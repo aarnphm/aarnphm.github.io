@@ -1,8 +1,20 @@
 import katex from 'katex'
 import type { QuartzComponent, QuartzComponentConstructor } from '../types/component'
 import { customMacros, katexOptions } from '../cfg'
+import { filterNodes, type PageRankModel } from '../util/pagerank-view'
 // @ts-ignore
 import script from './scripts/pagerank.inline'
+import {
+  describeNode,
+  emptyInbound,
+  emptyOutbound,
+  inspectorData,
+  metaLine,
+  pagerLine,
+  readState,
+  summaryValues,
+} from './scripts/pagerank/state'
+import { LinkRows, NoteLink, pageSize, RankRows, RankSizePlot } from './scripts/pagerank/views'
 import style from './styles/pagerank.scss'
 
 const tex = (source: string, displayMode = false) =>
@@ -47,14 +59,19 @@ const header = (key: keyof typeof explain, label: preact.ComponentChildren) => (
 )
 
 const sortHeader = (key: keyof typeof explain, label: preact.ComponentChildren, name: string) => (
-  <th scope="col" class={`pagerank-col-${key}`} aria-sort="none" data-pr-explain={explain[key]}>
+  <th
+    scope="col"
+    class={`pagerank-col-${key}`}
+    aria-sort={key === 'position' ? 'ascending' : 'none'}
+    data-pr-explain={explain[key]}
+  >
     <button type="button" data-pr-sort={key} aria-label={`sort by ${name}`}>
       {label}
     </button>
   </th>
 )
 
-const defaultExplain = '100 notes a page. point at a column heading to see what it measures.'
+const defaultExplain = 'settings: 100 notes/page.'
 
 const facts: [key: string, label: string][] = [
   ['rank', '\\#'],
@@ -70,7 +87,22 @@ const LinkIcon = () => (
   </svg>
 )
 
-export default (() => {
+interface Options {
+  /** The build's ranking; the page renders its first view from it so previews show real data. */
+  model?: PageRankModel
+}
+
+export default ((opts?: Options) => {
+  const model = opts?.model
+  // The view the script shows for an empty URL.
+  const state = model && readState(model, new URLSearchParams())
+  const rows = model && state ? filterNodes(model, state.query) : []
+  const selected = (model && state && model.nodes[state.selected]) || null
+  const panel = model && selected ? inspectorData(model, selected) : undefined
+  const values = model ? summaryValues(model) : {}
+  const pages = Math.max(1, Math.ceil(rows.length / pageSize))
+  const loading = 'reading the link graph…'
+
   const PageRankContent: QuartzComponent = ({ fileData }) => (
     <article class="popover-hint pagerank-page">
       <div id="pagerank-root" class="pagerank" data-pagerank>
@@ -91,12 +123,13 @@ export default (() => {
           />
           <p>
             <Tex source="L(q)" /> is the number of links on note <Tex source="q" />, so each link
-            passes on an equal part of what <Tex source="q" /> holds. the table divides each score
-            by the average, <Tex source="x_p = N\cdot\mathrm{PR}(p)" />, so 1.00× is an average
-            note. select a note to see the links that make up its score.
+            passes on an equal part of what <Tex source="q" /> holds. We normalize each score with
+            the average <Tex source="x_p = N\cdot\mathrm{PR}(p)" />, therefore a{' '}
+            <Tex source="1.00 \times" /> is considered an average note.{' '}
+            <i>select a note to see the links that make up its score.</i>
           </p>
           <p class="pagerank-meta" data-pr-meta>
-            reading the link graph…
+            {model ? metaLine(model) : loading}
           </p>
         </section>
 
@@ -104,20 +137,55 @@ export default (() => {
           {stats.map(([key, label]) => (
             <div key={key}>
               <dt>{label}</dt>
-              <dd data-pr-stat={key}>–</dd>
+              <dd data-pr-stat={key}>{values[key] ?? '–'}</dd>
             </div>
           ))}
         </dl>
 
+        <figure class="pagerank-figure pagerank-field">
+          <div
+            class="pagerank-field-plot"
+            data-pr-field
+            tabindex={0}
+            role="img"
+            aria-label="every note as one dot on a log score axis"
+          >
+            <canvas aria-hidden="true" />
+            <svg aria-hidden="true" />
+            <div class="pagerank-field-notes" data-pr-field-notes aria-hidden="true" />
+            <p class="pagerank-field-hover" data-pr-field-hover aria-hidden="true" />
+          </div>
+          <p
+            class="pagerank-chart-readout pagerank-field-readout"
+            data-pr-field-readout
+            aria-live="polite"
+          >
+            –
+          </p>
+          <figcaption>
+            one dot per note, placed by its score <Tex source="x = N\cdot\mathrm{PR}" /> on a log
+            axis; notes with the same score stack. the mean note sits at <Tex source="1\times" />{' '}
+            and most sit below it. notes nobody links to all share the lowest score, so they wait in
+            the block on the left, off the axis. the selected note is salmon; a solid dot links to
+            it, a ring is a note it links to, a solid dot inside a ring links both ways. hover a dot
+            to read it, click to select it; arrow keys walk the ranking.
+          </figcaption>
+        </figure>
+
         <figure class="pagerank-figure">
-          <div class="pagerank-chart" data-pr-chart />
+          <div class="pagerank-chart" data-pr-chart>
+            {model && <RankSizePlot model={model} selected={selected} pointer={null} />}
+          </div>
           <figcaption>
             <p>
-              each mark is one note, placed by its rank and its score on log scales. a few notes
-              hold most of the score, and the dashed line <Tex source="x \propto r^{-\alpha}" />{' '}
-              follows them down. the flat run on the right is the notes that nothing links to.
+              The line is log-scaled, and they trace the score of every available notes within the
+              garden. The dashed line <Tex source="x \propto r^{-\alpha}" /> proposed a linear
+              trend.
             </p>
-            <p class="pagerank-chart-readout" data-pr-chart-readout aria-live="polite" />
+            <br />
+            <p class="pagerank-chart-readout" data-pr-chart-readout aria-live="polite">
+              {describeNode('is selected', selected)}
+            </p>
           </figcaption>
         </figure>
 
@@ -168,9 +236,13 @@ export default (() => {
                     </tr>
                   </thead>
                   <tbody data-pr-rows>
-                    <tr class="pagerank-status">
-                      <td colSpan={7}>reading the link graph…</td>
-                    </tr>
+                    {model ? (
+                      <RankRows rows={rows.slice(0, pageSize)} selected={selected?.id ?? -1} />
+                    ) : (
+                      <tr class="pagerank-status">
+                        <td colSpan={7}>{loading}</td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -179,36 +251,43 @@ export default (() => {
                   <button type="button" data-pr-page="-1" aria-label="previous page" disabled>
                     ‹
                   </button>
-                  <span data-pr-page-label>1 / 1</span>
-                  <button type="button" data-pr-page="1" aria-label="next page" disabled>
+                  <span data-pr-page-label>1 / {pages}</span>
+                  <button
+                    type="button"
+                    data-pr-page="1"
+                    aria-label="next page"
+                    disabled={pages <= 1}
+                  >
                     ›
                   </button>
                 </div>
-                <span class="pagerank-filtered" data-pr-filtered aria-live="polite" />
+                <span class="pagerank-filtered" data-pr-filtered aria-live="polite">
+                  {model ? pagerLine(model, rows) : ''}
+                </span>
               </div>
             </div>
           </div>
 
           <aside class="pagerank-inspector" aria-label="selected note" data-pr-inspector>
             <header class="pagerank-inspector-head">
-              <p class="pagerank-kicker">selected note</p>
-              <h2 data-pr-title>–</h2>
-              <p class="pagerank-slug" data-pr-slug />
+              <h2 data-pr-title>{selected ? <NoteLink node={selected} /> : '–'}</h2>
+              <p class="pagerank-slug" data-pr-slug>
+                {selected?.slug}
+              </p>
               <dl class="pagerank-facts">
                 {facts.map(([key, label]) => (
                   <div key={key}>
                     <dt>
                       <Tex source={label} />
                     </dt>
-                    <dd data-pr-fact={key}>–</dd>
+                    <dd data-pr-fact={key}>{panel?.facts[key] ?? '–'}</dd>
                   </div>
                 ))}
               </dl>
             </header>
             <section class="pagerank-links" aria-label="links of the selected note">
               <p class="pagerank-kicker">
-                links in, largest first. a link from <Tex source="q" /> gives{' '}
-                <Tex source="d\,x_q / L(q)" />
+                A link from <Tex source="q" /> gives <Tex source="d\,x_q / L(q)" />
               </p>
               <div class="pagerank-ledger-scroll" tabindex={0} role="region" aria-label="links">
                 <table>
@@ -223,18 +302,20 @@ export default (() => {
                       </th>
                     </tr>
                   </thead>
-                  <tbody data-pr-ledger-in />
+                  <tbody data-pr-ledger-in>
+                    {panel && <LinkRows links={panel.inbound} empty={emptyInbound} />}
+                  </tbody>
                   <tfoot>
                     <tr>
                       <th scope="row">
                         every note gets <Tex source="(1-d) + d\sum_{L(q)=0}\mathrm{PR}(q)" />
                       </th>
-                      <td data-pr-ledger-base>–</td>
-                      <td data-pr-ledger-base-share>–</td>
+                      <td data-pr-ledger-base>{panel?.base ?? '–'}</td>
+                      <td data-pr-ledger-base-share>{panel?.baseShare ?? '–'}</td>
                     </tr>
                     <tr>
                       <th scope="row">score</th>
-                      <td data-pr-ledger-total>–</td>
+                      <td data-pr-ledger-total>{panel?.total ?? '–'}</td>
                       <td>100%</td>
                     </tr>
                   </tfoot>
@@ -252,7 +333,9 @@ export default (() => {
                       </th>
                     </tr>
                   </thead>
-                  <tbody data-pr-ledger-out />
+                  <tbody data-pr-ledger-out>
+                    {panel && <LinkRows links={panel.outbound} empty={emptyOutbound} />}
+                  </tbody>
                 </table>
               </div>
             </section>

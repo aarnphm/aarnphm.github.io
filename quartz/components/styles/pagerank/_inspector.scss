@@ -68,8 +68,20 @@
     white-space: nowrap;
   }
 
+  // top source: label and title share one line, the title truncates.
   > div:last-child {
     flex-basis: 100%;
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+
+    dt {
+      flex: none;
+    }
+
+    dd {
+      min-width: 0;
+    }
   }
 }
 

@@ -1,3 +1,4 @@
+import { h, render } from 'preact'
 import { createNoteRanker } from '../../util/note-pagerank'
 import {
   filterNodes,
@@ -9,38 +10,18 @@ import {
 } from '../../util/pagerank-view'
 import { buildSelect } from '../controls/select'
 import { currentNavSignal } from './nav-lifecycle'
-import { rankSizeChart } from './pagerank/chart'
+import { pagerankField } from './pagerank/field'
 import { renderInspector } from './pagerank/inspector'
-import { formatShare, formatTimes, markSelected, pageSize, renderRows } from './pagerank/table'
-
-const sorts: readonly PageRankSort[] = ['position', 'inbound', 'outbound', 'delta']
-const number = (value: number) => value.toLocaleString('en')
-
-interface PageRankState {
-  query: PageRankQuery
-  page: number
-  selected: number
-}
-
-function readState(model: PageRankModel): PageRankState {
-  const params = new URLSearchParams(location.search)
-  const sort = sorts.find(key => key === params.get('sort')) ?? 'position'
-  const folder = params.get('folder') ?? ''
-  const note = params.get('note')
-  const selected = model.nodes.find(node => node.slug === note) ?? model.byPosition[0]
-  return {
-    query: {
-      q: params.get('q') ?? '',
-      folder: model.folders.some(entry => entry.folder === folder) ? folder : '',
-      hideCourse: params.get('courses') !== '1',
-      linked: params.get('linked') === '1',
-      sort,
-      desc: params.has('dir') ? params.get('dir') === 'desc' : sort !== 'position',
-    },
-    page: Math.max(1, Number.parseInt(params.get('page') ?? '1', 10) || 1),
-    selected: selected?.id ?? -1,
-  }
-}
+import {
+  describeNode,
+  metaLine,
+  number,
+  pagerLine,
+  readState,
+  summaryValues,
+  type PageRankState,
+} from './pagerank/state'
+import { formatTimes, pageSize, RankRows, RankSizePlot } from './pagerank/views'
 
 function writeState(model: PageRankModel, state: PageRankState) {
   const { query } = state
@@ -53,30 +34,17 @@ function writeState(model: PageRankModel, state: PageRankState) {
   if (query.desc !== (query.sort !== 'position')) params.set('dir', query.desc ? 'desc' : 'asc')
   if (state.page > 1) params.set('page', String(state.page))
   const note = model.nodes[state.selected]
-  if (note && note !== model.byPosition[0]) params.set('note', note.slug)
+  // The first visible row is the default selection, so it needs no parameter.
+  if (note && note !== filterNodes(model, query)[0]) params.set('note', note.slug)
   const search = params.toString()
   history.replaceState(history.state, '', `${location.pathname}${search ? `?${search}` : ''}`)
 }
 
 function fillSummary(root: HTMLElement, model: PageRankModel) {
-  const s = model.summary
-  const percent = (count: number) => `${Math.round((count / (s.notes || 1)) * 100)}%`
-  const values: Record<string, string> = {
-    notes: number(s.notes),
-    links: number(s.links),
-    median: `${formatTimes(s.median)}×`,
-    max: `${formatTimes(s.max)}×`,
-    gini: s.gini.toFixed(2),
-    top10: formatShare(s.top10),
-    noInbound: `${percent(s.noInbound)} · ${number(s.noInbound)}`,
-    noOutbound: `${percent(s.noOutbound)} · ${number(s.noOutbound)}`,
-  }
+  const values = summaryValues(model)
   for (const dd of root.querySelectorAll<HTMLElement>('[data-pr-stat]'))
     dd.textContent = values[dd.dataset.prStat!] ?? '–'
-  root.querySelector<HTMLElement>('[data-pr-meta]')!.textContent =
-    `d = ${s.damping} · N = ${number(s.notes)} · ${s.iterations} iterations to a change below 1e-10 · ` +
-    `fitted α = ${s.alpha.toFixed(2)} · every note starts from ${formatTimes(s.base)}× · ` +
-    `protected notes, attachments and excluded paths are not ranked`
+  root.querySelector<HTMLElement>('[data-pr-meta]')!.textContent = metaLine(model)
 }
 
 document.addEventListener('nav', async () => {
@@ -91,15 +59,54 @@ document.addEventListener('nav', async () => {
     return
   }
   const model = pageRankModel(createNoteRanker(data).graph(), slug => data[slug]?.title ?? '')
-  const state = readState(model)
+  const state = readState(model, new URLSearchParams(location.search))
   fillSummary(root, model)
 
   const chartHost = root.querySelector<HTMLElement>('[data-pr-chart]')!
-  const chart = rankSizeChart(chartHost, model)
   const chartReadout = root.querySelector<HTMLElement>('[data-pr-chart-readout]')!
-  const resize = new ResizeObserver(([entry]) => chart.render(Math.floor(entry.contentRect.width)))
+  let chartWidth: number | undefined
+  let pointer: PageRankNode | null = null
+  const drawChart = () =>
+    render(
+      h(RankSizePlot, {
+        model,
+        width: chartWidth,
+        selected: model.nodes[state.selected] ?? null,
+        pointer,
+      }),
+      chartHost,
+    )
+  const fieldHost = root.querySelector<HTMLElement>('[data-pr-field]')!
+  const fieldReadout = root.querySelector<HTMLElement>('[data-pr-field-readout]')!
+  const fieldHover = root.querySelector<HTMLElement>('[data-pr-field-hover]')!
+  const field = pagerankField(
+    fieldHost,
+    model,
+    {
+      point: node => {
+        pointer = node
+        mark()
+      },
+      select: node => select(node.id, true),
+    },
+    signal,
+  )
+  const resize = new ResizeObserver(entries => {
+    for (const entry of entries) {
+      const width = Math.floor(entry.contentRect.width)
+      if (entry.target === fieldHost) {
+        field.render(width)
+        fieldHost.dataset.layoutMs = field.layoutMs.toFixed(1)
+      } else if (width > 0 && width !== chartWidth) {
+        chartWidth = width
+        drawChart()
+      }
+    }
+  })
   resize.observe(chartHost)
+  resize.observe(fieldHost)
   window.addCleanup(() => resize.disconnect())
+  document.addEventListener('themechange', () => field.paint(), { signal })
 
   const scroll = root.querySelector<HTMLElement>('.pagerank-scroll')!
   const search = root.querySelector<HTMLInputElement>('[data-pr-query]')!
@@ -107,37 +114,45 @@ document.addEventListener('nav', async () => {
   const filtered = root.querySelector<HTMLElement>('[data-pr-filtered]')!
   const [previous, next] = root.querySelectorAll<HTMLButtonElement>('[data-pr-page]')
   let rows: PageRankNode[] = []
-  let pointer: PageRankNode | null = null
 
-  const describe = (label: string, node: PageRankNode | null) =>
-    node
-      ? `${node.title} ${label}, rank ${node.position} at ${formatTimes(node.times)}× the mean.`
-      : ''
+  const line = (node: PageRankNode) =>
+    `${node.title} · #${node.position} · ${formatTimes(node.times)}×`
   const mark = () => {
     const selected = model.nodes[state.selected] ?? null
-    chart.mark(selected, pointer)
+    drawChart()
+    field.mark(selected, pointer)
     chartReadout.textContent = [
-      describe('is selected', selected),
-      pointer === selected ? '' : describe('is under the pointer', pointer),
+      describeNode('is selected', selected),
+      pointer === selected ? '' : describeNode('is under the pointer', pointer),
     ]
       .filter(Boolean)
       .join(' ')
+    // Hover reads inline at the top of the plot, in place of the #1 note; the line under the
+    // canvas keeps the selection.
+    const counts = (node: PageRankNode) =>
+      `${line(node)} · in ${node.inbound} · out ${node.outbound}`
+    if (pointer) fieldHover.textContent = counts(pointer)
+    fieldHost.toggleAttribute('data-pointer', !!pointer)
+    fieldReadout.textContent = selected ? `selected: ${counts(selected)}` : '–'
+    fieldHost.setAttribute(
+      'aria-label',
+      `${number(model.summary.notes)} notes as dots on a log score axis, ` +
+        `${number(model.summary.noInbound)} with no inbound link in a block to its left. ` +
+        (selected ? `selected: ${line(selected)}. ` : '') +
+        'left and right arrows move the selection down and up the ranking.',
+    )
   }
 
   const renderList = (resetScroll: boolean) => {
     rows = filterNodes(model, state.query)
     const pages = Math.max(1, Math.ceil(rows.length / pageSize))
     state.page = Math.min(state.page, pages)
-    renderRows(body, rows.slice((state.page - 1) * pageSize, state.page * pageSize), state.selected)
+    const visible = rows.slice((state.page - 1) * pageSize, state.page * pageSize)
+    render(h(RankRows, { rows: visible, selected: state.selected }), body)
     pageLabel.textContent = `${state.page} / ${pages}`
     previous.disabled = state.page <= 1
     next.disabled = state.page >= pages
-    const mass = rows.reduce((sum, node) => sum + node.times, 0) / (model.summary.notes || 1)
-    const mean = (pick: (node: PageRankNode) => number) =>
-      rows.length ? (rows.reduce((sum, node) => sum + pick(node), 0) / rows.length).toFixed(1) : '–'
-    filtered.textContent =
-      `${number(rows.length)} of ${number(model.summary.notes)} notes · ${formatShare(mass)} of mass` +
-      ` · mean in ${mean(node => node.inbound)} · mean out ${mean(node => node.outbound)}`
+    filtered.textContent = pagerLine(model, rows)
     for (const button of root.querySelectorAll<HTMLButtonElement>('[data-pr-sort]')) {
       const active = button.dataset.prSort === state.query.sort
       button
@@ -162,7 +177,13 @@ document.addEventListener('nav', async () => {
       state.page = page
       renderList(false)
     } else {
-      markSelected(body, id)
+      render(
+        h(RankRows, {
+          rows: rows.slice((state.page - 1) * pageSize, state.page * pageSize),
+          selected: id,
+        }),
+        body,
+      )
       writeState(model, state)
     }
     const tr = body.querySelector<HTMLElement>(`tr[data-id="${id}"]`)
@@ -177,10 +198,16 @@ document.addEventListener('nav', async () => {
     mark()
   }
 
+  // A filter that hides the selected note moves the selection to the first visible row.
+  const keepSelectionVisible = () => {
+    if (rows.length > 0 && !rows.some(node => node.id === state.selected)) select(rows[0].id, false)
+  }
+
   const update = (change: Partial<PageRankQuery>) => {
     state.query = { ...state.query, ...change }
     state.page = 1
     renderList(true)
+    keepSelectionVisible()
   }
 
   search.value = state.query.q

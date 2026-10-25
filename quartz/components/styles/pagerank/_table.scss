@@ -7,7 +7,6 @@
 // Positioned so KaTeX's absolute MathML stays inside the scrollport instead of growing the page.
 .pagerank-explain {
   box-sizing: border-box;
-  min-block-size: calc(2lh + 0.9rem);
   margin: 0;
   padding: 0.45rem 0.75rem;
   border-block-end: 1px solid var(--pr-line);
@@ -124,6 +123,12 @@
     &[aria-current='true'] {
       color: var(--dark);
       font-style: italic;
+
+      // A highlighter mark on the title text only; --secondary is too light to read as text.
+      a.internal {
+        background: color-mix(in srgb, var(--secondary) 55%, transparent);
+        box-decoration-break: clone;
+      }
     }
   }
 
