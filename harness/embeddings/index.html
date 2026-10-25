@@ -32,6 +32,12 @@
           <span class="mono muted" id="freshness">waiting for the first snapshot</span>
         </div>
       </section>
+      <section class="queue-actions" aria-label="PDF queue controls">
+        <button id="queue-missing" type="button">queue missing PDFs</button>
+        <p id="queue-status" class="mono" role="status">
+          new and changed public papers enter the same OCR and embedding queue
+        </p>
+      </section>
       <div class="notice" id="notice" role="alert" hidden></div>
       <section class="metrics" aria-label="queue totals">
         <article>
@@ -217,7 +223,7 @@
       <footer>
         <span id="observed" class="mono">waiting for observation</span
         ><span class="muted"
-          >read-only · WebSocket updates every 3 seconds · OCR caches preserved</span
+          >local queue controls · WebSocket updates every 3 seconds · OCR caches preserved</span
         >
       </footer>
     </main>

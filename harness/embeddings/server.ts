@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url'
 import { parseArgs } from 'node:util'
 import { WebSocket, WebSocketServer } from 'ws'
 import { isRecord } from '../../quartz/util/type-guards'
+import { enqueuePdfs } from './queue-api'
 
 const directory = path.dirname(fileURLToPath(import.meta.url))
 const repository = path.resolve(directory, '../..')
@@ -48,11 +49,20 @@ const assets = new Map([
   ['/title.ttf', ['../../quartz/static/SpaceGrotesk-VariableFont_wght.ttf', 'font/ttf']],
 ])
 const server = createServer(async (request, response) => {
-  if (request.method !== 'GET' && request.method !== 'HEAD') {
-    response.writeHead(405, { Allow: 'GET, HEAD' }).end('read-only harness')
+  const url = new URL(request.url ?? '/', 'http://127.0.0.1')
+  if (url.pathname === '/api/queue' && request.method === 'POST') {
+    const address = server.address()
+    if (!address || typeof address === 'string') {
+      response.writeHead(503).end('server starting')
+      return
+    }
+    await enqueuePdfs(request, response, root, repository, address.port)
     return
   }
-  const url = new URL(request.url ?? '/', 'http://127.0.0.1')
+  if (request.method !== 'GET' && request.method !== 'HEAD') {
+    response.writeHead(405, { Allow: 'GET, HEAD' }).end('unsupported method')
+    return
+  }
   response.setHeader('Cache-Control', 'no-store')
   response.setHeader('X-Content-Type-Options', 'nosniff')
   response.setHeader(

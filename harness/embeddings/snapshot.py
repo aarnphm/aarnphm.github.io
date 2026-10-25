@@ -64,6 +64,7 @@ class Observer:
     self.logs = Logs()
     self.models = Models()
     self.starts: dict[int, float] = {}
+    self.queue_updated: str | None = None
 
   def started_at(self, pid: int) -> float | None:
     if pid in self.starts:
@@ -83,8 +84,7 @@ class Observer:
       return None
     try:
       started = (
-        datetime
-        .strptime(result.stdout.strip(), '%a %b %d %H:%M:%S %Y')
+        datetime.strptime(result.stdout.strip(), '%a %b %d %H:%M:%S %Y')
         .replace(tzinfo=timezone.utc)
         .timestamp()
       )
@@ -146,6 +146,11 @@ class Observer:
   def snapshot(self) -> dict[str, object]:
     self.files.errors.clear()
     state = self.files.read(self.run / 'status.json')
+    queue = self.files.read(self.cache / 'queue.json')
+    queue_jobs = [mapping(job) for job in queue.get('jobs', [])]
+    if queue.get('updatedAt') != self.queue_updated:
+      self.inventory.updated = 0
+      self.queue_updated = text(queue.get('updatedAt'))
     prefix = text(state.get('prefix'), 'thoughts/papers/')
     index = self.root / 'public/static/searchIndex.json'
     command = state.get('command')
@@ -320,6 +325,14 @@ class Observer:
         'pages': batch_pages,
         'log': Path(text(state.get('log'))).name,
         'servers': model_servers,
+      },
+      'queue': {
+        'jobs': queue_jobs,
+        'pending': sum(
+          job.get('state') in ('queued', 'active') for job in queue_jobs
+        ),
+        'failed': sum(job.get('state') == 'error' for job in queue_jobs),
+        'updatedAt': queue.get('updatedAt'),
       },
       'current': current,
       'totals': {

@@ -12,7 +12,7 @@ import { isRecord } from '../../quartz/util/type-guards'
 const execute = promisify(execFile)
 
 test(
-  'the read-only harness pushes verified queue changes through HTTP and WebSocket',
+  'the harness pushes verified queue changes through HTTP and WebSocket',
   { timeout: 90_000 },
   async () => {
     const root = await mkdtemp(path.join(tmpdir(), 'embedding-harness-'))
@@ -86,6 +86,37 @@ test(
       assert.equal((await fetch(address + '/api/status', { method: 'POST' })).status, 405)
       assert.equal((await fetch(address + '/.env')).status, 404)
       assert.equal((await fetch(address + '/snapshot.py')).status, 404)
+      const queueHeaders = { 'Content-Type': 'application/json', 'X-Garden-Queue': '1' }
+      assert.equal(
+        (await fetch(address + '/api/queue', { method: 'POST', body: '{}' })).status,
+        403,
+      )
+      assert.equal(
+        (
+          await fetch(address + '/api/queue', {
+            method: 'POST',
+            headers: { ...queueHeaders, Origin: 'https://foreign.invalid' },
+            body: '{}',
+          })
+        ).status,
+        403,
+      )
+      assert.equal(
+        (await fetch(address + '/api/queue', { method: 'POST', headers: queueHeaders, body: '{' }))
+          .status,
+        400,
+      )
+      assert.equal(
+        (
+          await fetch(address + '/api/queue', {
+            method: 'POST',
+            headers: queueHeaders,
+            body: JSON.stringify({ slugs: ['../private.pdf'] }),
+          })
+        ).status,
+        400,
+      )
+
       const denied = new WebSocket(address.replace('http:', 'ws:') + '/events', {
         origin: 'https://foreign.invalid',
       })
@@ -101,6 +132,17 @@ test(
       assert.equal(next.totals.completeDocuments, 1)
       assert.equal(next.totals.remainingOcrPages, 2)
       assert.equal(next.totals.remainingIndexPages, 2)
+      const queued = await fetch(address + '/api/queue', {
+        method: 'POST',
+        headers: queueHeaders,
+        body: JSON.stringify({ slugs: ['thoughts/papers/alpha.pdf'] }),
+      })
+      assert.equal(queued.status, 202)
+      const report = await queued.json()
+      assert.equal(report.queued, 0)
+      assert.equal(report.pending, 0)
+      assert.equal(report.dispatcherPid, undefined)
+
       assert.ok(Array.isArray(next.indexes))
       assert.ok(
         next.indexes.some(
@@ -127,7 +169,8 @@ test(
           initial: first.totals,
           updated: next.totals,
           frames: frames.length,
-          writesRejected: true,
+          unrelatedWritesRejected: true,
+          completedPdfQueueNoop: true,
           foreignOriginRejected: true,
           errorPreserved: true,
         }),
