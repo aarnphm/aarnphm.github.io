@@ -3,13 +3,13 @@ import {
   blob,
   densify,
   even,
-  eye,
+  EYE,
   EYES,
   hand,
   INK,
-  loop,
   PAPER,
   part,
+  pillEye,
   PINK,
   poly,
   pressure,
@@ -45,12 +45,24 @@ export { engineer, student } from './mascot/academic-outfits'
 
 type MascotOptions = { line: number; seed: number; paper?: string; ink?: string; points?: number }
 
-// The mascot in its own units, radius about 1 around the origin, filled with paper inside the line
-// so it reads on a dark background.
+// `paper` with `share` of `tint` mixed in, both #rrggbb: color-mix() for rasterisers that lack it.
+const mix = (paper: string, tint: string, share: number) =>
+  `#${[1, 3, 5]
+    .map(i => {
+      const [a, b] = [paper, tint].map(c => parseInt(c.slice(i, i + 2), 16))
+      return Math.round(a + (b - a) * share)
+        .toString(16)
+        .padStart(2, '0')
+    })
+    .join('')}`
+
+// The mascot in its own units, radius about 1 around the origin, drawn as the pet is: the squarer
+// blob, paper blushed with pink inside the line so it reads on a dark background, and the pill eyes.
+// The site icon, section icons and social cards rasterise it.
 export function mascot({ line, seed, paper = PAPER, ink = INK, points = 220 }: MascotOptions) {
-  const outline = loop(seed, 0.06, 0.03, points)
-  const eyes = EYES.map(x => eye(x, line * 1.7, ink)).join('')
-  return `<path d="${poly(outline)}" style="fill:${paper}"/>${stroke(outline, pressure(seed + 1, line), ink)}${eyes}`
+  const outline = blob(seed, 0.25, 0.06, 0.03, points)
+  const eyes = EYES.map((x, i) => pillEye(x, EYE.y, EYE.h, EYE.w, 0.2, i, ink)).join('')
+  return `<path d="${poly(outline)}" style="fill:${mix(paper, PINK, 0.14)}"/>${stroke(outline, pressure(seed + 1, line), ink)}${eyes}`
 }
 
 // The pet: the mascot with every look the old rocky spritesheet had, each pre-drawn as a part. It

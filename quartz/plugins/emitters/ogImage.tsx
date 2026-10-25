@@ -365,6 +365,11 @@ export const CustomOgImagesFallback: QuartzEmitterPlugin = () => ({
   externalResources: ctx => socialImageResources(ctx, defaultOptions, false),
 })
 
+// A page with `generatedSocialImage` gets its image from the emitter that renders its route.
+const rendersSocialImage = (fileData: QuartzPluginData) =>
+  fileData.frontmatter?.socialImage === undefined &&
+  fileData.frontmatter?.generatedSocialImage !== true
+
 export const CustomOgImages: QuartzEmitterPlugin<Partial<SocialImageOptions>> = userOpts => {
   const fullOptions = { ...defaultOptions, ...userOpts }
 
@@ -374,9 +379,7 @@ export const CustomOgImages: QuartzEmitterPlugin<Partial<SocialImageOptions>> = 
       return []
     },
     async *emit(ctx, content, _resources) {
-      const targets = content.filter(
-        ([_tree, vfile]) => vfile.data.frontmatter?.socialImage === undefined,
-      )
+      const targets = content.filter(([_tree, vfile]) => rendersSocialImage(vfile.data))
       if (targets.length === 0) return
       const generateOgImage = await createOgImageGenerator(ctx, fullOptions)
       const emitted = await mapConcurrent(targets, defaultIoConcurrency, ([_tree, vfile]) =>
@@ -388,7 +391,7 @@ export const CustomOgImages: QuartzEmitterPlugin<Partial<SocialImageOptions>> = 
       const targets = changeEvents.filter(
         changeEvent =>
           changeEvent.file &&
-          changeEvent.file.data.frontmatter?.socialImage === undefined &&
+          rendersSocialImage(changeEvent.file.data) &&
           (changeEvent.type === 'add' || changeEvent.type === 'change'),
       )
       if (targets.length === 0) return
