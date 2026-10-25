@@ -17,6 +17,7 @@ import portalocker
 
 from cache import ExtractionSpec, PageCache, canonical, digest
 from publication import publish, prune_vectors
+from regions import publish_regions
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from embed_build import (
@@ -127,7 +128,7 @@ def read_passages(
     ):
       continue
     source_sha = hashlib.sha256(source.read_bytes()).hexdigest()
-    if document is None:
+    if document is None or document['sourceSha256'] != source_sha:
       document = by_hash.get(source_sha)
     if document is None:
       continue
@@ -316,6 +317,7 @@ def build(args: argparse.Namespace) -> None:
   removed = publish(
     args.out, generation, payload, shards, passage_shards, len(passages)
   )
+  publish_regions(args.cache, args.out.parent / 'pdf-regions', documents, spec)
   retained = prune_vectors(args.cache / 'vectors', digest(contract), set(keys))
   report = {
     'generation': generation,

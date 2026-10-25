@@ -10,6 +10,7 @@ const PDFJS_SCRIPT_SRC = '/static/pdfjs/pdf.min.mjs'
 const PDFJS_WORKER_SRC = '/static/pdfjs/pdf.worker.min.mjs'
 
 const PDF_DOCUMENT_CACHE_TTL_MS = 60 * 1000
+const MAX_IDLE_DOCUMENTS = 2
 
 let pdfJsLoad: Promise<PdfJsRuntime> | undefined
 const pdfDocumentCache = new Map<string, PdfDocumentCacheEntry>()
@@ -121,20 +122,28 @@ function pdfDocumentOptions(src: string) {
   }
 }
 
+function destroyIdleDocument(key: string, entry: PdfDocumentCacheEntry) {
+  if (entry.refs > 0 || pdfDocumentCache.get(key) !== entry) return
+  window.clearTimeout(entry.destroyTimer)
+  pdfDocumentCache.delete(key)
+  void entry.loadingTask.destroy().catch(() => undefined)
+}
+
 function releasePdfDocument(key: string) {
   const entry = pdfDocumentCache.get(key)
   if (!entry) return
   entry.refs = Math.max(0, entry.refs - 1)
   if (entry.refs > 0 || entry.destroyTimer) return
-  entry.destroyTimer = window.setTimeout(() => {
-    if (entry.refs > 0) {
-      entry.destroyTimer = 0
-      return
-    }
-
-    pdfDocumentCache.delete(key)
-    void entry.loadingTask.destroy().catch(() => undefined)
-  }, PDF_DOCUMENT_CACHE_TTL_MS)
+  pdfDocumentCache.delete(key)
+  pdfDocumentCache.set(key, entry)
+  entry.destroyTimer = window.setTimeout(
+    () => destroyIdleDocument(key, entry),
+    PDF_DOCUMENT_CACHE_TTL_MS,
+  )
+  const idle = [...pdfDocumentCache].filter(([, document]) => document.refs === 0)
+  for (const [idleKey, document] of idle.slice(0, -MAX_IDLE_DOCUMENTS)) {
+    destroyIdleDocument(idleKey, document)
+  }
 }
 
 export function loadPdfDocument(pdfjs: PdfJsRuntime, src: string): Promise<PdfDocumentHandle> {

@@ -349,6 +349,7 @@ function positionPdfAnnotationCards(state: PdfState) {
 }
 
 export function syncPdfEmbedViewport(state: PdfState): boolean {
+  if (state.destroyed || !state.root.isConnected || state.scroller.clientWidth === 0) return false
   const heightChanged = updateAutoPdfEmbedHeight(
     state.root,
     state.toolbar,
