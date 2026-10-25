@@ -8,6 +8,7 @@ export async function renderCodeMatch(
   target: HTMLElement,
   signal: AbortSignal,
   compact = false,
+  onMatchChange?: () => void,
 ) {
   const url = codeMatchUrl(current, match)
   const { readCodeManifest, readCodeShard } = await import('../../util/code-search-format')
@@ -32,13 +33,14 @@ export async function renderCodeMatch(
   const firstLine = 1
   const { highlightCode, codeAttributes } = await import('../../util/highlight-source')
   if (signal.aborted) return
-  const inner = document.createElement('div')
-  inner.className = 'preview-inner search-code-preview code-match-preview'
-  const figure = document.createElement('figure')
-  const caption = document.createElement('figcaption')
+  // The previous match's figure stays mounted; only its caption and source swap.
+  const mounted = target.querySelector<HTMLElement>(':scope > .code-match-preview')
+  const mountedCaption = mounted?.querySelector<HTMLElement>(':scope > figure > figcaption')
+  const mountedPre = mounted?.querySelector<HTMLPreElement>(':scope > figure > pre')
+  const caption = mountedCaption ?? document.createElement('figcaption')
   const label = document.createElement('span')
   label.className = 'code-match-label'
-  caption.append(label)
+  caption.replaceChildren(label)
   const previous = document.createElement('button')
   previous.type = 'button'
   previous.textContent = 'prev'
@@ -55,7 +57,7 @@ export async function renderCodeMatch(
   const open = document.createElement('a')
   open.href = url.toString()
   open.textContent = match.unit.kind === 'attachment' ? 'open file' : 'open block'
-  const pre = document.createElement('pre')
+  const pre = mountedPre ?? document.createElement('pre')
   pre.tabIndex = 0
   pre.setAttribute('aria-label', `Source code: ${match.unit.path}`)
   const highlighted = highlightCode(source, match.unit.language)
@@ -114,13 +116,27 @@ export async function renderCodeMatch(
   const move = (direction: number) => {
     match.selectedRange =
       (match.selectedRange + direction + match.ranges.length) % match.ranges.length
+    const range = match.ranges[match.selectedRange]
+    if (range) {
+      match.excerpt = source
+        .split('\n')
+        .slice(range.start.line - 1, range.end.line)
+        .join(' ')
+        .trim()
+    }
     paint()
+    onMatchChange?.()
   }
   previous.addEventListener('click', () => move(-1), { signal })
   next.addEventListener('click', () => move(1), { signal })
   caption.append(open)
-  figure.append(caption, pre)
-  inner.append(figure)
-  target.replaceChildren(inner)
+  if (!mountedCaption || !mountedPre) {
+    const inner = document.createElement('div')
+    inner.className = 'preview-inner search-code-preview code-match-preview'
+    const figure = document.createElement('figure')
+    figure.append(caption, pre)
+    inner.append(figure)
+    target.replaceChildren(inner)
+  }
   paint()
 }

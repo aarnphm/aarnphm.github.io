@@ -10,6 +10,21 @@
       border: 0;
       overflow: hidden;
     }
+
+    // A remount keeps the previous pages until the next document's pages replace them.
+    > .pdf-embed[data-pdf-status='loading'] .pdf-viewer {
+      opacity: 0.4;
+    }
+
+    // The pager holds three digits, so it keeps its width while results swap documents.
+    .pdf-embed-page-input {
+      width: calc((max(var(--pdf-instrument-digits, 2), 3) + 1) * 1ch + 0.5rem + 1px);
+    }
+
+    .pdf-embed-control-group > .pdf-embed-page-total {
+      justify-content: flex-start;
+      min-width: calc(5ch + 0.5rem);
+    }
   }
 
   &.search-code-preview {

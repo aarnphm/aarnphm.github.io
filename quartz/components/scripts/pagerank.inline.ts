@@ -32,7 +32,7 @@ function readState(model: PageRankModel): PageRankState {
     query: {
       q: params.get('q') ?? '',
       folder: model.folders.some(entry => entry.folder === folder) ? folder : '',
-      hideCourse: params.get('hide') === 'course',
+      hideCourse: params.get('courses') !== '1',
       linked: params.get('linked') === '1',
       sort,
       desc: params.has('dir') ? params.get('dir') === 'desc' : sort !== 'position',
@@ -47,7 +47,7 @@ function writeState(model: PageRankModel, state: PageRankState) {
   const params = new URLSearchParams()
   if (query.q) params.set('q', query.q)
   if (query.folder) params.set('folder', query.folder)
-  if (query.hideCourse) params.set('hide', 'course')
+  if (!query.hideCourse) params.set('courses', '1')
   if (query.linked) params.set('linked', '1')
   if (query.sort !== 'position') params.set('sort', query.sort)
   if (query.desc !== (query.sort !== 'position')) params.set('dir', query.desc ? 'desc' : 'asc')
@@ -110,11 +110,16 @@ document.addEventListener('nav', async () => {
   let pointer: PageRankNode | null = null
 
   const describe = (label: string, node: PageRankNode | null) =>
-    node ? `${label}: ${node.position}, ${node.title}, ${formatTimes(node.times)}×.` : ''
+    node
+      ? `${node.title} ${label}, rank ${node.position} at ${formatTimes(node.times)}× the mean.`
+      : ''
   const mark = () => {
     const selected = model.nodes[state.selected] ?? null
     chart.mark(selected, pointer)
-    chartReadout.textContent = [describe('selected', selected), describe('pointer', pointer)]
+    chartReadout.textContent = [
+      describe('is selected', selected),
+      pointer === selected ? '' : describe('is under the pointer', pointer),
+    ]
       .filter(Boolean)
       .join(' ')
   }
@@ -161,10 +166,11 @@ document.addEventListener('nav', async () => {
       writeState(model, state)
     }
     const tr = body.querySelector<HTMLElement>(`tr[data-id="${id}"]`)
+    const headerHeight = scroll.querySelector('thead')?.getBoundingClientRect().height ?? 0
     if (
       reveal &&
       tr &&
-      (tr.offsetTop < scroll.scrollTop ||
+      (tr.offsetTop < scroll.scrollTop + headerHeight ||
         tr.offsetTop > scroll.scrollTop + scroll.clientHeight - tr.offsetHeight)
     )
       scroll.scrollTop = tr.offsetTop - scroll.clientHeight / 2
@@ -179,14 +185,18 @@ document.addEventListener('nav', async () => {
 
   search.value = state.query.q
   for (const button of root.querySelectorAll<HTMLButtonElement>('[data-pr-toggle]')) {
-    const key = button.dataset.prToggle as 'hideCourse' | 'linked'
-    button.setAttribute('aria-pressed', String(state.query[key]))
+    // The courses button shows course indexes, which are hidden by default.
+    const courses = button.dataset.prToggle === 'courses'
+    button.setAttribute(
+      'aria-pressed',
+      String(courses ? !state.query.hideCourse : state.query.linked),
+    )
     button.addEventListener(
       'click',
       () => {
         const on = button.getAttribute('aria-pressed') !== 'true'
         button.setAttribute('aria-pressed', String(on))
-        update({ [key]: on })
+        update(courses ? { hideCourse: !on } : { linked: on })
       },
       { signal },
     )
@@ -213,6 +223,20 @@ document.addEventListener('nav', async () => {
   root.querySelector<HTMLElement>('[data-pr-folder]')!.replaceChildren(folders.element)
   window.addCleanup(folders.mount())
 
+  // Column headings explain themselves in the line above the table on hover or focus.
+  const explainLine = root.querySelector<HTMLElement>('[data-pr-explain-line]')!
+  const explainDefault = explainLine.textContent ?? ''
+  const thead = root.querySelector<HTMLElement>('.pagerank-table thead')!
+  const explainFrom = (event: Event) => {
+    const th = (event.target as Element).closest<HTMLElement>('th[data-pr-explain]')
+    explainLine.textContent = th?.dataset.prExplain ?? explainDefault
+  }
+  const explainReset = () => (explainLine.textContent = explainDefault)
+  thead.addEventListener('pointerover', explainFrom, { signal })
+  thead.addEventListener('focusin', explainFrom, { signal })
+  thead.addEventListener('pointerleave', explainReset, { signal })
+  thead.addEventListener('focusout', explainReset, { signal })
+
   for (const button of root.querySelectorAll<HTMLButtonElement>('[data-pr-sort]'))
     button.addEventListener(
       'click',
@@ -225,6 +249,48 @@ document.addEventListener('nav', async () => {
     )
   previous.addEventListener('click', () => ((state.page -= 1), renderList(true)), { signal })
   next.addEventListener('click', () => ((state.page += 1), renderList(true)), { signal })
+
+  document.addEventListener(
+    'keydown',
+    event => {
+      const key = event.key.toLowerCase()
+      if (
+        event.defaultPrevented ||
+        !event.ctrlKey ||
+        event.metaKey ||
+        event.altKey ||
+        event.shiftKey ||
+        (key !== 'n' && key !== 'p')
+      )
+        return
+      const target = event.target
+      if (!(target instanceof HTMLElement)) return
+      if (target !== document.body && !root.contains(target)) return
+      if (
+        target.closest(
+          'input, textarea, select, [contenteditable], [role="dialog"], [role="listbox"]',
+        )
+      )
+        return
+      if (!rows.length) return
+      event.preventDefault()
+      const start = (state.page - 1) * pageSize
+      const end = Math.min(start + pageSize, rows.length)
+      const index = rows.findIndex(node => node.id === state.selected)
+      const nextIndex =
+        index < start || index >= end
+          ? key === 'n'
+            ? start
+            : end - 1
+          : Math.max(0, Math.min(rows.length - 1, index + (key === 'n' ? 1 : -1)))
+      const node = rows[nextIndex]
+      select(node.id, true)
+      body
+        .querySelector<HTMLButtonElement>(`tr[data-id="${node.id}"] .pagerank-select`)
+        ?.focus({ preventScroll: true })
+    },
+    { signal, capture: true },
+  )
 
   root.addEventListener(
     'click',

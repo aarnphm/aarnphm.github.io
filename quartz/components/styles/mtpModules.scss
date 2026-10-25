@@ -353,10 +353,12 @@
   height: auto;
 }
 
+// Token rows sit on the same center line as the arrow and block they feed.
 .mtp-targets,
 .mtp-inputs {
   display: flex;
   flex-wrap: nowrap;
+  justify-content: center;
   gap: 0.2rem;
   align-items: center;
 }

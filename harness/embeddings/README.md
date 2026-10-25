@@ -31,9 +31,11 @@ The detached instance started for this task records its PID and output under `qu
 - **Remaining OCR estimate:** distinct uncached source/page pairs multiplied by the mean elapsed time of up to 50 newly extracted pages from the current runner process and extraction recipe. A page enters the sample only when its cache record verifies and has no migration origin. Repeated log entries count once. At least five samples are required; earlier runs and migrated pages do not provide new timing evidence. Duplicate PDFs share OCR work, while the coverage totals retain each document reference. The display includes the sample size and number of sampled PDFs. Embedding, publication, pauses and future throughput changes are excluded, so this estimates remaining OCR processing time.
 - **Cache updated:** the file's last cache-write time, which can represent migration as well as inference.
 
-The current page is the first requested page of the active batch that has no verified cache record. It can briefly represent the next page while the extractor prepares it. The inventory refreshes every 60 seconds; status, cache and publication observations refresh every three seconds by default. Socket freshness and the runner heartbeat are reported separately. Missing data appears as `–`.
+The current work lists pages admitted to the rolling extraction pipeline. The batch grid follows each physical page, including completions that arrive out of order. Completed counts come from verified cache records, so repeated log lines cannot increase progress. The displayed batch size uses its actual page plan. Older logs without admission events retain the first-pending-page fallback. The inventory refreshes every 60 seconds; status, cache and publication observations refresh every three seconds by default. Socket freshness and the runner heartbeat are reported separately. Missing data appears as `–`.
 
-`inputs.py` owns public source identities and cache validation, reusing the PDF builder and `PageCache`. `logs.py` reduces native batch logs. `snapshot.py` assembles observations. `server.ts` owns only the loopback HTTP/WebSocket transport and its child observer. The frontend preserves document row elements so live updates retain expanded rows and keyboard focus. All displayed source text uses text nodes.
+Model health requires both the runner's process and a matching HTTP model identity. The OCR readout shows active and queued requests, completion failures, prefix caching and continuous batching. Its token rate uses differences in the native completed-token counter over up to 30 seconds, with at least 10 seconds of observations. Tokens from a long request enter this counter when that request completes; this is a completed-output rate rather than instantaneous decode throughput.
+
+`inputs.py` owns public source identities and cache validation, reusing the PDF builder and `PageCache`. `logs.py` reduces native batch logs. `models.py` reads model health and throughput. `snapshot.py` assembles observations. `server.ts` owns only the loopback HTTP/WebSocket transport and its child observer. The frontend preserves document row elements so live updates retain expanded rows and keyboard focus. All displayed source text uses text nodes.
 
 The observer reads the runner's process start time once to bound the timing logs.
 If process identity is unavailable, it withholds the estimate. The runner and
@@ -45,6 +47,7 @@ Remaining-time regression replay:
 
 ```sh
 pnpm exec tsx --test harness/embeddings/timing.e2e.test.ts
+pnpm exec tsx --test harness/embeddings/streaming.e2e.test.ts
 ```
 
 This exercises the observer process with actual PDFs, checksummed cache files and

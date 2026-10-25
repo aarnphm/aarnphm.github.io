@@ -194,6 +194,18 @@ export function setPageCount(controls: PdfControls, count: number) {
   controls.pageTotal.textContent = `/ ${count}`
 }
 
+/** Points a mounted toolbar at the next document; the count arrives with it. */
+export function resetControls(toolbar: HTMLElement, controls: PdfControls, options: PdfOptions) {
+  controls.pageInput.value = String(options.page)
+  controls.pageTotal.textContent = '/ …'
+  controls.prev.disabled = true
+  controls.next.disabled = true
+  const download = toolbar.querySelector<HTMLAnchorElement>('.pdf-embed-download')
+  if (!download) return
+  download.href = options.src
+  download.download = options.title
+}
+
 function createControlGroup(className: string, label: string): HTMLDivElement {
   const group = document.createElement('div')
   group.className = `pdf-embed-control-group ${className}`

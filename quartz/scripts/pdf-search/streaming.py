@@ -17,6 +17,8 @@ from glmocr.pipeline._workers import layout_worker, recognition_worker
 from PIL import Image
 import pymupdf
 
+from rendering import RENDER_POLICY, render_page
+
 
 @dataclass(frozen=True)
 class PdfPage:
@@ -58,10 +60,7 @@ class PdfPipeline(Pipeline):
           started = time.monotonic()
           with pymupdf.open(source.source) as pdf:
             page = pdf[source.number - 1]
-            pixels = page.get_pixmap(dpi=self.page_loader.pdf_dpi, alpha=False)
-            image = Image.frombytes(
-              'RGB', (pixels.width, pixels.height), pixels.samples
-            )
+            image = render_page(page, self.page_loader.pdf_dpi)
             loaded[index] = LoadedPage(
               source, image, page.get_label(), bool(page.get_text().strip())
             )
@@ -74,6 +73,9 @@ class PdfPipeline(Pipeline):
               'source': str(source.source),
               'page': source.number,
               'activePages': len(loaded),
+              'renderPolicy': RENDER_POLICY,
+              'renderWidth': image.width,
+              'renderHeight': image.height,
               'renderSeconds': time.monotonic() - started,
             }),
             flush=True,

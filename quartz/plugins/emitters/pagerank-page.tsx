@@ -6,22 +6,20 @@ import { pageResources, renderPage } from '../../components/renderPage'
 import { QuartzComponentProps } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { BuildCtx, contentDataFor } from '../../util/ctx'
-import { isFullSlug, pathToRoot } from '../../util/path'
+import { FullSlug, pathToRoot } from '../../util/path'
 import { StaticResources } from '../../util/resources'
-import { defaultProcessedContent, QuartzPluginData } from '../vfile'
+import { defaultProcessedContent, ProcessedContent, QuartzPluginData } from '../vfile'
 import { write } from './helpers'
 
 const emitterName = 'PageRankPage'
 
-async function emitPage(
-  ctx: BuildCtx,
-  allFiles: QuartzPluginData[],
-  opts: FullPageLayout,
-  resources: StaticResources,
-) {
-  const pageSlug = 'pagerank'
-  if (!isFullSlug(pageSlug)) throw new Error('Invalid PageRank route')
-  const [tree, vfile] = defaultProcessedContent({
+const pageSlug = 'pagerank' as FullSlug
+
+// content/pagerank.md (layout: pagerank) supplies the title, description and OG image; the
+// built-in frontmatter keeps the route when that note is absent.
+const sourceOf = (content: ProcessedContent[]) =>
+  content.find(([, vfile]) => vfile.data.slug === pageSlug) ??
+  defaultProcessedContent({
     slug: pageSlug,
     frontmatter: {
       title: 'pagerank',
@@ -30,6 +28,14 @@ async function emitPage(
       description: 'global note ranking and links across the garden',
     },
   })
+
+async function emitPage(
+  ctx: BuildCtx,
+  [tree, vfile]: ProcessedContent,
+  allFiles: QuartzPluginData[],
+  opts: FullPageLayout,
+  resources: StaticResources,
+) {
   const cfg = ctx.cfg.configuration
   const externalResources = pageResources(pathToRoot(pageSlug), resources, ctx)
   const componentData: QuartzComponentProps = {
@@ -51,6 +57,9 @@ export const PageRankPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOp
     ...defaultContentPageLayout,
     pageBody: PageRankContent(),
     ...userOpts,
+    header: [],
+    beforeBody: [],
+    afterBody: [],
     sidebar: [],
   }
 
@@ -63,10 +72,10 @@ export const PageRankPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOp
       return [Head, Header, ...header, ...beforeBody, pageBody, ...afterBody, ...sidebar, Footer]
     },
     async *emit(ctx, content, resources) {
-      yield emitPage(ctx, contentDataFor(content), opts, resources)
+      yield emitPage(ctx, sourceOf(content), contentDataFor(content), opts, resources)
     },
     async *partialEmit(ctx, content, resources) {
-      yield emitPage(ctx, contentDataFor(content), opts, resources)
+      yield emitPage(ctx, sourceOf(content), contentDataFor(content), opts, resources)
     },
   }
 }

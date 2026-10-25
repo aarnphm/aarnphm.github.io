@@ -3,6 +3,23 @@
 @use './pagerank/table';
 @use './pagerank/inspector';
 
+// Own layout like curius: one centred column, wider than the reading grid, with no byline or footer.
+body[data-slug='pagerank'] {
+  .page-body-grid {
+    display: block;
+    min-width: 0;
+  }
+
+  .page-content {
+    display: block;
+    box-sizing: border-box;
+    inline-size: 100%;
+    max-inline-size: 80rem;
+    margin: 0 auto;
+    padding-inline: 1rem;
+  }
+}
+
 // Tool register: the shared line / surface / selected recipe under one prefix.
 .pagerank {
   --pr-line: color-mix(in srgb, var(--gray) 55%, transparent);
@@ -10,7 +27,8 @@
   --pr-selected: color-mix(in srgb, var(--secondary) 18%, var(--pr-surface));
   --pr-salmon: #fdb2a2;
   --pr-row: 2.875rem;
-  --control-height: 2.125rem;
+  --control-height: 2rem;
+  --control-font-size: var(--text-meta);
   container-type: inline-size;
   container-name: pagerank;
   display: flex;
@@ -29,6 +47,11 @@
     outline-offset: 2px;
   }
 
+  // document-defaults gives th a 2px rule and tr a 1px rule; the cells here draw their own.
+  :where(th, tr) {
+    border: 0;
+  }
+
   a.internal {
     color: var(--dark);
     background: none;
@@ -45,8 +68,6 @@
 }
 
 .pagerank-intro {
-  max-width: 44rem;
-
   p {
     margin: 0 0 0.75rem;
   }
@@ -58,18 +79,25 @@
   }
 }
 
+.pagerank-title {
+  margin: 0 0 0.35rem;
+  font: 700 1.6rem / 1.2 var(--titleFont);
+  color: var(--dark);
+}
+
+.pagerank-description {
+  margin: 0 0 1.25rem;
+  font-size: var(--text-ui);
+  color: var(--darkgray);
+}
+
 .pagerank-meta,
-.pagerank-legend,
 .pagerank-filtered,
 .pagerank-kicker {
   font: 400 var(--text-meta) / 1.5 var(--codeFont);
   font-variant-numeric: tabular-nums;
   color: var(--darkgray);
   text-transform: lowercase;
-}
-
-.pagerank-aside {
-  font-size: var(--text-ui);
 }
 
 .pagerank-readout {
@@ -215,8 +243,16 @@
   }
 }
 
+.pagerank-figure figcaption p {
+  margin: 0;
+}
+
+// Its own line under the caption; reserved so selecting a note never moves the page.
 .pagerank-chart-readout {
-  font-family: var(--codeFont);
+  min-block-size: 1lh;
+  margin-block-start: 0.35rem;
+  font-family: var(--bodyFont);
+  font-style: italic;
   color: var(--dark);
 }
 
@@ -224,20 +260,21 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  align-items: stretch;
+  align-items: center;
   min-width: 0;
 
+  // Search, folder select and toggles share the g-select trigger skin: one height, line, font.
   .pagerank-search {
     flex: 1 1 12rem;
     min-width: 0;
     box-sizing: border-box;
     block-size: var(--control-height);
-    padding: 0 0.6rem;
-    border: 1px solid var(--darkgray);
+    padding: 0 0.42rem;
+    border: 1px solid var(--lightgray);
     border-radius: var(--radius-none);
-    background: var(--light);
+    background: color-mix(in srgb, var(--light) 88%, transparent);
     color: var(--dark);
-    font: 400 var(--text-ui) var(--bodyFont);
+    font: 400 var(--text-meta) var(--codeFont);
 
     &::placeholder {
       color: var(--darkgray);
@@ -259,33 +296,43 @@
     .g-select {
       inline-size: 100%;
     }
+
+    .g-select-trigger {
+      inline-size: 100%;
+      block-size: var(--control-height);
+      min-height: 0;
+    }
   }
 }
 
 .pagerank-toggles {
   display: flex;
-  border: 1px solid var(--darkgray);
+  box-sizing: border-box;
+  block-size: var(--control-height);
+  border: 1px solid var(--lightgray);
 
   button {
-    min-block-size: var(--control-height);
-    padding: 0 0.7rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    block-size: 100%;
+    padding: 0 0.6rem;
     border: 0;
     border-radius: var(--radius-none);
-    background: transparent;
+    background: color-mix(in srgb, var(--light) 88%, transparent);
     color: var(--darkgray);
-    font: 500 var(--text-ui) var(--codeFont);
+    font: 400 var(--text-meta) / 1 var(--codeFont);
     text-transform: lowercase;
     cursor: pointer;
 
     & + button {
-      border-inline-start: 1px solid var(--darkgray);
+      border-inline-start: 1px solid var(--lightgray);
     }
 
     &[aria-pressed='true'] {
       background: var(--pr-selected);
       color: var(--dark);
-      text-decoration: underline;
-      text-underline-offset: 0.2em;
     }
 
     &:focus-visible {
@@ -298,6 +345,20 @@
       }
     }
   }
+
+  .pagerank-icon-toggle {
+    inline-size: var(--control-height);
+    padding: 0;
+
+    svg {
+      inline-size: 1rem;
+      block-size: 1rem;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+    }
+  }
 }
 
 .pagerank-workspace {
@@ -306,13 +367,29 @@
   gap: 1.5rem;
   align-items: start;
 
-  // Side by side only when the table still keeps its axis column (48rem) beside the inspector.
-  @container pagerank (min-width: 74rem) {
-    grid-template-columns: minmax(0, 1fr) minmax(19rem, 24rem);
+  // Side by side once the table keeps its axis column (40rem) beside the inspector.
+  @container pagerank (min-width: 62rem) {
+    grid-template-columns: minmax(0, 1fr) minmax(20rem, 24rem);
 
-    .pagerank-inspector {
-      position: sticky;
-      top: 1rem;
+    // Size containment drops the table's own height, so the row takes the inspector's height and
+    // the rows scroll inside it.
+    .pagerank-list {
+      display: grid;
+      align-self: stretch;
+      min-height: 0;
+      contain: size;
+    }
+
+    .pagerank-frame {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .pagerank-scroll {
+      flex: 1;
+      block-size: 0;
+      min-height: 0;
     }
   }
 }

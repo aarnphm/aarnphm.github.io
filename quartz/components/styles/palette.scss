@@ -312,6 +312,10 @@ ul#helper {
         }
       }
 
+      & > .search-completions:not([hidden]) + output {
+        display: none;
+      }
+
       & > output {
         @include search-result-pages.controls;
         flex: 1;
@@ -538,31 +542,6 @@ body[data-slug='index'] .palette > #palette-container > #space {
       display: none;
     }
 
-    &::after {
-      content: attr(data-tooltip);
-      position: absolute;
-      bottom: calc(100% + 6px);
-      right: 0;
-      padding: 4px 8px;
-      background: var(--light);
-      color: var(--dark);
-      border: 1px solid var(--darkgray);
-      font-family: var(--codeFont);
-      white-space: nowrap;
-      pointer-events: none;
-      visibility: hidden;
-    }
-
-    &:focus-visible::after {
-      visibility: visible;
-    }
-
-    @media (hover: hover) and (pointer: fine) {
-      &:hover::after {
-        visibility: visible;
-      }
-    }
-
     @media (pointer: coarse) {
       width: 44px;
       height: 44px;
@@ -592,6 +571,7 @@ body[data-slug='index'] .palette > #palette-container > #space {
     }
 
     .suggestion-rank {
+      margin-inline-start: 8px;
       display: block;
       width: 80px;
       height: 28px;

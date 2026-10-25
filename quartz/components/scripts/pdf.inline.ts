@@ -17,11 +17,12 @@ import {
   enqueuePreloadPages,
   scrollToPage,
 } from './pdf-common/page-rendering'
-import { createControls, setPageCount } from './pdf-common/viewer-chrome'
+import { createControls, resetControls, setPageCount } from './pdf-common/viewer-chrome'
 import {
   clampPdfValue,
   readInteger,
   readPdfOptions,
+  type PdfControls,
   type PdfDocumentHandle,
   type PdfOptions,
   type PdfState,
@@ -49,6 +50,60 @@ interface QuartzPdfEmbeds {
   preload(src?: string): Promise<void>
 }
 
+interface PdfChrome {
+  toolbar: HTMLDivElement
+  controls: PdfControls
+  body: HTMLDivElement
+  scroller: HTMLDivElement
+  shell: HTMLDivElement
+  viewer: HTMLDivElement
+  annotationRail: HTMLDivElement
+  annotationStack: HTMLDivElement
+}
+
+// A cleaned embed remounted with a new source keeps its chrome, so only the pages reload.
+const pdfChromes = new WeakMap<HTMLElement, PdfChrome>()
+
+function createPdfChrome(options: PdfOptions): PdfChrome {
+  const { toolbar, controls } = createControls(options)
+  const scroller = document.createElement('div')
+  scroller.className = 'pdf-viewer-container'
+  scroller.tabIndex = 0
+  const body = document.createElement('div')
+  body.className = 'pdf-embed-body'
+  const shell = document.createElement('div')
+  shell.className = 'pdf-viewer-shell'
+  const viewer = document.createElement('div')
+  viewer.className = 'pdf-viewer'
+  const annotationRail = document.createElement('div')
+  annotationRail.className = 'pdf-annotation-rail'
+  const annotationStack = document.createElement('div')
+  annotationStack.className = 'pdf-annotation-stack'
+  annotationRail.appendChild(annotationStack)
+  shell.appendChild(viewer)
+  scroller.appendChild(shell)
+  body.appendChild(scroller)
+  return { toolbar, controls, body, scroller, shell, viewer, annotationRail, annotationStack }
+}
+
+function createPdfLoading(): HTMLDivElement {
+  const loading = document.createElement('div')
+  loading.className = 'pdf-embed-loading'
+  loading.textContent = 'Loading PDF'
+  return loading
+}
+
+function reusePdfChrome(root: HTMLElement, options: PdfOptions): PdfChrome | null {
+  const chrome = pdfChromes.get(root)
+  if (!chrome || chrome.toolbar.parentElement !== root || chrome.body.parentElement !== root) {
+    return null
+  }
+  // The previous pages stay until the next document's slots replace them in one swap.
+  resetControls(chrome.toolbar, chrome.controls, options)
+  chrome.annotationStack.replaceChildren()
+  return chrome
+}
+
 function schedulePdfStartup(callback: () => void) {
   window.requestAnimationFrame(() => {
     window.setTimeout(callback, 0)
@@ -72,13 +127,9 @@ function renderPdfError(root: HTMLElement, options: PdfOptions) {
 
 async function mountPdfEmbed(root: HTMLElement, options: PdfOptions, events: AbortController) {
   root.dataset.pdfStatus = 'loading'
-  root.replaceChildren()
+  let chrome = reusePdfChrome(root, options)
+  if (!chrome) root.replaceChildren(createPdfLoading())
   if (options.height) root.style.setProperty('--pdf-embed-height', `${options.height}px`)
-
-  const loading = document.createElement('div')
-  loading.className = 'pdf-embed-loading'
-  loading.textContent = 'Loading PDF'
-  root.appendChild(loading)
 
   let documentHandle: PdfDocumentHandle | undefined
   const pdfjs = await loadPdfJs()
@@ -91,27 +142,15 @@ async function mountPdfEmbed(root: HTMLElement, options: PdfOptions, events: Abo
     if (events.signal.aborted || !root.isConnected || root.dataset.pdfStatus !== 'loading') return
     const firstViewport = firstPage.getViewport({ scale: 1 })
 
-    const { toolbar, controls } = createControls(options)
+    if (chrome) {
+      chrome.viewer.replaceChildren()
+    } else {
+      chrome = createPdfChrome(options)
+      root.replaceChildren(chrome.toolbar, chrome.body, chrome.annotationRail)
+      pdfChromes.set(root, chrome)
+    }
+    const { toolbar, controls, scroller, shell, viewer, annotationRail, annotationStack } = chrome
     setPageCount(controls, pdfDocument.numPages)
-
-    const scroller = document.createElement('div')
-    scroller.className = 'pdf-viewer-container'
-    scroller.tabIndex = 0
-    const body = document.createElement('div')
-    body.className = 'pdf-embed-body'
-    const shell = document.createElement('div')
-    shell.className = 'pdf-viewer-shell'
-    const viewer = document.createElement('div')
-    viewer.className = 'pdf-viewer'
-    const annotationRail = document.createElement('div')
-    annotationRail.className = 'pdf-annotation-rail'
-    const annotationStack = document.createElement('div')
-    annotationStack.className = 'pdf-annotation-stack'
-    annotationRail.appendChild(annotationStack)
-    shell.appendChild(viewer)
-    scroller.appendChild(shell)
-    body.appendChild(scroller)
-    root.replaceChildren(toolbar, body, annotationRail)
     updateAutoPdfEmbedHeight(root, toolbar, scroller, firstViewport, options)
 
     const scale = calculateFitScale(scroller, firstViewport, options.fit, options.scale)

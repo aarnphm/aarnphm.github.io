@@ -13,11 +13,11 @@ export interface SearchCompletion {
 }
 
 const scopeDescriptions: Readonly<Record<string, string>> = {
-  notes: 'notes and notebooks',
-  images: 'images',
-  pdf: 'PDF documents and passages',
-  code: 'source files, code blocks and notebook cells',
-  all: 'all searchable files',
+  notes: 'includes notebooks',
+  images: 'zines',
+  pdf: 'documents and passages',
+  code: 'files, blocks and notebook cells',
+  all: '',
 }
 const languageAliases = new Map<string, string[]>()
 for (const extension of CODE_FILE_EXTENSIONS) {
@@ -73,7 +73,7 @@ export function searchCompletions(raw: string, cursor: number): SearchCompletion
             (typed.length > 0 && canonicalCodeLanguage(typed) === language) ||
             languageAliases.get(language)?.some(alias => alias.startsWith(typed)),
         )
-        .map(language => choice('filter:', language, `${language} code`)),
+        .map(language => choice('filter:', language, '')),
     ]
   }
   if ('filter:'.startsWith(value.toLowerCase()))

@@ -19,7 +19,9 @@ function fileExtension(fileName: string): string | null {
 
 function isDirectContentFile(fileName: string): boolean {
   const ext = fileExtension(fileName)
-  return ext !== null && ext !== '.canvas' && ext !== '.base' && ext !== '.bases'
+  return (
+    ext !== null && ext !== '.canvas' && ext !== '.base' && ext !== '.bases' && ext !== '.ipynb'
+  )
 }
 
 export function fitResultPaths(s: SearchSession) {

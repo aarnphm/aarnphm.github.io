@@ -60,6 +60,12 @@ export function pdfTitleFromUrl(rawSrc: string): string {
   }
 }
 
+/** Points an embed at a document; a remount of a cleaned embed keeps its toolbar. */
+export function setPdfEmbedSource(pdf: HTMLElement, src: string, title = pdfTitleFromUrl(src)) {
+  pdf.dataset.pdfSrc = pdfRuntimeSource(src)
+  pdf.dataset.pdfTitle = title
+}
+
 export function createPdfEmbed(
   src: string,
   title = pdfTitleFromUrl(src),
@@ -67,8 +73,7 @@ export function createPdfEmbed(
 ): HTMLDivElement {
   const pdf = document.createElement('div')
   pdf.classList.add('internal-embed', 'pdf-embed', 'pdf-embed-preview')
-  pdf.dataset.pdfSrc = pdfRuntimeSource(src)
-  pdf.dataset.pdfTitle = title
+  setPdfEmbedSource(pdf, src, title)
   pdf.dataset.pdfFit = 'width'
   if (options.preload !== undefined) pdf.dataset.pdfPreload = String(options.preload)
   if (options.annotations !== undefined) {
@@ -145,6 +150,7 @@ export function mountPdfPreview(
   signal: AbortSignal,
   onReady: () => void,
   onFailed: () => void,
+  keepOnAbort = false,
 ) {
   const runtime = window.quartzPdfEmbeds
   if (!runtime) {
@@ -183,7 +189,7 @@ export function mountPdfPreview(
 
   function aborted() {
     pdfRuntime.cleanup(pdf)
-    pdf.remove()
+    if (!keepOnAbort) pdf.remove()
     finish(onFailed)
   }
 

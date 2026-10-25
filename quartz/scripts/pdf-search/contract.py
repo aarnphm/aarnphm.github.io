@@ -16,5 +16,5 @@ LAYOUT_REVISION = 'e4f489dc536556fc1be02b973ba06756e0d4a2ac'
 SERVER_REVISION = 'fec3f50379bb2cb0760ef3c8a68ebce9585e4d97'
 MODEL_ADAPTER = 'glm-ocr-request-positions-checkpoint-v1'
 PREVIOUS_RECIPE = (
-  '56a3c5da71f7599ceeccbc9dc5715267ad0cc9bfad86c8e738aaaaab7fdeba8f'
+  'e37c5ed95e93753cfddff38916416524130e5a26c53b53c7983d361c0a679ec1'
 )

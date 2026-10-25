@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "noEmit": true,
     "lib": ["esnext", "DOM", "DOM.Iterable"],
     "experimentalDecorators": true,
     "module": "esnext",

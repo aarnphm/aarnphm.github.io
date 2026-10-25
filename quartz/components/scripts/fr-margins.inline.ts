@@ -144,8 +144,14 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
   }
 
   const clamps = mountClamps(article, () => queue(), signal)
+  const measured = new WeakMap<Element, { width: number; height: number }>()
+  const measureBox = (element: Element) => {
+    const rect = element.getBoundingClientRect()
+    measured.set(element, { width: rect.width, height: rect.height })
+    return rect
+  }
   const paint = () => {
-    const box = article.getBoundingClientRect()
+    const box = measureBox(article)
     const mode =
       article.closest('.preview-container') || box.left < MARGIN_COLUMN ? 'inline' : 'margin'
     article.dataset.frMode = mode
@@ -182,15 +188,19 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
     const mid = (r: DOMRect) => r.top + r.height / 2
     const groupBases = groups.map(group => {
       const anchor = anchors.get(group)!
-      const rect = anchor.getBoundingClientRect()
-      return { group, anchor, rect, top: hoisted(group) ? rect.top - box.top : 0 }
+      const rect = measureBox(anchor)
+      const visible = anchor.checkVisibility({ visibilityProperty: true })
+      return { group, anchor, rect, visible, top: hoisted(group) ? rect.top - box.top : 0 }
     })
-    for (const { group, rect, top } of groupBases) {
+    for (const { group, rect, top, visible } of groupBases) {
       group.style.top = `${top}px`
-      group.style.setProperty('--fr-dx', hoisted(group) ? '0px' : `${rect.left - box.left}px`)
+      if (visible)
+        group.style.setProperty('--fr-dx', hoisted(group) ? '0px' : `${rect.left - box.left}px`)
     }
     for (const content of notes) content.style.removeProperty('translate')
-    const fits = clamps.measure(groups)
+    const fits = clamps.measure(
+      groupBases.filter(({ visible }) => visible).map(({ group }) => group),
+    )
     interface Item {
       el: HTMLElement
       side: 'left' | 'right'
@@ -206,10 +216,10 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
       fit?: (room: number) => ClampFit
     }
     const items: Item[] = []
-    for (const { group, anchor, top } of groupBases) {
+    for (const { group, anchor, top, visible } of groupBases) {
       const mark = anchor.querySelector<HTMLElement>(':scope > .fr-n')
       const label = group.querySelector<HTMLElement>('.fr-entry-label')
-      if (!mark || !label || !anchor.checkVisibility({ visibilityProperty: true })) continue
+      if (!mark || !label || !visible) continue
       const m = mark.getBoundingClientRect()
       const rect = group.getBoundingClientRect()
       const align = mid(m) - mid(label.getBoundingClientRect())
@@ -376,7 +386,24 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
     frame = requestAnimationFrame(paint)
   }
   layout.relayout = queue
-  const observer = new ResizeObserver(queue)
+  const observer = new ResizeObserver(changes => {
+    // Initial and fonts-ready paints can already include the dimensions delivered by the observer.
+    // Skip only those notifications; explicit content/control relayouts still always paint.
+    if (
+      article.dataset.frMode !== 'margin' ||
+      changes.some(change => {
+        const size = change.borderBoxSize[0]
+        const previous = measured.get(change.target)
+        return (
+          !size ||
+          !previous ||
+          Math.abs(size.inlineSize - previous.width) > 0.01 ||
+          Math.abs(size.blockSize - previous.height) > 0.01
+        )
+      })
+    )
+      queue()
+  })
   observer.observe(article)
   for (const anchor of article.querySelectorAll('.fr-anchor')) observer.observe(anchor)
   // the sidenote script hangs or folds its notes after this one runs, and again on resize

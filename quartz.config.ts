@@ -3,7 +3,7 @@ import * as Component from './quartz/components'
 import * as Plugin from './quartz/plugins'
 
 const arena = false
-const slides = true
+const slides = false
 
 const configuration: GlobalConfiguration = {
   pageTitle: "Aaron's notes",
@@ -169,7 +169,7 @@ const config: QuartzConfig = {
         Plugin.Speech(),
         Plugin.TableOfContents({ maxDepth: 5 }),
         Plugin.LLM(),
-        { plugin: Plugin.Slides(), dev: true },
+        { plugin: Plugin.Slides(), dev: slides },
         { plugin: Plugin.Arena(), dev: arena },
         Plugin.Stream(),
         Plugin.Protected(),
