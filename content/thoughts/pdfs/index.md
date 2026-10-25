@@ -99,6 +99,7 @@ pdfTitles:
   'On a measure of the information provided by an experiment.pdf': 'On a Measure of the Information Provided by an Experiment'
   'On keeping a Notebook - Joan Didion.pdf': 'On Keeping a Notebook'
   'On-the-phenomenon-of-bullshit-jobs-A-work-rant.pdf': 'On the Phenomenon of Bullshit Jobs: A Work Rant'
+  'Paulo Freire, Myra Bergman Ramos, Donaldo Macedo - Pedagogy of the Oppressed, 30th Anniversary Edition (2000, Bloomsbury Academic).pdf': 'Pedagogy of the Oppressed'
   'pistar06.pdf': 'π*0.6: A VLA That Learns from Experience'
   'pmpp.pdf': 'Programming Massively Parallel Processors: A Hands-on Approach'
   'Programme_Simone_de_Beauvoir_and_the_Lesbian_FINAL.pdf': 'Programme—Simone de Beauvoir and "the Lesbian"'
