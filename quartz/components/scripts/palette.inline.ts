@@ -32,6 +32,7 @@ import {
 } from './palette/shell'
 import { PdfSemantic } from './pdf-semantic'
 import { createSearchCompletions } from './search-completions'
+import { createSearchProgress } from './search-progress'
 import { beginSidePanelRequest, disposeSidePanel, getOrCreateSidePanel } from './side-panel'
 
 let activePaletteSignal: AbortSignal | undefined
@@ -375,12 +376,7 @@ document.addEventListener('nav', () => {
     s.quickOpenSemantic?.cancel()
   })
 
-  const progress = document.createElement('div')
-  progress.className = 'semantic-search-progress'
-  progress.setAttribute('role', 'progressbar')
-  progress.setAttribute('aria-label', 'Loading search')
-  bar.parentElement?.append(progress)
-  window.addCleanup(() => progress.remove())
+  const progress = createSearchProgress(bar)
   const s: PaletteState = {
     currentSlug,
     container,

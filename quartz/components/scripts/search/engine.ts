@@ -1,6 +1,7 @@
 import type { LexicalIndexPriority } from '../lexical-search-types'
 import { FullSlug } from '../../../util/path'
 import { isSearchExcluded } from '../../../util/search-exclude'
+import { parseSearchQuery } from '../../../util/search-scope'
 import { createImageSemantic } from '../image-semantic'
 import { getLexicalSearchClient } from '../lexical-search'
 import { siteSemantic } from '../site-semantic'
@@ -117,17 +118,19 @@ export function updateModeUI(s: SearchSession, mode: SearchMode) {
     modeToggle.dataset.mode = mode
   }
   searchLayout.dataset.mode = mode
+  setSemanticState(
+    s,
+    s.semanticBooting ? 'loading' : shared.semanticInitFailed ? 'unavailable' : 'ready',
+  )
 }
 
 export function setSemanticState(
   s: SearchSession,
   state: 'idle' | 'loading' | 'ready' | 'unavailable',
 ) {
-  const { modeButtons, semanticStatus } = s
-  if (semanticStatus) {
-    semanticStatus.dataset.state = state
-    semanticStatus.textContent = state === 'unavailable' ? 'semantic (unavailable)' : ''
-  }
+  const { modeButtons } = s
+  const { scope } = parseSearchQuery(s.searchBar.value)
+  if (scope === 'images' || scope === 'pdf') state = 'ready'
   modeButtons.forEach(button => {
     const btnMode = (button.dataset.mode as SearchMode) ?? 'lexical'
     if (btnMode !== 'semantic') return
@@ -138,10 +141,6 @@ export function setSemanticState(
     button.classList.toggle('is-loading', state === 'loading')
     button.setAttribute('aria-busy', state === 'loading' ? 'true' : 'false')
   })
-  if (state !== 'ready' && shared.searchMode === 'semantic') {
-    shared.searchMode = 'lexical'
-    updateModeUI(s, shared.searchMode)
-  }
 }
 
 async function bootSemantic(s: SearchSession): Promise<boolean> {

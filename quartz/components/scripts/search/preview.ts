@@ -9,6 +9,7 @@ import { renderDocumentPreview } from '../document-preview-card'
 import { imageSearchPreview, searchableImage } from '../image-search-controls'
 import { requireData } from './engine'
 import { renderFilePreview } from './file-preview'
+import { parkPdfPreview } from './pdf-preview-cache'
 import { completeSearchProgress, startSearchProgress } from './progress'
 import { shared, type SearchSession } from './state'
 
@@ -70,7 +71,10 @@ function highlightHTML(searchTerm: string, el: HTMLElement) {
 export function clearPreview(s: SearchSession) {
   s.previewRequest?.abort()
   s.previewRequest = undefined
-  if (s.preview) window.quartzPdfEmbeds?.cleanup(s.preview)
+  if (s.preview) {
+    parkPdfPreview(s.preview)
+    window.quartzPdfEmbeds?.cleanup(s.preview)
+  }
   s.preview?.replaceChildren()
   if (s.preview) delete s.preview.dataset.slug
 }
@@ -78,17 +82,11 @@ export function clearPreview(s: SearchSession) {
 export function setImageSearch(s: SearchSession, images: boolean) {
   s.imageSearch = images
   s.searchLayout.dataset.imageSearch = String(images)
-  if (s.previewToggle) s.previewToggle.disabled = images
-  if (images) setPreviewVisible(s, false)
-  else updatePreviewToggle(s)
+  updatePreviewToggle(s)
 }
 
 function updatePreviewToggle(s: SearchSession) {
-  const label = s.imageSearch
-    ? 'preview unavailable for images'
-    : s.previewVisible
-      ? 'hide preview'
-      : 'show preview'
+  const label = s.previewVisible ? 'hide preview' : 'show preview'
   s.previewToggle?.setAttribute('aria-label', label)
   s.previewToggle?.setAttribute('title', label)
   s.previewToggle?.setAttribute('aria-expanded', String(s.previewVisible))
@@ -96,7 +94,7 @@ function updatePreviewToggle(s: SearchSession) {
 
 export function setPreviewVisible(s: SearchSession, visible: boolean) {
   const { searchLayout, preview } = s
-  s.previewVisible = visible && s.enablePreview && !s.imageSearch
+  s.previewVisible = visible && s.enablePreview
   searchLayout.dataset.preview = String(s.previewVisible)
   updatePreviewToggle(s)
   if (preview) preview.inert = !s.previewVisible
@@ -147,7 +145,7 @@ export async function displayPreview(s: SearchSession, el: HTMLElement | null) {
   const previewKey = codeMatch
     ? `${slug}:${codeMatch.unit.id}:${codeMatch.ranges[codeMatch.selectedRange]?.start.offset}`
     : el.dataset.pdfPage
-      ? `${slug}#${el.dataset.pdfPage}`
+      ? `${slug}#${el.dataset.pdfPage}:${shared.currentSearchTerm}`
       : slug
   if (s.previewRequest && !s.previewRequest.signal.aborted && preview.dataset.slug === previewKey)
     return
@@ -200,10 +198,6 @@ export async function displayPreview(s: SearchSession, el: HTMLElement | null) {
     const documentType =
       el.dataset.canvas === 'true' ? 'canvas' : el.dataset.bases === 'true' ? 'base' : null
     if (documentType) {
-      const loading = document.createElement('p')
-      loading.setAttribute('role', 'status')
-      loading.textContent = 'Loading preview…'
-      preview.appendChild(loading)
       try {
         const response = await fetch(documentPreviewUrl(slug, resolveUrl(s, slug).toString()), {
           signal: request.signal,
@@ -242,6 +236,7 @@ export async function displayPreview(s: SearchSession, el: HTMLElement | null) {
           preview,
           request.signal,
           Number(el.dataset.pdfPage) || undefined,
+          shared.currentSearchTerm,
         )
       )
         return

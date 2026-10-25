@@ -7,6 +7,7 @@ import { createImageSimilarity } from './image-similarity'
 import { getLexicalSearchClient } from './lexical-search'
 import { PdfSemantic } from './pdf-semantic'
 import { createSearchCompletions } from './search-completions'
+import { createSearchProgress } from './search-progress'
 import {
   ensureSearchData,
   getSearchData,
@@ -71,13 +72,6 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   const searchSpace = searchElement.querySelector<HTMLFormElement>('.search-space')
   if (!searchSpace) return
 
-  const progressBar = document.createElement('div')
-  progressBar.className = 'semantic-search-progress'
-  progressBar.setAttribute('role', 'progressbar')
-  progressBar.setAttribute('aria-label', 'Loading search')
-  progressBar.setAttribute('aria-hidden', 'true')
-  searchBar.parentElement?.appendChild(progressBar)
-
   const el = searchSpace.querySelector('ul#helper')
   const modeToggle = searchSpace.querySelector('.search-mode-toggle') as HTMLDivElement | null
   const modeButtons = modeToggle
@@ -116,6 +110,8 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     searchSpace.appendChild(helper)
   }
 
+  const progressBar = createSearchProgress(searchBar)
+
   const enablePreview = searchLayout.dataset.previewAvailable === 'true'
   let results = searchLayout.querySelector('.results-container') as HTMLDivElement
   if (!results) {
@@ -148,7 +144,6 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     completions: createSearchCompletions(searchBar, container),
     codeMatches: new WeakMap(),
     progressBar,
-    progressResetTimer: 0,
     progressReasons: new Set<'search' | 'preview'>(),
     data: null,
     idDataMap: [],
@@ -156,9 +151,9 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     searchDataReady: null,
     modeToggle,
     modeButtons,
-    semanticStatus: searchSpace.querySelector<HTMLElement>('.semantic-status'),
     enablePreview,
     previewVisible: false,
+    previewScope: null,
     imageSearch: false,
     semanticBooting: null,
     searchSeq: 0,
@@ -191,16 +186,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   } else {
     setSemanticState(s, 'idle')
   }
-  if (storedMode === 'semantic') {
-    if (shared.semanticReady) {
-      shared.searchMode = storedMode
-    }
-  } else if (storedMode === 'lexical') {
-    shared.searchMode = storedMode
-  }
-  if (!shared.semanticReady && shared.searchMode === 'semantic') {
-    shared.searchMode = 'lexical'
-  }
+  if (storedMode) shared.searchMode = storedMode
   searchLayout.dataset.mode = shared.searchMode
   s.requestedMode = shared.searchMode
 
@@ -208,10 +194,6 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
 
   modeButtons.forEach(button => {
     const btnMode = (button.dataset.mode as SearchMode) ?? 'lexical'
-    if (btnMode === 'semantic') {
-      button.disabled = shared.semanticInitFailed
-      button.setAttribute('aria-disabled', String(shared.semanticInitFailed))
-    }
     const handler = () => triggerSearchWithMode(s, btnMode)
     button.addEventListener('click', handler)
     window.addCleanup(() => button.removeEventListener('click', handler))

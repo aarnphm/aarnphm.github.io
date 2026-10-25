@@ -1,4 +1,5 @@
 import { ensureSearchData, updateModeUI } from './engine'
+import { disposePdfPreviews } from './pdf-preview-cache'
 import { clearPreview, setImageSearch, setPreviewVisible } from './preview'
 import { completeSearchProgress, resetProgressBar, startSearchProgress } from './progress'
 import { shared, type SearchSession, type SearchType } from './state'
@@ -6,6 +7,7 @@ import { shared, type SearchSession, type SearchType } from './state'
 export function hideSearch(s: SearchSession, focusButton = true) {
   const { image, container, searchBar, searchLayout, results, searchButton } = s
   setPreviewVisible(s, false)
+  s.previewScope = null
   setImageSearch(s, false)
   s.resultPages?.dispose()
   s.resultPages = null
@@ -35,6 +37,7 @@ export function hideSearch(s: SearchSession, focusButton = true) {
   s.currentHover = null
   results.replaceChildren()
   clearPreview(s)
+  if (s.preview) disposePdfPreviews(s.preview)
   searchLayout!.classList.remove('display-results')
   searchLayout.removeAttribute('aria-busy')
   if (focusButton) {
@@ -53,10 +56,10 @@ export function showSearch(s: SearchSession, type: SearchType) {
   }
   container!.classList.add('active')
   if (!s.data) {
-    startSearchProgress(s)
+    startSearchProgress(s, 'index')
     void ensureSearchData(s).then(
       () => {
-        if (container.classList.contains('active')) completeSearchProgress(s)
+        if (container.classList.contains('active')) completeSearchProgress(s, 'index')
       },
       error => {
         resetProgressBar(s)

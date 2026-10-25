@@ -296,7 +296,7 @@ ul#helper {
       @include commandPanel;
       height: min(var(--palette-content-height, 80dvh), var(--command-panel-height));
 
-      & > #helper {
+      & > .search-footer {
         flex-shrink: 0;
         margin-top: auto;
       }
@@ -305,11 +305,6 @@ ul#helper {
         padding: 0.25rem 0.5rem 0;
         flex-shrink: 0;
         border-bottom: 1px solid var(--lightgray);
-
-        & > .semantic-search-progress {
-          top: calc(100% + 1px);
-          bottom: auto;
-        }
       }
 
       & > .search-completions:not([hidden]) + output {
@@ -472,7 +467,7 @@ body[data-slug='index'] .palette > #palette-container > #space {
   }
 
   & > .input-container,
-  & > #helper {
+  & > .search-footer {
     flex-shrink: 0;
   }
 

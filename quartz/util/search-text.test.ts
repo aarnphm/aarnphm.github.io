@@ -16,6 +16,17 @@ test('highlight treats regular expression characters as text', () => {
   assert.equal(highlight('a+b', 'a+b aab'), '<span class="highlight">a+b</span> aab')
 })
 
+test('highlight does not match later query terms inside generated markup', () => {
+  assert.equal(
+    highlight('estimating a robot position', 'estimating a robot position'),
+    '<span class="highlight">estimating a robot position</span>',
+  )
+  assert.equal(
+    highlight('robot a', 'robot range'),
+    '<span class="highlight">robot</span> r<span class="highlight">a</span>nge',
+  )
+})
+
 test('highlight trims around the strongest matching window', () => {
   const words = Array.from({ length: 100 }, (_, index) =>
     index >= 70 && index <= 72 ? `target${index}` : `word${index}`,

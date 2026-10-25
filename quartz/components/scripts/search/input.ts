@@ -3,8 +3,14 @@ import { parseSearchQuery } from '../../../util/search-scope'
 import { isSearchModeToggle, isSearchToggle } from '../../../util/search-shortcuts'
 import { ensureSemantic, persistSearchMode, updateModeUI } from './engine'
 import { isImageGridDirection } from './image-grid'
-import { clearPreview, displayPreview, setImageSearch, togglePreview } from './preview'
-import { resetProgressBar } from './progress'
+import {
+  clearPreview,
+  displayPreview,
+  setImageSearch,
+  setPreviewVisible,
+  togglePreview,
+} from './preview'
+import { startSearchProgress, completeSearchProgress, resetProgressBar } from './progress'
 import { runSearch } from './query'
 import { flushSearchDisplay, openSearchResult } from './results'
 import { shared, type SearchMode, type SearchSession } from './state'
@@ -15,14 +21,15 @@ export function triggerSearchWithMode(s: SearchSession, mode: SearchMode) {
   const { image, searchLayout } = s
   s.requestedMode = mode
   const request = ++s.modeRequest
-  if (mode === 'semantic' && !shared.semanticReady) {
+  completeSearchProgress(s, 'model')
+  const { scope } = parseSearchQuery(s.searchBar.value)
+  if (mode === 'semantic' && (scope === 'notes' || scope === 'all') && !shared.semanticReady) {
+    startSearchProgress(s, 'model')
     void ensureSemantic(s).then(ready => {
       if (request !== s.modeRequest) return
+      completeSearchProgress(s, 'model')
       if (ready) triggerSearchWithMode(s, 'semantic')
-      else {
-        s.requestedMode = 'lexical'
-        updateModeUI(s, 'lexical')
-      }
+      else triggerSearchWithMode(s, 'lexical')
     })
     updateModeUI(s, mode)
     return
@@ -108,7 +115,6 @@ export function shortcutHandler(s: SearchSession, e: HTMLElementEventMap['keydow
     return
   }
   if (isSearchModeToggle(e) && container.contains(document.activeElement)) {
-    if (s.requestedMode === 'lexical' && shared.semanticInitFailed) return
     e.preventDefault()
     if (!e.repeat) triggerSearchWithMode(s, s.requestedMode === 'semantic' ? 'lexical' : 'semantic')
     return
@@ -226,10 +232,18 @@ async function focusResult(s: SearchSession, result: Element | null | undefined)
 
 export function onType(s: SearchSession) {
   const { image, results, searchBar, searchLayout } = s
+  updateModeUI(s, shared.searchMode)
   delete results.dataset.imageSeed
   s.resultPages?.dispose()
   s.resultPages = null
-  setImageSearch(s, parseSearchQuery(searchBar.value).scope === 'images')
+  const query = parseSearchQuery(searchBar.value)
+  setImageSearch(s, query.scope === 'images')
+  const previewScope = query.explicit ? query.scope : null
+  if (s.previewScope !== previewScope) {
+    s.previewScope = previewScope
+    s.currentHover = null
+    setPreviewVisible(s, query.explicit)
+  }
   image.similarity.cancel()
   image.semantic?.cancel()
   s.pdf.cancel()
