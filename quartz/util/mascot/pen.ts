@@ -103,15 +103,6 @@ export function rounded(cx: number, cy: number, w: number, h: number, r: number)
   return pts
 }
 
-// An upright eye: a short stroke that bulges in the middle like a pressed pen.
-export function eye(x: number, base: number, ink: string): string {
-  const pts: Pt[] = Array.from({ length: 13 }, (_, i) => {
-    const t = i / 12
-    return [x + 0.025 * t + 0.012 * Math.sin(Math.PI * t), -0.36 + 0.32 * t] as const
-  })
-  return stroke(pts, t => base * (0.7 + 0.5 * Math.sin(Math.PI * t)), ink)
-}
-
 // Where the eyes rest, as in aarnphm's sketch: both shifted left of centre.
 export const EYES = [-0.6, 0.24] as const
 
