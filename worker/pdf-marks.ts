@@ -156,6 +156,16 @@ async function loadManifest(env: PdfReaderEnv, origin: string): Promise<Manifest
   return entry
 }
 
+export async function publishedPdfDocument(
+  env: PdfReaderEnv,
+  url: URL,
+): Promise<PdfDocumentRecord | undefined> {
+  const slug = normalizePdfSlug(url.pathname)
+  if (!slug) return undefined
+  const entry = await loadManifest(env, url.origin)
+  return entry.manifest.documents[slug]
+}
+
 function rowToMark(row: typeof pdfMarks.$inferSelect): PdfMark {
   return {
     id: row.id,

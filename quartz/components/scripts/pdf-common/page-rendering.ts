@@ -44,6 +44,7 @@ function clearTextLayer(slot: PdfPageSlot) {
   slot.textRenderTask = undefined
   slot.textRenderedScale = undefined
   slot.textRenderingScale = undefined
+  delete slot.textLayer.dataset.pdfTextReady
   slot.textLayer.replaceChildren()
 }
 
@@ -193,6 +194,7 @@ async function renderTextLayer(state: PdfState, slot: PdfPageSlot, epoch: number
   if (slot.textRenderedScale === state.scale || slot.textRenderingScale === state.scale) return
   slot.textRenderTask?.cancel()
   slot.textRenderTask = undefined
+  delete slot.textLayer.dataset.pdfTextReady
   slot.textLayer.replaceChildren()
   slot.textRenderingScale = state.scale
   const page = slot.page ?? (await state.document.getPage(slot.pageNumber))
@@ -222,6 +224,8 @@ async function renderTextLayer(state: PdfState, slot: PdfPageSlot, epoch: number
   slot.textRenderTask = undefined
   slot.textRenderedScale = state.scale
   slot.textRenderingScale = undefined
+  slot.textLayer.dataset.pdfTextReady = 'true'
+  state.root.dispatchEvent(new CustomEvent('pdf-text-rendered', { detail: slot.pageNumber }))
 }
 
 function enqueueTextLayer(state: PdfState, pageNumber: number) {

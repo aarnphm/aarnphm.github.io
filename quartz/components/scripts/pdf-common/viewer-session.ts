@@ -196,6 +196,7 @@ export function setupPdfEvents(state: PdfState) {
     rerenderVisiblePages(state)
   }
   const onScroll = () => {
+    if (!state.root.isConnected) return
     state.lastScrollAt = Date.now()
     if (state.scrollFrame) return
     state.scrollFrame = window.requestAnimationFrame(() => {
@@ -233,7 +234,7 @@ export function setupPdfEvents(state: PdfState) {
     }
   }
   const onKeyDown = (event: KeyboardEvent) => {
-    if (selectedPdfState !== state) return
+    if (selectedPdfState !== state || !state.root.isConnected) return
     if (targetAcceptsTextInput(event.target)) return
     if (event.metaKey || event.ctrlKey || event.altKey) return
 

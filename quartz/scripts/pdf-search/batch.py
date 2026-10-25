@@ -48,6 +48,7 @@ def main() -> None:
     help='Work budget for this invocation',
   )
   parser.add_argument('--inventory-only', action='store_true')
+  parser.add_argument('--slug', action='append', default=[])
   args = parser.parse_args()
   if (
     args.max_new_pages < 0
@@ -63,7 +64,7 @@ def main() -> None:
   sources = {
     slug: source
     for slug, source in sorted(inventory.items())
-    if slug.startswith(args.prefix)
+    if slug.startswith(args.prefix) and (not args.slug or slug in args.slug)
   }
   if args.inventory_only:
     print(json.dumps({'documents': len(sources), 'sources': list(sources)}))

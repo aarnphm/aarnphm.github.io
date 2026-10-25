@@ -22,7 +22,6 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import tiktoken, numpy as np
 
 from openai import OpenAI
-from langchain_text_splitters import RecursiveCharacterTextSplitter
 from tqdm.auto import tqdm
 
 
@@ -524,6 +523,8 @@ def count_tokens(text: str) -> int:
 
 
 def get_text_splitter(chunk_size: int, overlap: int):
+  from langchain_text_splitters import RecursiveCharacterTextSplitter
+
   encoder = get_tiktoken_encoder()
   return RecursiveCharacterTextSplitter(
     chunk_size=chunk_size,

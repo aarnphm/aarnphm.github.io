@@ -14,6 +14,7 @@ import {
   lfsAssetContentType,
   lfsPointerRequest,
 } from '../lfs-assets'
+import { publishedPdfDocument } from '../pdf-marks'
 import { problemResponse } from '../problem-details'
 import {
   documentDiscoveryLink,
@@ -139,6 +140,18 @@ export async function handleTerminalDelivery(
       return withHeaders(withHeadersFromSource(resp, originResp, keep), {
         'Content-Type': lfsContentType,
       })
+    }
+
+    if (lfsContentType === 'application/pdf') {
+      const document = await publishedPdfDocument(env, url).catch(() => undefined)
+      if (document) {
+        return env.LFS_BUCKET
+          ? getObjectFromBucket(env.LFS_BUCKET, document.doc, request, lfsContentType)
+          : getObjectFromLFS(
+              { hash_algo: 'sha256', oid: document.doc, size: document.bytes },
+              request,
+            )
+      }
     }
 
     const rawUrl = `https://raw.githubusercontent.com/aarnphm/aarnphm.github.io/refs/heads/main/content${url.pathname}`
