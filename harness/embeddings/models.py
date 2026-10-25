@@ -25,7 +25,11 @@ class Models:
       'healthy': False,
       'model': record.get('model', record.get('repo')),
     }
-    if not alive or port not in ('8001', '8003'):
+    if (
+      (not alive and record.get('owned') is not False)
+      or not port.isdecimal()
+      or not 1 <= int(port) <= 65535
+    ):
       return result
     key, now = (port, pid), time.monotonic()
     previous = self.saved.get(key)
@@ -40,7 +44,7 @@ class Models:
 
     try:
       health = read('health')
-      if port == '8003':
+      if record.get('repo') == 'mlx-community/embeddinggemma-2-bf16':
         result['healthy'] = health.get('status') == 'ok' and all(
           health.get(name) == record.get(name) for name in ('repo', 'revision')
         )
@@ -85,5 +89,6 @@ class Models:
         )
     except (OSError, URLError, ValueError) as error:
       result.update(healthy=False, error=str(error))
+    result['owned'] = record.get('owned', True)
     self.saved[key] = (now, result)
     return result

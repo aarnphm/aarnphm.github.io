@@ -685,3 +685,17 @@ footer {
     border: 1px solid CanvasText;
   }
 }
+
+.queue-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-block: 1.5rem;
+}
+.queue-actions p {
+  flex: 1 1 16rem;
+}
+.document-detail button {
+  margin-inline-start: 0.75rem;
+}

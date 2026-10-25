@@ -72,7 +72,10 @@ function documentRow(item) {
     link.href = `http://localhost:8080/${item.slug.split('/').map(encodeURIComponent).join('/')}`
     link.target = '_blank'
     link.rel = 'noopener'
-    detail.append(readout, link)
+    const enqueue = make('button', '', 'queue PDF')
+    enqueue.type = 'button'
+    enqueue.addEventListener('click', () => queuePdfs([item.slug], enqueue))
+    detail.append(readout, link, enqueue)
     details.append(summary, detail)
     titleCell.append(details, filename)
     const status = make('td')
@@ -97,6 +100,7 @@ function documentRow(item) {
       filename,
       readout,
       link,
+      enqueue,
       status,
       cachedCount,
       indexedCount,
@@ -106,6 +110,15 @@ function documentRow(item) {
     }
     rows.set(item.slug, saved)
   }
+  const pending = data.queue?.jobs.find(job => job.slug === item.slug)
+  saved.enqueue.disabled =
+    item.status === 'complete' || ['queued', 'active'].includes(pending?.state)
+  saved.enqueue.textContent =
+    pending?.state === 'error'
+      ? 'retry PDF'
+      : ['queued', 'active'].includes(pending?.state)
+        ? 'queued'
+        : 'queue PDF'
   saved.row.dataset.status = item.status
   saved.title.textContent = item.title
   saved.filename.textContent = item.slug.replace(data.prefix, '')
@@ -374,6 +387,10 @@ function health() {
     messages.push(
       `${count(data.totals.invalidPages)} OCR cache pages failed validation and are excluded from progress.`,
     )
+  if (data?.queue?.failed)
+    messages.push(
+      `${count(data.queue.failed)} queued PDFs need attention; expand a paper to retry.`,
+    )
   if (data?.issues.length) messages.push(...data.issues)
   put('notice', messages.join(' '))
   byId('notice').hidden = messages.length === 0
@@ -419,6 +436,30 @@ function connect() {
   next.addEventListener('error', () => next.close())
 }
 
+async function queuePdfs(slugs, button) {
+  button.disabled = true
+  put('queue-status', 'checking current public PDFs…')
+  try {
+    const response = await fetch('/api/queue', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Garden-Queue': '1' },
+      body: JSON.stringify({ slugs }),
+    })
+    const report = await response.json()
+    if (!response.ok) throw new Error(report.error || 'queue request failed')
+    put(
+      'queue-status',
+      report.pending
+        ? `${count(report.queued)} added · ${count(report.pending)} queued or active · progress appears below`
+        : `all ${count(report.checked)} checked PDFs are already published`,
+    )
+  } catch (error) {
+    put('queue-status', error instanceof Error ? error.message : 'queue request failed')
+  } finally {
+    button.disabled = false
+  }
+}
+byId('queue-missing').addEventListener('click', event => queuePdfs([], event.currentTarget))
 query.addEventListener('input', renderDocuments)
 for (const button of document.querySelectorAll('[data-filter]')) {
   button.addEventListener('click', () => {

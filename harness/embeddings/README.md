@@ -1,6 +1,6 @@
 # Embedding progress harness
 
-A local static HTML/JavaScript workspace for the running PDF embedding queue. A loopback server pushes read-only snapshots over WebSocket. The observer reads the runner status, verified page cache, publication manifests and batch logs. It does not start, stop or modify the embedding job.
+A local static HTML/JavaScript workspace for the running PDF embedding queue. A loopback server pushes read-only snapshots over WebSocket. The observer reads the runner status, verified page cache, publication manifests and batch logs. The queue controls enqueue new or changed public PDFs and wake one serialized dispatcher. The observer itself does not modify jobs.
 
 ## Run
 
@@ -33,9 +33,9 @@ The detached instance started for this task records its PID and output under `qu
 
 The current work lists pages admitted to the rolling extraction pipeline. The batch grid follows each physical page, including completions that arrive out of order. Completed counts come from verified cache records, so repeated log lines cannot increase progress. The displayed batch size uses its actual page plan. Older logs without admission events retain the first-pending-page fallback. The inventory refreshes every 60 seconds; status, cache and publication observations refresh every three seconds by default. Socket freshness and the runner heartbeat are reported separately. Missing data appears as `–`.
 
-Model health requires both the runner's process and a matching HTTP model identity. The OCR readout shows active and queued requests, completion failures, prefix caching and continuous batching. Its token rate uses differences in the native completed-token counter over up to 30 seconds, with at least 10 seconds of observations. Tokens from a long request enter this counter when that request completes; this is a completed-output rate rather than instantaneous decode throughput.
+Owned model health requires the recorded process and matching HTTP identity. Reused servers are checked by HTTP identity and stay running after client work. The OCR readout shows active and queued requests, completion failures, prefix caching and continuous batching. Its token rate uses differences in the native completed-token counter over up to 30 seconds, with at least 10 seconds of observations. Tokens from a long request enter this counter when that request completes; this is a completed-output rate rather than instantaneous decode throughput.
 
-`inputs.py` owns public source identities and cache validation, reusing the PDF builder and `PageCache`. `logs.py` reduces native batch logs. `models.py` reads model health and throughput. `snapshot.py` assembles observations. `server.ts` owns only the loopback HTTP/WebSocket transport and its child observer. The frontend preserves document row elements so live updates retain expanded rows and keyboard focus. All displayed source text uses text nodes.
+`inputs.py` owns public source identities and cache validation, reusing the PDF builder and `PageCache`. `logs.py` reduces native batch logs. `models.py` reads model health and throughput. `snapshot.py` assembles observations. `server.ts` owns the loopback transport and child observer; `queue-api.ts` validates same-origin queue requests and invokes the queue client. The frontend preserves document row elements so live updates retain expanded rows and keyboard focus. All displayed source text uses text nodes.
 
 The observer reads the runner's process start time once to bound the timing logs.
 If process identity is unavailable, it withholds the estimate. The runner and
@@ -63,5 +63,20 @@ Acceptance cases, recorded before implementation:
 - Show the active document/page, batch budget, complete and remaining documents/pages, recent publications, and an explicitly labelled OCR-only estimate from measured page timings.
 - Push updated counts over an existing WebSocket connection after cache/publication changes. Show disconnected, stale-runner, stopped, complete and error states without discarding the last known counts.
 - Keep the document list searchable and filterable while updates arrive. Preserve focus and expanded rows. Support both themes, keyboard operation, reduced motion and 320px widths.
-- Bind only to loopback, serve an explicit static-file allowlist, reject writes and foreign WebSocket origins, and shut down the owned observer with the harness server. The active PDF runner and watcher remain untouched.
+- Bind only to loopback, serve an explicit static-file allowlist, reject unrelated writes and foreign origins, and shut down the owned observer with the harness server. The active PDF runner and watcher remain untouched.
 - Exercise the real HTTP/WebSocket server against isolated PDFs, native page-cache files, manifests and logs before verifying the live queue in a browser. Save commands, snapshots and screenshots under `docs/verification/embedding-harness/artifacts/`.
+
+## Add PDFs to the queue
+
+After a new public paper appears in the watcher’s search inventory, use **queue missing PDFs** or expand its row and choose **queue PDF**. Failed jobs expose **retry PDF**. Equivalent commands:
+
+```sh
+pnpm pdf:queue
+pnpm pdf:queue --slug thoughts/papers/example.pdf
+```
+
+The client checks source hashes and full physical-page coverage. Complete papers are skipped; repeated requests share one pending job. Requests persist in `quartz/.quartz-cache/pdf-search/queue.json`. One detached dispatcher holds `.queue-worker.lock`, waits for the existing runner lock, and drains later arrivals. Its PID and log are `queue-worker.pid` and `queue-worker.log` beside the queue. Failed jobs retain their error and require an explicit retry.
+
+The runner reuses compatible EmbeddingGemma 2 servers on 8000 or 8003 and compatible OCR on 8001. It verifies pinned model identity, starts a server only when needed on a free port, and stops only processes it owns. Cached OCR pages bypass OCR startup. A fully published selection loads no model. `VLLM_URL` can also direct `pnpm embed:notes` to an existing compatible server. Base and image builders retain their own encoder contracts.
+
+Queue replay and server reuse evidence: [PDF queue verification](../../docs/verification/pdf-queue/README.md).
