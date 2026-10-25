@@ -2,6 +2,7 @@
 date: '2025-09-04'
 description: Train a byte-level BPE model in Python and check its Python and Rust encoders against the same saved merges.
 id: index
+layout: L
 modified: 2026-09-16 09:15:11 GMT-04:00
 seealso:
   - '[[thoughts/tsfm/2|notes]]'

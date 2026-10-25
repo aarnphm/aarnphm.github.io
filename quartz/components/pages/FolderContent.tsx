@@ -600,19 +600,58 @@ export default ((opts?: Partial<FolderContentOptions>) => {
       case Layout.statements:
         return <CourseStatements {...props} />
 
-      case Layout.lovp:
+      case Layout.lovp: {
+        const hasBodyContent = Boolean(
+          tree &&
+          'children' in tree &&
+          Array.isArray((tree as { children?: unknown[] }).children) &&
+          (tree as { children: Array<{ type?: string; value?: string }> }).children.some(
+            child =>
+              child.type === 'element' ||
+              (child.type === 'text' &&
+                typeof child.value === 'string' &&
+                child.value.trim().length > 0),
+          ),
+        )
+        const hasSeeAlso = Boolean(
+          fileData.frontmatter?.seealso &&
+          Array.isArray(fileData.frontmatter.seealso) &&
+          fileData.frontmatter.seealso.length > 0,
+        )
+        const showArticle = hasBodyContent || hasSeeAlso
+        const showList = listProps.allFiles.length > 0
+
+        if (!showArticle && !showList) {
+          return (
+            <>
+              <section class={baseListClass}>
+                <PageListSearch {...props} />
+                <PageList {...listProps} />
+              </section>
+              <aside class="notes-evergreen">
+                <Evergreen {...listProps} />
+              </aside>
+            </>
+          )
+        }
+
         return (
           <div class="folder-layout folder-layout--l" data-pagelist>
-            <article class="folder-layout--article">
-              {content}
-              <SeeAlso {...props} />
-            </article>
-            <section class={listClassName}>
-              <PageListSearch {...props} />
-              <PageList {...listProps} />
-            </section>
+            {showArticle && (
+              <article class="folder-layout--article">
+                {hasBodyContent ? content : null}
+                <SeeAlso {...props} />
+              </article>
+            )}
+            {showList && (
+              <section class={listClassName}>
+                <PageListSearch {...props} />
+                <PageList {...listProps} />
+              </section>
+            )}
           </div>
         )
+      }
 
       default:
         return (
