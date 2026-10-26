@@ -245,8 +245,8 @@ function contentToHast(content: Content, opts: Config) {
       const detail: Element = h('span', { class: 'details close' }, [
         // Original text
         h(
-          'span',
-          { class: 'summary' },
+          'button',
+          { class: 'summary', type: 'button', 'aria-expanded': 'false' },
           summaryChildren.length ? summaryChildren : [createEmptyTextNode()],
         ),
         // Expanded content
@@ -271,7 +271,7 @@ function contentToHast(content: Content, opts: Config) {
 
   // Helper to get fully expanded text
   return h(
-    'div#telescope',
+    'div.telescope',
     { 'data-expand': opts.shouldExpandOnMouseOver ? 'hover' : 'click' },
     processContent(content),
   )
@@ -289,7 +289,7 @@ export const TelescopicText: QuartzTransformerPlugin<Partial<Config>> = userOpts
     markdownPlugins() {
       return [
         () => (tree: MdastRoot, file) => {
-          visit(tree, 'code', (node: Code) => {
+          visit(tree, 'code', (node: Code, index, parent) => {
             let { lang, meta } = node
             if (lang === 'telescopic' && meta) {
               // Parse the meta string to extract ID
@@ -302,6 +302,15 @@ export const TelescopicText: QuartzTransformerPlugin<Partial<Config>> = userOpts
               }
               node.data = node.data || {}
               node.data.hProperties = { id: idMatch[1] + '-container' }
+              const mark = meta.match(/(?:^|\s)marks=["']?([\w-]+)["']?(?=\s|$)/)?.[1]
+              if (mark && parent && index !== undefined) {
+                // Let the Obsidian parser register the final rendered container.
+                parent.children.splice(index + 1, 0, {
+                  type: 'paragraph',
+                  children: [{ type: 'text', value: `^${mark}` }],
+                })
+                return index + 2
+              }
             }
           })
         },
