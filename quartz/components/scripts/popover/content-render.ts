@@ -43,8 +43,8 @@ export function cloneTelescopicPreview(
   if (!(clone instanceof HTMLElement)) return null
   clone.querySelectorAll('.details').forEach(detail => detail.classList.replace('open', 'close'))
   clone
-    .querySelectorAll('button.summary')
-    .forEach(button => button.setAttribute('aria-expanded', 'false'))
+    .querySelectorAll('.summary')
+    .forEach(summary => summary.setAttribute('aria-expanded', 'false'))
   const source = document.createElement('a')
   const destination = new URL(targetUrl)
   destination.hash = hash
