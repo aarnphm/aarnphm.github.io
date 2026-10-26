@@ -1,4 +1,3 @@
-import micromorph from 'micromorph'
 import { fetchCanonical, prefetchCanonical } from '../../util/fetch-canonical'
 import {
   FullSlug,
@@ -24,11 +23,12 @@ import {
   linkUrl,
   transformHostInternalLinks,
 } from './spa/link-policy'
+import { replacePageBody } from './spa/page-body'
 import { stacked } from './spa/stacked-manager'
 import { announcer } from './spa/stacked-view'
 import { Toast } from './toast'
 
-function startViewTransition(callback: () => void): void {
+async function startViewTransition(callback: () => void): Promise<void> {
   if (
     document.visibilityState === 'hidden' ||
     window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
@@ -40,6 +40,7 @@ function startViewTransition(callback: () => void): void {
 
   const transition = document.startViewTransition(callback)
   void transition.finished.catch(() => undefined)
+  await transition.updateCallbackDone
 }
 
 const getOpts = ({ target }: Event): { url: URL; scroll?: boolean } | undefined => {
@@ -144,12 +145,19 @@ function stopLoading() {
 
 window.stacked = stacked
 
+let activeNavigation: AbortController | undefined
+
 async function navigate(
   url: URL,
   isBack: boolean = false,
   options: { transition?: boolean; signal?: AbortSignal } = {},
 ) {
   if (options.signal?.aborted) return
+  activeNavigation?.abort()
+  activeNavigation = new AbortController()
+  const signal = options.signal
+    ? AbortSignal.any([options.signal, activeNavigation.signal])
+    : activeNavigation.signal
   if (
     window.location.hostname === STREAM_HOSTNAME &&
     isLocalHttpUrl(url) &&
@@ -176,20 +184,20 @@ async function navigate(
 
   startLoading()
 
-  const contents = await fetchCanonical(new URL(`${url}`), { signal: options.signal })
+  const contents = await fetchCanonical(new URL(`${url}`), { signal })
     .then(res => {
       const contentType = res.headers.get('content-type')
       if (contentType?.startsWith('text/html')) {
         return res.text()
       } else {
-        if (!options.signal?.aborted) window.location.assign(url)
+        if (!signal.aborted) window.location.assign(url)
       }
     })
     .catch(() => {
-      if (!options.signal?.aborted) window.location.assign(url)
+      if (!signal.aborted) window.location.assign(url)
     })
 
-  if (!contents || options.signal?.aborted) return
+  if (!contents || signal.aborted) return
 
   const html = parseHtml(contents)
   const isCodeViewer = html.body.dataset.page === 'code-viewer'
@@ -198,10 +206,10 @@ async function navigate(
   // Link the page-scoped sheets the new body uses while the old page still shows; a stalled
   // sheet only delays navigation.
   await Promise.race([loadPageStyles(html.body), new Promise(resolve => setTimeout(resolve, 2000))])
-  if (options.signal?.aborted) return
+  if (signal.aborted) return
 
   const update = () => {
-    if (options.signal?.aborted) return
+    if (signal.aborted) return
     // notify about to nav
     const event: CustomEventMap['prenav'] = new CustomEvent('prenav', { detail: {} })
     document.dispatchEvent(event)
@@ -230,7 +238,7 @@ async function navigate(
     announcer.dataset.persist = ''
     html.body.appendChild(announcer)
 
-    micromorph(document.body, html.body)
+    replacePageBody(html.body)
 
     // scroll into place and add history
     if (!isBack) {
@@ -264,9 +272,9 @@ async function navigate(
     notifyNav(getFullSlug(window))
     delete announcer.dataset.persist
   }
-  if (options.transition === false || isCodeViewer || document.body.dataset.page === 'code-viewer')
-    update()
-  else startViewTransition(update)
+  if (options.transition === true && !isCodeViewer && document.body.dataset.page !== 'code-viewer')
+    await startViewTransition(update)
+  else update()
   stopLoading()
 }
 
