@@ -4,7 +4,7 @@
   --course-line: color-mix(in srgb, var(--gray) 55%, transparent);
   --course-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
   --course-selected: color-mix(in srgb, var(--secondary) 18%, var(--course-surface));
-  --course-control-height: 1.75rem;
+  --course-control-height: 1.5rem;
 
   display: block;
   min-width: 0;
@@ -15,10 +15,29 @@
     width: 100%;
     min-height: 200px;
   }
+  // padding sits on the header row and the pane, so the header rule meets the box border
+  .course-transcript {
+    margin-top: var(--space-3);
+    border: 1px solid var(--darkgray);
+  }
+  .course-transcript > .course-transcript-tools {
+    margin: 0;
+    padding: var(--space-2) var(--space-3);
+    border-bottom-color: var(--darkgray);
+    background: var(--course-surface);
+  }
   .course-transcript-pane {
     max-height: 26rem;
+    margin: 0;
+    padding: var(--space-3);
   }
-  .youtube-transcript-source,
+  .course-count {
+    margin: 0;
+    padding: var(--space-2) var(--space-3);
+  }
+  .course-transcript-list {
+    --course-stamp-width: 3.75rem;
+  }
   .course-player-line,
   .course-count {
     font-family: var(--codeFont);
@@ -26,17 +45,37 @@
     overflow-wrap: anywhere;
   }
   .course-transcript-tools {
-    font-size: var(--text-meta);
     button,
     input {
       border-color: var(--darkgray);
     }
-    input[type='search'] {
-      font-size: max(16px, 1rem);
-    }
     button:focus-visible,
     input:focus-visible {
       outline-color: var(--dark);
+    }
+  }
+  .course-transcript-heading {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-inline-end: auto;
+    flex-shrink: 0;
+
+    h2 {
+      margin: 0;
+    }
+  }
+  .course-transcript-languages {
+    display: inline-flex;
+
+    button + button {
+      margin-inline-start: -1px;
+    }
+    button[aria-selected='true'] {
+      color: var(--dark);
+      background: var(--course-selected);
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
     }
   }
   a:hover {
@@ -45,5 +84,10 @@
   }
   @media (pointer: coarse) {
     --course-control-height: 44px;
+
+    // 16px keeps iOS from zooming into the field
+    .course-transcript-tools input[type='search'] {
+      font-size: max(16px, 1rem);
+    }
   }
 }

@@ -92,7 +92,7 @@
   padding-bottom: var(--space-2);
   border-bottom: 1px solid var(--course-line);
   font-family: var(--codeFont);
-  font-size: 0.66rem;
+  font-size: var(--text-meta);
   color: var(--darkgray);
 
   button {
@@ -101,14 +101,15 @@
     align-items: center;
     justify-content: center;
     gap: 0.35em;
-    min-height: var(--course-control-height);
-    padding: 0.2rem 0.6rem;
+    box-sizing: border-box;
+    block-size: var(--course-control-height);
+    padding: 0 0.5rem;
     border: 1px solid var(--course-line);
     border-radius: var(--radius-none);
     background: transparent;
     color: inherit;
     font: inherit;
-    line-height: 1.3;
+    line-height: 1;
     text-transform: lowercase;
     cursor: pointer;
     touch-action: manipulation;
@@ -128,22 +129,62 @@
   .course-segmented {
     display: inline-flex;
 
-    > button + button {
+    > * + * {
       margin-inline-start: -1px;
     }
   }
 
+  // search, follow and copy: square icon segments; the magnifier opens the field to its left
+  .course-transcript-actions {
+    .course-icon-button {
+      inline-size: var(--course-control-height);
+      padding: 0;
+    }
+
+    svg {
+      display: block;
+      flex: none;
+    }
+
+    [data-transcript-copy] svg[data-glyph='done'],
+    [data-transcript-copy][data-copied] svg[data-glyph='copy'] {
+      display: none;
+    }
+
+    [data-transcript-copy][data-copied] svg[data-glyph='done'] {
+      display: block;
+    }
+
+    [aria-expanded='true'] {
+      color: var(--dark);
+    }
+  }
+
+  .course-transcript-find {
+    display: inline-flex;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  // the label sits in the row at the controls' size
+  h2 {
+    font-size: inherit;
+  }
+
   input[type='search'] {
-    min-height: var(--course-control-height);
-    width: 9rem;
+    box-sizing: border-box;
+    block-size: var(--course-control-height);
+    width: 8rem;
     max-width: 100%;
-    padding: 0.2rem 0.5rem;
+    padding: 0 0.4rem;
     border: 1px solid var(--course-line);
     border-radius: var(--radius-none);
     background: var(--light);
     color: var(--dark);
     font: inherit;
-    font-size: 0.7rem;
+    line-height: 1;
 
     &:focus-visible {
       outline: 2px solid var(--secondary);
@@ -168,17 +209,18 @@
 .course-transcript-list {
   // positioned so the rough-notation svgs (absolute siblings of their targets) scroll with the pane
   position: relative;
+  // room for h:mm:ss and the link's youtube mark; the fr embeds stamp m:ss without the mark
+  --course-stamp-width: 5.5rem;
 
   svg.rough-annotation {
     z-index: 1;
   }
-  font-size: var(--text-ui);
-  line-height: 1.55;
+  font-size: 0.875rem;
+  line-height: 1.6;
 
   p {
     margin: 0 0 var(--space-3);
-    padding-left: 5.5ch;
-    text-indent: -5.5ch;
+    padding-left: var(--course-stamp-width);
 
     &[aria-current='time'] {
       background: var(--course-surface);
@@ -194,16 +236,18 @@
     }
   }
 
+  // floated into the paragraph's padding: the text column stays one edge, whatever the two fonts measure
   a.course-stamp {
-    display: inline-block;
-    min-width: 5ch;
-    margin-right: 0.5ch;
+    float: left;
+    width: var(--course-stamp-width);
+    margin-left: calc(-1 * var(--course-stamp-width));
+    white-space: nowrap;
     font-family: var(--codeFont);
     font-size: var(--text-meta);
     font-variant-numeric: tabular-nums;
+    line-height: inherit;
     color: var(--darkgray);
     text-decoration: none;
-    text-indent: 0;
 
     &:hover {
       color: var(--dark);
