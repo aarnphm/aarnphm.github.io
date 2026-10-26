@@ -2,55 +2,72 @@
   margin: 1rem 0;
 }
 
-#telescope {
+.telescope {
   color: var(--dark);
 }
 
-#telescope#telescope blockquote {
+.telescope blockquote {
   margin-left: 0;
   padding-left: 1rem;
   border-left: 1px solid var(--dark);
   display: block;
 }
 
-#telescope#telescope hr {
+.telescope hr {
   border: 0.5px solid var(--dark);
   margin: 3px 0;
   display: block;
 }
 
-#telescope .details {
+.telescope .details {
   display: inline;
+}
+
+.telescope .summary {
+  appearance: none;
+  font: inherit;
+  color: inherit;
+  background: var(--highlight);
+  border: 0;
   padding: 0 3px;
-  margin: -1px;
-  box-shadow:
-    0px 1px 0px 1px var(--light) inset,
-    0px 1px 0px 2px var(--telescope-border) inset;
   cursor: pointer;
+  text-align: inherit;
 }
 
-#telescope .details.open {
-  background-color: transparent;
-  box-shadow: none;
-  padding: 0;
-  margin: 0;
-  cursor: initial;
+.telescope .summary:focus-visible {
+  outline: 2px solid var(--dark);
+  outline-offset: 2px;
 }
 
-#telescope .details.open > .summary,
-#telescope .details.close > .expanded {
+.telescope .details.open > .summary,
+.telescope .details.close > .expanded {
   display: none;
 }
 
-#telescope .details.close:hover {
-  box-shadow:
-    0px 1px 0px 0px var(--light) inset,
-    0px 1px 0px 1px var(--telescope-border) inset;
-  border-bottom: 1px solid var(--telescope-border);
+@media (hover: hover) and (pointer: fine) {
+  .telescope .summary:hover {
+    text-decoration: underline;
+  }
 }
 
-#telescope .details *,
-#telescope p * {
-  list-style: none;
-  display: inline;
+.telescopic-preview .transclude-src {
+  display: block;
+  margin-top: 1rem;
+}
+
+.popover:has(.telescopic-preview) {
+  & > .popover-inner {
+    box-sizing: border-box;
+    width: min(30rem, calc(100vw - 2 * var(--popover-padding) - 16px));
+    overflow-wrap: anywhere;
+    user-select: text;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    display: block !important;
+  }
+
+  &.keyboard-popover {
+    display: block !important;
+  }
 }
