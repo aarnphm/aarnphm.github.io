@@ -10,6 +10,8 @@ import { estimateWahooCyclingStamina } from '../../../util/cycling-stamina'
 import {
   buildCyclingTorqueTrace,
   cyclingMechanics,
+  cyclingTorqueReference,
+  type CyclingTorqueHistory,
   type CyclingTorqueSample,
 } from '../../../util/cycling-torque'
 import { applyHeartRatePhysiology } from '../../../util/heart-rate-physiology'
@@ -99,6 +101,7 @@ export interface ActivityProjectionScope {
   activityCriticalPowers: ReadonlyMap<string, CriticalPowerEstimate>
   criticalPowerAnchorsByActivity: ReadonlyMap<string, CriticalPowerAnchor[]>
   torqueSamplesByActivity: ReadonlyMap<string, CyclingTorqueSample[]>
+  torqueHistory: readonly CyclingTorqueHistory[]
 }
 
 export function projectActivityDetail(
@@ -137,6 +140,7 @@ export function projectActivityDetail(
     activityCriticalPowers,
     criticalPowerAnchorsByActivity,
     torqueSamplesByActivity,
+    torqueHistory,
   } = scope
   const id = String(a.id)
   const garminMatch = garminMatches.get(id) ?? resolveGarmin(a, sport)
@@ -253,7 +257,11 @@ export function projectActivityDetail(
         : null)
     detail.criticalPowerAnchors = criticalPowerAnchorsByActivity.get(id) ?? []
     const samples = torqueSamplesByActivity.get(id) ?? []
-    detail.cyclingTorque = buildCyclingTorqueTrace(samples, detail.elapsedTimeS, detail.route)
+    const torque = buildCyclingTorqueTrace(samples, detail.elapsedTimeS, detail.route)
+    detail.cyclingTorque = torque && {
+      ...torque,
+      reference: cyclingTorqueReference(torqueHistory, Date.parse(a.startDate)),
+    }
     for (const effort of detail.bestEfforts?.power ?? [])
       if (effort.startElapsedS != null && effort.endElapsedS != null)
         effort.mechanics = cyclingMechanics(samples, effort.startElapsedS, effort.endElapsedS)

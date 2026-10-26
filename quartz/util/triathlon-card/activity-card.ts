@@ -31,6 +31,7 @@ import { buildPowerPhaseChart, buildRiderPositionChart } from './cycling-phase-p
 import { buildCyclingPowerChart } from './cycling-power-chart'
 import {
   buildCrankTorqueChart,
+  buildCyclingImpactLoadTrace,
   buildHeartRateTrace,
   buildIntensityFactorChart,
   buildWalkPowerTrace,
@@ -340,6 +341,10 @@ export const buildActivity = <N>(
     if (triathlonTraceEnabled(traceSettings, 'crank-torque')) {
       const torque = buildCrankTorqueChart(f, d, analysisSelection)
       if (torque) activityGraphs.push(torque)
+    }
+    if (triathlonTraceEnabled(traceSettings, 'impact-load-factor')) {
+      const impactLoad = buildCyclingImpactLoadTrace(f, d, analysisSelection)
+      if (impactLoad) activityGraphs.push(impactLoad)
     }
     if (triathlonTraceEnabled(traceSettings, 'cycling-power')) {
       const power = buildCyclingPowerChart(f, d, analysisSelection)

@@ -70,6 +70,8 @@ export const en: Record<string, string> = {
   'crank torque by cadence': 'crank torque by cadence',
   'time in cadence and torque bins': 'time in cadence and torque bins',
   'darker means more time': 'darker means more time',
+  'cycling impact load factor definition':
+    'Crank torque per pedal stroke divided by your average stroke: the time-weighted mean torque of every Wahoo ride that started in the trailing 42 days, this ride included. 1.00 is an ordinary stroke; 1.50 loads the legs half again as hard per revolution. Coasting and missing data are excluded. Cycling has no ground impact, so this follows pedal force where the running factor follows foot strike.',
   'crank torque definition':
     'Mean crank torque = 60 × watts / (2π × rpm), calculated from paired Wahoo samples before downsampling. Zero cadence and missing data are excluded. Display windows require 80% paired coverage. The density chart covers the whole ride; its top band groups the high-torque tail beyond the 99th percentile. Torque describes crank load; it does not measure metabolic efficiency.',
   'power balance': 'power balance',
@@ -197,6 +199,8 @@ export const fr: Record<string, string> = {
   'crank torque by cadence': 'couple selon la cadence',
   'time in cadence and torque bins': 'temps par intervalle de cadence et de couple',
   'darker means more time': 'plus foncé = plus de temps',
+  'cycling impact load factor definition':
+    'Couple au pédalier par coup de pédale divisé par votre coup moyen : la moyenne pondérée par le temps du couple de toutes les sorties Wahoo commencées dans les 42 jours précédents, celle-ci comprise. 1,00 est un coup ordinaire; 1,50 charge les jambes moitié plus par tour. La roue libre et les données absentes sont exclues. Le vélo n’a pas d’impact au sol : ce facteur suit la force sur la pédale, là où le facteur de course suit l’appui du pied.',
   'crank torque definition':
     'Couple moyen = 60 × watts / (2π × tr/min), calculé à partir des mesures Wahoo appariées avant réduction. La cadence nulle et les données absentes sont exclues. Chaque fenêtre affichée exige 80 % de couverture. La densité couvre la sortie entière; sa bande supérieure regroupe les couples élevés au-delà du 99e percentile. Le couple décrit la charge au pédalier, sans mesurer l’efficacité métabolique.',
   'power balance': 'équilibre de puissance',

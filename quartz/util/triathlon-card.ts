@@ -127,6 +127,7 @@ export { buildElevation, climbGradeBand } from './triathlon-card/elevation-chart
 export { buildTrace } from './triathlon-card/trace-chart'
 export {
   buildCrankTorqueChart,
+  buildCyclingImpactLoadTrace,
   buildHeartRateTrace,
   buildIntensityFactorChart,
   buildWalkPowerTrace,

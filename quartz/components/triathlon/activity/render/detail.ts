@@ -60,6 +60,7 @@ import {
   staminaAtPoint,
   strideScrubSurface,
   torqueScrubSurface,
+  cyclingImpactLoadScrubSurface,
   walkPowerScrubSurface,
   type ActivityView,
 } from './scrub-surfaces'
@@ -390,6 +391,8 @@ export const renderDetail = (
           return `${scrubDist(presentation, p.d, d.sport)} · ${p.muscleOxygenPct == null ? '—' : formatMuscleOxygen(p.muscleOxygenPct)}`
         },
       })
+    else if (trace.dataset.triTrace === 'impact-load-factor' && d.sport === 'bike')
+      surfaces.push(cyclingImpactLoadScrubSurface(trace, d, presentation))
     else if (trace.dataset.triTrace === 'impact-load-factor')
       surfaces.push({
         wrap: trace,

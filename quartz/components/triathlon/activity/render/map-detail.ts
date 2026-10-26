@@ -12,6 +12,7 @@ import {
   buildAnalysisBar,
   buildBestEfforts as buildBestEffortsNode,
   buildCrankTorqueChart,
+  buildCyclingImpactLoadTrace,
   buildCyclingPowerChart,
   buildEnvironmentAnalysis as buildEnvironmentAnalysisNode,
   buildPerformanceConditionTrace as buildPerformanceConditionTraceNode,
@@ -156,6 +157,7 @@ export const renderMapDetail = (
         buildPowerZones(presentation, d, opts?.detailContext ?? detailContextFromPayload()),
       ),
       buildCrankTorqueChart(domF, d, null),
+      buildCyclingImpactLoadTrace(domF, d, null),
       buildCyclingPowerChart(domF, d, null),
       environment,
       buildMyWindsockGraphs(domF, d) as HTMLElement | null,
@@ -261,6 +263,8 @@ export const renderMapDetail = (
     zoneBox.replaceChildren(...traces.map(trace => trace.wrap))
     const torque = buildCrankTorqueChart(domF, d, null, graphDomain)
     if (torque) zoneBox.appendChild(torque)
+    const impactLoad = buildCyclingImpactLoadTrace(domF, d, null, graphDomain)
+    if (impactLoad) zoneBox.appendChild(impactLoad)
     const cyclingPower = buildCyclingPowerChart(domF, d, graphDomain)
     if (cyclingPower) zoneBox.appendChild(cyclingPower)
     const strideChart = buildRunStrideCadenceChart(domF, d, null, graphDomain)

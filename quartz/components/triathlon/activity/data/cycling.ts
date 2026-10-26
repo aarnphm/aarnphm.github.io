@@ -1,6 +1,7 @@
 import { GARDEN_CYCLING_PERFORMANCE_CONDITION_METHOD } from '../../../../plugins/stores/strava'
 import { CYCLING_POWER_MAX_POINTS } from '../../../../util/cycling-power'
 import { GARDEN_CYCLING_STAMINA_METHOD } from '../../../../util/cycling-stamina'
+import { CYCLING_TORQUE_REFERENCE_DAYS } from '../../../../util/cycling-torque'
 import {
   STAMINA_LEDGER_METHOD,
   STAMINA_LEDGER_OFFSET_METHOD,
@@ -60,6 +61,19 @@ export const isPerformanceConditionTrace = (value: unknown): boolean => {
   )
 }
 
+const isCyclingTorqueReference = (value: unknown): boolean =>
+  value == null ||
+  (isRecord(value) &&
+    value.method === 'trailing-mean-v1' &&
+    finite(value.torqueNm) &&
+    value.torqueNm > 0 &&
+    finite(value.rides) &&
+    Number.isInteger(value.rides) &&
+    value.rides >= 1 &&
+    finite(value.pedalingSeconds) &&
+    value.pedalingSeconds > 0 &&
+    value.windowDays === CYCLING_TORQUE_REFERENCE_DAYS)
+
 export const isCyclingTorqueTrace = (value: unknown, elapsedTimeS: number): boolean => {
   if (value == null) return true
   if (
@@ -77,7 +91,8 @@ export const isCyclingTorqueTrace = (value: unknown, elapsedTimeS: number): bool
     value.summary.averageCadenceRpm <= 0 ||
     !Array.isArray(value.points) ||
     value.points.length < 2 ||
-    !Array.isArray(value.cells)
+    !Array.isArray(value.cells) ||
+    !isCyclingTorqueReference(value.reference)
   )
     return false
   let previous = -1
