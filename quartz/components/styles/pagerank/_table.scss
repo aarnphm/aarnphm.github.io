@@ -57,11 +57,13 @@
       background: var(--pr-line);
     }
 
+    // Buttons centre their label by default; the column's numbers sit on the right edge.
     button {
       padding: 0;
       border: 0;
       background: none;
       color: inherit;
+      text-align: inherit;
       font: inherit;
       text-transform: inherit;
       cursor: pointer;

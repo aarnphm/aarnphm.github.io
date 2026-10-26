@@ -150,41 +150,49 @@ export function pagerankField(
     const first = model.byPosition[0]
     const unlinked = model.byPosition.find(node => node.inbound === 0)
     const items: HTMLElement[] = []
-    let blockRight = 0
-    if (unlinked) {
-      const block = document.createElement('p')
+    const count = span('pagerank-field-number', field.blockCount.toLocaleString('en'))
+    const floor = unlinked && span('pagerank-field-number', `${formatTimes(unlinked.times)}×`)
+    const block = document.createElement('p')
+    if (floor) {
       block.className = 'pagerank-field-note'
-      block.append(
-        span('pagerank-field-number', field.blockCount.toLocaleString('en')),
-        ' notes, each at ',
-        span('pagerank-field-number', `${formatTimes(unlinked.times)}×`),
-      )
-      const left = field.blockX0 - field.radius
-      const width = Math.max(field.blockX1 - field.blockX0 + 2 * field.radius, 104)
-      blockRight = left + width
-      block.style.left = `${left}px`
-      block.style.bottom = `${field.height - field.blockTop + 8}px`
-      block.style.maxWidth = `${width}px`
+      block.append(count, ' notes, each at ', floor)
+      block.style.left = `${field.blockX0 - field.radius}px`
       items.push(block)
     }
-    let top: HTMLElement | null = null
+    const top = document.createElement('p')
+    const name = span('pagerank-field-title', first?.title ?? '')
+    const mean = span('', 'the mean')
     if (first && first.inbound > 0) {
-      top = document.createElement('p')
       top.className = 'pagerank-field-note pagerank-field-top'
       top.append(
         span('pagerank-field-number', '#1'),
-        ` ${first.title}, `,
+        name,
         span('pagerank-field-number', `${formatTimes(first.times)}×`),
-        ' the mean',
+        mean,
       )
-      const right = field.x[first.id] + field.radius
-      top.style.right = `${field.width - right}px`
-      top.style.top = '8px'
-      top.style.maxWidth = `${Math.max(96, right - blockRight - 24)}px`
+      top.style.right = `${field.width - field.x[first.id] - field.radius}px`
       items.push(top)
     }
     notes.replaceChildren(...items)
-    if (top && first) {
+    if (top.isConnected && first) {
+      const right = field.x[first.id] + field.radius
+      // Both notes keep one line. While they collide, the #1 title truncates first, then
+      // "the mean" goes, then the block note drops its words, then the title goes.
+      const fits = () => {
+        const blockRight = block.isConnected ? block.offsetLeft + block.offsetWidth : 0
+        top.style.maxWidth = `${Math.max(0, right - blockRight - 16)}px`
+        return top.scrollWidth <= top.clientWidth && (name.hidden || name.clientWidth >= 48)
+      }
+      const steps = [
+        () => mean.remove(),
+        () => floor && block.replaceChildren(count, ' at ', floor),
+        () => (name.hidden = true),
+      ]
+      for (const step of steps) {
+        if (fits()) break
+        step()
+      }
+      fits()
       // Leader from under the label to just above the dot.
       const from = top.offsetTop + top.offsetHeight + 4
       const to = field.y[first.id] - field.radius - 5

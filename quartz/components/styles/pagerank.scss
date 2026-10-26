@@ -297,16 +297,36 @@ body[data-slug='pagerank'] {
   }
 }
 
+// One line each, on the same top edge as the hover readout.
 .pagerank-field-note {
   position: absolute;
+  inset-block-start: 8px;
   margin: 0;
+  padding-block: 0.12rem;
   font: 400 var(--text-meta) / 1.35 var(--bodyFont);
   color: var(--dark);
-  overflow-wrap: anywhere;
+  white-space: nowrap;
 }
 
 .pagerank-field-top {
-  text-align: right;
+  display: flex;
+  gap: 0.3em;
+  justify-content: flex-end;
+
+  > * {
+    flex: none;
+  }
+
+  .pagerank-field-title {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &::after {
+      content: ',';
+    }
+  }
 }
 
 // The triathlon chart readout: mono, top right inside the plot, shown while a dot is hovered.

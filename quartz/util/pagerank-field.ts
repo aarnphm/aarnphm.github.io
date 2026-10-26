@@ -31,7 +31,7 @@ export interface FieldLayout {
   readonly blockX1: number
   readonly blockTop: number
   readonly blockCount: number
-  /** "no inbound link", wrapped to the block width. */
+  /** "no inbound link", one line per entry. */
   readonly blockLabel: readonly string[]
   readonly ticks: readonly FieldTick[]
   /** Largest distance, in columns, that the packer moved a dot from its score column. */
@@ -42,16 +42,6 @@ export interface FieldLayout {
   nearest(px: number, py: number, reach: number): number
   /** x of a score on the axis, in ×mean. */
   scale(times: number): number
-}
-
-const wrap = (text: string, chars: number) => {
-  const lines: string[] = []
-  for (const word of text.split(' ')) {
-    const last = lines.length - 1
-    if (last >= 0 && lines[last].length + 1 + word.length <= chars) lines[last] += ` ${word}`
-    else lines.push(word)
-  }
-  return lines
 }
 
 export const tickLabel = (value: number) => `${value}×`
@@ -85,9 +75,8 @@ export function fieldLayout(model: PageRankModel, width: number): FieldLayout {
     y[node.id] = mid + ((q % rows) - half) * cell
   }
   const blockWidth = blockX1 - blockX0 + 2 * radius
-  const blockLabel = unlinked.length
-    ? wrap('no inbound link', Math.max(10, Math.floor(blockWidth / tickCharWidth)))
-    : []
+  // One line; the axis starts past it.
+  const blockLabel = unlinked.length ? ['no inbound link'] : []
   const labelWidth = Math.max(0, ...blockLabel.map(line => line.length * tickCharWidth))
   const axisX0 = unlinked.length
     ? left + Math.max(blockWidth, labelWidth) + (narrow ? 20 : 28)
