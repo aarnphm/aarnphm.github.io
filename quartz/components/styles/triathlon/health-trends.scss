@@ -313,6 +313,7 @@
 }
 
 .tri-sleep-metrics {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
@@ -322,6 +323,7 @@
   border-block: 1px solid var(--lightgray);
 
   .tri-day-analytics-metric {
+    position: static;
     gap: 0.4rem;
   }
 

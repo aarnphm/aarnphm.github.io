@@ -5,6 +5,7 @@ import { estimateWahooCyclingStamina } from '../../../util/cycling-stamina'
 import {
   cyclingMechanics,
   cyclingTorqueSamples,
+  type CyclingTorqueHistory,
   type CyclingTorqueSample,
 } from '../../../util/cycling-torque'
 import { localIsoDay } from '../../../util/local-date'
@@ -232,6 +233,7 @@ export function buildPayload(
   const recentRunCurves: PowerCurveSource[] = []
   const yearRunCurves: PowerCurveSource[] = []
   const torqueSamplesByActivity = new Map<string, CyclingTorqueSample[]>()
+  const torqueHistory: CyclingTorqueHistory[] = []
   const criticalPowerAnchorsByActivity = new Map<string, CriticalPowerAnchor[]>()
   const activityCriticalPowers = new Map<string, CriticalPowerEstimate>()
   const recentCriticalPowerAnchors: CriticalPowerAnchor[] = []
@@ -280,6 +282,9 @@ export function buildPayload(
         )
       : []
     torqueSamplesByActivity.set(id, torqueSamples)
+    const rideMechanics = cyclingMechanics(torqueSamples, 0, a.elapsedTime)
+    if (rideMechanics)
+      torqueHistory.push({ startMs: Date.parse(a.startDate), mechanics: rideMechanics })
     if (a.deviceWatts && timeline) {
       const activityDate = a.startDateLocal.slice(0, 10)
       const anchors = bestObservedPowerWindows(timeline, CRITICAL_POWER_DURATIONS_S).map(
@@ -394,6 +399,7 @@ export function buildPayload(
     activityCriticalPowers,
     criticalPowerAnchorsByActivity,
     torqueSamplesByActivity,
+    torqueHistory,
   }
   const details: Record<string, StravaActivityDetail> = {}
   for (const { a, sport } of projectedActivities)

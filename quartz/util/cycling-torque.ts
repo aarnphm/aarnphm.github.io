@@ -27,12 +27,59 @@ export interface CyclingTorqueCell {
   seconds: number
 }
 
+export interface CyclingTorqueReference {
+  method: 'trailing-mean-v1'
+  torqueNm: number
+  rides: number
+  pedalingSeconds: number
+  windowDays: number
+}
+
 export interface CyclingTorqueTrace {
   source: 'wahoo'
   method: 'power-cadence-v1'
   summary: CyclingMechanics
   points: CyclingTorquePoint[]
   cells: CyclingTorqueCell[]
+  reference?: CyclingTorqueReference | null
+}
+
+export interface CyclingTorqueHistory {
+  startMs: number
+  mechanics: CyclingMechanics
+}
+
+export const CYCLING_TORQUE_REFERENCE_DAYS = 42
+const TORQUE_REFERENCE_MIN_SECONDS = 600
+
+/**
+ * The rider's average pedal stroke: time-weighted mean crank torque over rides that started in the
+ * trailing 42 days, this ride included. The mean keeps a ride at its usual load near 1.00; torque is
+ * right-skewed, so a median reference would put almost every ride above 1.
+ */
+export function cyclingTorqueReference(
+  history: readonly CyclingTorqueHistory[],
+  startMs: number,
+): CyclingTorqueReference | null {
+  if (!Number.isFinite(startMs)) return null
+  const from = startMs - CYCLING_TORQUE_REFERENCE_DAYS * 86_400_000
+  let rides = 0
+  let seconds = 0
+  let torque = 0
+  for (const { startMs: rideMs, mechanics } of history) {
+    if (rideMs > startMs || rideMs <= from) continue
+    rides++
+    seconds += mechanics.observedSeconds
+    torque += mechanics.averageTorqueNm * mechanics.observedSeconds
+  }
+  if (seconds < TORQUE_REFERENCE_MIN_SECONDS || torque <= 0) return null
+  return {
+    method: 'trailing-mean-v1',
+    torqueNm: Math.round((torque / seconds) * 100) / 100,
+    rides,
+    pedalingSeconds: Math.round(seconds),
+    windowDays: CYCLING_TORQUE_REFERENCE_DAYS,
+  }
 }
 
 export const crankTorqueNm = (

@@ -49,6 +49,7 @@
 }
 
 :is(.tri-health-recovery, .tri-health-training, .tri-health-oura) {
+  container-type: inline-size;
   text-transform: lowercase;
 
   .tri-ana-block-title {

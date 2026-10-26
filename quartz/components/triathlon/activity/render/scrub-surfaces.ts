@@ -11,6 +11,7 @@ import {
   activityTraceUsesElapsedAxis,
   activityWalkPowerPoints,
   cyclingDynamicsIndexAtDistance,
+  formatImpactLoadFactor,
   formatPerformanceCondition,
   formatStrideLength,
   gearShiftAtFraction,
@@ -167,6 +168,26 @@ export const torqueScrubSurface = (
         ? zoneClock(point.elapsedS)
         : scrubDist(presentation, point.d, d.sport)
       return `${position} · ${point.torqueNm?.toFixed(1) ?? '—'} N·m · ${point.cadenceRpm?.toFixed(0) ?? '—'} rpm · ${point.watts?.toFixed(0) ?? '—'} W${gear ? ` · ${gear.frontTeeth ?? '—'}×${gear.rearTeeth ?? '—'}` : ''}`
+    },
+  }
+}
+
+export const cyclingImpactLoadScrubSurface = (
+  wrap: HTMLElement,
+  d: StravaActivityDetail,
+  presentation: TriathlonPresentation,
+): ScrubSurface => {
+  const points = activityCyclingTorquePoints(d)
+  const reference = d.cyclingTorque?.reference?.torqueNm
+  return {
+    wrap,
+    samples: points,
+    fmt: i => {
+      const point = points[i]
+      const position = activityTraceUsesElapsedAxis(d)
+        ? zoneClock(point.elapsedS)
+        : scrubDist(presentation, point.d, d.sport)
+      return `${position} · ${point.torqueNm == null || !reference ? '—' : formatImpactLoadFactor(point.torqueNm / reference)} · ${point.torqueNm?.toFixed(1) ?? '—'} N·m`
     },
   }
 }

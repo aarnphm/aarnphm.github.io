@@ -10,7 +10,7 @@ import {
   activityWalkPowerPoints,
 } from './activity-metric-data'
 import { axisFrame, type ActivityGraphDomain } from './chart-geometry'
-import { zoneClock } from './metric-text'
+import { formatImpactLoadFactor, zoneClock } from './metric-text'
 import { buildTraceSeries } from './trace-chart'
 
 const HEART_RATE_TRACE_MIN_BPM = 80
@@ -202,6 +202,45 @@ export const buildCrankTorqueChart = <N>(
   )
   f.add(panel, distance, cadence)
   return panel
+}
+
+export const buildCyclingImpactLoadTrace = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  selection?: ActivityAnalysisRange | null,
+  graphDomain?: ActivityGraphDomain | null,
+): N | null => {
+  const trace = d.cyclingTorque
+  const reference = trace?.reference
+  if (d.sport !== 'bike' || !trace || !reference) return null
+  const points = activityCyclingTorquePoints(d)
+  const factor = (point: (typeof points)[number]): number | null =>
+    point.torqueNm == null ? null : point.torqueNm / reference.torqueNm
+  const values = points.flatMap(point => factor(point) ?? [])
+  if (values.length < 2) return null
+  // Sprint and stall-start spikes reach 8×; cap the scale at the 99th percentile so riding stays legible.
+  const sorted = [...values].sort((a, b) => a - b)
+  const p99 = sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * 0.99))]
+  const source = f.el('span', 'tri-elev-range', triText(f.presentation.locale, 'calculated'), {
+    'data-gloss': '',
+    tabindex: '0',
+    'data-gloss-def': `${triText(f.presentation.locale, 'cycling impact load factor definition')} 1.00 = ${reference.torqueNm.toFixed(1)} N·m · ${reference.rides} ${triText(f.presentation.locale, 'rides')} · ${reference.windowDays} d`,
+  })
+  return buildTraceSeries(
+    f,
+    d,
+    points,
+    factor,
+    'impact load factor',
+    () => `${formatImpactLoadFactor(trace.summary.averageTorqueNm / reference.torqueNm)} avg`,
+    value => value.toFixed(1),
+    { min: 0, max: Math.ceil(Math.max(1.5, p99) * 2) / 2, intervals: 2 },
+    d.route.length >= 2 ? selection : undefined,
+    graphDomain,
+    undefined,
+    { value: 1, label: '1.00' },
+    { capExtra: [source], wrapAttrs: { 'data-impact-load-source': 'garden-crank-torque' } },
+  )
 }
 
 export const buildHeartRateTrace = <N>(

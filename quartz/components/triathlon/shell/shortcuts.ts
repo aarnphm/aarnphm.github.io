@@ -1,3 +1,4 @@
+import { TRIATHLON_HOSTNAME } from '../../../util/triathlon-host'
 import { ANALYTICS_CHAPTERS } from '../analytics/catalog'
 import { calculatorTabFromShortcut } from '../tools/calculator-tabs'
 import { blurFocusedPanelSearch } from './command-palette'
@@ -31,6 +32,7 @@ export const setupShortcuts = (root: HTMLElement): (() => void) => {
     if (window.spaNavigate) window.spaNavigate(url)
     else window.location.href = url.toString()
   }
+  const gardenHome = window.location.hostname === TRIATHLON_HOSTNAME ? 'https://aarnphm.xyz/' : '/'
   const subView = root.dataset.triView
   const subpageNav: Record<string, string> = {
     g: '/triathlon/tools',
@@ -174,7 +176,7 @@ export const setupShortcuts = (root: HTMLElement): (() => void) => {
       return true
     }
     if (key === 'h') {
-      go('/')
+      go(gardenHome)
       return true
     }
     return false
@@ -197,7 +199,7 @@ export const setupShortcuts = (root: HTMLElement): (() => void) => {
       clearG()
       e.preventDefault()
       e.stopImmediatePropagation()
-      runChord('h')
+      go(gardenHome)
       return
     }
 
