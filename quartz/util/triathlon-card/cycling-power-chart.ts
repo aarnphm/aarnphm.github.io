@@ -1,6 +1,7 @@
 import type { StravaActivityDetail } from '../../plugins/stores/strava'
 import type { TriNodeFactory } from './construction-contracts'
 import { preferredActivityWind } from '../activity-wind'
+import { elapsedAxis, formatElapsedPauses } from '../elapsed-axis'
 import { triText } from '../triathlon-i18n'
 import { axisFrame, elapsedActivityXTicks, niceTicks } from './chart-geometry'
 import {
@@ -8,7 +9,7 @@ import {
   buildAnalysisSelectionRect,
   type AnalysisInterval,
 } from './chart-selection'
-import { addWindLegend, addWindStrip, elapsedSeriesPath } from './elapsed-chart'
+import { addElapsedBreaks, addWindLegend, addWindStrip, elapsedSeriesPath } from './elapsed-chart'
 import { elevationValue, isImperial, zoneClock } from './metric-text'
 
 export const buildCyclingPowerChart = <N>(
@@ -33,7 +34,8 @@ export const buildCyclingPowerChart = <N>(
   const maxPower = Math.max(10, ...powers) * 1.05
   const powerTicks = niceTicks(0, maxPower, 3)
   const powerCeiling = Math.max(maxPower, powerTicks.at(-1) ?? maxPower)
-  const px = (elapsedS: number): number => (elapsedS / totalElapsedS) * 100
+  const axis = elapsedAxis(0, totalElapsedS, trace.pauses)
+  const px = (elapsedS: number): number => axis.fraction(elapsedS) * 100
   const powerY = (watts: number): number => bottom - (watts / powerCeiling) * (bottom - 1)
   const elevations = points.flatMap(point =>
     point.elevationM != null && Number.isFinite(point.elevationM)
@@ -48,7 +50,7 @@ export const buildCyclingPowerChart = <N>(
     pick: (point: (typeof points)[number]) => number | null,
     py: (value: number) => number,
     area = false,
-  ): string => elapsedSeriesPath(points, pick, px, py, bottom, area)
+  ): string => elapsedSeriesPath(points, pick, px, py, bottom, area, axis.crossesPause)
   const windSource = preferredActivityWind(d)
   const wrap = f.el('div', 'tri-elev-wrap tri-cycling-power', undefined, {
     'data-tri-trace': 'cycling-power',
@@ -106,6 +108,7 @@ export const buildCyclingPowerChart = <N>(
     'aria-valuetext': zoneClock(0),
     'data-domain-start-elapsed-s': 0,
     'data-domain-end-elapsed-s': totalElapsedS,
+    ...(axis.pauses.length ? { 'data-domain-pauses': formatElapsedPauses(axis.pauses) } : {}),
   })
   for (const value of powerTicks)
     f.add(
@@ -139,9 +142,14 @@ export const buildCyclingPowerChart = <N>(
         ),
       }),
     )
+  addElapsedBreaks(f, graph, axis, height)
   const windSegments = addWindStrip(f, graph, windSource, px, totalElapsedS)
   const bounds = selection
-    ? analysisChartSelectionBounds(selection, { startElapsedS: 0, endElapsedS: totalElapsedS })
+    ? analysisChartSelectionBounds(selection, {
+        startElapsedS: 0,
+        endElapsedS: totalElapsedS,
+        pauses: axis.pauses,
+      })
     : undefined
   f.add(graph, buildAnalysisSelectionRect(f, height, bounds))
   for (const series of [
@@ -169,7 +177,7 @@ export const buildCyclingPowerChart = <N>(
       graph,
       powerTicks.map(value => ({ label: `${Math.round(value)} W`, vbY: powerY(value) })),
       height,
-      elapsedActivityXTicks(totalElapsedS),
+      elapsedActivityXTicks(totalElapsedS, axis.elapsedAt),
       true,
       { top: 0, bottom: height },
       [],

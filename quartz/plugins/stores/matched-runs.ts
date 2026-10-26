@@ -29,6 +29,7 @@ export interface MatchedRunEffort {
   name: string
   distanceKm: number
   movingTimeS: number
+  elapsedTimeS: number
   paceSPerKm: number
   relativeEffort: number | null
 }
@@ -66,6 +67,7 @@ const effortFromCandidate = ({ activity }: RouteCandidate): MatchedRunEffort => 
   name: activity.name || 'Run',
   distanceKm: roundTo(activity.distance / 1_000, 2),
   movingTimeS: activity.movingTime,
+  elapsedTimeS: activity.elapsedTime,
   paceSPerKm: roundTo(activity.movingTime / (activity.distance / 1_000), 1),
   relativeEffort:
     activity.sufferScore != null && Number.isFinite(activity.sufferScore)

@@ -2,6 +2,7 @@ import type { StravaActivityDetail } from '../../plugins/stores/strava'
 import type { RunHeartCostPoint } from '../run-mechanics'
 import type { TriNodeFactory } from './construction-contracts'
 import { preferredActivityWind } from '../activity-wind'
+import { elapsedAxis, formatElapsedPauses } from '../elapsed-axis'
 import { triText } from '../triathlon-i18n'
 import { activityThermalTracePoints, runHeartCostValue } from './activity-metric-data'
 import { axisFrame, elapsedActivityXTicks, niceTicks } from './chart-geometry'
@@ -10,7 +11,7 @@ import {
   buildAnalysisSelectionRect,
   type AnalysisInterval,
 } from './chart-selection'
-import { addWindLegend, addWindStrip, elapsedSeriesPath } from './elapsed-chart'
+import { addElapsedBreaks, addWindLegend, addWindStrip, elapsedSeriesPath } from './elapsed-chart'
 import { elevationValue, formatThermalTemperature, isImperial, zoneClock } from './metric-text'
 
 const quantile = (sorted: readonly number[], q: number): number =>
@@ -48,7 +49,8 @@ export const buildRunHeartCostChart = <N>(
   const costTicks = niceTicks(Math.max(0, low - pad), high + pad, 3)
   const costFloor = Math.min(low - pad, costTicks[0])
   const costCeiling = Math.max(high + pad, costTicks.at(-1) ?? high)
-  const px = (elapsedS: number): number => (elapsedS / totalElapsedS) * 100
+  const axis = elapsedAxis(0, totalElapsedS, trace.pauses)
+  const px = (elapsedS: number): number => axis.fraction(elapsedS) * 100
   const costY = (value: number): number =>
     bottom -
     ((Math.min(costCeiling, Math.max(costFloor, value)) - costFloor) / (costCeiling - costFloor)) *
@@ -136,6 +138,7 @@ export const buildRunHeartCostChart = <N>(
     'aria-valuetext': zoneClock(0),
     'data-domain-start-elapsed-s': 0,
     'data-domain-end-elapsed-s': totalElapsedS,
+    ...(axis.pauses.length ? { 'data-domain-pauses': formatElapsedPauses(axis.pauses) } : {}),
   })
   for (const value of costTicks)
     f.add(
@@ -147,16 +150,37 @@ export const buildRunHeartCostChart = <N>(
       graph,
       f.svg('path', {
         class: 'tri-cycling-power-elevation',
-        d: elapsedSeriesPath(backdropPoints, point => point.value, px, backdropY, bottom, true),
+        d: elapsedSeriesPath(
+          backdropPoints,
+          point => point.value,
+          px,
+          backdropY,
+          bottom,
+          true,
+          axis.crossesPause,
+        ),
       }),
       f.svg('path', {
         class: 'tri-cycling-power-elevation-line',
-        d: elapsedSeriesPath(backdropPoints, point => point.value, px, backdropY, bottom),
+        d: elapsedSeriesPath(
+          backdropPoints,
+          point => point.value,
+          px,
+          backdropY,
+          bottom,
+          false,
+          axis.crossesPause,
+        ),
       }),
     )
+  addElapsedBreaks(f, graph, axis, height)
   const windSegments = addWindStrip(f, graph, windSource, px, totalElapsedS)
   const bounds = selection
-    ? analysisChartSelectionBounds(selection, { startElapsedS: 0, endElapsedS: totalElapsedS })
+    ? analysisChartSelectionBounds(selection, {
+        startElapsedS: 0,
+        endElapsedS: totalElapsedS,
+        pauses: axis.pauses,
+      })
     : undefined
   f.add(graph, buildAnalysisSelectionRect(f, height, bounds))
   for (const series of [
@@ -168,7 +192,7 @@ export const buildRunHeartCostChart = <N>(
       graph,
       f.svg('path', {
         class: `tri-cycling-power-line${series.name === 'cumulative' ? ' tri-cycling-power-line--cumulative' : ''}`,
-        d: elapsedSeriesPath(points, series.pick, px, costY, bottom),
+        d: elapsedSeriesPath(points, series.pick, px, costY, bottom, false, axis.crossesPause),
         'data-run-cost-series': series.name,
         ...(series.name === '30' ? { hidden: '' } : {}),
       }),
@@ -188,7 +212,7 @@ export const buildRunHeartCostChart = <N>(
       graph,
       costTicks.map(value => ({ label: `${value.toFixed(2)} m/b`, vbY: costY(value) })),
       height,
-      elapsedActivityXTicks(totalElapsedS),
+      elapsedActivityXTicks(totalElapsedS, axis.elapsedAt),
       true,
       { top: 0, bottom: height },
       [],

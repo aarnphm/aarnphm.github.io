@@ -2,7 +2,8 @@ import type { TriathlonContext } from '../runtime/context'
 import type { TriathlonFormatter } from '../runtime/formatter'
 import { SPORT_ICON, type ActivityKind } from '../../../plugins/stores/strava'
 import { buildBattery, buildIcon } from '../../../util/triathlon-card/activity-icons'
-import { dist, dur, prettyDate } from '../../../util/triathlon-card/metric-text'
+import { prettyDate } from '../../../util/triathlon-card/metric-text'
+import { timelineActivityValue } from '../../../util/triathlon-card/timeline-day-card'
 import { triText } from '../../../util/triathlon-i18n'
 import { readTimelineActivities } from '../../../util/triathlon-timeline'
 import {
@@ -221,10 +222,7 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
         continue
       }
       slot.item.style.display = ''
-      const value =
-        activity.distanceKm > 0
-          ? dist(context.presentation, activity.distanceKm, activity.sport)
-          : dur(activity.movingTimeS)
+      const value = timelineActivityValue(context.presentation, activity)
       const aria = `${triText(context.presentation.locale, activity.sport)} · ${activity.name} · ${value}`
       slot.entry.setAttribute('aria-label', aria)
       slot.entry.setAttribute('title', activity.name)

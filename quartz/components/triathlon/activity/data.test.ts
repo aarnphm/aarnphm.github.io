@@ -776,6 +776,7 @@ test('validates recorded cycling power provenance, sample bounds and nullable te
     source: 'strava',
     terrainSource: 'strava',
     method: 'recorded-power-average-v1',
+    pauses: [],
     points: [
       {
         elapsedS: 0,

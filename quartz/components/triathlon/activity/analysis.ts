@@ -5,11 +5,14 @@ import type {
   ActivitySelectionSummary,
 } from '../../../util/triathlon-card'
 import type { TriathlonPresentation } from '../../../util/triathlon-presentation'
+import { parseElapsedPauses } from '../../../util/elapsed-axis'
 import { activityCadenceScale } from '../../../util/triathlon-card'
 import { activityCadenceUnit } from '../../../util/triathlon-card'
 import { activitySelectionSummary } from '../../../util/triathlon-card'
 import {
   analysisChartSelectionBounds,
+  analysisDomainFraction,
+  analysisDomainValueAt,
   analysisHeartRateChangeText,
 } from '../../../util/triathlon-card'
 import { clock } from '../../../util/triathlon-card'
@@ -36,14 +39,8 @@ export type ActivityScrubSample = { d: number; elapsedS: number }
 export const activityScrubCursorX = (
   sample: ActivityScrubSample,
   domain: ActivityAnalysisChartDomain,
-): number => {
-  const [start, end, value] =
-    'startElapsedS' in domain
-      ? [domain.startElapsedS, domain.endElapsedS, sample.elapsedS]
-      : [domain.startDistanceKm, domain.endDistanceKm, sample.d]
-  if (!(end > start)) return 0
-  return Math.max(0, Math.min(100, ((value - start) / (end - start)) * 100))
-}
+): number =>
+  analysisDomainFraction(domain, 'startElapsedS' in domain ? sample.elapsedS : sample.d) * 100
 
 export const activityScrubIndexAt = (
   samples: readonly ActivityScrubSample[],
@@ -117,7 +114,8 @@ export const analysisFinite = (value: string | undefined): number | null => {
 const analysisDomainFromChart = (svg: SVGSVGElement): ActivityAnalysisChartDomain | null => {
   const startElapsedS = analysisFinite(svg.dataset.domainStartElapsedS)
   const endElapsedS = analysisFinite(svg.dataset.domainEndElapsedS)
-  if (startElapsedS != null && endElapsedS != null) return { startElapsedS, endElapsedS }
+  if (startElapsedS != null && endElapsedS != null)
+    return { startElapsedS, endElapsedS, pauses: parseElapsedPauses(svg.dataset.domainPauses) }
   const startDistanceKm = analysisFinite(svg.dataset.domainStartDistanceKm)
   const endDistanceKm = analysisFinite(svg.dataset.domainEndDistanceKm)
   return startDistanceKm != null && endDistanceKm != null
@@ -580,16 +578,11 @@ export const linkScrub = (
     const { svgEl, samples } = surface
     const r = svgEl.getBoundingClientRect()
     const fraction = Math.min(1, Math.max(0, (clientX - r.left) / r.width))
-    const domainStart =
-      analysisFinite(svgEl.dataset.domainStartElapsedS) ??
-      analysisFinite(svgEl.dataset.domainStartDistanceKm) ??
-      samples[0].d
-    const domainEnd =
-      analysisFinite(svgEl.dataset.domainEndElapsedS) ??
-      analysisFinite(svgEl.dataset.domainEndDistanceKm) ??
-      samples.at(-1)?.d ??
-      domainStart
-    return activityScrubIndexAt(samples, domainStart + fraction * (domainEnd - domainStart))
+    const domain = analysisDomainFromChart(svgEl) ?? {
+      startDistanceKm: samples[0].d,
+      endDistanceKm: samples.at(-1)?.d ?? samples[0].d,
+    }
+    return activityScrubIndexAt(samples, analysisDomainValueAt(domain, fraction))
   }
   for (const surf of resolved) {
     let pendingX: number | null = null

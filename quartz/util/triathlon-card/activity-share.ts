@@ -83,7 +83,6 @@ export const activityShareData = (
   if (!url) return null
   const stats: ActivityCardStat[] = []
   const rows = activityTableRows(presentation, d, fillMissingRunPower)
-  if (d.elapsedTimeS > 0) rows.push(['elapsed time', dur(d.elapsedTimeS)])
   rows.push(['elevation gain', formatAltitude(presentation, d.elevationM)])
   if (d.sport === 'bike') {
     const add = (key: string, label: string, value: string, provenance?: string): void => {

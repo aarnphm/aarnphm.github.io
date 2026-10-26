@@ -32,7 +32,13 @@ export const matchedRunDisplayPace = (
   paceSPerKm: number,
 ): number => paceSPerKm / matchedRunUnitScale(presentation)
 
-export const matchedRunPace = (presentation: TriathlonPresentation, paceSPerKm: number): string =>
+export // Older payloads predate elapsedTimeS; show the gap as missing data.
+const matchedElapsed = (effort: { elapsedTimeS?: number }): string =>
+  effort.elapsedTimeS != null && Number.isFinite(effort.elapsedTimeS) && effort.elapsedTimeS > 0
+    ? hms(effort.elapsedTimeS)
+    : '–'
+
+const matchedRunPace = (presentation: TriathlonPresentation, paceSPerKm: number): string =>
   `${clock(matchedRunDisplayPace(presentation, paceSPerKm))}${presentation.distance === 'imperial' ? '/mi' : '/km'}`
 
 export const matchedRunDelta = (
@@ -357,6 +363,7 @@ export const buildMatchedRunGroup = (
     'pace',
     'vs route avg',
     'moving time',
+    'elapsed time',
     'relative effort',
   ])
     headRow.appendChild(el('th', undefined, text(label), { scope: 'col' }))
@@ -393,6 +400,7 @@ export const buildMatchedRunGroup = (
         matchedRunDelta(presentation, effort.paceSPerKm, group.averagePaceSPerKm),
       ),
       el('td', undefined, hms(effort.movingTimeS)),
+      el('td', undefined, matchedElapsed(effort)),
       el('td', undefined, effort.relativeEffort == null ? '—' : String(effort.relativeEffort)),
     )
     tbody.appendChild(row)
@@ -656,6 +664,7 @@ export const buildMatchedRideGroup = (
     'average power',
     'normalized power',
     'moving time',
+    'elapsed time',
   ])
     headRow.appendChild(el('th', undefined, text(label), { scope: 'col' }))
   thead.appendChild(headRow)
@@ -690,6 +699,7 @@ export const buildMatchedRideGroup = (
       el('td', undefined, matchedRideEffortPower(presentation, effort, effort.averageWatts)),
       el('td', undefined, matchedRideEffortPower(presentation, effort, effort.normalizedWatts)),
       el('td', undefined, hms(effort.movingTimeS)),
+      el('td', undefined, matchedElapsed(effort)),
     )
     tbody.appendChild(row)
   }

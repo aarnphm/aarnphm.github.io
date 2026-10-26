@@ -1,3 +1,5 @@
+import { RECORDING_PAUSE_MIN_S, type ElapsedPause } from './elapsed-axis'
+
 export interface CyclingPowerPoint {
   elapsedS: number
   distanceKm: number
@@ -12,6 +14,8 @@ export interface CyclingPowerTrace {
   terrainSource: 'wahoo' | 'strava' | 'garmin'
   method: 'recorded-power-average-v1'
   points: CyclingPowerPoint[]
+  /** Recording gaps of at least RECORDING_PAUSE_MIN_S; the chart gives them no width. */
+  pauses: ElapsedPause[]
 }
 
 export const CYCLING_POWER_MAX_POINTS = 1_202
@@ -140,6 +144,10 @@ export function buildCyclingPowerTrace(input: {
   const shortWindow = new PowerWindow(30)
   const longWindow = new PowerWindow(300)
   const points: CyclingPowerPoint[] = []
+  const pauses: ElapsedPause[] = []
+  const addPause = (startS: number, endS: number): void => {
+    if (endS - startS >= RECORDING_PAUSE_MIN_S) pauses.push({ startS, endS })
+  }
   let energyJ = 0
   let recordedS = 0
   let distanceKm = 0
@@ -174,6 +182,7 @@ export function buildCyclingPowerTrace(input: {
     if (startS >= elapsedTimeS) break
     if (endS <= startS) continue
     if (startS > cursorS) {
+      addPause(cursorS, startS)
       reset()
       addPoint(cursorS, precedingElevationM, false)
     }
@@ -204,6 +213,7 @@ export function buildCyclingPowerTrace(input: {
     }
   }
   if (cursorS < elapsedTimeS) {
+    addPause(cursorS, elapsedTimeS)
     addPoint(cursorS, null, false)
     addPoint(elapsedTimeS, null, false)
   }
@@ -213,5 +223,6 @@ export function buildCyclingPowerTrace(input: {
     terrainSource: input.terrainSource ?? source,
     method: 'recorded-power-average-v1',
     points: samplePowerPoints(points),
+    pauses,
   }
 }

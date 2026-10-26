@@ -1,3 +1,4 @@
+import { RECORDING_PAUSE_MIN_S, type ElapsedPause } from './elapsed-axis'
 import { runGradeFactors } from './run-grade'
 
 interface RunStreams {
@@ -45,11 +46,15 @@ export interface RunHeartCostTrace {
   method: 'gap-per-beat-v1'
   heartRateLagS: number
   points: RunHeartCostPoint[]
+  /** Recording gaps of at least RECORDING_PAUSE_MIN_S; the chart gives them no width. */
+  pauses: ElapsedPause[]
 }
 
 export const RUN_STRIDE_CADENCE_BIN_SPM = 2
 export const RUN_STRIDE_BIN_M = 0.04
 export const RUN_HEART_COST_MAX_POINTS = 1_000
+// Each pause adds up to two points at its edges; only the longest pauses get them.
+export const RUN_HEART_COST_MAX_PAUSES = 100
 // Heart rate follows a pace change with a time constant near 30 s, so each speed window pairs
 // with the heart-rate window that ends 30 s later.
 export const RUN_HEART_RATE_LAG_S = 30
@@ -298,12 +303,28 @@ export function buildRunHeartCostTrace(
       heartRateBpm: round((movingHeart[rank] - movingHeart[heartFrom]) / heartSeconds, 2),
     }
   }
-  const step = Math.max(5, Math.ceil(totalS / (RUN_HEART_COST_MAX_POINTS - 2)))
+  // A recording gap spans the grid seconds from its last sample to the next one.
+  const pauses = time
+    .slice(1)
+    .flatMap((at, index) => {
+      const startS = Math.max(0, Math.floor(time[index]))
+      const endS = Math.min(totalS, Math.floor(at))
+      return endS - startS >= RECORDING_PAUSE_MIN_S ? [{ startS, endS }] : []
+    })
+    .sort((left, right) => right.endS - right.startS - (left.endS - left.startS))
+    .slice(0, RUN_HEART_COST_MAX_PAUSES)
+    .sort((left, right) => left.startS - right.startS)
+  const step = Math.max(5, Math.ceil(totalS / (RUN_HEART_COST_MAX_POINTS - 2 - 2 * pauses.length)))
+  // Points inside a pause would all land on its join, so the pause edges replace them.
   const ends: number[] = []
-  for (let end = 0; end < totalS; end += step) ends.push(end)
+  for (let end = 0; end < totalS; end += step)
+    if (!pauses.some(pause => end > pause.startS && end < pause.endS)) ends.push(end)
   ends.push(totalS)
+  for (const pause of pauses) ends.push(pause.startS, pause.endS)
+  ends.sort((left, right) => left - right)
   const points: RunHeartCostPoint[] = []
-  for (const end of ends) {
+  for (const [position, end] of ends.entries()) {
+    if (end === ends[position - 1]) continue
     const short = window(end, 30)
     const long = window(end, 300)
     const beats = heartSum[end] / 60
@@ -325,5 +346,6 @@ export function buildRunHeartCostTrace(
     method: 'gap-per-beat-v1',
     heartRateLagS: RUN_HEART_RATE_LAG_S,
     points,
+    pauses,
   }
 }

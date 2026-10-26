@@ -1,5 +1,6 @@
 import {
   RUN_GAP_MAX_MPS,
+  RUN_HEART_COST_MAX_PAUSES,
   RUN_HEART_COST_MAX_POINTS,
   RUN_HEART_RATE_LAG_S,
   RUN_HEART_RATE_MAX_BPM,
@@ -7,7 +8,7 @@ import {
 } from '../../../../util/run-mechanics'
 import { isRecord } from '../../../../util/type-guards'
 import { WALK_POWER_METHOD, WALK_POWER_WINDOW_SECONDS } from '../../../../util/walk-power'
-import { bounded, finite, nullableBounded, nullableFinite } from './predicates'
+import { bounded, finite, isElapsedPauses, nullableBounded, nullableFinite } from './predicates'
 
 export const isWalkPower = (value: unknown, elapsedTimeS: number, date: unknown): boolean => {
   if (value == null) return true
@@ -86,7 +87,9 @@ export const isRunHeartCostTrace = (value: unknown, elapsedTimeS: number): boole
     value.heartRateLagS !== RUN_HEART_RATE_LAG_S ||
     !Array.isArray(value.points) ||
     value.points.length < 2 ||
-    value.points.length > RUN_HEART_COST_MAX_POINTS
+    value.points.length > RUN_HEART_COST_MAX_POINTS ||
+    !isElapsedPauses(value.pauses, elapsedTimeS) ||
+    value.pauses.length > RUN_HEART_COST_MAX_PAUSES
   )
     return false
   let previousElapsed = -1

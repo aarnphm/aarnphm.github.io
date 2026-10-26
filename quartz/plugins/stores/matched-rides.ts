@@ -50,6 +50,7 @@ export interface MatchedRideEffort {
   name: string
   distanceKm: number
   movingTimeS: number
+  elapsedTimeS: number
   elevationM: number
   climbingMPerKm: number
   averageWatts: number
@@ -229,6 +230,7 @@ const effortFromActivity = (activity: RawStravaActivity): MatchedRideEffort => {
     name: activity.name || 'Ride',
     distanceKm: roundTo(distanceKm, 2),
     movingTimeS: activity.movingTime,
+    elapsedTimeS: activity.elapsedTime,
     elevationM: roundTo(elevationM, 1),
     climbingMPerKm: roundTo(elevationM / distanceKm, 2),
     averageWatts: roundTo(positive(activity.averageWatts) ?? 0, 1),

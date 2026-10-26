@@ -1,3 +1,4 @@
+import type { ElapsedAxis } from '../elapsed-axis'
 import type { TriNodeFactory } from './construction-contracts'
 import { preferredActivityWind } from '../activity-wind'
 import { triText } from '../triathlon-i18n'
@@ -9,10 +10,12 @@ export const elapsedSeriesPath = <P extends { elapsedS: number }>(
   py: (value: number) => number,
   bottom: number,
   area = false,
+  crossesPause: (leftS: number, rightS: number) => boolean = () => false,
 ): string => {
   let result = ''
   let firstX: number | null = null
   let lastX = 0
+  let lastS = 0
   const finish = (): void => {
     if (area && firstX != null) result += `L ${lastX.toFixed(2)} ${bottom} Z `
     firstX = null
@@ -23,6 +26,8 @@ export const elapsedSeriesPath = <P extends { elapsedS: number }>(
       finish()
       continue
     }
+    // A removed pause has no width, so the line lifts at its join instead of drawing a step.
+    if (firstX != null && crossesPause(lastS, point.elapsedS)) finish()
     const x = px(point.elapsedS)
     const y = py(value)
     if (firstX == null) {
@@ -31,9 +36,35 @@ export const elapsedSeriesPath = <P extends { elapsedS: number }>(
     } else result += 'L '
     result += `${x.toFixed(2)} ${y.toFixed(2)} `
     lastX = x
+    lastS = point.elapsedS
   }
   finish()
   return result.trim()
+}
+
+/** One dotted mark at each inner join; a pause at either end only moves that end's label. */
+export const addElapsedBreaks = <N>(
+  f: TriNodeFactory<N>,
+  graph: N,
+  axis: ElapsedAxis,
+  height: number,
+): void => {
+  for (const pause of axis.pauses) {
+    if (pause.startS <= axis.startS || pause.endS >= axis.endS) continue
+    const x = (axis.fraction(pause.startS) * 100).toFixed(2)
+    f.add(
+      graph,
+      f.svg('line', {
+        class: 'tri-elev-break',
+        x1: x,
+        x2: x,
+        y1: 0,
+        y2: height,
+        'data-pause-start-elapsed-s': pause.startS,
+        'data-pause-end-elapsed-s': pause.endS,
+      }),
+    )
+  }
 }
 
 /** Headwind strip along the bottom row of a 30-unit elapsed chart; returns the segment count. */

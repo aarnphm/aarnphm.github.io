@@ -1868,6 +1868,11 @@ power: wahoo
 virtual: true
 ```
 
+```tracking
+activity: 20731306790
+garmin: 24851844921
+```
+
 <!-- training plan start
 meta: IRONMAN Lanzarote
 date: 2026-09-01

@@ -404,6 +404,14 @@
   vector-effect: non-scaling-stroke;
 }
 
+// A removed recording pause: the plot joins both sides here with no width for the stop.
+.tri-elev-break {
+  stroke: var(--darkgray);
+  stroke-width: 1;
+  stroke-dasharray: 1 2;
+  vector-effect: non-scaling-stroke;
+}
+
 .tri-cycling-power-line {
   fill: none;
   stroke: var(--tri-bike);
