@@ -1,3 +1,4 @@
+import { gazeAt } from '../pet-gaze'
 import {
   center,
   clamp,
@@ -127,31 +128,19 @@ const readSidenote = (note: Element) => {
   moveTo({ el: note, kind: 'stand', t: 0.3 + Math.random() * 0.4 })
 }
 
-// The eyes follow the pointer round: they slide toward it along its direction,
-// easing back to centre as it comes close, and the body tips a few degrees its way. The pet turns
-// to face it once it is clearly to one side.
+// Only the eyes follow the pointer. The body stays upright and keeps facing the way it last moved.
 export const watch = () => {
   petState.watchFrame = 0
   friendWatch()
   const target = petState.lookAt ?? petState.pointer
   if (!petState.root || !target || petState.hop) return
   const c = center()
-  const dx = target.x - c.x
-  const dy = target.y - c.y
-  if (Math.abs(dx) > 40 && !petState.carry) petState.face = dx > 0 ? -1 : 1
-  const r = Math.hypot(dx, dy)
-  const k = Math.min(1, r / (3 * petState.unit)) / Math.max(r, 1)
-  // In the pet's own frame, which is mirrored when it faces right.
-  const ux = petState.face * dx * k
-  const uy = dy * k
-  // Hundredths of a body radius (about a fifth of a pixel), so a still pointer repaints nothing.
-  // The eyes sit high and to one side, so they travel less upward, where the outline is nearest.
-  const look = `${petState.face} ${(ux * 0.18).toFixed(2)} ${(uy * (uy < 0 ? 0.11 : 0.16)).toFixed(2)} ${petState.carry ? 0 : (ux * 7).toFixed(1)}`
+  const [lx, ly] = gazeAt(target.x - c.x, target.y - c.y, petState.face, petState.unit)
+  const look = `${petState.face} ${lx} ${ly}`
   if (look === petState.gaze) return
   petState.gaze = look
-  const [f, lx, ly, tilt] = look.split(' ')
-  petState.gazeArt?.face(Number(f))
-  petState.gazeArt?.look(lx, ly, tilt)
+  petState.gazeArt?.face(petState.face)
+  petState.gazeArt?.look(lx, ly)
   syncTrailArt()
   if (petState.trailWalk && petState.perch?.foot && !petState.hop)
     reserveTrailFoot(petState.trailWalk.path, {

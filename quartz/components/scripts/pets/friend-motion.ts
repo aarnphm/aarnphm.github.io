@@ -1,4 +1,5 @@
 import { getFullSlug } from '../../../util/path'
+import { gazeAt } from '../pet-gaze'
 import {
   center,
   clamp,
@@ -42,18 +43,9 @@ export function friendWatch() {
       : null
   const target = near ?? (petState.doc || petState.carry ? center() : null)
   if (!target) return
-  const dx = target.x - c.x
-  const dy = target.y - c.y
-  if (Math.abs(dx) > 12) friendState.friendFace = dx > 0 ? -1 : 1
-  const r = Math.hypot(dx, dy)
-  const k = Math.min(1, r / (3 * petState.unit)) / Math.max(r, 1)
-  const ux = friendState.friendFace * dx * k
-  const uy = dy * k
   friendState.friendGaze?.face(friendState.friendFace)
   friendState.friendGaze?.look(
-    (ux * 0.18).toFixed(2),
-    (uy * (uy < 0 ? 0.11 : 0.16)).toFixed(2),
-    (ux * 7).toFixed(1),
+    ...gazeAt(target.x - c.x, target.y - c.y, friendState.friendFace, petState.unit),
   )
 }
 
