@@ -243,10 +243,10 @@ function contentToHast(content: Content, opts: Config) {
       })
 
       const detail: Element = h('span', { class: 'details close' }, [
-        // Original text
+        // A span keeps the summary in the text flow; a button is an atomic inline-block box.
         h(
-          'button',
-          { class: 'summary', type: 'button', 'aria-expanded': 'false' },
+          'span',
+          { class: 'summary', role: 'button', tabindex: 0, 'aria-expanded': 'false' },
           summaryChildren.length ? summaryChildren : [createEmptyTextNode()],
         ),
         // Expanded content
