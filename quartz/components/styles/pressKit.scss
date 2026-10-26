@@ -41,7 +41,6 @@
     min-width: 0;
     margin: 0;
   }
-  // Number fields share the press kit's text input; buttons and selects are the shared controls.
   input {
     box-sizing: border-box;
     width: 100%;
@@ -54,6 +53,31 @@
     color: var(--dark);
     font: var(--control-font-size) / 1.3 var(--codeFont);
     font-variant-numeric: tabular-nums;
+  }
+  input[type='number'] {
+    appearance: textfield;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    text-align: right;
+    text-underline-offset: 0.2em;
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      appearance: none;
+      margin: 0;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover:not(:focus) {
+        text-decoration: underline dotted var(--darkgray);
+      }
+    }
+
+    &:focus {
+      outline: none;
+      text-decoration: underline solid var(--control-focus) 2px;
+    }
   }
   fieldset {
     min-width: 0;
@@ -197,10 +221,6 @@
   > label {
     padding: 0.3rem 0.4rem 0.4rem;
     background: var(--light);
-  }
-
-  input {
-    border: 0;
   }
 }
 .press-kit-editor-overlay {
