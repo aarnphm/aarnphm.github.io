@@ -28,6 +28,10 @@ const entities: Record<string, string> = {
   '&lrm;': '',
   '&rlm;': '',
 }
+// YouTube auto-captions time each word inline; their cues scroll, so each one repeats the line
+// shown before it. A cue with only blank lines clears the screen: a sound tag after a clear is an
+// interlude, and one shown beside speech stays in the text.
+const wordTimingRe = /<\d{2}:\d{2}:\d{2}\.\d{3}>/
 const speakerRe = /^[A-Z][A-Z .'-]{1,40}: /
 const sentenceEndRe = /[.?!]["')\]]?$/
 const GAP_SECONDS = 2
@@ -55,8 +59,11 @@ function soundOnly(text: string): boolean {
 export function parseVtt(text: string): { cues: VttCue[]; skipped: number } {
   const body = text.replace(/^﻿/, '').replace(/\r\n?/g, '\n')
   if (!/^WEBVTT(?:[ \t\n]|$)/.test(body)) return { cues: [], skipped: 0 }
+  const rolling = wordTimingRe.test(body)
   const cues: VttCue[] = []
   let skipped = 0
+  let shownLine = ''
+  let cleared = true
   for (const block of body.split(/\n{2,}/).slice(1)) {
     const lines = block.split('\n').filter(line => line.length > 0)
     if (lines.length === 0) continue
@@ -74,8 +81,17 @@ export function parseVtt(text: string): { cues: VttCue[]; skipped: number } {
       skipped++
       continue
     }
-    const content = cueText(lines.slice(index + 1))
-    if (content.length === 0 || soundOnly(content)) continue
+    let textLines = lines.slice(index + 1)
+    if (rolling) {
+      const shown = textLines.map(line => cueText([line])).filter(line => line.length > 0)
+      if (shown.length === 0) cleared = true
+      if (shown[0] === shownLine) shown.shift()
+      if (shown.length > 0) shownLine = shown[shown.length - 1]
+      textLines = shown
+    }
+    const content = cueText(textLines)
+    if (content.length === 0 || (soundOnly(content) && (!rolling || cleared))) continue
+    cleared = false
     cues.push({ start, end, text: content })
   }
   cues.sort((a, b) => a.start - b.start)

@@ -1,6 +1,7 @@
 import type { RoughAnnotation } from 'rough-notation/lib/model'
 import { annotate } from 'rough-notation'
 import { groupCues, parseVtt, type VttCue } from '../../util/vtt'
+import { createCueHighlighter, type Cue } from './transcript-player/cue-highlighter'
 import { copyText, plain, parseStamp, formatStamp } from './transcript-text'
 
 // Watch page: the youtube-nocookie player mounts on load (no autoplay), timestamps seek through
@@ -14,30 +15,7 @@ const YOUTUBE_ORIGINS = new Set(['https://www.youtube-nocookie.com', 'https://ww
 const READY_TIMEOUT = 5000
 const USER_SCROLL_HOLD = 4000
 const MAX_HIGHLIGHTS = 1000
-// A cue shorter than this sweeps at the floor.
-const CUE_SWEEP_MIN = 300
-
-interface Cue {
-  start: number
-  end: number
-  span: HTMLElement
-  paragraph: number
-}
-
-/** Index of the last cue starting at or before `seconds`. */
-function cueAt(cues: Cue[], seconds: number): number {
-  let lo = 0
-  let hi = cues.length - 1
-  let found = -1
-  while (lo <= hi) {
-    const mid = (lo + hi) >> 1
-    if (cues[mid].start <= seconds) {
-      found = mid
-      lo = mid + 1
-    } else hi = mid - 1
-  }
-  return found
-}
+const rootsWithPlayerCleanup = new WeakSet<HTMLElement>()
 
 interface Stamp {
   seconds: number
@@ -60,7 +38,16 @@ function stampAt(stamps: Stamp[], seconds: number): number {
   return found
 }
 
-export function mountTranscriptPlayer(root: HTMLElement, signal: AbortSignal) {
+interface TranscriptPlayerOptions {
+  reusePlayer?: boolean
+}
+
+export function mountTranscriptPlayer(
+  root: HTMLElement,
+  signal: AbortSignal,
+  { reusePlayer = false }: TranscriptPlayerOptions = {},
+) {
+  if (signal.aborted) return
   const youtube = root.dataset.courseWatch ?? ''
   const frame = root.querySelector<HTMLElement>('.course-player')
   const status = root.querySelector<HTMLElement>('.course-player-status')
@@ -73,6 +60,8 @@ export function mountTranscriptPlayer(root: HTMLElement, signal: AbortSignal) {
   const prevButton = root.querySelector<HTMLButtonElement>('[data-transcript-prev]')
   const nextButton = root.querySelector<HTMLButtonElement>('[data-transcript-next]')
   const copyButton = root.querySelector<HTMLButtonElement>('[data-transcript-copy]')
+  const findButton = root.querySelector<HTMLButtonElement>('[data-transcript-find]')
+  const findField = search?.closest<HTMLElement>('.course-transcript-find')
   if (!frame) return
 
   const stamps: Stamp[] = []
@@ -87,7 +76,10 @@ export function mountTranscriptPlayer(root: HTMLElement, signal: AbortSignal) {
   stamps.sort((a, b) => a.seconds - b.seconds)
   const hours = (stamps[stamps.length - 1]?.seconds ?? 0) >= 3600
 
-  let iframe: HTMLIFrameElement | null = null
+  const adoptedIframe = reusePlayer
+    ? frame.querySelector<HTMLIFrameElement>('.course-player-frame')
+    : null
+  let iframe = adoptedIframe
   let ready = false
   let failed = false
   let readyTimer = 0
@@ -98,19 +90,8 @@ export function mountTranscriptPlayer(root: HTMLElement, signal: AbortSignal) {
   const inkColor = getComputedStyle(root).getPropertyValue('--secondary').trim() || 'currentColor'
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   const cues: Cue[] = []
-  const cueMarks = new Map<number, RoughAnnotation>()
-  let currentCue = -1
-  let playing = false
+  const cueHighlighter = createCueHighlighter(cues, inkColor, reducedMotion)
   let lastTime = 0
-  signal.addEventListener(
-    'abort',
-    () => {
-      box?.remove()
-      for (const mark of cueMarks.values()) mark.remove()
-    },
-    { once: true },
-  )
-
   // The box is a sibling svg after the paragraph (rough-notation), so it scrolls with the pane.
   const drawBox = (paragraph: HTMLElement) => {
     box?.remove()
@@ -167,82 +148,6 @@ export function mountTranscriptPlayer(root: HTMLElement, signal: AbortSignal) {
     return true
   }
 
-  const markPaths = (cue: Cue): HTMLElement[] => {
-    const svg = cue.span.nextElementSibling
-    return svg instanceof SVGElement && svg.classList.contains('rough-annotation')
-      ? Array.from(svg.querySelectorAll<HTMLElement>('path'))
-      : []
-  }
-
-  // Retimes the sweep so its progress matches the player: delay = base - elapsed in the cue.
-  const syncMark = (cue: Cue, seconds: number) => {
-    const offset = Math.max(0, (seconds - cue.start) * 1000)
-    for (const path of markPaths(cue)) {
-      const base = Number(path.dataset.delay ?? 0)
-      path.style.animationDelay = `${base - offset}ms`
-      path.style.animationPlayState = playing ? 'running' : 'paused'
-    }
-  }
-
-  // Underline across the cue text; animated at the cue's own duration, so the ink reaches each
-  // word as it is spoken. Earlier cues of the paragraph (after a seek) are inked whole.
-  const inkCue = (cue: Cue, sweep: boolean, seconds: number): RoughAnnotation => {
-    const mark = annotate(cue.span, {
-      type: 'underline',
-      color: inkColor,
-      strokeWidth: 1.6,
-      padding: 1,
-      iterations: 1,
-      multiline: true,
-      animate: sweep && !reducedMotion,
-      animationDuration: Math.max(CUE_SWEEP_MIN, (cue.end - cue.start) * 1000),
-    })
-    mark.show()
-    if (sweep && !reducedMotion) {
-      for (const path of markPaths(cue)) {
-        path.style.animationTimingFunction = 'linear'
-        path.dataset.delay = String(parseFloat(path.style.animationDelay) || 0)
-      }
-      syncMark(cue, seconds)
-    }
-    return mark
-  }
-
-  const setCue = (seconds: number) => {
-    const index = cueAt(cues, seconds)
-    const cue = cues[index]
-    const backward = seconds < lastTime - 0.5
-    lastTime = seconds
-    if (index === currentCue) {
-      if (cue && backward) {
-        cueMarks.get(index)?.remove()
-        cueMarks.set(index, inkCue(cue, true, seconds))
-      } else if (cue && playing) {
-        syncMark(cue, seconds)
-      }
-      return
-    }
-    for (const [key, mark] of cueMarks) {
-      if (!cue || key > index || cues[key].paragraph !== cue.paragraph) {
-        mark.remove()
-        cueMarks.delete(key)
-      }
-    }
-    currentCue = index
-    if (!cue) return
-    for (let k = index - 1; k >= 0 && cues[k].paragraph === cue.paragraph; k--) {
-      if (!cueMarks.has(k)) cueMarks.set(k, inkCue(cues[k], false, seconds))
-    }
-    cueMarks.set(index, inkCue(cue, true, seconds))
-  }
-
-  const setPlaying = (state: boolean) => {
-    if (state === playing) return
-    playing = state
-    const cue = cues[currentCue]
-    if (cue) syncMark(cue, lastTime)
-  }
-
   const captionsUrl = root.dataset.courseWatchCaptions
   if (captionsUrl && stamps.length > 0) {
     fetch(captionsUrl, { signal })
@@ -254,7 +159,7 @@ export function mountTranscriptPlayer(root: HTMLElement, signal: AbortSignal) {
         if (groups.length !== stamps.length) return
         if (groups.some((group, i) => Math.floor(group.start) !== stamps[i].seconds)) return
         for (const [i, group] of groups.entries()) wrapCues(stamps[i].paragraph, group.cues, i)
-        if (currentCue === -1 && lastTime > 0) setCue(lastTime)
+        if (lastTime > 0) cueHighlighter.setCue(lastTime)
       })
       .catch(() => {})
   }
@@ -338,7 +243,8 @@ export function mountTranscriptPlayer(root: HTMLElement, signal: AbortSignal) {
     command('seekTo', [seconds, true])
     command('playVideo')
     setCurrent(stampAt(stamps, seconds))
-    setCue(seconds)
+    lastTime = seconds
+    cueHighlighter.setCue(seconds)
   }
 
   const onMessage = (event: MessageEvent) => {
@@ -373,19 +279,34 @@ export function mountTranscriptPlayer(root: HTMLElement, signal: AbortSignal) {
     }
     if (message.event === 'infoDelivery' && typeof message.info === 'object' && message.info) {
       const info = message.info as { currentTime?: unknown; playerState?: unknown }
-      if (typeof info.playerState === 'number') setPlaying(info.playerState === 1)
+      if (typeof info.playerState === 'number') cueHighlighter.setPlaying(info.playerState === 1)
       if (typeof info.currentTime === 'number') {
         ready = true
         failed = false
         window.clearTimeout(readyTimer)
         setCurrent(stampAt(stamps, info.currentTime))
-        setCue(info.currentTime)
+        lastTime = info.currentTime
+        cueHighlighter.setCue(info.currentTime)
       }
     }
   }
   window.addEventListener('message', onMessage, { signal })
 
   mount(Number(root.dataset.courseWatchStart ?? 0), false)
+  if (adoptedIframe) {
+    adoptedIframe.addEventListener(
+      'load',
+      () => post({ event: 'listening', id: 1, channel: 'widget' }),
+      { signal },
+    )
+    frame.dataset.state = 'mounted'
+    post({ event: 'listening', id: 1, channel: 'widget' })
+    readyTimer = window.setTimeout(() => {
+      if (ready || signal.aborted) return
+      failed = true
+      say('the player did not answer; timestamps open youtube')
+    }, READY_TIMEOUT)
+  }
 
   list.addEventListener(
     'click',
@@ -444,13 +365,16 @@ export function mountTranscriptPlayer(root: HTMLElement, signal: AbortSignal) {
       try {
         await copyText(body)
         if (signal.aborted) return
-        copyButton.textContent = 'copied'
+        copyButton.dataset.copied = 'done'
+        copyButton.setAttribute('aria-label', 'copied')
         window.clearTimeout(copyTimer)
         copyTimer = window.setTimeout(() => {
-          if (!signal.aborted) copyButton.textContent = 'copy'
+          if (signal.aborted) return
+          delete copyButton.dataset.copied
+          copyButton.setAttribute('aria-label', 'copy the transcript')
         }, 1500)
       } catch {
-        if (!signal.aborted) copyButton.textContent = 'copy failed'
+        if (!signal.aborted) copyButton.setAttribute('aria-label', 'copy failed')
       }
     },
     { signal },
@@ -533,20 +457,47 @@ export function mountTranscriptPlayer(root: HTMLElement, signal: AbortSignal) {
         event.preventDefault()
         search.value = ''
         clearMatches()
-        search.blur()
+        setFindOpen(false)
+        findButton?.focus()
       }
       event.stopPropagation()
     },
     { signal },
   )
 
-  window.addCleanup(() => {
+  // The magnifier opens the field beside it; an empty field closes again when focus leaves it.
+  const setFindOpen = (open: boolean) => {
+    if (!findField || !findButton) return
+    findField.hidden = !open
+    findButton.setAttribute('aria-expanded', String(open))
+    if (open) search?.focus()
+  }
+  findButton?.addEventListener(
+    'click',
+    () => setFindOpen(findField?.hidden !== false || search?.value.trim() !== ''),
+    { signal },
+  )
+  search?.addEventListener(
+    'blur',
+    event => {
+      if (search.value.trim() === '' && event.relatedTarget !== findButton) setFindOpen(false)
+    },
+    { signal },
+  )
+
+  const cleanup = () => {
     window.clearTimeout(readyTimer)
     window.clearTimeout(searchTimer)
     window.clearTimeout(copyTimer)
     clearMatches()
     highlightStyle.remove()
-    iframe?.remove()
-    iframe = null
-  })
+    box?.remove()
+    box = null
+    cueHighlighter.dispose()
+  }
+  signal.addEventListener('abort', cleanup, { once: true })
+  if (!rootsWithPlayerCleanup.has(root)) {
+    rootsWithPlayerCleanup.add(root)
+    window.addCleanup(() => frame.querySelector('.course-player-frame')?.remove())
+  }
 }

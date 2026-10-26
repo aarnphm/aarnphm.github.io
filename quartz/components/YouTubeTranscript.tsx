@@ -27,13 +27,10 @@ export function youtubeTranscriptEmbed(embed: YouTubeEmbedSpec) {
         <p class="course-player-line">
           <span class="course-player-status" role="status" />
         </p>
-        <p class="youtube-transcript-source" role="status">
-          preferred language: français · source: local authorized captions
-        </p>
         <div data-transcript-panel>
           <TranscriptPanel
             hasTranscript={false}
-            unavailable="transcript unavailable until captions load. You can also use captions in the YouTube player."
+            unavailable="use captions in the video player while the transcript loads."
           />
         </div>
       </div>,
