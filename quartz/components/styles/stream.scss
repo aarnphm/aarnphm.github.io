@@ -1,4 +1,5 @@
 @use 'sass:map';
+@use 'stream-archive.scss';
 @use '../../styles/variables.scss' as *;
 @use '../../styles/mixin.scss' as *;
 
@@ -745,6 +746,7 @@
     .stream-entry {
       display: flex;
       flex-direction: column;
+      align-items: stretch;
       gap: 0.5rem;
     }
 
