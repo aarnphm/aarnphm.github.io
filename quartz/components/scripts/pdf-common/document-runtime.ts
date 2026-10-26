@@ -122,41 +122,63 @@ function pdfDocumentOptions(src: string) {
   }
 }
 
-function destroyIdleDocument(key: string, entry: PdfDocumentCacheEntry) {
-  if (entry.refs > 0 || pdfDocumentCache.get(key) !== entry) return
+function destroyPdfDocument(key: string, entry: PdfDocumentCacheEntry) {
+  if (pdfDocumentCache.get(key) !== entry) return
   window.clearTimeout(entry.destroyTimer)
   pdfDocumentCache.delete(key)
   void entry.loadingTask.destroy().catch(() => undefined)
 }
 
-function releasePdfDocument(key: string) {
-  const entry = pdfDocumentCache.get(key)
-  if (!entry) return
+function releasePdfDocument(key: string, entry: PdfDocumentCacheEntry) {
+  if (pdfDocumentCache.get(key) !== entry) return
   entry.refs = Math.max(0, entry.refs - 1)
   if (entry.refs > 0 || entry.destroyTimer) return
+  if (!entry.loaded) {
+    destroyPdfDocument(key, entry)
+    return
+  }
   pdfDocumentCache.delete(key)
   pdfDocumentCache.set(key, entry)
   entry.destroyTimer = window.setTimeout(
-    () => destroyIdleDocument(key, entry),
+    () => destroyPdfDocument(key, entry),
     PDF_DOCUMENT_CACHE_TTL_MS,
   )
   const idle = [...pdfDocumentCache].filter(([, document]) => document.refs === 0)
   for (const [idleKey, document] of idle.slice(0, -MAX_IDLE_DOCUMENTS)) {
-    destroyIdleDocument(idleKey, document)
+    destroyPdfDocument(idleKey, document)
   }
 }
 
-export function loadPdfDocument(pdfjs: PdfJsRuntime, src: string): Promise<PdfDocumentHandle> {
+export function loadPdfDocument(
+  pdfjs: PdfJsRuntime,
+  src: string,
+  signal?: AbortSignal,
+): Promise<PdfDocumentHandle> {
+  signal?.throwIfAborted()
   const key = pdfDocumentCacheKey(src)
   let entry = pdfDocumentCache.get(key)
 
   if (!entry) {
     const loadingTask = pdfjs.getDocument(pdfDocumentOptions(src))
-    const promise = loadingTask.promise.catch(error => {
-      pdfDocumentCache.delete(key)
-      throw error
-    })
-    entry = { key, loadingTask, promise, refs: 0, destroyTimer: 0 }
+    const created: PdfDocumentCacheEntry = {
+      key,
+      loadingTask,
+      promise: loadingTask.promise,
+      refs: 0,
+      destroyTimer: 0,
+      loaded: false,
+    }
+    created.promise = loadingTask.promise.then(
+      document => {
+        created.loaded = true
+        return document
+      },
+      error => {
+        destroyPdfDocument(key, created)
+        throw error
+      },
+    )
+    entry = created
     pdfDocumentCache.set(key, entry)
   }
 
@@ -165,18 +187,30 @@ export function loadPdfDocument(pdfjs: PdfJsRuntime, src: string): Promise<PdfDo
     entry.destroyTimer = 0
   }
   entry.refs += 1
-
-  return entry.promise.then(document => {
-    let released = false
-    return {
-      loadingTask: entry.loadingTask,
-      document,
-      release() {
-        if (released) return
-        released = true
-        releasePdfDocument(key)
-      },
+  const acquired = entry
+  let released = false
+  const release = () => {
+    if (released) return
+    released = true
+    releasePdfDocument(key, acquired)
+  }
+  return new Promise((resolve, reject) => {
+    const abort = () => {
+      release()
+      reject(signal?.reason ?? new DOMException('PDF load cancelled', 'AbortError'))
     }
+    signal?.addEventListener('abort', abort, { once: true })
+    acquired.promise.then(
+      document => {
+        signal?.removeEventListener('abort', abort)
+        resolve({ loadingTask: acquired.loadingTask, document, release })
+      },
+      error => {
+        signal?.removeEventListener('abort', abort)
+        release()
+        reject(error)
+      },
+    )
   })
 }
 
