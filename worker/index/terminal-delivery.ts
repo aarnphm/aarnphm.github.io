@@ -244,7 +244,10 @@ export async function handleTerminalDelivery(
   const assetRequest = shouldBypassDocumentCache
     ? requestWithoutCache(request)
     : requestWithoutStaticAssetCache(request, url.pathname)
-  const resp = await env.ASSETS.fetch(assetRequest)
+  let resp = await env.ASSETS.fetch(assetRequest)
+  if ((url.pathname === '/404' || url.pathname === '/404.html') && resp.status === 200) {
+    resp = new Response(resp.body, { status: 404, headers: resp.headers })
+  }
   if (url.pathname.endsWith('.md') && resp.status === 404)
     return missingMarkdownResponse(request, url.pathname)
   const staticAssetHeaders = {
