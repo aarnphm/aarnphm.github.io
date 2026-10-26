@@ -5,22 +5,13 @@ import { triText } from '../triathlon-i18n'
 import { buildBattery, buildIcon } from './activity-icons'
 import { dist, dur, prettyDate } from './metric-text'
 
-// Native elapsed time follows the value only when it prints differently from moving time.
 export const timelineActivityValue = (
   presentation: TriathlonPresentation,
   activity: TimelineActivity,
-): string => {
-  const value =
-    activity.distanceKm > 0
-      ? dist(presentation, activity.distanceKm, activity.sport)
-      : dur(activity.movingTimeS)
-  const elapsedS = activity.elapsedTimeS
-  if (elapsedS == null || !(elapsedS > activity.movingTimeS)) return value
-  const elapsed = dur(elapsedS)
-  return elapsed === dur(activity.movingTimeS)
-    ? value
-    : `${value} · ${elapsed} ${triText(presentation.locale, 'elapsed time')}`
-}
+): string =>
+  activity.distanceKm > 0
+    ? dist(presentation, activity.distanceKm, activity.sport)
+    : dur(activity.movingTimeS)
 
 export const buildTimelineDayCard = <N>(
   f: TriNodeFactory<N>,
