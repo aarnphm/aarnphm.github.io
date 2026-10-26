@@ -106,8 +106,10 @@ export const moreStatRows = (
   if (d.sources?.length || d.garmin || d.wahoo)
     rows.push([
       'source',
-      d.swimProvenance
-        ? 'Garmin + athlete reconstruction'
+      d.provenance
+        ? d.garmin
+          ? 'Garmin + athlete reconstruction'
+          : 'Athlete reconstruction'
         : d.wahoo
           ? 'Wahoo'
           : d.distanceSource === 'strava'

@@ -173,12 +173,12 @@ export const isActivityDetail = (value: unknown): value is StravaActivityDetail 
         (value.sport !== 'bike' && value.sport !== 'run'))) ||
     !finite(value.elapsedTimeS) ||
     !(
-      value.swimProvenance === undefined ||
-      (value.sport === 'swim' &&
-        isRecord(value.swimProvenance) &&
-        value.swimProvenance.source === 'athlete-estimate' &&
-        typeof value.swimProvenance.note === 'string' &&
-        Number.isSafeInteger(value.swimProvenance.trainingPeaksWorkoutId))
+      value.provenance === undefined ||
+      (isRecord(value.provenance) &&
+        value.provenance.source === 'athlete-estimate' &&
+        typeof value.provenance.note === 'string' &&
+        (value.provenance.trainingPeaksWorkoutId === undefined ||
+          Number.isSafeInteger(value.provenance.trainingPeaksWorkoutId)))
     ) ||
     !isSwimPhysiology(value.swimPhysiology, value.elapsedTimeS) ||
     !isSwimPower(value.swimPower, value.elapsedTimeS) ||

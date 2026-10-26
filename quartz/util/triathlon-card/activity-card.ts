@@ -121,12 +121,10 @@ export const buildActivity = <N>(
   if (share) f.add(headActions, share)
   f.add(head, headActions)
   f.add(wrap, head)
-  if (d.swimProvenance)
+  if (d.provenance)
     f.add(
       wrap,
-      f.el('p', 'tri-note', d.swimProvenance.note, {
-        'data-swim-provenance': d.swimProvenance.source,
-      }),
+      f.el('p', 'tri-note', d.provenance.note, { 'data-provenance': d.provenance.source }),
     )
   f.add(
     wrap,

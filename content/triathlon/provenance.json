@@ -1,18 +1,20 @@
 [
   {
-    "source": "athlete-estimate",
     "activityId": 20558875198,
+    "sport": "swim",
+    "startDate": "2026-10-12T16:32:30.000Z",
+    "source": "athlete-estimate",
     "garminActivityId": "connect:24701267451",
     "trainingPeaksWorkoutId": 3998274563,
-    "startDate": "2026-10-12T16:32:30.000Z",
     "note": "Reconstructed swim: 15 × 100 m continuous pull paddles at an estimated 2:35/100 m and 22.5 str/min. Total 2,875 m. Pace, cadence and SWOLF include estimates. Two drill timings and one merged 25 m warm-up turn remain uncertain. Recorded heart rate is preserved; the missing pull-lap HR summary uses 133 bpm from the reported 128–138 bpm range."
   },
   {
-    "source": "athlete-estimate",
     "activityId": 20704623061,
+    "sport": "swim",
+    "startDate": "2026-10-23T18:19:06.000Z",
+    "source": "athlete-estimate",
     "garminActivityId": "connect:24829053818",
     "trainingPeaksWorkoutId": 4010504372,
-    "startDate": "2026-10-23T18:19:06.000Z",
     "note": "Reconstructed swim: 3,400 m, including both 16–12–8–4 × 25 m blocks. Missing length timings are estimated within the original recording; the second block is about 3% quicker. Kick and loosen are estimated at 3:20/100 m and 3:00/100 m. Repeated second-block stroke counts are estimates; drill and cool-down stroke counts are unknown. HR timestamps are retained, with 119 samples capped at the athlete-confirmed 160 bpm maximum. Other HR values are unchanged. Training-effect/load values in the FIT are retained source observations, not recalculations."
   }
 ]
