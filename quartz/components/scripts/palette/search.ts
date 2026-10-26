@@ -5,15 +5,10 @@ import { pdfMetadata, type PdfPassage, type PdfSearchDocument } from '../../../u
 import { isSearchExcluded } from '../../../util/search-exclude'
 import { parseSearchQuery, searchScopeIncludes, type SearchScope } from '../../../util/search-scope'
 import { fuseSearchRanks, type SemanticDocument } from '../../../util/semantic-search'
-import {
-  imageSimilarityButton,
-  imageSimilarityStatus,
-  searchableImage,
-} from '../image-search-controls'
 import { getLexicalSearchClient } from '../lexical-search'
 import { noteRankDistribution } from '../note-rank-distribution'
 import { pdfPageLabel } from '../pdf-search-controls'
-import { updateSearchProgress } from '../search-progress'
+import { showSearchNotice } from '../search-progress'
 import { mountResultPages } from '../search-result-pages'
 import { searchResultsTable, searchStatusTable } from '../search-results-table'
 import { isSemanticCancellation } from '../semantic.inline'
@@ -23,7 +18,6 @@ import { appendHighlightedText } from './format'
 import {
   ensureAttachmentData,
   ensureContentData,
-  ensureImageSearch,
   ensureQuickOpen,
   hidePalette,
   paletteMode,
@@ -82,6 +76,12 @@ export async function querySearch(
       return
     }
     const { term: query, scope, explicit } = parseSearchQuery(currentSearchTerm)
+    if (scope === 'images') {
+      s.output.removeAttribute('aria-busy')
+      quickOpenProgress(s, false)
+      quickOpenStatus(s, 'Image search is available in Ctrl+K.')
+      return
+    }
     if (!query && !explicit) {
       await displayNearbyNotes(s, generation)
       return
@@ -101,11 +101,6 @@ export async function querySearch(
         )
           return
         s.data = loaded
-        if (scope === 'images') {
-          const ids = await s.imageSimilarity.ids().catch(() => undefined)
-          if (generation !== s.queryGeneration || !s.isActive) return
-          s.imageIds = ids
-        }
         const slugs = Object.entries(loaded)
           .filter(([slug, source]) => !isSearchExcluded(slug) && !isSearchExcluded(source.fileName))
           .map(([slug]) => slug)
@@ -154,26 +149,6 @@ export async function querySearch(
           }
           return
         }
-        if (scope === 'images' && query) {
-          quickOpenProgress(s, true)
-          s.output.setAttribute('aria-busy', 'true')
-          const service = await ensureImageSearch(s)
-          if (generation !== s.queryGeneration || !s.isActive) return
-          const documents = await service.search(query, s.imageIds?.size ?? slugs.length)
-          if (
-            generation !== s.queryGeneration ||
-            queryActionType !== paletteMode.actionType ||
-            !s.isActive
-          )
-            return
-          const scores = new Map(documents.map(document => [document.slug, document.score]))
-          const combined = fuseSearchRanks([
-            { ids: scopedDocuments.map(document => document.slug), weight: 1 },
-            { ids: documents.map(document => document.slug), weight: 1 },
-          ]).map(({ id }) => ({ slug: id, score: scores.get(id) ?? Number.NaN }))
-          displayQuickOpenResults(s, combined, query, scope)
-          return
-        }
         if ((scope !== 'notes' && scope !== 'all') || !query) return
         s.output.setAttribute('aria-busy', 'true')
         quickOpenProgress(s, true)
@@ -216,23 +191,8 @@ export async function querySearch(
       console.warn('[QuickOpen] semantic search failed:', error)
       s.output.removeAttribute('aria-busy')
       quickOpenProgress(s, false)
-      if (scope === 'images') {
-        s.imageSemantic?.dispose()
-        s.imageSemantic = null
-        s.imageReady = null
-        displayQuickOpenResults(s, scopedDocuments, query, scope)
-        const status = document.createElement('p')
-        status.setAttribute('role', 'status')
-        status.textContent = 'Visual search unavailable. Showing image metadata matches.'
-        s.output.prepend(status)
-      } else if (scopedDocuments.length) displayQuickOpenResults(s, scopedDocuments, query, scope)
-      else
-        displayPendingTitles(
-          s,
-          query,
-          'semantic unavailable; use ctrl+k for full-text search',
-          scope,
-        )
+      if (scopedDocuments.length) displayQuickOpenResults(s, scopedDocuments, query, scope)
+      else displayPendingTitles(s, query, 'semantic unavailable · ctrl+k for full text', scope)
     } finally {
       settled = true
     }
@@ -280,47 +240,9 @@ function displayPendingTitles(
   if (items.length) displayResults(s, items, query)
   else quickOpenStatus(s, '')
   if (message) {
-    const status = document.createElement('p')
-    status.setAttribute('role', 'status')
-    status.textContent = items.length ? `${message}; title matches shown` : message
-    s.output.prepend(status)
+    showSearchNotice(s.progress, items.length ? `${message} · title matches` : message)
   } else {
     s.output.setAttribute('aria-busy', 'true')
-  }
-}
-
-async function showSimilarImages(s: PaletteState, seed: string) {
-  s.resultPages?.dispose()
-  s.resultPages = null
-  const generation = ++s.queryGeneration
-  s.imageSemantic?.cancel()
-  s.quickOpenSemantic?.cancel()
-  s.pdfSearch.cancel()
-  window.clearTimeout(s.quickOpenTimer)
-  paletteMode.currentSearchTerm = 'filter: images'
-  s.bar.value = paletteMode.currentSearchTerm
-  s.bar.focus()
-  quickOpenProgress(s, true)
-  updateSearchProgress(s.progress, 'finding similar images…')
-  s.output.setAttribute('aria-busy', 'true')
-  try {
-    const data = await ensureAttachmentData(s)
-    if (generation !== s.queryGeneration || !s.isActive) return
-    s.data = data
-    const documents = await s.imageSimilarity.search(seed, Object.keys(data).length)
-    if (generation !== s.queryGeneration || !s.isActive) return
-    displayQuickOpenResults(s, documents, '', 'images')
-    s.output.dataset.imageSeed = seed
-  } catch (error) {
-    if (isSemanticCancellation(error) || generation !== s.queryGeneration || !s.isActive) return
-    s.output.replaceChildren(
-      imageSimilarityStatus('similar images unavailable. Type an image query to continue.'),
-    )
-  } finally {
-    if (generation === s.queryGeneration) {
-      quickOpenProgress(s, false)
-      s.output.removeAttribute('aria-busy')
-    }
   }
 }
 
@@ -333,11 +255,6 @@ export function displayQuickOpenResults(
   const items: Item[] = []
   for (const document of documents) {
     if (!isFullSlug(document.slug) || isSearchExcluded(document.slug)) continue
-    if (
-      scope === 'images' &&
-      (!searchableImage(document.slug) || (s.imageIds && !s.imageIds.has(document.slug)))
-    )
-      continue
     const fileData = s.data?.[document.slug]
     if (
       !fileData ||
@@ -412,7 +329,7 @@ function toHtml(s: PaletteState, { name, slug, similarity, passage }: Item, sign
     aux.append(page)
     item.dataset.pdfPage = String(passage.page)
   }
-  if (!searchableImage(slug) && similarity !== undefined && Number.isFinite(similarity)) {
+  if (similarity !== undefined && Number.isFinite(similarity)) {
     item.dataset.similarity = String(similarity)
     const score = document.createElement('span')
     score.className = 'result-likelihood'
@@ -433,8 +350,6 @@ function toHtml(s: PaletteState, { name, slug, similarity, passage }: Item, sign
     }
   }
 
-  if (searchableImage(slug))
-    aux.append(imageSimilarityButton(slug, seed => showSimilarImages(s, seed), similarity))
   const noteCell = item.insertCell()
   noteCell.className = 'search-column-note'
   noteCell.append(content)

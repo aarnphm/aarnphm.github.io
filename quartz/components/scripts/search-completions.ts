@@ -1,4 +1,8 @@
-import { searchCompletions, type SearchCompletion } from '../../util/search-completion'
+import {
+  searchCompletions,
+  type SearchCompletion,
+  type SearchCompletionOptions,
+} from '../../util/search-completion'
 
 export interface SearchCompletions {
   update: () => boolean
@@ -10,6 +14,7 @@ export function createSearchCompletions(
   input: HTMLInputElement,
   host: HTMLElement,
   enabled: () => boolean = () => true,
+  options: SearchCompletionOptions = {},
 ): SearchCompletions {
   const abort = new AbortController()
   const { signal } = abort
@@ -71,7 +76,7 @@ export function createSearchCompletions(
     clear()
     if (!enabled()) return false
     if (input.selectionStart !== input.selectionEnd) return false
-    choices = searchCompletions(input.value, input.selectionStart ?? input.value.length)
+    choices = searchCompletions(input.value, input.selectionStart ?? input.value.length, options)
     if (!choices.length) return false
     list.replaceChildren(
       ...choices.map((choice, index) => {

@@ -53,6 +53,9 @@ export function showSearch(s: SearchSession, type: SearchType) {
   const { container, searchBar } = s
   if (!container!.matches(':popover-open')) {
     s.previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    shared.searchMode = 'lexical'
+    s.requestedMode = 'lexical'
+    updateModeUI(s, 'lexical')
     container!.showPopover()
   }
   container!.classList.add('active')

@@ -72,7 +72,10 @@ export class SemanticRuntime {
         const msg = event.data
         if (msg.type === 'model-progress') {
           const bytes = (value: number) =>
-            (value / 1_000_000).toLocaleString(undefined, { maximumFractionDigits: 1 })
+            (value / 1_000_000).toLocaleString(undefined, {
+              minimumFractionDigits: 1,
+              maximumFractionDigits: 1,
+            })
           const label =
             msg.phase === 'initializing'
               ? 'initializing model…'

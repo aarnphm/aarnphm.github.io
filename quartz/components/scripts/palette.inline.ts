@@ -3,7 +3,6 @@ import { getFullSlug, isFullSlug, pathToRoot } from '../../util/path'
 import { parseSearchQuery } from '../../util/search-scope'
 import { CodeSearchClient } from './code-search'
 import { registerEscapeHandler } from './escape-handler'
-import { createImageSimilarity } from './image-similarity'
 import { currentNavSignal } from './nav-lifecycle'
 import {
   commandActions,
@@ -163,32 +162,10 @@ async function shortcutHandler(s: PaletteState, e: HTMLElementEventMap['keydown'
   if (!s.container?.classList.contains('active')) return
   if (
     e.target instanceof HTMLButtonElement &&
-    e.target.matches('.image-similar-button, .search-load-more') &&
+    e.target.matches('.search-load-more') &&
     (e.key === 'Enter' || e.key === ' ')
   )
     return
-  if (
-    (e.key === 'Tab' || e.key === 'ArrowRight') &&
-    s.currentHover?.querySelector('.image-similar-button')
-  ) {
-    e.preventDefault()
-    const button = s.currentHover.querySelector<HTMLButtonElement>('.image-similar-button')
-    if (document.activeElement === button) {
-      if (e.shiftKey) s.currentHover.focus()
-      else moveSelection(s, 1)
-    } else button?.focus()
-    return
-  }
-  if (
-    e.key === 'ArrowLeft' &&
-    e.target instanceof HTMLButtonElement &&
-    e.target.classList.contains('image-similar-button')
-  ) {
-    e.preventDefault()
-    s.currentHover?.focus()
-    return
-  }
-
   if (e.metaKey && e.altKey && e.key === 'Enter') {
     if (!s.currentHover) return
     const slug = s.currentHover.dataset.slug
@@ -261,9 +238,6 @@ async function shortcutHandler(s: PaletteState, e: HTMLElementEventMap['keydown'
 async function onType(s: PaletteState, e: HTMLElementEventMap['input']) {
   s.resultPages?.dispose()
   s.resultPages = null
-  delete s.output.dataset.imageSeed
-  s.imageSimilarity.cancel()
-  s.imageSemantic?.cancel()
   s.pdfSearch.cancel()
   s.codeSearch.cancelPending()
   s.codePreview?.abort()
@@ -335,16 +309,10 @@ document.addEventListener('nav', () => {
   const containerElement = document.getElementById('palette-container')
   if (!containerElement) return
   const container = containerElement
-  const imageSimilarity = createImageSimilarity()
   const pdfSearch = new PdfSemantic()
   const codeSearch = new CodeSearchClient()
   window.addCleanup(() => codeSearch.dispose())
   window.addCleanup(() => pdfSearch.dispose())
-  window.addCleanup(() => imageSimilarity.dispose())
-  window.addCleanup(() => {
-    s.imageActive = false
-    s.imageSemantic?.dispose()
-  })
 
   const bar = container.querySelector('#bar') as HTMLInputElement
   const output = container.getElementsByTagName('output')[0]
@@ -368,8 +336,6 @@ document.addEventListener('nav', () => {
   window.addCleanup(() => {
     s.isActive = false
     s.resultPages?.dispose()
-    imageSimilarity.cancel()
-    s.imageSemantic?.cancel()
     s.pdfSearch.cancel()
     s.codeSearch.cancel()
     s.codePreview?.abort()
@@ -385,22 +351,18 @@ document.addEventListener('nav', () => {
     helper,
     rankButton,
     progress,
-    imageSimilarity,
     pdfSearch,
     codeSearch,
     completions: createSearchCompletions(
       bar,
       container,
       () => paletteMode.actionType === 'quick_open',
+      { imageSearch: false },
     ),
     codePreview: null,
     actionCache: new WeakMap<Action, HTMLDivElement>(),
     connectorActs: connectorActions(currentSlug),
     commandActs: [],
-    imageIds: undefined,
-    imageSemantic: null,
-    imageReady: null,
-    imageActive: true,
     currentHover: null,
     resultPages: null,
     previousFocus: null,
