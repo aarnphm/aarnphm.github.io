@@ -1,46 +1,62 @@
 .status-flap {
   position: relative;
-  display: grid;
+  display: block;
   min-width: 0;
   max-width: 100%;
   min-height: 1.4em;
   line-height: 1.4;
-  perspective: 20em;
+  overflow: hidden;
   font-variant-numeric: tabular-nums;
 
-  > span {
-    min-width: 0;
+  .status-flap-label {
+    display: flex;
+    align-items: baseline;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    text-align: inherit;
   }
-
-  > [aria-hidden] {
+  .status-flap-prefix {
+    min-width: 0;
+    white-space: pre;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .status-flap-readout {
+    position: relative;
+    display: inline-block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .status-flap-readout[data-numeric] {
+    flex-shrink: 0;
+    font-family: var(--codeFont);
+    text-align: right;
+  }
+  .status-flap-value {
+    display: inline-block;
+  }
+  .status-flap-outgoing {
     display: none;
     position: absolute;
     inset: 0;
-    background: var(--status-flap-background, var(--light));
-    backface-visibility: hidden;
-    transform-origin: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     pointer-events: none;
+    text-align: inherit;
   }
-
-  &[data-flipping] > [aria-hidden] {
+  &[data-flipping] .status-flap-outgoing {
     display: block;
   }
-  .status-flap-old-top {
-    clip-path: inset(0 0 50%);
-  }
-  .status-flap-old-bottom,
-  .status-flap-new-bottom {
-    clip-path: inset(50% 0 0);
-  }
-
   @media (prefers-reduced-motion: reduce) {
-    perspective: none;
-    &[data-flipping] > [aria-hidden] {
+    &[data-flipping] .status-flap-outgoing {
       display: none;
     }
   }
+}
+
+.semantic-search-progress .status-flap-label,
+.flashcards-notes-status .status-flap-label {
+  justify-content: flex-end;
 }
