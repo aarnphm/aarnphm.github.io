@@ -359,6 +359,9 @@ export async function handleBibliography(
   const reference = referenceEntry(link)
   if (!reference) return
   const { entry: bibEntry, key } = reference
+  // a margin bibliographie already shows the reference beside its number (fr-margins.inline.ts)
+  const margins = bibEntry.closest<HTMLElement>('.fr-gloss')?.closest<HTMLElement>('[data-fr-mode]')
+  if (margins?.dataset.frMode === 'margin') return
 
   const popoverId = `popover-bib-${key}`
   let popoverElement = document.getElementById(popoverId) as HTMLElement | null
