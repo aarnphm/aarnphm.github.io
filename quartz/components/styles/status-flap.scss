@@ -1,0 +1,46 @@
+.status-flap {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 1.4em;
+  line-height: 1.4;
+  perspective: 20em;
+  font-variant-numeric: tabular-nums;
+
+  > span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: inherit;
+  }
+
+  > [aria-hidden] {
+    display: none;
+    position: absolute;
+    inset: 0;
+    background: var(--status-flap-background, var(--light));
+    backface-visibility: hidden;
+    transform-origin: center;
+    pointer-events: none;
+  }
+
+  &[data-flipping] > [aria-hidden] {
+    display: block;
+  }
+  .status-flap-old-top {
+    clip-path: inset(0 0 50%);
+  }
+  .status-flap-old-bottom,
+  .status-flap-new-bottom {
+    clip-path: inset(50% 0 0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    perspective: none;
+    &[data-flipping] > [aria-hidden] {
+      display: none;
+    }
+  }
+}

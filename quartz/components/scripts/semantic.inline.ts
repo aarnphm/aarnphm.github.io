@@ -70,6 +70,18 @@ export class SemanticRuntime {
       this.worker = new Worker(new URL('semantic.worker.js', import.meta.url), { type: 'module' })
       this.worker.onmessage = (event: MessageEvent<SemanticWorkerResponse>) => {
         const msg = event.data
+        if (msg.type === 'model-progress') {
+          const bytes = (value: number) =>
+            (value / 1_000_000).toLocaleString(undefined, { maximumFractionDigits: 1 })
+          const label =
+            msg.phase === 'initializing'
+              ? 'initializing model…'
+              : msg.totalBytes > 0
+                ? `loading model · ${bytes(msg.loadedBytes)}/${bytes(msg.totalBytes)} MB`
+                : 'loading model files…'
+          reportSemanticProgress(label, msg.loadedBytes, msg.totalBytes)
+          return
+        }
         if (msg.type === 'progress') {
           reportSemanticProgress(
             `loading index · ${msg.loadedRows.toLocaleString()}/${msg.totalRows.toLocaleString()}`,

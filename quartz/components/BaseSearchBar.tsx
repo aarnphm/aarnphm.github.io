@@ -39,7 +39,6 @@ function BaseSearchBar({ displayClass, fileData }: QuartzComponentProps) {
             />
             {semanticManifest && (
               <>
-                <span class="semantic-status sr-only" data-state="idle" aria-live="polite"></span>
                 <div class="search-mode-toggle" role="radiogroup" aria-label="Search mode">
                   <button
                     type="button"

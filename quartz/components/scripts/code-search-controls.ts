@@ -38,12 +38,16 @@ export function codeMatchUrl(current: FullSlug, match: CodeMatch): URL {
   return url
 }
 
-export function codeSearchStatus(value: CodeSearchProgress): HTMLParagraphElement {
-  const status = document.createElement('p')
-  status.className = 'code-search-status'
-  status.setAttribute('role', 'status')
-  status.textContent = value.phase === 'loading' ? 'loading code' : 'searching code'
-  return status
+export function codeSearchStatus(value: CodeSearchProgress): string {
+  const phase =
+    value.phase === 'loading'
+      ? 'loading code'
+      : value.phase === 'structural'
+        ? 'matching structure'
+        : 'searching code'
+  return value.totalUnits > 0
+    ? `${phase} · ${value.scannedUnits.toLocaleString()}/${value.totalUnits.toLocaleString()}`
+    : `${phase}…`
 }
 
 const lastCodeSearchNotice = new WeakMap<HTMLElement, string>()

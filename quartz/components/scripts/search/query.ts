@@ -10,6 +10,7 @@ import { fuseSearchRanks } from '../../../util/semantic-search'
 import { imageSimilarityStatus, searchableImage } from '../image-search-controls'
 import { getLexicalSearchClient } from '../lexical-search'
 import { pdfPageLabel } from '../pdf-search-controls'
+import { updateSearchProgress } from '../search-progress'
 import { isSemanticCancellation } from '../semantic.inline'
 import { resetSiteSemantic } from '../site-semantic'
 import { searchCode } from './code'
@@ -123,8 +124,8 @@ export async function showSimilarImages(s: SearchSession, seed: string) {
   searchBar.focus()
   searchLayout.classList.add('display-results')
   clearPreview(s)
-  results.replaceChildren(imageSimilarityStatus('finding similar images…'))
   startSearchProgress(s)
+  updateSearchProgress(s.progressBar, 'finding similar images…')
   try {
     await ensureSearchData(s)
     if (token !== s.searchSeq || !image.active) return

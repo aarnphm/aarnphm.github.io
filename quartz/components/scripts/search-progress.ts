@@ -1,4 +1,5 @@
 import { isRecord } from '../../util/type-guards'
+import { setStatusText } from './status-flap'
 
 const eventName = 'quartz-semantic-progress'
 
@@ -18,21 +19,23 @@ export function createSearchProgress(input: HTMLInputElement): HTMLDivElement {
   if (helper) {
     helper.before(footer)
     footer.append(helper, progress)
-  } else panel?.append(footer)
+  } else {
+    footer.append(progress)
+    panel?.append(footer)
+  }
 
   const update = (event: Event) => {
     if (!(event instanceof CustomEvent) || progress.getAttribute('aria-hidden') !== 'false') return
-    if (progress.dataset.reason !== 'search') return
+    if (progress.dataset.reason !== 'search' || progress.dataset.source === 'local') return
     const detail: unknown = event.detail
     if (!isRecord(detail) || typeof detail.label !== 'string') return
-    progress.textContent = detail.label
-    progress.title = detail.label
-    progress.setAttribute('aria-label', detail.label)
-    if (typeof detail.loaded === 'number' && typeof detail.total === 'number' && detail.total > 0) {
-      progress.setAttribute('aria-valuemin', '0')
-      progress.setAttribute('aria-valuemax', String(detail.total))
-      progress.setAttribute('aria-valuenow', String(detail.loaded))
-    } else progress.removeAttribute('aria-valuenow')
+    updateSearchProgress(
+      progress,
+      detail.label,
+      typeof detail.loaded === 'number' ? detail.loaded : undefined,
+      typeof detail.total === 'number' ? detail.total : undefined,
+      'semantic',
+    )
   }
   window.addEventListener(eventName, update)
   window.addCleanup(() => {
@@ -43,12 +46,41 @@ export function createSearchProgress(input: HTMLInputElement): HTMLDivElement {
   return progress
 }
 
+export function updateSearchProgress(
+  progress: HTMLElement,
+  label: string,
+  loaded?: number,
+  total?: number,
+  source: 'local' | 'semantic' = 'local',
+) {
+  progress.dataset.source = source
+  setStatusText(progress, label)
+  progress.title = label
+  progress.setAttribute('aria-label', label)
+  for (const name of ['aria-valuemin', 'aria-valuemax', 'aria-valuenow'])
+    progress.removeAttribute(name)
+  if (loaded !== undefined && total !== undefined && total > 0) {
+    progress.setAttribute('aria-valuemin', '0')
+    progress.setAttribute('aria-valuemax', String(total))
+    progress.setAttribute('aria-valuenow', String(loaded))
+  }
+}
+
 export function showSearchProgress(progress: HTMLElement, loading: boolean, reason = 'search') {
+  const unchanged =
+    loading &&
+    progress.getAttribute('aria-hidden') === 'false' &&
+    progress.dataset.reason === reason
   progress.dataset.reason = reason
   progress.setAttribute('aria-hidden', String(!loading))
-  progress.removeAttribute('aria-valuenow')
-  progress.textContent = reason === 'preview' ? 'loading preview…' : 'searching…'
-  progress.title = progress.textContent
-  progress.setAttribute('aria-label', progress.textContent)
+  if (!unchanged)
+    updateSearchProgress(
+      progress,
+      reason === 'preview' ? 'loading preview…' : 'searching…',
+      undefined,
+      undefined,
+      'semantic',
+    )
+  if (!loading) setStatusText(progress, '')
   progress.style.opacity = loading ? '1' : '0'
 }

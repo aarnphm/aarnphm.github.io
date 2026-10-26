@@ -1,3 +1,4 @@
+@use './status-flap.scss';
 @use './code-search.scss';
 @use './search-completions.scss';
 @use 'sass:map';
@@ -806,5 +807,41 @@ body[data-slug='index'] .search > .search-container > .search-space {
   & > .search-footer {
     flex-shrink: 0;
     margin-top: auto;
+  }
+}
+
+.base-search-status {
+  grid-column: 1 / -1;
+  min-height: 1.4em;
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--lightgray);
+  color: var(--darkgray);
+  font: var(--text-meta)/1.4 var(--bodyFont);
+}
+@media all and ($mobile) {
+  .search-space .search-footer > ul#helper > li:nth-child(n + 4) {
+    display: none;
+  }
+  .search-footer {
+    grid-template-columns: auto minmax(0, 1fr);
+    > ul#helper > li {
+      font-size: 0;
+      > kbd {
+        font-size: var(--text-meta);
+      }
+      &[data-quick-open],
+      &[data-command] {
+        display: none;
+      }
+    }
+  }
+}
+
+.base-search-error {
+  grid-column: 1 / -1;
+  color: var(--darkgray);
+  font: var(--text-meta)/1.4 var(--bodyFont);
+  &[hidden] {
+    display: none;
   }
 }
