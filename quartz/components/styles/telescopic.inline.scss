@@ -23,15 +23,16 @@
   display: inline;
 }
 
+// Hairline index box. On hover the box grows into its 1px margin and thickens its base,
+// so the line keeps its width.
 .telescope .summary {
-  appearance: none;
-  font: inherit;
+  display: inline;
   color: inherit;
-  background: var(--highlight);
-  border: 0;
-  padding: 0 3px;
+  margin: 0 1px;
+  padding: 0 2px;
+  border: 1px solid var(--telescope-border);
+  border-radius: var(--radius-none);
   cursor: pointer;
-  text-align: inherit;
 }
 
 .telescope .summary:focus-visible {
@@ -46,7 +47,9 @@
 
 @media (hover: hover) and (pointer: fine) {
   .telescope .summary:hover {
-    text-decoration: underline;
+    margin: 0;
+    padding: 0 3px;
+    border-bottom-width: 2px;
   }
 }
 
