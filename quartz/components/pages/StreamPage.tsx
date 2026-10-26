@@ -232,8 +232,16 @@ export default (() => {
     )
 
     const renderLegendEntries = (entries: StreamEntry[]) => (
-      <div class="stream-legend-table">
-        <ol class="stream-legend-entries">
+      <table class="stream-legend-table" aria-label="stream entries">
+        <thead class="stream-legend-columns">
+          <tr>
+            <th scope="col">day</th>
+            <th scope="col">entry</th>
+            <th scope="col">tags</th>
+            <th scope="col">length</th>
+          </tr>
+        </thead>
+        <tbody class="stream-legend-entries">
           {entries.map(entry => {
             const dayPath = buildStreamDayPathFromIso(entry.date)
             const entryPath = buildStreamEntryPathFromIso(entry.date, entry.id)
@@ -243,42 +251,46 @@ export default (() => {
             const restricted = isRestrictedEntry(entry)
 
             return (
-              <li
+              <tr
                 key={entry.id}
                 class="stream-legend-entry"
                 data-stream-restricted={restricted ? 'true' : undefined}
               >
-                <a
-                  class="stream-legend-date internal"
-                  href={dayPath ?? '/stream'}
-                  data-slug={slugFromPath(dayPath ?? '/stream')}
-                  data-no-popover
-                >
-                  {dayLabel || 'undated'}
-                </a>
-                <a
-                  class="stream-legend-title internal"
-                  href={href}
-                  data-slug={slugFromPath(dayPath ?? '/stream')}
-                  data-no-popover
-                >
-                  {entryTitle(entry)}
-                </a>
-                <div class="stream-legend-tags">
+                <td class="stream-legend-date-cell">
+                  <a
+                    class="stream-legend-date internal"
+                    href={dayPath ?? '/stream'}
+                    data-slug={slugFromPath(dayPath ?? '/stream')}
+                    data-no-popover
+                  >
+                    {dayLabel || 'undated'}
+                  </a>
+                </td>
+                <td class="stream-legend-title-cell">
+                  <a
+                    class="stream-legend-title internal"
+                    href={href}
+                    data-slug={slugFromPath(dayPath ?? '/stream')}
+                    data-no-popover
+                  >
+                    {entryTitle(entry)}
+                  </a>
+                </td>
+                <td class="stream-legend-tags">
                   {tags.map(tag => (
                     <span key={tag} class="stream-entry-tag">
                       {tag}
                     </span>
                   ))}
-                </div>
-                <div class="stream-legend-meta">
+                </td>
+                <td class="stream-legend-meta">
                   {restricted ? renderLockPopover(1) : entryMeta(entry)}
-                </div>
-              </li>
+                </td>
+              </tr>
             )
           })}
-        </ol>
-      </div>
+        </tbody>
+      </table>
     )
 
     const renderMonthGroups = (months: StreamMonthGroup[]) => (
@@ -359,7 +371,23 @@ export default (() => {
         class="stream main-col popover-hint"
         data-stream-canonical={canonicalPath}
         data-stream-view={streamView.kind}
+        data-stream-layout={isFeedView ? undefined : 'list'}
       >
+        {!isFeedView && (
+          <div class="stream-archive-toolbar">
+            <span class="stream-archive-heading">
+              {fileData.frontmatter?.title ?? 'stream / on'}
+            </span>
+            <div role="group" aria-label="archive view" class="stream-archive-views" hidden>
+              <button type="button" data-stream-layout-button="list" aria-pressed="true">
+                list
+              </button>
+              <button type="button" data-stream-layout-button="table" aria-pressed="false">
+                table
+              </button>
+            </div>
+          </div>
+        )}
         {isFeedView ? (
           renderFeed()
         ) : streamView.kind === 'index' ? (

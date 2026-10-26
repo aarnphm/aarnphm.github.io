@@ -1,0 +1,242 @@
+.stream[data-stream-layout] {
+  --stream-line: color-mix(in srgb, var(--gray) 55%, transparent);
+  --stream-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  --stream-toolbar-height: 2.75rem;
+  --stream-group-height: 2.25rem;
+  --stream-year-offset: 0rem;
+  --stream-month-offset: 0rem;
+
+  &[data-stream-view='index'] {
+    --stream-year-offset: var(--stream-group-height);
+  }
+
+  &[data-stream-view='index'],
+  &[data-stream-view='year'] {
+    --stream-month-offset: var(--stream-group-height);
+  }
+
+  .stream-archive-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: calc(var(--z-sticky) + 3);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    height: var(--stream-toolbar-height);
+    box-sizing: border-box;
+    background: var(--light);
+    border-bottom: 1px solid var(--stream-line);
+    font: max(12px, 0.75rem) var(--codeFont);
+    color: var(--dark);
+  }
+
+  .stream-archive-heading {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .stream-archive-views {
+    display: flex;
+    &[hidden] {
+      display: none;
+    }
+    button {
+      min-height: 2.125rem;
+      padding: 0.25rem 0.65rem;
+      border: 1px solid var(--stream-line);
+      background: var(--light);
+      color: var(--darkgray);
+      font: inherit;
+      cursor: pointer;
+      & + button {
+        border-left: 0;
+      }
+      &[aria-pressed='true'] {
+        background: var(--stream-surface);
+        color: var(--dark);
+        text-decoration: underline;
+        text-underline-offset: 0.2em;
+      }
+      &:focus-visible {
+        outline: 2px solid var(--dark);
+        outline-offset: -2px;
+      }
+    }
+  }
+
+  .stream-legend-row {
+    position: sticky;
+    top: var(--stream-toolbar-height);
+    z-index: calc(var(--z-sticky) + 2);
+    box-sizing: border-box;
+    height: var(--stream-group-height);
+    align-items: center;
+    padding: 0.35rem 0.5rem;
+    background: var(--light);
+    border-color: var(--stream-line);
+  }
+
+  .stream-legend-month > .stream-legend-row {
+    top: calc(var(--stream-toolbar-height) + var(--stream-year-offset));
+    z-index: calc(var(--z-sticky) + 1);
+  }
+
+  .stream-legend-count {
+    margin: 0.75rem 0;
+  }
+
+  .stream-legend-table {
+    display: table;
+    width: 100%;
+    margin: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+    overflow: visible;
+  }
+
+  .stream-legend-columns {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .stream-legend-entries {
+    display: block;
+  }
+  .stream-legend-entry {
+    box-sizing: border-box;
+    padding: 0;
+    min-height: 2.125rem;
+    font-size: max(12px, 0.75rem);
+    border-color: var(--stream-line);
+    td {
+      min-width: 0;
+      padding: 0.4rem 0.1rem;
+      border: 0;
+      overflow-wrap: anywhere;
+    }
+  }
+  .stream-legend-title {
+    display: block;
+  }
+  .stream-legend-date-cell {
+    grid-area: auto;
+  }
+  .stream-legend-summary-metric,
+  .stream-legend-meta,
+  .stream-legend-month > .stream-legend-row .stream-legend-row-title,
+  .stream-entry-tag {
+    font-size: max(12px, 0.75rem);
+  }
+  .stream-legend-lock {
+    color: var(--darkgray);
+  }
+
+  &[data-stream-layout='table'] {
+    .stream-legend-columns {
+      position: static;
+      width: auto;
+      height: auto;
+      overflow: visible;
+      clip-path: none;
+      display: table-header-group;
+      th {
+        position: sticky;
+        top: calc(
+          var(--stream-toolbar-height) + var(--stream-year-offset) + var(--stream-month-offset)
+        );
+        z-index: var(--z-sticky);
+        background: var(--stream-surface);
+        color: var(--darkgray);
+        text-align: left;
+        font: max(12px, 0.75rem) var(--codeFont);
+        padding: 0.55rem 0.5rem;
+        border-bottom: 1px solid var(--stream-line);
+      }
+      th:first-child {
+        width: 3ch;
+      }
+      th:nth-child(2) {
+        width: 48%;
+      }
+      th:last-child {
+        width: 9ch;
+        text-align: right;
+      }
+    }
+    .stream-legend-entries {
+      display: table-row-group;
+    }
+    .stream-legend-entry {
+      display: table-row;
+      td {
+        padding: 0.5rem;
+        border-bottom: 1px solid var(--stream-line);
+        border-right: 1px solid var(--stream-line);
+        vertical-align: top;
+        &:first-child {
+          border-left: 1px solid var(--stream-line);
+        }
+      }
+      .stream-legend-tags {
+        display: table-cell;
+      }
+      .stream-entry-tag {
+        display: inline-block;
+        margin: 0 0.25rem 0.25rem 0;
+      }
+      .stream-legend-title {
+        white-space: normal;
+      }
+    }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .stream-legend-entry:hover,
+    .stream-archive-views button:hover {
+      background: var(--stream-surface);
+    }
+  }
+
+  @media (max-width: 600px) {
+    &[data-stream-layout='list'] .stream-legend-entry {
+      .stream-legend-date-cell {
+        grid-area: date;
+      }
+      .stream-legend-title-cell {
+        grid-area: entry;
+      }
+    }
+    &[data-stream-layout='table'] .stream-legend-columns {
+      th:nth-child(2) {
+        width: 35%;
+      }
+      th:last-child {
+        width: 6ch;
+      }
+    }
+    &[data-stream-layout='table'] .stream-legend-entry td,
+    &[data-stream-layout='table'] .stream-legend-columns th {
+      padding: 0.5rem 0.25rem;
+    }
+    .stream-legend-meta {
+      white-space: normal;
+    }
+  }
+
+  @media (pointer: coarse) {
+    --stream-toolbar-height: 3.25rem;
+    .stream-archive-views button {
+      min-height: 44px;
+    }
+    .stream-legend-entry a {
+      min-height: 44px;
+      align-content: center;
+    }
+  }
+}
