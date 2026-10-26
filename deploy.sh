@@ -35,11 +35,13 @@ deploy() {
   run_stage lfs-pull git lfs pull
   run_stage lfs-required git lfs pull --include="quartz/runtime/native/packs/**,content/triathlon/wind/**/*.json,content/thoughts/images/**,content/hinterland/app/**" --exclude=""
   run_stage lfs-checkout git lfs checkout
+  run_stage source-assets node quartz/scripts/validate-deployment-assets.mjs
   run_stage wind-validation pnpm exec tsx quartz/scripts/validate-wind-archive.ts
 
   export GITHUB_SHA="$(git rev-parse HEAD)"
 
   EMAIL_EMITTER_ENABLED=1 NODE_ENV=production run_stage quartz-build pnpm exec quartz/bootstrap-cli.mjs build --concurrency 16 --bundleInfo --verbose
+  run_stage output-assets node quartz/scripts/validate-deployment-assets.mjs public
 
   run_stage prune-ddl fd --glob "*.ddl" public -x rm
   run_stage prune-war fd --glob "*.war" public -x rm
