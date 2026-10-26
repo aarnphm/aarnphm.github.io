@@ -49,7 +49,7 @@ document.addEventListener('petstoggle', event => {
   document.dispatchEvent(toast)
 })
 
-document.addEventListener('nav', () => {
+function setupPet() {
   // Reading ready can update layout. Do it before syncPets inserts the SVG artwork.
   const fontsReady = document.fonts?.ready
   const controller = new AbortController()
@@ -317,5 +317,17 @@ document.addEventListener('nav', () => {
     windows.disconnect()
     window.clearTimeout(petState.windowTimer)
     petState.lookAt = null
+  })
+}
+
+document.addEventListener('nav', () => {
+  let timer = 0
+  // Let the destination paint before pet placement measures the page and mounts its artwork.
+  const frame = requestAnimationFrame(() => {
+    timer = window.setTimeout(setupPet, 0)
+  })
+  window.addCleanup(() => {
+    cancelAnimationFrame(frame)
+    window.clearTimeout(timer)
   })
 })
