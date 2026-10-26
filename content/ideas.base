@@ -17,19 +17,25 @@ views:
       - date
       - subcategory
       - notebook
+      - seealso
+      - description
+      - category
+      - file.tags
     sort:
+      - property: file.tags
+        direction: DESC
+      - property: description
+        direction: ASC
       - property: date
         direction: DESC
-      - property: title
-        direction: ASC
-      - property: notebook
-        direction: ASC
       - property: status
         direction: ASC
     columnSize:
       note.title: 401
       note.date: 147
       note.subcategory: 172
+      note.seealso: 339
+      note.description: 661
   - type: list
     name: dynalist
     groupBy:
