@@ -193,7 +193,7 @@ test('custom page and Curius link popovers use the shared browser lifecycle', as
               const popup = document.querySelector('.active-popover')
               check(!popup.textContent.includes('Unrelated prose'), id + ': isolates the marked text')
               check(popup.querySelector('.transclude-src').href === document.getElementById(id).href, id + ': source retains block anchor')
-              const button = popup.querySelector('button.summary')
+              const button = popup.querySelector('.summary')
               check(button && getComputedStyle(button).display !== 'none', id + ': starts collapsed')
               button.click()
               check(popup.querySelector('.details').classList.contains('open'), id + ': expansion works after insertion')
@@ -240,7 +240,7 @@ test('custom page and Curius link popovers use the shared browser lifecycle', as
       '<body data-slug="stream"><article class="stream popover-hint"><ol class="stream-feed"><li class="stream-entry" id="one">Entry one</li><li class="stream-entry" id="two">Entry two</li></ol></article>',
   }
   const telescope = (id: string) =>
-    `<div class="telescopic-container" id="${id}"><div class="telescope"><span class="details close"><button type="button" class="summary" aria-expanded="false">Small</button><span class="expanded">Expanded ${id}</span></span></div></div>`
+    `<div class="telescopic-container" id="${id}"><div class="telescope"><span class="details close"><span class="summary" role="button" tabindex="0" aria-expanded="false">Small</span><span class="expanded">Expanded ${id}</span></span></div></div>`
   pages['/telescope'] =
     '<body><article class="popover-hint"><p>Unrelated prose</p>' +
     telescope('one') +

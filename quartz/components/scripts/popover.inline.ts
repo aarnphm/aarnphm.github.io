@@ -250,7 +250,10 @@ function closestPopoverLink(target: EventTarget | null): HTMLAnchorElement | nul
     element?.closest<HTMLAnchorElement>(
       'a.internal, a[data-power-activity-id], a[data-curius-popover]',
     ) ?? null
-  return link?.closest('#stacked-notes-container') ? null : link
+  // Telescopic text inside a popover keeps plain links: a nested preview would cover it. Checked per
+  // event, so links in segments expanded after mount are covered too.
+  if (link?.closest('#stacked-notes-container, .popover .telescopic-container')) return null
+  return link
 }
 
 function setupPopoverDelegation(): void {
