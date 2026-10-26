@@ -128,6 +128,11 @@ export default ((opts?: Options) => {
             <Tex source="1.00 \times" /> is considered an average note.{' '}
             <i>select a note to see the links that make up its score.</i>
           </p>
+          <p>
+            <i>
+              every note gets <Tex source="(1-d) + d\sum_{L(q)=0}\mathrm{PR}(q)" />
+            </i>
+          </p>
           <p class="pagerank-meta" data-pr-meta>
             {model ? metaLine(model) : loading}
           </p>
@@ -163,12 +168,11 @@ export default ((opts?: Options) => {
             –
           </p>
           <figcaption>
-            one dot per note, placed by its score <Tex source="x = N\cdot\mathrm{PR}" /> on a log
-            axis; notes with the same score stack. the mean note sits at <Tex source="1\times" />{' '}
-            and most sit below it. notes nobody links to all share the lowest score, so they wait in
-            the block on the left, off the axis. the selected note is salmon; a solid dot links to
-            it, a ring is a note it links to, a solid dot inside a ring links both ways. hover a dot
-            to read it, click to select it; arrow keys walk the ranking.
+            Each dot represents a note, placed by its score <Tex source="x = N\cdot\mathrm{PR}" />{' '}
+            via log-scaled axis. notes nobody links to all share the lowest score, so they wait in
+            the block on the left, off the axis. <br />A solid dot denotes backlinks, a ring denotes
+            forward linkage, a solid dot within a ring denotes bidirectional linkage. You can use
+            arrow keys to walk between the ranking.
           </figcaption>
         </figure>
 
@@ -306,13 +310,6 @@ export default ((opts?: Options) => {
                     {panel && <LinkRows links={panel.inbound} empty={emptyInbound} />}
                   </tbody>
                   <tfoot>
-                    <tr>
-                      <th scope="row">
-                        every note gets <Tex source="(1-d) + d\sum_{L(q)=0}\mathrm{PR}(q)" />
-                      </th>
-                      <td data-pr-ledger-base>{panel?.base ?? '–'}</td>
-                      <td data-pr-ledger-base-share>{panel?.baseShare ?? '–'}</td>
-                    </tr>
                     <tr>
                       <th scope="row">score</th>
                       <td data-pr-ledger-total>{panel?.total ?? '–'}</td>

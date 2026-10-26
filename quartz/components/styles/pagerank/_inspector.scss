@@ -99,57 +99,73 @@
     margin: 1rem 0 0.4rem;
   }
 
-  // Tufte register: one rule under the head and one above the totals; no rules between rows.
+  // The Base table idiom of the ranking: a line frame, a surface head row, a rule under every row.
   table {
     inline-size: 100%;
     margin: 0;
     table-layout: fixed;
     border-collapse: collapse;
-    font: 400 var(--text-meta) / 1.4 var(--codeFont);
+    border: 1px solid var(--pr-line);
+    font: 400 var(--text-meta) / 1.3 var(--codeFont);
     font-variant-numeric: tabular-nums;
+    color: var(--darkgray);
   }
 
   th,
   td {
-    padding: 0.25rem 0.4rem;
+    box-sizing: border-box;
+    padding: 0 0.5rem;
+    border-block-end: 1px solid var(--pr-line);
     text-align: right;
-    vertical-align: baseline;
+    vertical-align: middle;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   :is(th, td):first-child {
-    padding-inline-start: 0;
     text-align: left;
   }
 
   :is(th, td):nth-child(2) {
-    inline-size: 3.5rem;
+    inline-size: 3.75rem;
   }
 
   :is(th, td):nth-child(3) {
-    inline-size: 6.25rem;
-    padding-inline-end: 0;
+    inline-size: 6rem;
   }
 
   thead th {
+    block-size: 2rem;
+    background: var(--pr-surface);
     font-weight: 400;
-    color: var(--darkgray);
-    border-block-end: 1px solid var(--pr-line);
+    text-transform: lowercase;
+  }
+
+  // One line per link, so rows run shorter than the ranking's title-and-slug rows.
+  td {
+    block-size: 2.25rem;
   }
 
   tbody td:first-child {
-    display: flex;
-    gap: 0.4rem;
-    align-items: baseline;
     font-family: var(--bodyFont);
+    font-size: 0.85rem;
     color: var(--dark);
+
+    a.internal {
+      white-space: nowrap;
+    }
   }
 
-  tfoot tr:first-child :is(th, td) {
-    border-block-start: 1px solid var(--pr-line);
+  tfoot :is(th, td) {
+    block-size: 2.25rem;
+    background: var(--pr-surface);
   }
 
   tfoot th {
-    font: 400 var(--text-meta) / 1.4 var(--bodyFont);
+    padding-block: 0.3rem;
+    white-space: normal;
+    font: 400 var(--text-meta) / 1.3 var(--bodyFont);
     color: var(--darkgray);
   }
 
@@ -158,9 +174,11 @@
     font-weight: 500;
   }
 
+  // Inline, so the rank and the title share the cell's one line.
   .pagerank-link-rank {
-    flex: none;
-    min-inline-size: 2.5rem;
+    display: inline-block;
+    min-inline-size: 3rem;
+    margin-inline-end: 0.4rem;
     padding: 0;
     border: 0;
     background: none;
@@ -197,7 +215,7 @@
   }
 
   .pagerank-status td {
-    display: table-cell;
+    white-space: normal;
     font-family: var(--bodyFont);
     color: var(--darkgray);
   }
