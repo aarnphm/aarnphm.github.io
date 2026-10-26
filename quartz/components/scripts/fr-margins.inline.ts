@@ -143,7 +143,43 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
     }
   }
 
+  // the article's own blocks: one that grows or shrinks (a figure leaving its intrinsic size, a
+  // fold, an image) moves every number below it, often without resizing the article, which the
+  // page grid may stretch. The last one's bottom is where the text ends
+  const blocks = Array.from(article.children).filter(
+    (child): child is HTMLElement =>
+      child instanceof HTMLElement && !child.matches('.fr-group, .fr-leaders'),
+  )
   const clamps = mountClamps(article, () => queue(), signal)
+
+  // a citation's reference sits in a margin bibliographie, which stands in for its popover; pointing
+  // at the citation opens a cut entry until the pointer leaves both, an open entry stays as it is
+  for (const cite of article.querySelectorAll<HTMLAnchorElement>('a[data-bib]')) {
+    const id = decodeURIComponent(new URL(cite.href).hash.slice(1))
+    const entry = id
+      ? article.querySelector<HTMLElement>(`.fr-gloss#${CSS.escape(id)}`)?.closest<HTMLElement>(
+          '.fr-entry',
+        )
+      : null
+    if (!entry) continue
+    let held = false
+    const release = (event: PointerEvent) => {
+      const to = event.relatedTarget as Node | null
+      if (!held || (to && (cite.contains(to) || entry.contains(to)))) return
+      held = false
+      clamps.hold(entry, false)
+    }
+    cite.addEventListener(
+      'pointerenter',
+      () => {
+        if (held || article.dataset.frMode !== 'margin') return
+        held = clamps.hold(entry, true)
+      },
+      { signal },
+    )
+    cite.addEventListener('pointerleave', release, { signal })
+    entry.addEventListener('pointerleave', release, { signal })
+  }
   const measured = new WeakMap<Element, { width: number; height: number }>()
   const measureBox = (element: Element) => {
     const rect = element.getBoundingClientRect()
@@ -277,7 +313,56 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
       })
     }
     items.sort((x, y) => x.top - y.top)
+    // the column stops where the text does, not where the grid stretched the article to
+    const end = blocks.reduce((low, block) => {
+      const rect = block.getBoundingClientRect()
+      return rect.height > 0 ? Math.max(low, rect.bottom) : low
+    }, -Infinity)
+    const limit = Number.isFinite(end) ? Math.min(end, box.bottom) : box.bottom
+    // top-down: each entry stands at its number, or below the one before it
     const floors = { left: -Infinity, right: -Infinity }
+    const placed: number[] = []
+    for (const [i, item] of items.entries()) {
+      const floor = floors[item.side]
+      const at = Math.max(item.top, floor + GROUP_GAP)
+      // a group ends before the next entry on its side would stand; the last one may also take
+      // the room above it, since the tail of the column is stacked from the text's end upward
+      const next = items.slice(i + 1).find(other => other.side === item.side)
+      const fit = item.fit?.(
+        next ? next.top - GROUP_GAP - at : limit - Math.max(floor + GROUP_GAP, box.top),
+      )
+      if (fit) {
+        item.height = fit.height
+        item.heads = fit.heads
+      }
+      placed[i] = at
+      floors[item.side] = at + item.height
+    }
+    // bottom-up: an entry that would run past the text's end rises until it ends there, and lifts
+    // the ones above it in turn, so a body opened near the end grows upward and the page keeps its
+    // height. A column taller than the article keeps the top-down stack
+    for (const side of ['left', 'right'] as const) {
+      const lifted = [...placed]
+      let ceiling = limit
+      let fits = true
+      for (let i = items.length - 1; i >= 0; i--) {
+        if (items[i].side !== side) continue
+        if (lifted[i] + items[i].height <= ceiling) break
+        lifted[i] = ceiling - items[i].height
+        if (lifted[i] < box.top) {
+          fits = false
+          break
+        }
+        ceiling = lifted[i] - GROUP_GAP
+      }
+      if (!fits) continue
+      floors[side] = -Infinity
+      for (const [i, item] of items.entries())
+        if (item.side === side) {
+          placed[i] = lifted[i]
+          floors[side] = Math.max(floors[side], lifted[i] + item.height)
+        }
+    }
     // entries that point at the same line share one leader: a trunk through the gutter that each
     // head's arm meets, one stem from the trunk to the target, one dash before the number. The
     // stroke is translucent, so a stretch drawn twice would read darker than its neighbours
@@ -295,17 +380,8 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
     }
     const targets = new Map<string, Target>()
     for (const [i, item] of items.entries()) {
-      const shift = Math.max(0, floors[item.side] + GROUP_GAP - item.top)
-      item.move(shift)
-      // a group ends before the next entry on its side would stand, or before the article ends
-      const next = items.slice(i + 1).find(other => other.side === item.side)
-      const fit = item.fit?.((next ? next.top - GROUP_GAP : box.bottom) - item.top - shift)
-      if (fit) {
-        item.height = fit.height
-        item.heads = fit.heads
-      }
-      const placedTop = item.top + shift
-      floors[item.side] = placedTop + item.height
+      const placedTop = placed[i]
+      item.move(placedTop - item.top)
       const y1 = Math.round(item.end.y) + 0.5
       const key = `${item.side} ${y1}`
       let target = targets.get(key)
@@ -327,7 +403,7 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
         target.hi = Math.max(target.hi, y0)
       }
     }
-    // a body the reader opened may run the column past the text; the article grows to hold it, so
+    // a column too tall to lift may still run past the article; the article grows to hold it, so
     // the column never reaches the footer
     const overrun = Math.max(floors.left, floors.right) + GROUP_GAP - box.bottom
     if (overrun > 0) article.style.setProperty('margin-block-end', `${Math.ceil(overrun)}px`)
@@ -386,12 +462,25 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
     frame = requestAnimationFrame(paint)
   }
   layout.relayout = queue
+  // a block's height when the observer last saw it; its first notice only sets the baseline, since
+  // the first paint is already queued
+  const heights = new Map<Element, number>()
   const observer = new ResizeObserver(changes => {
     // Initial and fonts-ready paints can already include the dimensions delivered by the observer.
     // Skip only those notifications; explicit content/control relayouts still always paint.
+    let moved = false
+    for (const change of changes) {
+      if (!heights.has(change.target)) continue
+      const before = heights.get(change.target)!
+      const now = change.borderBoxSize[0]?.blockSize ?? change.contentRect.height
+      heights.set(change.target, now)
+      if (!Number.isNaN(before) && Math.abs(now - before) > 0.01) moved = true
+    }
     if (
-      article.dataset.frMode !== 'margin' ||
+      moved ||
       changes.some(change => {
+        if (heights.has(change.target)) return false
+        if (article.dataset.frMode !== 'margin') return true
         const size = change.borderBoxSize[0]
         const previous = measured.get(change.target)
         return (
@@ -406,6 +495,11 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
   })
   observer.observe(article)
   for (const anchor of article.querySelectorAll('.fr-anchor')) observer.observe(anchor)
+  for (const block of blocks) {
+    if (block.matches('.fr-anchor')) continue
+    heights.set(block, NaN)
+    observer.observe(block)
+  }
   // the sidenote script hangs or folds its notes after this one runs, and again on resize
   const hung = new MutationObserver(records => {
     if (records.some(r => (r.target as Element).classList.contains('sidenote-content'))) queue()

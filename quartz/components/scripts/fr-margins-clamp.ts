@@ -104,6 +104,15 @@ export function mountClamps(article: HTMLElement, relayout: () => void, signal: 
         more.hidden = true
       }
     },
+    /** Open a cut body while `on`, then cut it again; a body that is not cut, or already open, stays. */
+    hold(entry: HTMLElement, on: boolean): boolean {
+      if (on) {
+        if (open.has(entry) || !entry.hasAttribute('data-fr-clamp')) return false
+        open.add(entry)
+      } else if (!open.delete(entry)) return false
+      relayout()
+      return true
+    },
     /** Returns focus to its control once the layout has shown it again. */
     refocus() {
       if (focused && !focused.hidden) focused.focus({ preventScroll: true })
