@@ -3,6 +3,7 @@ import { getFullSlug } from '../../../util/path'
 import { beginSitePerformanceSample, endSitePerformanceSample } from '../performance-sample'
 import {
   cloneCurrentStreamEntryPreview,
+  cloneTelescopicPreview,
   fetchStackedNotePayload,
   isNoteDocumentUrl,
   populatePopoverContent,
@@ -146,7 +147,7 @@ async function handleStackedNotes(
       if (popoverState.request?.link === link) popoverState.request = null
       return
     }
-    populateStackedPayloadContent(payload, targetUrl, popoverInner)
+    populateStackedPayloadContent(payload, targetUrl, popoverInner, hash)
   } else {
     const response = await fetchCanonical(new URL(targetUrl.toString()), {
       signal: controller.signal,
@@ -283,7 +284,13 @@ export async function mouseEnterHandler(
   if (compareUrls(thisUrl, targetUrl)) {
     clearActivePopover()
     if (hash !== '') {
-      const currentStreamPreview = cloneCurrentStreamEntryPreview(hash)
+      const currentStreamPreview =
+        cloneTelescopicPreview(
+          document,
+          targetUrl,
+          hash,
+          document.querySelector('h1')?.textContent ?? document.title,
+        ) ?? cloneCurrentStreamEntryPreview(hash)
       if (currentStreamPreview) {
         const popoverId = streamPopoverKey(targetUrl)
         link.dataset.popoverId = popoverId

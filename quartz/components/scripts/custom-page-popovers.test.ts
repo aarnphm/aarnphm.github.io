@@ -32,13 +32,16 @@ test('custom page and Curius link popovers use the shared browser lifecycle', as
   }
   if (!chrome) return t.skip('Chromium is required for the popover interaction fixture.')
 
-  const stylesheet = compile('quartz/components/styles/popover.scss').css
+  const stylesheet =
+    compile('quartz/components/styles/popover.scss').css +
+    compile('quartz/components/styles/telescopic.inline.scss').css
   const bundle = await build({
     stdin: {
       resolveDir: path.dirname(fileURLToPath(import.meta.url)),
       loader: 'ts',
       contents: `
         import './popover.inline'
+        import './telescopic.inline'
         import { createLinkEl, createTitle, _SENTINEL } from './curius'
         const cleanups = []
         window.addCleanup = fn => cleanups.push(fn)
@@ -77,6 +80,37 @@ test('custom page and Curius link popovers use the shared browser lifecycle', as
         }
         void (async () => {
           try {
+            for (const modifiers of [{ metaKey: true }, { ctrlKey: true }, { shiftKey: true }, { metaKey: true, altKey: true }]) {
+              let intercepted
+              window.addEventListener('click', event => {
+                intercepted = event.defaultPrevented
+                event.preventDefault()
+              }, { once: true })
+              document.querySelector('#ordinary').dispatchEvent(new MouseEvent('click', {
+                bubbles: true, cancelable: true, ...modifiers,
+              }))
+              check(intercepted === false, JSON.stringify(modifiers) + ': preserves native link activation')
+            }
+            const optionClick = new MouseEvent('click', { bubbles: true, cancelable: true, altKey: true })
+            document.querySelector('#ordinary').dispatchEvent(optionClick)
+            check(optionClick.defaultPrevented, 'Option-click is handled by the side panel')
+            await waitFor(() => document.querySelector('.sidepanel-container.active .sidepanel-inner article'))
+
+            for (const mime of ['application/xml', 'text/xml', 'application/rss+xml', 'application/atom+xml']) {
+              const anchor = document.createElement('a')
+              anchor.className = 'internal'
+              anchor.href = '/feed-' + encodeURIComponent(mime) + '.xml'
+              anchor.textContent = 'rss'
+              document.body.append(anchor)
+              for (const cleanup of cleanups.splice(0)) cleanup()
+              document.dispatchEvent(new CustomEvent('nav', { detail: { url: 'fixture' } }))
+              const card = await preview(anchor, 'rss')
+              check(card.textContent.includes('recent note'), mime + ': renders entry title')
+              check(card.textContent.includes('2026-10-25'), mime + ': renders entry date')
+              check(card.querySelector('.page-preview-row a').href.endsWith('/recent'), mime + ': resolves entry link')
+              escape()
+              anchor.remove()
+            }
             const row = createLinkEl({
               ..._SENTINEL, id: 101, title: 'Saved <T> & title', link: 'https://example.org/article',
               snippet: '<p>A saved <strong>excerpt</strong> &amp; context.</p>',
@@ -153,6 +187,19 @@ test('custom page and Curius link popovers use the shared browser lifecycle', as
             await waitFor(() => document.querySelector('.active-popover .stream-entry'))
             check(document.querySelectorAll('.active-popover .stream-entry').length === 1, 'stream entry links retain the isolated entry')
             escape()
+            for (const id of ['telescope-one', 'telescope-two', 'telescope-local']) {
+              enter(document.getElementById(id))
+              await waitFor(() => document.querySelector('.active-popover .telescopic-container'))
+              const popup = document.querySelector('.active-popover')
+              check(!popup.textContent.includes('Unrelated prose'), id + ': isolates the marked text')
+              check(popup.querySelector('.transclude-src').href === document.getElementById(id).href, id + ': source retains block anchor')
+              const button = popup.querySelector('button.summary')
+              check(button && getComputedStyle(button).display !== 'none', id + ': starts collapsed')
+              button.click()
+              check(popup.querySelector('.details').classList.contains('open'), id + ': expansion works after insertion')
+              check(getComputedStyle(popup.querySelector('.expanded')).display !== 'none', id + ': expanded text is visible')
+              escape()
+            }
             document.querySelector('#optout').dispatchEvent(new MouseEvent('mouseover', { bubbles: true }))
             await new Promise(r => setTimeout(r, 50))
             check(!document.querySelector('.active-popover'), 'explicit popover opt-out survives')
@@ -192,10 +239,24 @@ test('custom page and Curius link popovers use the shared browser lifecycle', as
     '/stream':
       '<body data-slug="stream"><article class="stream popover-hint"><ol class="stream-feed"><li class="stream-entry" id="one">Entry one</li><li class="stream-entry" id="two">Entry two</li></ol></article>',
   }
+  const telescope = (id: string) =>
+    `<div class="telescopic-container" id="${id}"><div class="telescope"><span class="details close"><button type="button" class="summary" aria-expanded="false">Small</button><span class="expanded">Expanded ${id}</span></span></div></div>`
+  pages['/telescope'] =
+    '<body><article class="popover-hint"><p>Unrelated prose</p>' +
+    telescope('one') +
+    telescope('two') +
+    '</article>'
   const server = createServer((request, response) => {
     const url = new URL(request.url ?? '/', 'http://localhost')
     requests.push(url.pathname + url.search)
-    if (url.pathname === '/fixture.js') {
+    if (url.pathname.startsWith('/feed-')) {
+      response.setHeader('Content-Type', decodeURIComponent(url.pathname.slice(6, -4)))
+      response.end(
+        url.pathname.includes('atom')
+          ? '<feed xmlns="http://www.w3.org/2005/Atom"><title>garden feed</title><subtitle>recent writing</subtitle><entry><title>recent note</title><link href="/recent"/><updated>2026-10-25T12:00:00Z</updated></entry></feed>'
+          : '<rss version="2.0"><channel><title>garden feed</title><description>recent writing</description><item><title>recent note</title><link>/recent</link><pubDate>Sun, 25 Oct 2026 12:00:00 GMT</pubDate></item></channel></rss>',
+      )
+    } else if (url.pathname === '/fixture.js') {
       response.setHeader('Content-Type', 'application/javascript')
       response.end(bundle.outputFiles[0].text)
     } else if (url.pathname === '/api/curius') {
@@ -231,7 +292,8 @@ test('custom page and Curius link popovers use the shared browser lifecycle', as
       if (url.pathname === '/') unavailableFeed = false
       response.setHeader('Content-Type', 'text/html')
       response.end(`<!doctype html><style>:root{--light:#fffcf0;--gray:#b7b5ac;--darkgray:#6f6e69;--dark:#100f0f;--z-popover:100;--radius-none:0;--text-ui:14px;--text-meta:12px}${stylesheet}</style><body data-slug="fixture">
-        <ul id="curius-fragments"></ul>
+        ${telescope('local')}<a id="telescope-local" class="internal" href="/#local">local</a><a id="telescope-one" class="internal" href="/telescope#one">one</a><a id="telescope-two" class="internal" href="/telescope#two">two</a>
+        <main><div class="page-body-grid"></div></main><ul id="curius-fragments"></ul>
         <a id="curius-offline" class="internal" href="/curius-offline">offline curius</a>
         ${['curius', 'arena', 'flashcards', 'masonry', 'letter', 'notebook', 'ordinary'].map(slug => `<a id="${slug === 'curius' ? 'curius-page' : slug}" class="internal" href="/${slug}">${slug}</a>`).join(' ')}
         <a id="stream-entry" class="internal" href="/stream#one">stream entry</a>

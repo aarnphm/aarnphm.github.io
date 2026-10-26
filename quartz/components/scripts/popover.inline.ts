@@ -45,10 +45,6 @@ function stackedPopoverForTarget(target: EventTarget | null): HTMLElement | null
   return popover instanceof HTMLElement ? popover : null
 }
 
-function opensSidePanel(event: MouseEvent): boolean {
-  return event.altKey || event.metaKey || event.ctrlKey
-}
-
 function setupStackedPopoverLinks() {
   stackedPopoverEvents?.abort()
   stackedPopoverEvents = null
@@ -59,10 +55,15 @@ function setupStackedPopoverLinks() {
   const events = new AbortController()
   stackedPopoverEvents = events
   // Let the router read preview links before removing their DOM.
-  stacked.addEventListener('click', () => queueMicrotask(dismissPopover), {
-    capture: true,
-    signal: events.signal,
-  })
+  stacked.addEventListener(
+    'click',
+    event => {
+      if (event.target instanceof Element && event.target.closest('a')) {
+        queueMicrotask(dismissPopover)
+      }
+    },
+    { capture: true, signal: events.signal },
+  )
 
   stacked.addEventListener(
     'mouseover',
@@ -109,6 +110,7 @@ function setupStackedPopoverLinks() {
 }
 
 async function mouseClickHandler(evt: MouseEvent, link: HTMLAnchorElement) {
+  if (evt.defaultPrevented || evt.button !== 0 || evt.metaKey || evt.ctrlKey || evt.shiftKey) return
   clearActivePopover()
   if (link.dataset.curiusPopover) return
   if (getFullSlug(window) === 'index') return
@@ -133,7 +135,7 @@ async function mouseClickHandler(evt: MouseEvent, link: HTMLAnchorElement) {
     return
   }
 
-  if (opensSidePanel(evt) && !container?.classList.contains('active')) {
+  if (evt.altKey && !container?.classList.contains('active')) {
     evt.preventDefault()
     evt.stopPropagation()
 
