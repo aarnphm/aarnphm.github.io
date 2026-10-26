@@ -4,6 +4,7 @@ import { codeMatchLocation, codeMatchUrl } from '../code-search-controls'
 import { imageSearchRow, searchableImage } from '../image-search-controls'
 import { fitSearchPath } from '../search-path'
 import { mountResultPages } from '../search-result-pages'
+import { searchResultsTable, searchStatusTable } from '../search-results-table'
 import { clearPreview, displayPreview, resolveUrl } from './preview'
 import { shared, type SearchSession, type SimilarityResult } from './state'
 import { hideSearch } from './visibility'
@@ -42,7 +43,7 @@ export function commitSearchDisplay(
     return
   }
   s.pendingDisplay = null
-  s.searchLayout.classList.toggle('display-results', shared.rawSearchTerm.trim() !== '')
+  s.searchLayout.classList.add('display-results')
   s.searchLayout.removeAttribute('aria-busy')
   const applied = apply()
   if (s.pendingOpen === token) {
@@ -176,10 +177,8 @@ export function displayResults(s: SearchSession, finalResults: SimilarityResult[
   results.replaceChildren()
   results.scrollTop = 0
   if (finalResults.length === 0) {
-    results.innerHTML = `<a class="result-card no-match">
-        <h3>No results.</h3>
-        <p>Try another search term?</p>
-    </a>`
+    const query = parseSearchQuery(s.searchBar.value)
+    results.append(searchStatusTable(s.searchBar.value, query.scope))
     s.currentHover = null
   } else if (imagesOnly) {
     const gallery = document.createElement('div')
@@ -192,22 +191,11 @@ export function displayResults(s: SearchSession, finalResults: SimilarityResult[
     })
   } else {
     const scored = finalResults.some(result => Number.isFinite(result.similarity))
-    const table = document.createElement('table')
-    table.className = 'search-results-table'
-    table.setAttribute('aria-label', 'search results')
-    const head = table.createTHead().insertRow()
-    for (const [label, column] of [
-      [parseSearchQuery(s.searchBar.value).scope === 'notes' ? 'note' : 'file', 'note'],
-      ['match', 'match'],
-      ...(scored ? [['score', 'score']] : []),
-    ]) {
-      const heading = document.createElement('th')
-      heading.scope = 'col'
-      heading.className = `search-column-${column}`
-      heading.textContent = label
-      head.append(heading)
-    }
-    const body = table.createTBody()
+    const { table, body } = searchResultsTable([
+      parseSearchQuery(s.searchBar.value).scope === 'notes' ? 'note' : 'file',
+      'match',
+      ...(scored ? ['score'] : []),
+    ])
     results.append(table)
     s.resultPages = mountResultPages(results, finalResults, (page, signal) => {
       let first: HTMLElement | null = null

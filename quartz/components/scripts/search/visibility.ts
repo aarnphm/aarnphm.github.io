@@ -1,3 +1,4 @@
+import { searchStatusTable } from '../search-results-table'
 import { ensureSearchData, updateModeUI } from './engine'
 import { disposePdfPreviews } from './pdf-preview-cache'
 import { clearPreview, setImageSearch, setPreviewVisible } from './preview'
@@ -55,6 +56,10 @@ export function showSearch(s: SearchSession, type: SearchType) {
     container!.showPopover()
   }
   container!.classList.add('active')
+  if (!searchBar.value.trim()) {
+    s.results.replaceChildren(searchStatusTable(''))
+    s.searchLayout.classList.add('display-results')
+  }
   if (!s.data) {
     startSearchProgress(s, 'index')
     void ensureSearchData(s).then(
