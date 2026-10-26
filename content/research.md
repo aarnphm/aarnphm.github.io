@@ -2,7 +2,7 @@
 date: '2025-08-12'
 description: and my interests.
 id: research
-modified: 2026-10-23 19:01:45 GMT-04:00
+modified: 2026-10-25 22:41:18 GMT-04:00
 pageLayout: technical
 tags:
   - fruit
@@ -22,7 +22,7 @@ A lot of work recently focuses on disaggregated serving architectures of these m
 - @qin2024mooncakekvcachecentricdisaggregatedarchitecture reports up to a 525% throughput increase for Mooncake against the paper's serving baselines.[^notes]
 - @li2025flowkvdisaggregatedinferenceframework reduces KV transfer latency by 96%.
 
-[^notes]: ==cross-stage communication under dynamic workloads== and how to allocate resources when both stages compete for the same hardware is a pretty cool system problems.
+[^notes]: ::cross-stage communication{h3}:: under dynamic workloads and how to allocate resources when both stages compete for the same hardware is a pretty cool system problems.
 
 I do think that, speculation should move beyond naive draft-verify paradigm:
 

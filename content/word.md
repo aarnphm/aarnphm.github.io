@@ -372,3 +372,4 @@ title: lists
 - paroxysm
 - dowdy
 - austere
+- mercantilism

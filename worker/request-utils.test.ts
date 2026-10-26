@@ -3,11 +3,13 @@ import test from 'node:test'
 import {
   documentDiscoveryLink,
   isAgentUserAgent,
+  isCodeAssetPathname,
   markdownPathname,
   resolveBaseUrl,
   shouldRejectDocumentResponse,
   shouldRewriteMarkdown,
   shouldTreatAsDocument,
+  wantsCodeViewerHtml,
 } from './request-utils'
 
 test('resolves the public base URL from the development override or request origin', () => {
@@ -158,5 +160,53 @@ test('publishes markdown alternates and the llms.txt description in document lin
   assert.equal(
     documentDiscoveryLink('/thoughts.html'),
     '</thoughts.md>; rel="alternate"; type="text/markdown", </llms.txt>; rel="describedby"; type="text/markdown"',
+  )
+})
+
+test('matches content code asset pathnames while excluding static bundle paths', () => {
+  assert.equal(isCodeAssetPathname('/lectures/420/examples/cute_paged_attention.py'), true)
+  assert.equal(
+    isCodeAssetPathname('/lectures/420/examples/10_cute_paged_attention_optimized.cu'),
+    true,
+  )
+  assert.equal(isCodeAssetPathname('/thoughts/kernels/flash.cpp'), true)
+  assert.equal(isCodeAssetPathname('/static/scripts/worker.js'), false)
+  assert.equal(isCodeAssetPathname('/thoughts/mechanistic-interpretability'), false)
+})
+
+test('negotiates code viewer HTML only for browser HTML requests without raw override', () => {
+  const url = new URL('http://localhost:8080/lectures/420/examples/cute_paged_attention.py')
+  const rawUrl = new URL(
+    'http://localhost:8080/lectures/420/examples/cute_paged_attention.py?raw=1',
+  )
+  const browserHeaders = {
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+    Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+  }
+
+  assert.equal(wantsCodeViewerHtml(new Request(url, { headers: browserHeaders }), url), true)
+  assert.equal(wantsCodeViewerHtml(new Request(rawUrl, { headers: browserHeaders }), rawUrl), false)
+  assert.equal(
+    wantsCodeViewerHtml(
+      new Request(url, { headers: { ...browserHeaders, 'User-Agent': 'Claude-User' } }),
+      url,
+    ),
+    false,
+  )
+  assert.equal(
+    wantsCodeViewerHtml(
+      new Request(url, { headers: { 'User-Agent': browserHeaders['User-Agent'], Accept: '*/*' } }),
+      url,
+    ),
+    false,
+  )
+  assert.equal(
+    wantsCodeViewerHtml(
+      new Request(url, {
+        headers: { 'User-Agent': browserHeaders['User-Agent'], Accept: 'text/plain, */*;q=0.8' },
+      }),
+      url,
+    ),
+    false,
   )
 })
