@@ -1,4 +1,4 @@
-// Gaze belongs to the eyes and body; inherited pointer updates restyle the full SVG artwork.
+// Gaze belongs to the eyes; inherited pointer updates restyle the full SVG artwork.
 @property --pet-eye-x {
   syntax: '<number>';
   inherits: false;
@@ -6,12 +6,6 @@
 }
 
 @property --pet-eye-y {
-  syntax: '<number>';
-  inherits: false;
-  initial-value: 0;
-}
-
-@property --pet-tilt {
   syntax: '<number>';
   inherits: false;
   initial-value: 0;
@@ -140,16 +134,6 @@ $pet-looks: (
   [data-part='arm-thumb'] {
     transform-origin: 0 100%;
   }
-}
-
-// Perched and watching, the body tips toward the pointer from where it rests. A hanger's body
-// hangs from its arms, so it stays plumb.
-.pet-svg:is([data-pet-state='idle'], [data-pet-state='happy'], [data-pet-state='wait']):not(
-    [data-pet-kind='hang']
-  )
-  .pet-body {
-  rotate: calc(var(--pet-tilt, 0) * 1deg);
-  transition: rotate 160ms cubic-bezier(0.2, 0, 0, 1);
 }
 
 @each $state, $parts in $pet-looks {
