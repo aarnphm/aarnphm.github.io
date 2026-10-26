@@ -8,6 +8,7 @@ import {
 } from '../../quartz/util/stream-host'
 import { TRIATHLON_HOSTNAME, triathlonHostPathname } from '../../quartz/util/triathlon-host'
 import { API_CATALOG_LINK, isHomepagePathname } from '../api-catalog'
+import { codeViewerResponse } from '../code-viewer'
 import {
   getObjectFromBucket,
   getObjectInfo,
@@ -18,6 +19,7 @@ import { publishedPdfDocument } from '../pdf-marks'
 import { problemResponse } from '../problem-details'
 import {
   documentDiscoveryLink,
+  isCodeAssetPathname,
   markdownPathname,
   resolveBaseUrl,
   shouldTreatAsDocument,
@@ -202,17 +204,9 @@ export async function handleTerminalDelivery(
     })
   }
 
-  const assetsMatch = url.pathname.match(
-    /.+\.(py|go|java|c|cpp|cxx|cu|cuh|h|hpp|ts|tsx|jsx|yaml|yml|rs|m|sql|sh|zig|lua)$/i,
-  )
-  if (assetsMatch) {
+  if (isCodeAssetPathname(url.pathname)) {
     const originResp = await env.ASSETS.fetch(request)
-    return withHeaders(originResp, {
-      'Content-Type': 'text/plain; charset=utf-8',
-      'X-Content-Type-Options': 'nosniff',
-      'X-Frame-Options': 'DENY',
-      'Cache-Control': 'no-store, no-cache, must-revalidate',
-    })
+    return codeViewerResponse(request, url, originResp)
   }
 
   if (url.pathname.startsWith('/api/')) {

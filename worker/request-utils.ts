@@ -41,6 +41,13 @@ export function shouldTreatAsDocument(pathname: string): boolean {
   return extension === 'html' || extension === 'htm'
 }
 
+const CODE_ASSET_PATTERN =
+  /^\/(?!static\/|api\/|fonts\/|_plausible\/|\.well-known\/|embeddings\/).+\.(?:py|pyi|mojo|go|java|kt|swift|scala|c|cc|cpp|cxx|cu|cuh|h|hpp|ts|tsx|jsx|yaml|yml|toml|rs|m|mm|sql|sh|bash|zsh|fish|zig|lua|hs|rb|php|lean|wat|wast|ml|mli|nix)$/i
+
+export function isCodeAssetPathname(pathname: string): boolean {
+  return CODE_ASSET_PATTERN.test(pathname)
+}
+
 export function isAgentUserAgent(request: Request): boolean {
   const userAgent = request.headers.get('User-Agent')?.toLowerCase() ?? ''
   return AGENT_USER_AGENT_MARKERS.some(marker => userAgent.includes(marker))
@@ -78,6 +85,17 @@ export function wantsMarkdown(request: Request): boolean {
   if (markdownQuality === 0) return false
   if (markdownQuality > htmlQuality) return true
   return markdownQuality === htmlQuality && isAgentUserAgent(request)
+}
+
+export function wantsCodeViewerHtml(request: Request, url: URL): boolean {
+  if (request.method !== 'GET' && request.method !== 'HEAD') return false
+  if (url.searchParams.has('raw')) return false
+  if (isAgentUserAgent(request)) return false
+  const ranges = parseAccept(request)
+  const htmlQuality = mediaQuality(ranges, 'text/html')
+  const plainQuality = mediaQuality(ranges, 'text/plain')
+  const markdownQuality = mediaQuality(ranges, 'text/markdown')
+  return htmlQuality > 0 && htmlQuality > plainQuality && htmlQuality >= markdownQuality
 }
 
 export function markdownPathname(pathname: string): string {
