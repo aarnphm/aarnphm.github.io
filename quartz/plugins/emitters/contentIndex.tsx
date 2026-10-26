@@ -70,7 +70,7 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = userOpts => {
     name: 'ContentIndex',
     async *emit(ctx, content, _resources) {
       const cfg = ctx.cfg.configuration
-      const writesAtom = opts.enableAtom && !ctx.argv.watch
+      const writesAtom = opts.enableAtom
       const linkIndex = buildLinkIndex(ctx, content, opts)
       cachedLinkIndex = new Map(linkIndex)
 
@@ -156,7 +156,7 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = userOpts => {
       }
     },
     async *partialEmit(ctx, content, _resources, changeEvents) {
-      const writesAtom = opts.enableAtom && !ctx.argv.watch
+      const writesAtom = opts.enableAtom
       const plan = planPartialContentIndex(changeEvents)
       if (!plan.content && !plan.graph && !plan.search && !plan.security) {
         return
@@ -418,7 +418,7 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = userOpts => {
       }
     },
     externalResources: (ctx, content = []) => {
-      const { argv, cfg } = ctx
+      const { cfg } = ctx
       const additionalHead: StaticResources['additionalHead'] = [
         <link
           rel="stylesheet"
@@ -429,7 +429,7 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = userOpts => {
         />,
       ]
 
-      if (opts.enableAtom && !argv.watch) {
+      if (opts.enableAtom) {
         // Capture feed eligibility before concurrent emitters render page heads.
         const folderFeedSlugs = new Set(
           Array.from(

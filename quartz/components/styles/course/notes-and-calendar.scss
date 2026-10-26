@@ -93,15 +93,6 @@
       max-inline-size: 66rem;
       justify-self: center;
     }
-
-    // the notes + workspace split spans 5 / -3, wider than 66rem on a wide screen, where
-    // centring would push the notes off the title's edge; it starts at that edge instead.
-    // At 1400px and below it spans 3 / -3, where `start` pulls the notes left of the title.
-    @media (min-width: 1401px) {
-      > .page-content > .course-reading-split {
-        justify-self: start;
-      }
-    }
   }
 }
 
