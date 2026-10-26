@@ -1,0 +1,25 @@
+@mixin rows {
+  .search-empty-row {
+    > td {
+      padding: 1.25rem 0.75rem;
+      white-space: normal;
+      color: var(--dark);
+      cursor: default;
+    }
+    p {
+      margin: 0;
+      font-size: var(--text-ui);
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+    .search-empty-hint {
+      margin-top: 0.25rem;
+      color: var(--darkgray);
+      font-size: var(--text-meta);
+    }
+    &:hover {
+      background: transparent;
+      cursor: default;
+    }
+  }
+}

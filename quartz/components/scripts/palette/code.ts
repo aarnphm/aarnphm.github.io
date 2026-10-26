@@ -11,6 +11,7 @@ import { renderCodeMatch } from '../code-search-preview'
 import { updateSearchProgress } from '../search-progress'
 import { showSearchProgress } from '../search-progress'
 import { mountResultPages } from '../search-result-pages'
+import { searchStatusTable } from '../search-results-table'
 import { hidePalette, paletteMode, quickOpenProgress, type PaletteState } from './shell'
 
 export async function searchPaletteCode(s: PaletteState, query: CodeQuery, generation: number) {
@@ -34,9 +35,7 @@ export async function searchPaletteCode(s: PaletteState, query: CodeQuery, gener
     s.output.replaceChildren(codeSearchSummary(result, rows.length, s.container))
     s.currentHover = null
     if (!rows.length) {
-      const empty = document.createElement('p')
-      empty.textContent = 'no code matches. edit the query to retry.'
-      s.output.append(empty)
+      s.output.append(searchStatusTable(query.pattern, 'code'))
     }
     s.resultPages = mountResultPages(s.output, rows, (page, signal) => {
       const items = page.map(match => {

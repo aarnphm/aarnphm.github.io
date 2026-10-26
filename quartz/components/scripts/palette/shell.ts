@@ -11,6 +11,7 @@ import { FullSlug } from '../../../util/path'
 import { SEARCH_QUERY_PLACEHOLDER } from '../../../util/search-completion'
 import { createImageSemantic, type ImageSemantic } from '../image-semantic'
 import { showSearchProgress } from '../search-progress'
+import { searchStatusTable } from '../search-results-table'
 import { siteSemantic, type SiteSemantic } from '../site-semantic'
 
 export type ActionType = 'quick_open' | 'connector' | 'command'
@@ -132,14 +133,7 @@ export function quickOpenStatus(s: PaletteState, message: string) {
   s.resultPages?.dispose()
   s.resultPages = null
   s.currentHover = null
-  if (!message) {
-    s.output.replaceChildren()
-    return
-  }
-  const status = document.createElement('p')
-  status.setAttribute('role', 'status')
-  status.textContent = message
-  s.output.replaceChildren(status)
+  s.output.replaceChildren(searchStatusTable(s.bar.value, 'notes', message || undefined))
 }
 
 export function hidePalette(s: PaletteState) {
@@ -195,8 +189,8 @@ export function syncPaletteHelper(s: PaletteState) {
 }
 
 export function setFocusFirstChild(s: PaletteState) {
-  const firstChild = s.output.firstElementChild
-  if (!(firstChild instanceof HTMLDivElement)) {
+  const firstChild = s.output.querySelector<HTMLElement>('.suggestion-item')
+  if (!firstChild) {
     s.currentHover = null
     return
   }

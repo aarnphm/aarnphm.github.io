@@ -1,3 +1,4 @@
+@use './search-empty';
 @use './status-flap.scss';
 @use './code-search.scss';
 @use './search-completions.scss';
@@ -495,6 +496,7 @@
           }
 
           .search-results-table {
+            @include search-empty.rows;
             width: 100%;
             table-layout: fixed;
             border-collapse: collapse;
@@ -562,7 +564,7 @@
               }
             }
             @media (hover: hover) and (pointer: fine) {
-              tbody tr:hover {
+              tbody tr:not(.search-empty-row):hover {
                 cursor: pointer;
               }
             }
@@ -577,6 +579,9 @@
             @container search-results (max-width: 360px) {
               .search-column-match {
                 display: none;
+              }
+              &:has(.search-empty-row) .search-column-match {
+                display: table-cell;
               }
               .search-column-note {
                 width: auto;

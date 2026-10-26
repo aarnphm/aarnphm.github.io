@@ -11,6 +11,7 @@ import { imageSimilarityStatus, searchableImage } from '../image-search-controls
 import { getLexicalSearchClient } from '../lexical-search'
 import { pdfPageLabel } from '../pdf-search-controls'
 import { updateSearchProgress } from '../search-progress'
+import { searchStatusTable } from '../search-results-table'
 import { isSemanticCancellation } from '../semantic.inline'
 import { resetSiteSemantic } from '../site-semantic'
 import { searchCode } from './code'
@@ -177,24 +178,25 @@ async function querySearch(s: SearchSession, rawTerm: string, token: number) {
     return
   }
   const { image, modeButtons, results } = s
-  await ensureSearchData(s)
-  if (token !== s.searchSeq) return
   const { scope, term: trimmed, explicit } = parseSearchQuery(rawTerm)
-  setImageSearch(s, scope === 'images')
-  if (scope === 'images') {
-    const ids = await image.similarity.ids().catch(() => undefined)
-    if (token !== s.searchSeq) return
-    image.ids = ids
-  }
   if (trimmed === '' && !explicit) {
+    setImageSearch(s, false)
     await commitSearchDisplay(s, token, () => {
-      results.replaceChildren()
+      results.replaceChildren(searchStatusTable(''))
       clearPreview(s)
       s.currentHover = null
       shared.currentSearchTerm = ''
       resetProgressBar(s)
     })
     return
+  }
+  await ensureSearchData(s)
+  if (token !== s.searchSeq) return
+  setImageSearch(s, scope === 'images')
+  if (scope === 'images') {
+    const ids = await image.similarity.ids().catch(() => undefined)
+    if (token !== s.searchSeq) return
+    image.ids = ids
   }
 
   if (shared.searchMode === 'semantic' && (scope === 'notes' || scope === 'all')) {

@@ -15,6 +15,7 @@ import { noteRankDistribution } from '../note-rank-distribution'
 import { pdfPageLabel } from '../pdf-search-controls'
 import { updateSearchProgress } from '../search-progress'
 import { mountResultPages } from '../search-result-pages'
+import { searchResultsTable, searchStatusTable } from '../search-results-table'
 import { isSemanticCancellation } from '../semantic.inline'
 import { getCommandItems } from './actions'
 import { searchPaletteCode } from './code'
@@ -366,35 +367,21 @@ function displayResults(s: PaletteState, finalResults: Item[], currentSearchTerm
   s.output.replaceChildren()
   s.currentHover = null
 
-  const noMatchEl = document.createElement('div')
-  noMatchEl.classList.add('suggestion-item', 'no-match')
-  noMatchEl.tabIndex = -1
-  const noMatchContent = document.createElement('div')
-  noMatchContent.className = 'suggestion-content'
-  const noMatchTitle = document.createElement('div')
-  noMatchTitle.className = 'suggestion-title'
-  noMatchTitle.textContent = currentSearchTerm
-  noMatchContent.appendChild(noMatchTitle)
-  const noMatchAux = document.createElement('div')
-  noMatchAux.className = 'suggestion-aux'
-  const noMatchAction = document.createElement('span')
-  noMatchAction.className = 'suggestion-action'
-  noMatchAction.textContent = 'enter to schedule a chat'
-  noMatchAux.appendChild(noMatchAction)
-  noMatchEl.append(noMatchContent, noMatchAux)
-
-  const onNoMatchClick = () => {
-    window.location.href = `mailto:contact@aarnphm.xyz?subject=Chat about: ${encodeURIComponent(currentSearchTerm)}`
-    hidePalette(s)
-  }
-
-  noMatchEl.addEventListener('click', onNoMatchClick)
   if (finalResults.length === 0) {
-    s.output.appendChild(noMatchEl)
+    const { scope } = parseSearchQuery(s.bar.value)
+    s.output.append(searchStatusTable(s.bar.value, scope))
   } else {
+    const { table, body } = searchResultsTable(
+      [
+        parseSearchQuery(s.bar.value).scope === 'notes' ? 'note' : 'file',
+        currentSearchTerm ? 'score' : 'rank',
+      ],
+      currentSearchTerm ? 'search results' : 'nearby notes',
+    )
+    s.output.append(table)
     s.resultPages = mountResultPages(s.output, finalResults, (page, signal) => {
       const items = page.map(result => toHtml(s, result, signal))
-      s.output.append(...items)
+      body.append(...items)
       return items[0] ?? null
     })
   }
@@ -403,7 +390,7 @@ function displayResults(s: PaletteState, finalResults: Item[], currentSearchTerm
 }
 
 function toHtml(s: PaletteState, { name, slug, similarity, passage }: Item, signal: AbortSignal) {
-  const item = document.createElement('div')
+  const item = document.createElement('tr')
   item.classList.add('suggestion-item')
   item.tabIndex = -1
   item.dataset.slug = slug
@@ -448,7 +435,12 @@ function toHtml(s: PaletteState, { name, slug, similarity, passage }: Item, sign
 
   if (searchableImage(slug))
     aux.append(imageSimilarityButton(slug, seed => showSimilarImages(s, seed), similarity))
-  item.append(content, aux)
+  const noteCell = item.insertCell()
+  noteCell.className = 'search-column-note'
+  noteCell.append(content)
+  const scoreCell = item.insertCell()
+  scoreCell.className = 'search-column-score'
+  scoreCell.append(aux)
 
   const onClick = (event: MouseEvent) => {
     if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return
@@ -459,7 +451,7 @@ function toHtml(s: PaletteState, { name, slug, similarity, passage }: Item, sign
 
   const onMouseEnter = () => {
     // Remove focus class from all other items
-    s.output.querySelectorAll<HTMLDivElement>('.suggestion-item.focus').forEach(el => {
+    s.output.querySelectorAll<HTMLElement>('.suggestion-item.focus').forEach(el => {
       el.classList.remove('focus')
     })
     // Add focus to current item
