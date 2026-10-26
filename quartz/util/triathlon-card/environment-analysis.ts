@@ -2,6 +2,7 @@ import type { StravaActivityDetail } from '../../plugins/stores/strava'
 import type { TriNodeFactory } from './construction-contracts'
 import { surfaceCurrentChartSamples, type EnvironmentChartSample } from '../activity-environment'
 import { myWindsockWindSamples, preferredActivityWind } from '../activity-wind'
+import { activityRecordedPauses } from '../elapsed-axis'
 import { triText } from '../triathlon-i18n'
 import { myWindsockLogoLink } from '../triathlon-mywindsock'
 import { buildEnvironmentChart } from './environment-chart'
@@ -216,6 +217,7 @@ export const buildEnvironmentAnalysis = <N>(
               : ENVIRONMENT_PROVIDER_CHART_VIEWS.includes(view)
                 ? 'mywindsock'
                 : null,
+            activityRecordedPauses(d),
           ),
     )
     if (view === 'wind')

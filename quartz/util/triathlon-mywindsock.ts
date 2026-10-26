@@ -1,5 +1,6 @@
 import type { StravaActivityDetail } from '../plugins/stores/strava'
 import type { TriNodeFactory } from './triathlon-card'
+import { activityRecordedPauses, formatElapsedPauses } from './elapsed-axis'
 import { triText } from './triathlon-i18n'
 
 export const myWindsockLogoLink = <N>(
@@ -34,11 +35,14 @@ export const buildMyWindsockGraphs = <N>(
 ): N | null => {
   const reference = d.analyses.native.myWindsockArchive
   if (!reference) return null
+  // myWindsock plots the recorded file on elapsed time, so the trace's recorded pauses apply.
+  const pauses = activityRecordedPauses(d)
   const section = f.el('section', 'tri-mywindsock', undefined, {
     'data-mywindsock-id': String(d.id),
     'data-mywindsock-path': reference.path,
     'data-mywindsock-captured-at': reference.capturedAt,
     'data-mywindsock-elapsed-s': String(d.elapsedTimeS),
+    ...(pauses.length ? { 'data-mywindsock-pauses': formatElapsedPauses(pauses) } : {}),
     'data-mywindsock-state': 'pending',
     'aria-label': triText(f.presentation.locale, 'wind graphs'),
     'data-i18n-aria-label': 'wind graphs',

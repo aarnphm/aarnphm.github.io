@@ -3,6 +3,7 @@ import type {
   GardenEnvironmentSample,
 } from '../../../util/activity-environment'
 import type { TriathlonPresentation } from '../../../util/triathlon-presentation'
+import { elapsedAxis, parseElapsedPauses } from '../../../util/elapsed-axis'
 import { setText } from '../../../util/set-text'
 import {
   ENVIRONMENT_CHART_VIEWS,
@@ -280,11 +281,15 @@ const cumulativeMode = (analysis: HTMLElement): 'score' | 'sed' =>
     ? 'score'
     : 'sed'
 
+// Each chart svg lists the recording pauses that take no width on its elapsed axis.
+const chartAxis = (chart: SVGElement, elapsed: number) =>
+  elapsedAxis(0, elapsed, parseElapsedPauses(chart.dataset.domainPauses))
+
 const moveChartCursors = (analysis: HTMLElement, elapsedS: number): void => {
   const elapsed = Number(analysis.dataset.environmentElapsed)
   if (!Number.isFinite(elapsed) || elapsed <= 0) return
-  const x = 2 + Math.min(1, Math.max(0, elapsedS / elapsed)) * 96
   for (const chart of analysis.querySelectorAll<SVGElement>('[data-environment-chart]')) {
+    const x = 2 + chartAxis(chart, elapsed).fraction(elapsedS) * 96
     const cursor = chart.querySelector<SVGLineElement>('.tri-environment-cursor')
     cursor?.setAttribute('x1', x.toFixed(3))
     cursor?.setAttribute('x2', x.toFixed(3))
@@ -418,15 +423,18 @@ const eventElapsed = (analysis: HTMLElement, chart: SVGElement, clientX: number)
   const bounds = chart.getBoundingClientRect()
   if (!Number.isFinite(elapsed) || elapsed <= 0 || bounds.width <= 0) return null
   const fraction = (clientX - bounds.left) / bounds.width
-  return Math.min(1, Math.max(0, (fraction - 0.02) / 0.96)) * elapsed
+  return chartAxis(chart, elapsed).elapsedAt((fraction - 0.02) / 0.96)
 }
 
 const setSelection = (analysis: HTMLElement, startS: number, endS: number): void => {
   const elapsed = Number(analysis.dataset.environmentElapsed)
   if (!Number.isFinite(elapsed) || elapsed <= 0) return
-  const left = 2 + (Math.min(startS, endS) / elapsed) * 96
-  const right = 2 + (Math.max(startS, endS) / elapsed) * 96
   for (const selection of analysis.querySelectorAll<SVGRectElement>('.tri-environment-selection')) {
+    const chart = selection.ownerSVGElement
+    if (!chart) continue
+    const axis = chartAxis(chart, elapsed)
+    const left = 2 + axis.fraction(Math.min(startS, endS)) * 96
+    const right = 2 + axis.fraction(Math.max(startS, endS)) * 96
     selection.setAttribute('x', left.toFixed(3))
     selection.setAttribute('width', Math.max(0.15, right - left).toFixed(3))
   }
