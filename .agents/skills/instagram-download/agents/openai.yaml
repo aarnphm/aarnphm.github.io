@@ -1,4 +1,4 @@
 interface:
   display_name: 'Instagram Download'
-  short_description: 'Save Instagram photos, video, and separate audio'
-  default_prompt: 'Use $instagram-download to save the media from this Instagram link, including a compact video and separate audio when present.'
+  short_description: 'Download Instagram media into the Garden archive'
+  default_prompt: 'Use $instagram-download to download this Instagram link and archive its verified media in Garden with base64url hash filenames, available audio, and attribution.'
