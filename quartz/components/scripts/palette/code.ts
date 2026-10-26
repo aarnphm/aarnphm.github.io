@@ -8,6 +8,7 @@ import {
   codeSearchError,
 } from '../code-search-controls'
 import { renderCodeMatch } from '../code-search-preview'
+import { updateSearchProgress } from '../search-progress'
 import { showSearchProgress } from '../search-progress'
 import { mountResultPages } from '../search-result-pages'
 import { hidePalette, paletteMode, quickOpenProgress, type PaletteState } from './shell'
@@ -19,7 +20,13 @@ export async function searchPaletteCode(s: PaletteState, query: CodeQuery, gener
   s.output.setAttribute('aria-busy', 'true')
   try {
     const result = await s.codeSearch.search(query, progress => {
-      if (current()) s.output.replaceChildren(codeSearchStatus(progress))
+      if (current())
+        updateSearchProgress(
+          s.progress,
+          codeSearchStatus(progress),
+          progress.scannedUnits,
+          progress.totalUnits,
+        )
     })
     if (!current()) return
     s.resultPages?.dispose()

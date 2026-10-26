@@ -315,6 +315,9 @@ export async function displayPreview(s: SearchSession, el: HTMLElement | null) {
   } catch (error) {
     if (request.signal.aborted) return
     console.warn('[Search] preview unavailable:', error)
+    // The PDF reader shows its error below the toolbar, so the pane keeps the PDF frame.
+    if (preview.querySelector(':scope > .search-pdf-preview .pdf-embed-body > .pdf-embed-error'))
+      return
     window.quartzPdfEmbeds?.cleanup(preview)
     const message = document.createElement('p')
     message.setAttribute('role', 'status')

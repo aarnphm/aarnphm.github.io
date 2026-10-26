@@ -71,7 +71,14 @@ export type PdfSearchResult = {
   /** Passage body matches, one per PDF, in lexical rank order. */
   lexical: PdfPassage[]
 }
+export type ModelLoadProgress = {
+  phase: 'loading' | 'initializing'
+  loadedBytes: number
+  totalBytes: number
+}
+
 export type SemanticWorkerResponse =
+  | ({ type: 'model-progress' } & ModelLoadProgress)
   | { type: 'progress'; loadedRows: number; totalRows: number }
   | { type: 'ready' }
   | SemanticLoadedResult

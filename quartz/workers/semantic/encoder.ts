@@ -1,7 +1,9 @@
 import { env, AutoConfig, AutoModel, AutoTokenizer } from '@huggingface/transformers'
+import type { ModelLoadProgress } from '../../util/semantic-protocol'
 import { IMAGE_EMBEDDING_REVISION } from '../../util/image-search'
 import { SEMANTIC_ONNX_MODELS, type SemanticQueryDType } from '../../util/semantic-search'
 import { isRecord } from '../../util/type-guards'
+import { encoderProgress } from './encoder-progress'
 
 export type QueryEncoder = {
   readonly model: string
@@ -70,6 +72,7 @@ function disposeTensors(...maps: unknown[]) {
 export async function loadQueryEncoder(
   modelId: string,
   queryDtype: unknown,
+  report: (progress: ModelLoadProgress) => void,
 ): Promise<QueryEncoder> {
   const mappedModel = SEMANTIC_ONNX_MODELS[modelId] ?? modelId
   const revision = modelId === 'google/embeddinggemma-2' ? IMAGE_EMBEDDING_REVISION : 'main'
@@ -80,18 +83,25 @@ export async function loadQueryEncoder(
   if (!(await navigator.gpu?.requestAdapter().catch(() => null))) {
     throw new Error('semantic query encoder needs WebGPU')
   }
+  const progress_callback = encoderProgress(report)
   const dtype = resolveQueryDType(queryDtype)
-  const config = await AutoConfig.from_pretrained(mappedModel, { revision })
+  const config = await AutoConfig.from_pretrained(mappedModel, { revision, progress_callback })
   // embeddinggemma-2 ships vision and audio encoders (1.8 GB at fp32); queries only need the text graph.
   if (config.model_type === 'embedding_gemma2') {
     Object.assign(config, { vision_config: null, audio_config: null })
   }
   const [tokenizer, model] = await Promise.all([
-    AutoTokenizer.from_pretrained(mappedModel, { revision }).then(loaded => {
+    AutoTokenizer.from_pretrained(mappedModel, { revision, progress_callback }).then(loaded => {
       pruneTokenizerMemory(loaded)
       return loaded
     }),
-    AutoModel.from_pretrained(mappedModel, { config, dtype, device: 'webgpu', revision }),
+    AutoModel.from_pretrained(mappedModel, {
+      config,
+      dtype,
+      device: 'webgpu',
+      revision,
+      progress_callback,
+    }),
   ])
   const onnxWasm = env.backends.onnx.wasm
   if (onnxWasm) onnxWasm.wasmBinary = undefined

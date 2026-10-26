@@ -195,7 +195,9 @@ async function parseManifest(path: string): Promise<ParsedManifest> {
 
 function ensureEncoder(model: string): Promise<QueryEncoder> {
   if (encoder) return Promise.resolve(encoder)
-  encoderLoading ??= loadQueryEncoder(model, cfg?.queryDtype)
+  encoderLoading ??= loadQueryEncoder(model, cfg?.queryDtype, progress =>
+    post({ type: 'model-progress', ...progress }),
+  )
     .then(loaded => (encoder = loaded))
     .catch((err: unknown) => {
       encoderLoading = null

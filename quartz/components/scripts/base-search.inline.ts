@@ -6,6 +6,7 @@ import {
 import { isRecord } from '../../util/type-guards'
 import { readGeoPayload } from './base-geo-client'
 import { applyMemberList, runBaseGeoSearch, showDistanceLabel } from './base-geo-search'
+import { mountBaseSearchStatus } from './base-search-status'
 import { isSemanticCancellation, SemanticClient } from './semantic.inline'
 
 type SearchMode = 'lexical' | 'semantic'
@@ -343,7 +344,7 @@ function setupBaseSearch(): (() => void) | undefined {
   for (const button of modeButtons) {
     if (button.dataset.mode === 'lexical') button.title = `Full-text search (${modeShortcut})`
   }
-  const status = bar.querySelector<HTMLElement>('.semantic-status')
+  const status = mountBaseSearchStatus(root, () => items.filter(isShown).length)
   let mode: SearchMode = 'lexical'
   let semanticState: SemanticState = 'idle'
   let searchSeq = 0
@@ -353,15 +354,7 @@ function setupBaseSearch(): (() => void) | undefined {
   const setSemanticState = (state: SemanticState) => {
     if (!active) return
     semanticState = state
-    if (status) {
-      status.dataset.state = state
-      status.textContent =
-        state === 'loading'
-          ? 'loading semantic results'
-          : state === 'unavailable'
-            ? semanticNotice || 'semantic search unavailable'
-            : ''
-    }
+    status.set(state, semanticNotice)
     const semanticButton = modeButtons.find(button => button.dataset.mode === 'semantic')
     if (semanticButton) {
       semanticButton.disabled = state === 'unavailable'
@@ -412,6 +405,7 @@ function setupBaseSearch(): (() => void) | undefined {
     } catch (err) {
       if (!active || seq !== searchSeq) return null
       console.warn('[BaseSearch] semantic index unavailable:', err)
+      semanticNotice = 'Semantic search unavailable. Full-text results shown; reload to retry.'
       setSemanticState('unavailable')
       return null
     }
@@ -428,11 +422,7 @@ function setupBaseSearch(): (() => void) | undefined {
       notice: value => {
         semanticNotice = value
       },
-      status: value => {
-        if (!status) return
-        if (value === '' && status.dataset.state === 'unavailable') return
-        status.textContent = value
-      },
+      status: status.message,
       cancelEncoder: () => shared?.client.cancel(),
       releaseEncoder: releaseSemantic,
       setSemanticState,
@@ -484,10 +474,12 @@ function setupBaseSearch(): (() => void) | undefined {
       if (isSemanticCancellation(err)) return
       if (seq !== searchSeq) return
       console.warn('[BaseSearch] semantic query failed:', err)
+      semanticNotice = 'Semantic search unavailable. Full-text results shown; reload to retry.'
+      setSemanticState('unavailable')
       releaseSemantic()
       filterLexical()
     } finally {
-      if (active && seq === searchSeq) setSemanticState('ready')
+      if (active && seq === searchSeq && semanticState !== 'unavailable') setSemanticState('ready')
     }
   }
 
@@ -588,6 +580,7 @@ function setupBaseSearch(): (() => void) | undefined {
   search()
 
   return () => {
+    status.dispose()
     shared?.client.cancel()
     active = false
     clearTimeout(debounce)

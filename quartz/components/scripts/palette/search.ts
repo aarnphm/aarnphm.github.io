@@ -13,6 +13,7 @@ import {
 import { getLexicalSearchClient } from '../lexical-search'
 import { noteRankDistribution } from '../note-rank-distribution'
 import { pdfPageLabel } from '../pdf-search-controls'
+import { updateSearchProgress } from '../search-progress'
 import { mountResultPages } from '../search-result-pages'
 import { isSemanticCancellation } from '../semantic.inline'
 import { getCommandItems } from './actions'
@@ -298,8 +299,8 @@ async function showSimilarImages(s: PaletteState, seed: string) {
   paletteMode.currentSearchTerm = 'filter: images'
   s.bar.value = paletteMode.currentSearchTerm
   s.bar.focus()
-  s.output.replaceChildren(imageSimilarityStatus('finding similar images…'))
   quickOpenProgress(s, true)
+  updateSearchProgress(s.progress, 'finding similar images…')
   s.output.setAttribute('aria-busy', 'true')
   try {
     const data = await ensureAttachmentData(s)

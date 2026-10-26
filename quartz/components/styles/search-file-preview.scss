@@ -15,6 +15,12 @@
       overflow: hidden;
     }
 
+    .pdf-embed-error {
+      box-sizing: border-box;
+      height: 100%;
+      min-height: 0;
+    }
+
     // A remount keeps the previous pages until the next document's pages replace them.
     > .pdf-embed[data-pdf-status='loading'] .pdf-viewer {
       opacity: 0.4;

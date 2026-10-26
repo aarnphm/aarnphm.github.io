@@ -8,6 +8,7 @@ import {
   codeSearchSummary,
   codeSearchError,
 } from '../code-search-controls'
+import { updateSearchProgress } from '../search-progress'
 import { clearPreview, setImageSearch } from './preview'
 import { completeSearchProgress, startSearchProgress } from './progress'
 import { commitSearchDisplay, displayResults } from './results'
@@ -21,7 +22,13 @@ export async function searchCode(s: SearchSession, query: CodeQuery, token: numb
   const current = () => token === s.searchSeq && s.container.classList.contains('active')
   try {
     const result = await s.code.search(query, progress => {
-      if (current()) s.results.replaceChildren(codeSearchStatus(progress))
+      if (current())
+        updateSearchProgress(
+          s.progressBar,
+          codeSearchStatus(progress),
+          progress.scannedUnits,
+          progress.totalUnits,
+        )
     })
     if (!current()) return
     const entries: SimilarityResult[] = codeSearchRows(result.matches).flatMap((match, id) => {
