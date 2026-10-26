@@ -52,6 +52,7 @@ let retryDelay = 1000
 let connected = false
 let fault = ''
 let closing = false
+let announceOpen = false
 const rows = new Map()
 const query = byId('query')
 const table = byId('documents')
@@ -68,7 +69,7 @@ function documentRow(item) {
     const filename = make('span', 'filename')
     const detail = make('div', 'document-detail')
     const readout = make('p')
-    const link = make('a', '', 'open PDF ↗')
+    const link = make('a', 'control', 'open PDF ↗')
     link.href = `http://localhost:8080/${item.slug.split('/').map(encodeURIComponent).join('/')}`
     link.target = '_blank'
     link.rel = 'noopener'
@@ -136,7 +137,7 @@ function documentRow(item) {
   saved.remaining.textContent = count(item.remainingPages)
   progress(saved.cachedBar, item.ocrPages, item.totalPages)
   progress(saved.indexedBar, item.indexedPages, item.totalPages)
-  saved.readout.textContent = `highest cached page: ${count(item.lastPage)} · cache updated: ${time(item.lastProgressAt)}${item.invalidPages ? ` · ${item.invalidPages} invalid cache pages require extraction` : ''}`
+  saved.readout.textContent = `last cached page ${count(item.lastPage)} · ${time(item.lastProgressAt)}${item.invalidPages ? ` · ${item.invalidPages} invalid pages` : ''}`
   saved.link.hash = `page=${item.lastPage ?? 1}`
   return saved.row
 }
@@ -227,13 +228,13 @@ function renderCurrent() {
     'current-title',
     data.current?.title ??
       {
-        publishing: 'embedding the completed batch',
-        complete: 'all papers in this queue are published',
-        starting: 'loading the local models',
-        error: 'the queue needs attention',
-        idle: 'no active queue',
+        publishing: 'embedding batch',
+        complete: 'all published',
+        starting: 'loading models',
+        error: 'error',
+        idle: 'idle',
       }[phase] ??
-      'preparing the next paper',
+      '–',
   )
   put('current-path', data.current?.slug ?? runner.log ?? '–')
   put(
@@ -241,13 +242,13 @@ function renderCurrent() {
     data.current
       ? `pages ${(data.current.pages ?? [data.current.page]).join(', ')} / ${count(data.current.totalPages)}`
       : phase === 'publishing'
-        ? `${count(data.totals.awaitingPublicationPages)} cached pages awaiting publication`
+        ? `${count(data.totals.awaitingPublicationPages)} pages awaiting publication`
         : '–',
   )
   put(
     'batch-count',
     runner.batchCompleted === null
-      ? `batch size · ${count(runner.batchPages)} pages`
+      ? `batch · ${count(runner.batchPages)} pages`
       : `${count(runner.batchCompleted)} / ${count(runner.batchPlanned)} done · ${count(runner.batchActive)} active · ${count(runner.batchQueued)} queued`,
   )
   const grid = byId('batch-grid')
@@ -265,43 +266,28 @@ function renderCurrent() {
         `${server.port} ${server.healthy ? 'healthy' : server.alive ? 'unavailable' : 'stopped'}`,
     )
     .join(' · ')
-  put('runner-note', `pid ${runner.pid ?? '–'} · ${models || 'model status unavailable'}`)
+  put('runner-note', `pid ${runner.pid ?? '–'} · ${models || '–'}`)
   const ocr = runner.servers.find(server => server.port === '8001' && server.healthy)
   put(
     'model-metrics',
     ocr
-      ? `${count(ocr.inFlight)} / ${count(ocr.maxSequences)} requests active · ${count(ocr.queued)} queued · ${ocr.completedTokensPerSecond === null ? 'collecting token rate' : `${Math.round(ocr.completedTokensPerSecond)} completed tokens/s over ${Math.round(ocr.sampleSeconds)}s`} · ${count(ocr.failedRequests)} failed · prefix cache ${ocr.prefixCache ? 'on' : 'off'} · batching ${ocr.continuousBatching ? 'on' : 'off'}`
+      ? `${count(ocr.inFlight)} / ${count(ocr.maxSequences)} active · ${count(ocr.queued)} queued · ${ocr.completedTokensPerSecond === null ? '–' : Math.round(ocr.completedTokensPerSecond)} tok/s · ${count(ocr.failedRequests)} failed · prefix cache ${ocr.prefixCache ? 'on' : 'off'} · batching ${ocr.continuousBatching ? 'on' : 'off'}`
       : '',
   )
-  put('batch-total', `${count(runner.batches)} completed batches`)
+  put('batch-total', `${count(runner.batches)} batches`)
 }
 
 function render(next) {
   data = next
   fault = ''
   const totals = data.totals
-  put('scope', `PDF queue / ${data.prefix}`)
-  put(
-    'summary',
-    `${count(totals.documents)} papers · ${count(totals.totalPages)} pages · ${count(totals.completeDocuments)} papers complete`,
-  )
+  put('scope', `harness / embeddings / ${data.prefix}`)
+  put('summary', `${count(totals.documents)} papers · ${count(totals.totalPages)} pages`)
   put('vectors', count(totals.vectors))
-  put('vector-note', 'page-aware passage vectors')
   put('ocr-pages', count(totals.ocrPages))
-  put(
-    'ocr-note',
-    `${percent(totals.ocrPages, totals.totalPages)} of ${count(totals.totalPages)} pages`,
-  )
   put('indexed-pages', count(totals.indexedPages))
-  put(
-    'indexed-note',
-    `${percent(totals.indexedPages, totals.totalPages)} of ${count(totals.totalPages)} pages`,
-  )
   put('remaining-docs', count(totals.remainingDocuments))
-  put(
-    'document-note',
-    `${count(totals.completeDocuments)} / ${count(totals.documents)} fully published`,
-  )
+  put('document-note', `${count(totals.completeDocuments)} / ${count(totals.documents)} published`)
   for (const [id, value] of [
     ['ocr', totals.ocrPages],
     ['index', totals.indexedPages],
@@ -314,11 +300,6 @@ function render(next) {
     )
   }
   const unpublished = totals.awaitingPublicationPages
-  const siteLag = Math.max(0, totals.indexedPages - totals.servedPages)
-  put(
-    'publication-note',
-    `${count(unpublished)} cached pages await the next publication. ${siteLag ? `${count(siteLag)} generated pages await the local site output.` : 'The local site output has the current page coverage.'}`,
-  )
   put(
     'pace',
     data.rate.pagesPerHour === null ? '–' : `${count(Math.round(data.rate.pagesPerHour))} pages/h`,
@@ -327,19 +308,16 @@ function render(next) {
   put('awaiting-pages', count(unpublished))
   put(
     'eta',
-    data.rate.remainingOcrSeconds === null
-      ? 'collecting timings'
-      : `~${duration(data.rate.remainingOcrSeconds)}`,
+    data.rate.remainingOcrSeconds === null ? '–' : `~${duration(data.rate.remainingOcrSeconds)}`,
   )
   put(
     'estimate-note',
     data.rate.remainingUniquePages === 0
-      ? 'OCR is cached for every requested page. embedding and publication may remain.'
+      ? ''
       : data.rate.samples >= data.rate.minimumSamples
-        ? `mean ${duration(data.rate.secondsPerPage)} per page from ${count(data.rate.samples)} pages across ${count(data.rate.sampleDocuments)} ${data.rate.sampleDocuments === 1 ? 'PDF' : 'PDFs'} in this run. duplicate files count once. other documents may differ; embedding, publication and pauses are excluded.`
-        : `collecting timings: ${count(data.rate.samples)} / ${count(data.rate.minimumSamples)} completed pages from this run. earlier runs and migrated pages are excluded.`,
+        ? `${duration(data.rate.secondsPerPage)} / page · ${count(data.rate.samples)} pages · ${count(data.rate.sampleDocuments)} PDFs`
+        : `sampling ${count(data.rate.samples)} / ${count(data.rate.minimumSamples)} pages`,
   )
-  put('observed', `observed ${time(data.observedAt)} · America/Toronto`)
   renderCurrent()
   renderDocuments()
   renderTables()
@@ -363,36 +341,22 @@ function health() {
   put(
     'freshness',
     since === null
-      ? 'waiting for the first snapshot'
-      : `snapshot ${duration(since)} ago · runner ${data.runner.updatedAt ? duration((Date.now() - Date.parse(data.runner.updatedAt)) / 1000) + ' ago' : 'unknown'}`,
+      ? ''
+      : `· snapshot ${duration(since)} · runner ${data.runner.updatedAt ? duration((Date.now() - Date.parse(data.runner.updatedAt)) / 1000) : '–'} ago`,
   )
   const messages = []
-  if (fault) messages.push(`observer: ${fault}. reconnect to retry.`)
-  if (!connected && data)
-    messages.push(
-      'connection lost. counts below are the last received snapshot; reconnecting automatically.',
-    )
-  if (connected && data && !fresh)
-    messages.push(
-      'the connection is open but observations have stopped arriving. counts below are the last received snapshot.',
-    )
+  if (fault) messages.push(`observer: ${fault}`)
+  if (!connected && data) messages.push('connection lost · showing last snapshot')
+  if (connected && data && !fresh) messages.push('updates stopped · showing last snapshot')
   if (data?.runner.error) messages.push(`runner: ${data.runner.error}`)
   if (data?.runner.stale)
-    messages.push(
-      data.runner.alive
-        ? 'the runner heartbeat is stale. the process exists; page progress may be stalled.'
-        : 'the runner process is stopped. cached progress is retained.',
-    )
+    messages.push(data.runner.alive ? 'runner heartbeat stale' : 'runner stopped')
   if (data?.totals.invalidPages)
-    messages.push(
-      `${count(data.totals.invalidPages)} OCR cache pages failed validation and are excluded from progress.`,
-    )
+    messages.push(`${count(data.totals.invalidPages)} invalid OCR pages excluded`)
   if (data?.queue?.failed)
-    messages.push(
-      `${count(data.queue.failed)} queued PDFs need attention; expand a paper to retry.`,
-    )
+    messages.push(`${count(data.queue.failed)} PDFs failed · retry from the paper row`)
   if (data?.issues.length) messages.push(...data.issues)
-  put('notice', messages.join(' '))
+  put('notice', messages.join(' · '))
   byId('notice').hidden = messages.length === 0
 }
 
@@ -410,6 +374,8 @@ function connect() {
     if (socket !== next) return
     connected = true
     retryDelay = 1000
+    if (announceOpen) toast('connected')
+    announceOpen = false
     health()
   })
   next.addEventListener('message', event => {
@@ -436,9 +402,23 @@ function connect() {
   next.addEventListener('error', () => next.close())
 }
 
+function toast(message, error = false) {
+  const item = make('div', error ? 'toast error' : 'toast')
+  item.setAttribute('role', error ? 'alert' : 'status')
+  const close = make('button', '', '×')
+  close.type = 'button'
+  close.setAttribute('aria-label', 'dismiss')
+  const timer = setTimeout(() => item.remove(), 4000)
+  close.addEventListener('click', () => {
+    clearTimeout(timer)
+    item.remove()
+  })
+  item.append(make('span', '', message), close)
+  byId('toasts').append(item)
+}
+
 async function queuePdfs(slugs, button) {
   button.disabled = true
-  put('queue-status', 'checking current public PDFs…')
   try {
     const response = await fetch('/api/queue', {
       method: 'POST',
@@ -447,14 +427,13 @@ async function queuePdfs(slugs, button) {
     })
     const report = await response.json()
     if (!response.ok) throw new Error(report.error || 'queue request failed')
-    put(
-      'queue-status',
+    toast(
       report.pending
-        ? `${count(report.queued)} added · ${count(report.pending)} queued or active · progress appears below`
-        : `all ${count(report.checked)} checked PDFs are already published`,
+        ? `${count(report.queued)} added · ${count(report.pending)} pending`
+        : `${count(report.checked)} checked · none missing`,
     )
   } catch (error) {
-    put('queue-status', error instanceof Error ? error.message : 'queue request failed')
+    toast(error instanceof Error ? error.message : 'queue request failed', true)
   } finally {
     button.disabled = false
   }
@@ -469,7 +448,11 @@ for (const button of document.querySelectorAll('[data-filter]')) {
     renderDocuments()
   })
 }
-byId('reconnect').addEventListener('click', connect)
+byId('reconnect').addEventListener('click', () => {
+  announceOpen = true
+  toast('reconnecting')
+  connect()
+})
 const applyTheme = theme => {
   document.documentElement.dataset.theme = theme
   const next = theme === 'dark' ? 'light' : 'dark'

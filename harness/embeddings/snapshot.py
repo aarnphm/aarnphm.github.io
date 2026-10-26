@@ -84,7 +84,8 @@ class Observer:
       return None
     try:
       started = (
-        datetime.strptime(result.stdout.strip(), '%a %b %d %H:%M:%S %Y')
+        datetime
+        .strptime(result.stdout.strip(), '%a %b %d %H:%M:%S %Y')
         .replace(tzinfo=timezone.utc)
         .timestamp()
       )

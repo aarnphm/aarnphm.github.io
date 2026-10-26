@@ -5,60 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
     <title>embedding harness</title>
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/style.css" />
     <script type="module" src="/app.js"></script>
   </head>
   <body>
     <header class="masthead">
-      <span class="mono">harness / embeddings <span class="muted">/ local</span></span>
+      <span class="mono" id="scope">harness / embeddings</span>
       <nav aria-label="harness controls">
-        <a href="/api/status" download="embedding-status.json">snapshot ↓</a>
+        <button id="queue-missing" type="button">queue missing PDFs</button>
         <button id="reconnect" type="button">reconnect</button>
+        <a class="control" href="/api/status" download="embedding-status.json">snapshot ↓</a>
         <button id="theme" type="button" aria-label="switch to dark theme">dark</button>
       </nav>
     </header>
     <main>
       <section class="heading">
         <div>
-          <p class="eyebrow" id="scope">paper queue</p>
           <h1>embedding harness</h1>
-          <p id="summary">reading the queue, page cache and publication manifests…</p>
+          <p id="summary" class="mono">–</p>
         </div>
         <div class="connection">
           <span class="signal" id="signal" data-state="waiting"
             ><span aria-hidden="true"></span
             ><strong id="connection-state" role="status">connecting</strong></span
           >
-          <span class="mono muted" id="freshness">waiting for the first snapshot</span>
+          <span class="mono" id="freshness"></span>
         </div>
-      </section>
-      <section class="queue-actions" aria-label="PDF queue controls">
-        <button id="queue-missing" type="button">queue missing PDFs</button>
-        <p id="queue-status" class="mono" role="status">
-          new and changed public papers enter the same OCR and embedding queue
-        </p>
       </section>
       <div class="notice" id="notice" role="alert" hidden></div>
       <section class="metrics" aria-label="queue totals">
         <article>
-          <h2>PDF embeddings</h2>
+          <h2>passage vectors</h2>
           <strong id="vectors">–</strong>
-          <p id="vector-note">generated passage vectors</p>
         </article>
         <article>
-          <h2>OCR pages cached</h2>
+          <h2>OCR pages</h2>
           <strong id="ocr-pages">–</strong>
-          <p id="ocr-note">verified for the current recipe</p>
         </article>
         <article>
           <h2>pages published</h2>
           <strong id="indexed-pages">–</strong>
-          <p id="indexed-note">in the generated search index</p>
         </article>
         <article>
           <h2>papers remaining</h2>
           <strong id="remaining-docs">–</strong>
-          <p id="document-note">waiting for full publication</p>
+          <p id="document-note"></p>
         </article>
       </section>
       <section class="coverage" aria-label="page coverage">
@@ -78,7 +70,7 @@
           ><span id="index-ratio">–</span>
         </div>
         <div class="progress-row">
-          <span>local site output</span
+          <span>site output</span
           ><progress
             id="served-progress"
             max="1"
@@ -87,9 +79,6 @@
           ></progress
           ><span id="served-ratio">–</span>
         </div>
-        <p id="publication-note">
-          each completed OCR batch is embedded and published before the next batch
-        </p>
       </section>
       <section class="run-grid" aria-label="current work and pace">
         <article class="current panel">
@@ -98,11 +87,11 @@
             <span id="runner-phase" class="badge">waiting</span>
           </header>
           <ol class="pipeline" aria-label="pipeline stages">
-            <li data-phase="extracting">01 / OCR</li>
-            <li data-phase="publishing">02 / embed + publish</li>
-            <li data-phase="complete">03 / complete</li>
+            <li data-phase="extracting">OCR</li>
+            <li data-phase="publishing">embed + publish</li>
+            <li data-phase="complete">complete</li>
           </ol>
-          <h3 id="current-title">reading the active batch</h3>
+          <h3 id="current-title">–</h3>
           <p id="current-path" class="mono muted">–</p>
           <div class="current-readouts">
             <strong id="current-page">–</strong><span id="batch-count" class="mono">–</span>
@@ -113,28 +102,27 @@
         </article>
         <article class="pace panel">
           <header class="section-heading">
-            <h2>pace & remaining</h2>
-            <span class="mono muted">OCR only</span>
+            <h2>pace</h2>
           </header>
           <dl>
             <div>
-              <dt>recent pace</dt>
+              <dt>OCR rate</dt>
               <dd id="pace">–</dd>
             </div>
             <div>
-              <dt>unique pages awaiting OCR</dt>
+              <dt>awaiting OCR</dt>
               <dd id="remaining-pages">–</dd>
             </div>
             <div>
-              <dt>cached, awaiting publication</dt>
+              <dt>awaiting publication</dt>
               <dd id="awaiting-pages">–</dd>
             </div>
-            <div class="estimate">
-              <dt>remaining OCR estimate</dt>
+            <div>
+              <dt>OCR left (estimate)</dt>
               <dd id="eta">–</dd>
             </div>
           </dl>
-          <p id="estimate-note">an estimate appears after measured page timings are available</p>
+          <p id="estimate-note" class="mono"></p>
         </article>
       </section>
       <section class="inventory" aria-labelledby="inventory-title">
@@ -144,12 +132,8 @@
         </header>
         <div class="toolbar">
           <label class="search"
-            ><span class="visually-hidden">find a paper by title or filename</span
-            ><input
-              id="query"
-              type="search"
-              placeholder="find a paper by title or filename"
-              autocomplete="off"
+            ><span class="visually-hidden">search papers</span
+            ><input id="query" type="search" placeholder="search papers" autocomplete="off"
           /></label>
           <div class="filters" role="group" aria-label="filter papers">
             <button data-filter="all" aria-pressed="true" type="button">all</button
@@ -158,78 +142,58 @@
             ><button data-filter="complete" aria-pressed="false" type="button">complete</button>
           </div>
         </div>
-        <div class="table-scroll" tabindex="0" aria-label="paper progress table">
-          <table class="documents">
-            <thead>
-              <tr>
-                <th scope="col">document</th>
-                <th scope="col">status</th>
-                <th scope="col">OCR cached</th>
-                <th scope="col">published</th>
-                <th scope="col">OCR left</th>
-              </tr>
-            </thead>
-            <tbody id="documents"></tbody>
-          </table>
-          <p id="empty" class="empty" hidden>
-            no papers match this view. change the filter or clear the search.
-          </p>
-        </div>
+        <table class="documents">
+          <thead>
+            <tr>
+              <th scope="col">document</th>
+              <th scope="col">status</th>
+              <th scope="col">OCR cached</th>
+              <th scope="col">published</th>
+              <th scope="col">OCR left</th>
+            </tr>
+          </thead>
+          <tbody id="documents"></tbody>
+        </table>
+        <p id="empty" class="empty" hidden>no matches</p>
       </section>
       <section class="bottom-grid">
-        <article class="panel">
+        <article>
           <header class="section-heading">
             <h2>recent publications</h2>
             <span id="batch-total" class="mono muted">–</span>
           </header>
-          <div class="compact-scroll">
-            <table>
-              <thead>
-                <tr>
-                  <th scope="col">time · Toronto</th>
-                  <th scope="col">new vectors</th>
-                  <th scope="col">total vectors</th>
-                  <th scope="col">pages</th>
-                </tr>
-              </thead>
-              <tbody id="history"></tbody>
-            </table>
-          </div>
-          <p id="history-empty" class="empty">no completed publication logs yet</p>
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th scope="col">time · toronto</th>
+                <th scope="col">new vectors</th>
+                <th scope="col">total vectors</th>
+                <th scope="col">pages</th>
+              </tr>
+            </thead>
+            <tbody id="history"></tbody>
+          </table>
+          <p id="history-empty" class="empty">none</p>
         </article>
-        <article class="panel">
+        <article>
           <header class="section-heading">
-            <h2>embedding indexes</h2>
-            <span class="mono muted">all scopes</span>
+            <h2>indexes</h2>
           </header>
-          <div class="compact-scroll">
-            <table>
-              <thead>
-                <tr>
-                  <th scope="col">index</th>
-                  <th scope="col">generated</th>
-                  <th scope="col">site output</th>
-                  <th scope="col">shards</th>
-                </tr>
-              </thead>
-              <tbody id="indexes"></tbody>
-            </table>
-          </div>
-          <p class="muted">
-            vector counts from local manifests. site output follows the Quartz watcher.
-          </p>
+          <table class="index-table">
+            <thead>
+              <tr>
+                <th scope="col">index</th>
+                <th scope="col">generated</th>
+                <th scope="col">site output</th>
+                <th scope="col">shards</th>
+              </tr>
+            </thead>
+            <tbody id="indexes"></tbody>
+          </table>
         </article>
       </section>
-      <footer>
-        <span id="observed" class="mono">waiting for observation</span
-        ><span class="muted"
-          >local queue controls · WebSocket updates every 3 seconds · OCR caches preserved</span
-        >
-      </footer>
     </main>
-    <noscript
-      >Enable JavaScript to receive live progress. The current snapshot is available at
-      /api/status.</noscript
-    >
+    <div id="toasts" class="toasts" aria-live="polite"></div>
+    <noscript>javascript required · snapshot at /api/status</noscript>
   </body>
 </html>

@@ -46,6 +46,8 @@ const assets = new Map([
   ['/index.html', ['index.html', 'text/html; charset=utf-8']],
   ['/app.js', ['app.js', 'text/javascript; charset=utf-8']],
   ['/style.css', ['style.css', 'text/css; charset=utf-8']],
+  ['/icon.svg', ['icon.svg', 'image/svg+xml']],
+  ['/favicon.ico', ['icon.svg', 'image/svg+xml']],
   ['/title.ttf', ['../../quartz/static/SpaceGrotesk-VariableFont_wght.ttf', 'font/ttf']],
 ])
 const server = createServer(async (request, response) => {
