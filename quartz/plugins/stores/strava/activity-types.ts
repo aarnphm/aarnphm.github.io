@@ -3,6 +3,7 @@ import type {
   GardenEnvironmentEstimate,
   GardenUvScore,
 } from '../../../util/activity-environment'
+import type { ActivityProvenance } from '../../../util/activity-provenance'
 import type { NativeActivityReports } from '../../../util/activity-provider-reports'
 import type { CyclingIntensityTrace } from '../../../util/cycling-intensity'
 import type { CyclingPowerTrace } from '../../../util/cycling-power'
@@ -13,7 +14,6 @@ import type { RunPaceZoneDistribution } from '../../../util/run-pace-zones'
 import type { StaminaLedgerStart } from '../../../util/stamina-ledger'
 import type { SwimPhysiology } from '../../../util/swim-physiology'
 import type { SwimPowerEstimate } from '../../../util/swim-power'
-import type { SwimProvenance } from '../../../util/swim-provenance'
 import type { WalkPowerEstimate } from '../../../util/walk-power'
 import type { SwimLocation, SwimStroke } from '../apple'
 import type { CriticalPowerAnchor, CriticalPowerEstimate } from '../critical-power'
@@ -182,6 +182,7 @@ export interface StravaActivityDetail {
   virtual?: boolean
   commute?: boolean
   distanceSource?: 'garmin' | 'strava'
+  provenance?: ActivityProvenance
   wahoo?: WahooVerification
   cyclingTorque?: CyclingTorqueTrace | null
   cyclingIntensityTrace?: CyclingIntensityTrace | null
@@ -263,7 +264,6 @@ export interface StravaActivityDetail {
   swimPaceSource: SwimPaceSource | null
   swimDurationS: number | null
   swimIntervals: SwimActivityInterval[]
-  swimProvenance?: SwimProvenance
   swimPower?: SwimPowerEstimate | null
   swimLocation: SwimLocation | null
   waterTemperatureC: number | null

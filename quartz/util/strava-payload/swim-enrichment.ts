@@ -302,7 +302,7 @@ export function enrichSwimMetrics(
     detail.swimDurationS = garminSwim?.elapsedTimeS ?? activity?.durationS ?? null
     detail.swimIntervals = intervals
     detail.swimPower = buildSwimPowerEstimate(
-      detail.swimProvenance ? 'reconstructed' : garminIntervals.length > 0 ? 'garmin' : 'apple',
+      detail.provenance ? 'reconstructed' : garminIntervals.length > 0 ? 'garmin' : 'apple',
       intervals,
     )
     if (garminAnalysisRanges.length > 0)

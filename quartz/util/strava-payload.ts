@@ -35,6 +35,7 @@ import {
 } from '../plugins/stores/strava'
 import { parseWahooCache, type WahooCache, type WahooData } from '../plugins/stores/wahoo'
 import { parseWeatherCache, type WeatherCache } from '../plugins/stores/weather'
+import { activityProvenanceStamp, readActivityProvenance } from './activity-provenance'
 import { applyHeartRatePhysiology } from './heart-rate-physiology'
 import { joinSegments, QUARTZ } from './path'
 import { latestProviderSync } from './provider-sync'
@@ -66,7 +67,6 @@ import {
 } from './strava-payload/wind-enrichment'
 import { enrichTrainingPeaksStrength } from './strength-trainingpeaks'
 import { applySwimPhysiology } from './swim-physiology'
-import { readSwimProvenance, swimProvenanceStamp } from './swim-provenance'
 import { parseTrainingPeaksCalendar, type TrainingPeaksCalendar } from './trainingpeaks-calendar'
 import { TRAININGPEAKS_CALENDAR_CACHE } from './trainingpeaks-calendar-cache'
 import {
@@ -232,7 +232,7 @@ export function loadStravaDataSync(
     virtual: true,
     wahooFitPath: pair.fitPath,
   }))
-  const stamps = `${stamp(stravaCachePath)}:${stamp(ouraCachePath)}:${stamp(garminCachePath)}:${stamp(wahooCachePath)}:${stamp(weatherCachePath)}:${stamp(appleCachePath)}:${stamp(coreBodyTemperatureCachePath)}:${stamp(rouvyWahooPairsPath(contentDirectory))}:${wahooTrackingStamp([...pairEntries, ...(manualTracking?.activities ?? [])], contentDirectory)}:${windArchiveStamp(contentDirectory)}:${swimProvenanceStamp(contentDirectory)}`
+  const stamps = `${stamp(stravaCachePath)}:${stamp(ouraCachePath)}:${stamp(garminCachePath)}:${stamp(wahooCachePath)}:${stamp(weatherCachePath)}:${stamp(appleCachePath)}:${stamp(coreBodyTemperatureCachePath)}:${stamp(rouvyWahooPairsPath(contentDirectory))}:${wahooTrackingStamp([...pairEntries, ...(manualTracking?.activities ?? [])], contentDirectory)}:${windArchiveStamp(contentDirectory)}:${activityProvenanceStamp(contentDirectory)}`
   const sourceSalt = `${payloadSourceSalt}:${stamp(TRAININGPEAKS_CALENDAR_CACHE)}`
   if (payloadMemo.stamps !== stamps || payloadMemo.sourceSalt !== sourceSalt) {
     payloadMemo.entries.clear()
@@ -283,7 +283,7 @@ export function buildStravaData(
     manualTracking?.activities ?? [],
     sources.strava,
   )
-  const swimProvenance = readSwimProvenance(contentDirectory)
+  const provenance = readActivityProvenance(contentDirectory)
   const wahoo = loadTrackedWahooFits(
     sources.wahoo,
     sources.strava,
@@ -323,18 +323,22 @@ export function buildStravaData(
   }
   enrichActivityDevices(payload, apple)
   enrichRouteLessHeartRate(payload, apple)
-  for (const provenance of swimProvenance) {
-    const detail = payload.details[String(provenance.activityId)]
+  for (const entry of provenance) {
+    const detail = payload.details[String(entry.activityId)]
     if (
-      detail?.sport !== 'swim' ||
-      detail.garmin?.activityId !== provenance.garminActivityId ||
-      Math.abs(Date.parse(detail.start) - Date.parse(provenance.startDate)) > 1000
+      !detail ||
+      detail.sport !== entry.sport ||
+      (entry.garminActivityId !== undefined &&
+        detail.garmin?.activityId !== entry.garminActivityId) ||
+      Math.abs(Date.parse(detail.start) - Date.parse(entry.startDate)) > 1000
     )
       continue
-    detail.swimProvenance = {
-      source: provenance.source,
-      note: provenance.note,
-      trainingPeaksWorkoutId: provenance.trainingPeaksWorkoutId,
+    detail.provenance = {
+      source: entry.source,
+      note: entry.note,
+      ...(entry.trainingPeaksWorkoutId !== undefined && {
+        trainingPeaksWorkoutId: entry.trainingPeaksWorkoutId,
+      }),
     }
   }
   enrichSwimMetrics(payload, apple, garmin)
