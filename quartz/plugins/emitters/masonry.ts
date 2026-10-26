@@ -19,6 +19,8 @@ import { parseWikilink, resolveWikilinkTarget } from '../../util/wikilinks'
 import { QuartzPluginData } from '../vfile'
 import { write, removeWritten } from './helpers'
 
+const imageExtensions = new Set(['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.avif'])
+
 const HeaderInputSize = 64 * 1024
 const MaxInputSize = 512 * 1024
 const masonryImageCacheFile = path.join('quartz', '.quartz-cache', 'masonry-image-sizes.json')
@@ -176,9 +178,14 @@ export const Masonry: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts =>
         }
       }
 
+      // Asset events have no parsed file. Directory galleries still need a new catalogue.
+      const imagesChanged = changeEvents.some(event =>
+        imageExtensions.has(path.extname(event.path).toLowerCase()),
+      )
       const targets = content.filter(
         ([, file]) =>
-          changedSlugs.has(file.data.slug!) && file.data.frontmatter?.layout === 'masonry',
+          (imagesChanged || changedSlugs.has(file.data.slug!)) &&
+          file.data.frontmatter?.layout === 'masonry',
       )
       yield* await mapConcurrent(targets, defaultIoConcurrency, ([tree, file]) =>
         processMasonry(ctx, tree, file, allFiles, opts, resources),
@@ -263,32 +270,24 @@ function deduplicateImages(images: MasonryImage[]): MasonryImage[] {
 async function extractImagesFromDirectory(
   dirPath: string,
   contentRoot: string,
+  files: FilePath[],
 ): Promise<MasonryImage[]> {
-  const fullPath = path.join(contentRoot, dirPath)
-  const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg']
+  // Use the build's asset inventory so recursive discovery follows the same ignore rules.
+  const prefix = dirPath.replace(/\\/g, '/').replace(/^\/+|\/+$/g, '') + '/'
+  const imageFiles = files.filter(
+    file => file.startsWith(prefix) && imageExtensions.has(path.extname(file).toLowerCase()),
+  )
 
-  let files: string[]
-  try {
-    files = await fs.readdir(fullPath)
-  } catch {
-    return []
-  }
-  const imageFiles = files.filter(file => {
-    const ext = path.extname(file).toLowerCase()
-    return imageExtensions.includes(ext)
-  })
-
-  const images = await mapConcurrent(imageFiles, defaultIoConcurrency, async file => {
-    const ext = path.extname(file).toLowerCase()
-    const relativePath = path.join(dirPath, file).replace(/\\/g, '/')
-    const slugifiedPath = slugifyFilePath(relativePath as FilePath, true)
-    const filePath = path.join(fullPath, file)
+  const images = await mapConcurrent(imageFiles, defaultIoConcurrency, async relativePath => {
+    const ext = path.extname(relativePath)
+    const slugifiedPath = slugifyFilePath(relativePath, true)
+    const filePath = path.join(contentRoot, relativePath)
 
     const dimensions = await imageSizeFromFile(filePath)
 
     return {
       src: `/${slugifiedPath}${ext}`,
-      alt: path.basename(file, ext),
+      alt: path.basename(relativePath, ext),
       width: dimensions.width || 800,
       height: dimensions.height || 600,
     }
@@ -326,7 +325,11 @@ async function processMasonry(
               const targetPath = parsed.target
 
               // try directory extraction first
-              const dirImages = await extractImagesFromDirectory(targetPath, ctx.argv.directory)
+              const dirImages = await extractImagesFromDirectory(
+                targetPath,
+                ctx.argv.directory,
+                ctx.allFiles,
+              )
               if (dirImages.length > 0) {
                 return dirImages
               }
