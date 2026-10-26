@@ -198,7 +198,7 @@ export default ((opts?: Options) => {
                 </kbd>
               </button>
             </span>
-            <span class="fc-spacer" />
+            <span class="flashcards-notes-status" role="status" aria-live="polite" />
             <button type="button" class="fc-btn fc-end" data-action="end">
               {t.end}
               <kbd class="fc-key" aria-hidden="true">
