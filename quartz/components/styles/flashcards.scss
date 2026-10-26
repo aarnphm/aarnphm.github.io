@@ -1,3 +1,4 @@
+@use './status-flap.scss';
 @use '../../styles/variables.scss' as *;
 
 html:has(body[data-flashcards='true']),
@@ -593,4 +594,17 @@ body[data-flashcards='true'] {
   .fc-key {
     transition: none;
   }
+}
+
+.flashcards-notes-status {
+  --status-flap-background: var(--fc-surface);
+  flex: 1 1 7rem;
+  min-width: 0;
+  min-height: 1.4em;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--darkgray);
+  font: var(--text-meta)/1.4 var(--bodyFont);
 }

@@ -1,4 +1,5 @@
 import { normalizeRelativeURLs } from '../../util/path'
+import { mountNotes } from './flashcards/notes'
 import { currentNavSignal } from './nav-lifecycle'
 
 interface CardState {
@@ -82,8 +83,6 @@ const mountFlashcards = () => {
   const endBtn = root.querySelector<HTMLButtonElement>('.fc-end')
   const syncEl = root.querySelector<HTMLAnchorElement>('.flashcards-sync')
   const notesEl = root.querySelector<HTMLElement>('.flashcards-notes')
-  const notesBody = root.querySelector<HTMLElement>('.flashcards-notes-body')
-  const notesTitle = root.querySelector<HTMLAnchorElement>('.flashcards-notes-title')
   const notesBtn = root.querySelector<HTMLButtonElement>('.fc-notes')
 
   // The Worker resolves the owner's GitHub session; without one the drill is stateless.
@@ -177,69 +176,18 @@ const mountFlashcards = () => {
   }
 
   // Each card carries its source route when the note uses a default drill.
-  interface Note {
-    title: string
-    body: DocumentFragment
-  }
-  const noteCache = new Map<string, Promise<Note | null>>()
-  let notesOpen = false
-  let currentNote = ''
-  const noteOf = (el: HTMLElement) =>
-    el.dataset.source ?? root.dataset.source ?? deckOf(el).replace(/\/flashcards$/, '')
-
-  const loadNote = (slug: string): Promise<Note | null> => {
-    let pending = noteCache.get(slug)
-    if (!pending) {
-      pending = fetch(`/${slug}`, { headers: { Accept: 'text/html' }, signal })
-        .then(async res => {
-          if (!res.ok) return null
-          const doc = new DOMParser().parseFromString(await res.text(), 'text/html')
-          normalizeRelativeURLs(doc, new URL(res.url))
-          const article = doc.querySelector('.page-content article')
-          if (!article) return null
-          for (const el of article.querySelectorAll('script')) el.remove()
-          const body = document.createDocumentFragment()
-          body.append(document.importNode(article, true))
-          const title = doc.querySelector('h1.article-title')?.textContent?.trim() || slug
-          return { title, body }
-        })
-        .catch(() => null)
-      noteCache.set(slug, pending)
-    }
-    return pending
-  }
-
-  const renderNote = async (slug: string) => {
-    if (!notesBody || !notesTitle || slug === currentNote) return
-    currentNote = slug
-    notesTitle.href = `/${slug}`
-    notesTitle.dataset.slug = slug
-    notesTitle.textContent = 'loading…'
-    const note = await loadNote(slug)
-    if (signal.aborted || currentNote !== slug) return
-    if (!note) {
-      notesTitle.textContent = slug
-      const p = document.createElement('p')
-      p.className = 'flashcards-notes-empty'
-      p.textContent = 'could not load the note.'
-      notesBody.replaceChildren(p)
-      return
-    }
-    notesTitle.textContent = note.title
-    notesBody.replaceChildren(note.body.cloneNode(true))
-    notesBody.scrollTop = 0
-  }
-
+  const notes = mountNotes(
+    root,
+    () =>
+      active
+        ? (active.dataset.source ??
+          root.dataset.source ??
+          deckOf(active).replace(/\/flashcards$/, ''))
+        : undefined,
+    signal,
+  )
   const syncNotes = () => {
-    if (notesOpen && active) void renderNote(noteOf(active))
-  }
-
-  const setNotes = (open: boolean) => {
-    notesOpen = open
-    root.dataset.notes = open ? 'open' : 'closed'
-    notesEl?.toggleAttribute('hidden', !open)
-    notesBtn?.setAttribute('aria-pressed', String(open))
-    if (open) syncNotes()
+    void notes.sync()
   }
 
   const show = () => {
@@ -404,7 +352,7 @@ const mountFlashcards = () => {
       finish()
     } else if (event.key === 'n') {
       event.preventDefault()
-      setNotes(!notesOpen)
+      notes.toggle()
     }
   }
 
@@ -424,8 +372,8 @@ const mountFlashcards = () => {
   grades?.addEventListener('click', onGrade, { signal })
   undoBtn?.addEventListener('click', undo, { signal })
   endBtn?.addEventListener('click', onEnd, { signal })
-  notesBtn?.addEventListener('click', () => setNotes(!notesOpen), { signal })
-  if (notesEl) setNotes(window.matchMedia('(min-width: 64rem)').matches)
+  notesBtn?.addEventListener('click', () => notes.toggle(), { signal })
+  if (notesEl) notes.setOpen(window.matchMedia('(min-width: 64rem)').matches)
   window.addEventListener('keydown', onKey, { signal })
   window.addEventListener('keydown', onModDown, { signal })
   window.addEventListener('keyup', onModUp, { signal })
