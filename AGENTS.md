@@ -20,6 +20,7 @@ This repository powers a Quartz digital garden with custom plugins and a Cloudfl
 - Bookcase keyboard focus uses fill and text changes, without outline rings on its controls, viewport label or preview dialog. Category initials select and focus the matching topic from the bookcase; repeated initials cycle matching categories. Keep typing in search fields and preview navigation independent.
 - Keep secrets in local `.env` files or Cloudflare Secrets. Never add secret values to tracked configuration.
 - Use LaTeX math syntax in Markdown and preserve existing note paths and source citations.
+- When adding or learning French words, expressions, or reusable sentence patterns in lessons, practices, or other French work, also update `content/fr/mots.md` in the same task. Starting with `content/fr/practices/261025.md`, keep English-to-French entries grouped by theme, include useful examples and a source-note link, and reuse existing entries instead of duplicating them.
 
 ## Workflow and checks
 
