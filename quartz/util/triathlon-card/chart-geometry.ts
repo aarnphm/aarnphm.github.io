@@ -79,10 +79,14 @@ export const distanceXTicks = (
   return ticks
 }
 
-export const elapsedActivityXTicks = (totalElapsedS: number): AxisXTick[] => [
-  { label: zoneClock(0), pct: 0, cls: 'tri-cax-xt--first' },
-  { label: zoneClock(totalElapsedS / 2), pct: 50 },
-  { label: zoneClock(totalElapsedS), pct: 100, cls: 'tri-cax-xt--last' },
+/** Labels read elapsed time at each position, so the middle label moves past a removed pause. */
+export const elapsedActivityXTicks = (
+  totalElapsedS: number,
+  elapsedAt: (fraction: number) => number = fraction => fraction * totalElapsedS,
+): AxisXTick[] => [
+  { label: zoneClock(elapsedAt(0)), pct: 0, cls: 'tri-cax-xt--first' },
+  { label: zoneClock(elapsedAt(0.5)), pct: 50 },
+  { label: zoneClock(elapsedAt(1)), pct: 100, cls: 'tri-cax-xt--last' },
 ]
 
 export const graphView = (

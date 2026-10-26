@@ -384,22 +384,24 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   }
 }
 
-// A readout table: one mono family at meta size, a single rule under the header, and the row
-// hover as the only fill.
+// Primary readouts use UI size; supporting labels retain the metadata scale.
 .tri-pace-table {
   width: 100%;
   min-width: 44rem;
   margin: 0;
   border-collapse: collapse;
   font-family: var(--codeFont);
-  font-size: var(--text-meta);
+  font-size: var(--text-ui);
   font-variant-numeric: tabular-nums;
   line-height: 1.5;
   color: var(--dark);
 
   caption {
-    padding: 0 0 var(--space-2);
+    padding: 0 0 var(--space-3);
     color: var(--dark);
+    font-family: var(--headerFont);
+    font-size: var(--text-ui);
+    font-weight: 600;
     text-align: left;
   }
 
@@ -423,6 +425,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   }
 
   thead th {
+    font-size: var(--text-meta);
     color: var(--darkgray);
     border-bottom-color: var(--gray);
   }
@@ -431,7 +434,9 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   .tri-pace-unit {
     display: inline-flex;
     align-items: center;
-    min-height: 1.5rem;
+    justify-content: flex-end;
+    min-width: 1.75rem;
+    min-height: 1.75rem;
     vertical-align: middle;
     color: var(--darkgray);
 
@@ -444,6 +449,13 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   .tri-pace-spd {
     position: relative;
     color: var(--darkgray);
+  }
+
+  @media (pointer: coarse) {
+    .tri-pace-unit {
+      min-width: 44px;
+      min-height: 44px;
+    }
   }
 
   // The reference tag hangs past the number so the mph digits keep one right edge.

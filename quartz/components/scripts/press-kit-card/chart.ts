@@ -35,6 +35,9 @@ interface ChartRenderOptions {
   logScale?: boolean
 }
 
+// Space below a chart note, in label sizes.
+const NOTE_GAP = 1.6
+
 const clock = (seconds: number): string => {
   const rounded = Math.round(seconds)
   const hours = Math.floor(rounded / 3600)
@@ -124,7 +127,7 @@ export function paintTrainingChart(
   const axis = scaleLinear().domain([0, maximum]).nice(4)
   const ceiling = axis.domain()[1]
   const top = y + size * 2
-  const bottom = y + height - size * ((bars ? 2.9 : 1.7) + (chart.note ? 1 : 0))
+  const bottom = y + height - size * ((bars ? 2.9 : 1.7) + (chart.note ? 1 + NOTE_GAP : 0))
   const tickText = (value: number) =>
     runLaps ? clock(value) : value.toLocaleString(locale, { maximumFractionDigits: 1 })
 
@@ -409,7 +412,7 @@ export function paintTrainingChart(
       group,
       triLabel(locale, chart.note),
       x,
-      y + height - size * 0.15,
+      y + height - size * (0.15 + NOTE_GAP),
       referenceWidth,
       size * 0.6,
       ink,

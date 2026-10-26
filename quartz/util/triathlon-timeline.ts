@@ -4,7 +4,8 @@ import { isRecord } from './type-guards'
 export type TimelineActivity = Pick<
   StravaActivityDetail,
   'sport' | 'name' | 'distanceKm' | 'movingTimeS'
->
+> &
+  Partial<Pick<StravaActivityDetail, 'elapsedTimeS'>>
 
 export function readTimelineActivities(source: string | undefined): TimelineActivity[] {
   if (!source) return []
@@ -21,7 +22,9 @@ export function readTimelineActivities(source: string | undefined): TimelineActi
         activity.distanceKm >= 0 &&
         typeof activity.movingTimeS === 'number' &&
         Number.isFinite(activity.movingTimeS) &&
-        activity.movingTimeS >= 0,
+        activity.movingTimeS >= 0 &&
+        (activity.elapsedTimeS === undefined ||
+          (typeof activity.elapsedTimeS === 'number' && Number.isFinite(activity.elapsedTimeS))),
     )
   )
     throw new Error('invalid timeline activities')

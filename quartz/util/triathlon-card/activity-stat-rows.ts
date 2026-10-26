@@ -51,6 +51,20 @@ const primarySwimStroke = (d: StravaActivityDetail): string => {
   return entries[0] ? STROKE_LABEL[entries[0][0]] : STROKE_LABEL.freestyle
 }
 
+// Elapsed is the native recorded clock. It earns a row only when it would print differently
+// from moving time, as a row under it.
+const timeRows = (d: StravaActivityDetail): [string, string][] => {
+  const moving = dur(d.movingTimeS)
+  const elapsed =
+    Number.isFinite(d.elapsedTimeS) && d.elapsedTimeS > d.movingTimeS ? dur(d.elapsedTimeS) : null
+  return elapsed && elapsed !== moving
+    ? [
+        ['time', moving],
+        ['elapsed time', elapsed],
+      ]
+    : [['time', moving]]
+}
+
 const activityTrainingRows = (
   presentation: TriathlonPresentation,
   d: StravaActivityDetail,
@@ -153,7 +167,7 @@ export const activityStatRows = (
     return rows
   }
   if (d.sport === 'strength') {
-    const rows: [string, string][] = [['time', dur(d.movingTimeS)]]
+    const rows: [string, string][] = timeRows(d)
     if (d.strength?.volumeKg != null)
       rows.push(['volume', strengthMass(presentation, d.strength.volumeKg)])
     if (d.strength?.totalSets != null) rows.push(['sets', String(d.strength.totalSets)])
@@ -164,7 +178,7 @@ export const activityStatRows = (
     return rows
   }
   if (d.sport === 'treatment' || d.sport === 'yoga') {
-    const rows: [string, string][] = [['time', dur(d.movingTimeS)]]
+    const rows: [string, string][] = timeRows(d)
     if (d.avgHr) rows.push(['avg hr', `${d.avgHr} bpm`])
     rows.push(...activityTrainingRows(presentation, d))
     if (includeAnalyses) rows.push(...activityAnalysisStatRows(presentation, d))
@@ -176,7 +190,7 @@ export const activityStatRows = (
       : rate(presentation, d.sport, d.distanceKm, d.movingTimeS)
   const rows: [string, string][] = [
     ['distance', dist(presentation, d.distanceKm, d.sport)],
-    ['time', dur(d.movingTimeS)],
+    ...timeRows(d),
     [d.sport === 'bike' ? 'speed' : 'pace', activityRate],
   ]
   if (d.sport === 'bike' && d.maxSpeedKph != null)

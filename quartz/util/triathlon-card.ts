@@ -117,7 +117,11 @@ export type {
   AxisXTick,
   AxisYTick,
 } from './triathlon-card/chart-geometry'
-export { analysisChartSelectionBounds } from './triathlon-card/chart-selection'
+export {
+  analysisChartSelectionBounds,
+  analysisDomainFraction,
+  analysisDomainValueAt,
+} from './triathlon-card/chart-selection'
 export type { ActivityAnalysisChartDomain } from './triathlon-card/chart-selection'
 export { buildElevation, climbGradeBand } from './triathlon-card/elevation-chart'
 export { buildTrace } from './triathlon-card/trace-chart'

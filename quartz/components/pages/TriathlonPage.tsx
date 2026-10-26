@@ -187,6 +187,7 @@ export default (() => {
                                 name: activity.name,
                                 distanceKm: activity.distanceKm,
                                 movingTimeS: activity.movingTimeS,
+                                elapsedTimeS: activity.elapsedTimeS,
                               }
                               return [summary]
                             }),

@@ -6,7 +6,7 @@ import {
   STAMINA_LEDGER_OFFSET_METHOD,
 } from '../../../../util/stamina-ledger'
 import { isRecord } from '../../../../util/type-guards'
-import { bounded, finite, nullableBounded, nullableFinite } from './predicates'
+import { bounded, finite, isElapsedPauses, nullableBounded, nullableFinite } from './predicates'
 
 export const isStaminaTrace = (value: unknown): boolean => {
   if (value === null) return true
@@ -156,7 +156,8 @@ export const isCyclingPowerTrace = (value: unknown, elapsedTimeS: number): boole
     value.method !== 'recorded-power-average-v1' ||
     !Array.isArray(value.points) ||
     value.points.length < 2 ||
-    value.points.length > CYCLING_POWER_MAX_POINTS
+    value.points.length > CYCLING_POWER_MAX_POINTS ||
+    !isElapsedPauses(value.pauses, elapsedTimeS)
   )
     return false
   let previousElapsed = -1

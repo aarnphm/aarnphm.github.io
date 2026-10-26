@@ -897,7 +897,8 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
   start: '2026-07-09T12:00:00Z',
   distanceKm: 30,
   movingTimeS: 4_800,
-  elapsedTimeS: 4_800,
+  // no pauses unless a test sets elapsed time itself
+  elapsedTimeS: overrides.movingTimeS ?? 4_800,
   maxSpeedKph: null,
   elevationM: 100,
   avgHr: 148,
@@ -11172,6 +11173,7 @@ const cyclingPowerDetail = (): StravaActivityDetail =>
       source: 'wahoo',
       terrainSource: 'wahoo',
       method: 'recorded-power-average-v1',
+      pauses: [],
       points: [0, 30, 300, 400, 700, 1_000].map((elapsedS, index) => ({
         elapsedS,
         distanceKm: elapsedS / 100,
@@ -11267,7 +11269,7 @@ test('cycling power retains provider metadata without visible source text', () =
   assert.doesNotMatch(text(frenchChart), /Wahoo|Strava|Garmin/)
 })
 
-test('cycling power renders continuous terrain and cumulative power across a recording pause', () => {
+test('cycling power gives a recording pause no width and marks its join', () => {
   const time = Array.from({ length: 401 }, (_, index) => (index < 60 ? index : index + 120))
   const cyclingPowerTrace = buildCyclingPowerTrace({
     source: 'wahoo',
@@ -11282,12 +11284,25 @@ test('cycling power renders continuous terrain and cumulative power across a rec
   assert.ok(cyclingPowerTrace)
   const chart = buildCyclingPowerChart(factory, detail({ elapsedTimeS: 520, cyclingPowerTrace }))
   assert.ok(chart)
+  assert.deepEqual(cyclingPowerTrace.pauses, [{ startS: 60, endS: 180 }])
+  // 400 recorded seconds fill the width; the join sits at 60 / 400.
+  const marks = byClass(chart, 'tri-elev-break')
+  assert.deepEqual(
+    marks.map(mark => mark.properties.x1),
+    ['15.00'],
+  )
   const terrain = String(byClass(chart, 'tri-cycling-power-elevation')[0].properties.d)
-  assert.equal(terrain.match(/M /g)?.length, 1)
-  assert.equal(terrain.match(/Z/g)?.length, 1)
+  assert.equal(terrain.match(/M /g)?.length, 2)
+  assert.equal(terrain.match(/Z/g)?.length, 2)
   const lines = byClass(chart, 'tri-cycling-power-line')
   assert.equal(String(lines[0].properties.d).match(/M /g)?.length, 2)
-  assert.equal(String(lines[2].properties.d).match(/M /g)?.length, 1)
+  assert.equal(String(lines[2].properties.d).match(/M /g)?.length, 2)
+  const svg = byClass(chart, 'tri-cycling-power-plot')[0]
+  assert.equal(svg.properties.dataDomainPauses, '60:180')
+  assert.deepEqual(
+    byClass(chart, 'tri-cax-xt').map(tick => text(tick)),
+    ['0s', '5:20', '8:40'],
+  )
 })
 
 test('cycling power keeps wind gaps empty and preserves observed calm and signed direction', () => {

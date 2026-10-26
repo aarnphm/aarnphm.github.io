@@ -1,5 +1,6 @@
 import type { ActivityAnalysisRange, StravaActivityDetail } from '../../plugins/stores/strava'
 import type { TriNodeFactory } from './construction-contracts'
+import { elapsedAxis, type ElapsedPause } from '../elapsed-axis'
 import { activityTraceUsesElapsedAxis } from './activity-metric-data'
 
 const routeDistanceAtElapsed = (d: StravaActivityDetail, elapsedS: number): number => {
@@ -22,8 +23,28 @@ export type AnalysisInterval = Pick<
 >
 
 export type ActivityAnalysisChartDomain =
-  | Pick<AnalysisInterval, 'startElapsedS' | 'endElapsedS'>
+  | (Pick<AnalysisInterval, 'startElapsedS' | 'endElapsedS'> & { pauses?: readonly ElapsedPause[] })
   | Pick<AnalysisInterval, 'startDistanceKm' | 'endDistanceKm'>
+
+/** Domain position in [0, 1]; an elapsed domain gives its pauses no width. */
+export const analysisDomainFraction = (
+  domain: ActivityAnalysisChartDomain,
+  value: number,
+): number => {
+  if ('startElapsedS' in domain)
+    return elapsedAxis(domain.startElapsedS, domain.endElapsedS, domain.pauses).fraction(value)
+  const span = domain.endDistanceKm - domain.startDistanceKm
+  return span > 0 ? Math.max(0, Math.min(1, (value - domain.startDistanceKm) / span)) : 0
+}
+
+/** Inverse of analysisDomainFraction: elapsed seconds or kilometres at a fraction. */
+export const analysisDomainValueAt = (
+  domain: ActivityAnalysisChartDomain,
+  fraction: number,
+): number =>
+  'startElapsedS' in domain
+    ? elapsedAxis(domain.startElapsedS, domain.endElapsedS, domain.pauses).elapsedAt(fraction)
+    : domain.startDistanceKm + fraction * (domain.endDistanceKm - domain.startDistanceKm)
 
 export const analysisChartSelectionBounds = (
   range: AnalysisInterval,
@@ -34,14 +55,10 @@ export const analysisChartSelectionBounds = (
     'startElapsedS' in domain
       ? [domain.startElapsedS, domain.endElapsedS, range.startElapsedS, range.endElapsedS]
       : [domain.startDistanceKm, domain.endDistanceKm, range.startDistanceKm, range.endDistanceKm]
-  const span = domainEnd - domainStart
-  if (!(span > 0) || !(plot.width > 0)) return { x: plot.x, width: 0 }
-  const start = Math.max(domainStart, Math.min(domainEnd, rangeStart))
-  const end = Math.max(start, Math.min(domainEnd, rangeEnd))
-  return {
-    x: plot.x + ((start - domainStart) / span) * plot.width,
-    width: ((end - start) / span) * plot.width,
-  }
+  if (!(domainEnd - domainStart > 0) || !(plot.width > 0)) return { x: plot.x, width: 0 }
+  const start = analysisDomainFraction(domain, rangeStart)
+  const end = Math.max(start, analysisDomainFraction(domain, rangeEnd))
+  return { x: plot.x + start * plot.width, width: (end - start) * plot.width }
 }
 
 export const analysisSelectionBounds = (
