@@ -12,6 +12,7 @@ import {
 } from '../../../util/stacked-notes'
 import { renderDocumentPreview } from '../document-preview-card'
 import { currentNavSignal } from '../nav-lifecycle'
+import { previewHref, previewText, renderPagePreview } from '../page-preview-card'
 import { renderCustomPagePreview } from './custom-page-preview'
 import { handlePdfContent } from './pdf-preview'
 import { findHashTarget, isAbortError } from './placement'
@@ -25,6 +26,36 @@ type ContentHandler = (
 ) => Promise<void>
 
 export const p = new DOMParser()
+
+export function cloneTelescopicPreview(
+  container: ParentNode,
+  targetUrl: URL,
+  hash: string,
+  title: string,
+): HTMLElement | null {
+  if (!hash) return null
+  const target = findHashTarget(container, hash)
+  const telescope = target?.closest<HTMLElement>('.telescopic-container')
+  if (!telescope) return null
+  const preview = document.createElement('div')
+  preview.className = 'telescopic-preview'
+  const clone = telescope.cloneNode(true)
+  if (!(clone instanceof HTMLElement)) return null
+  clone.querySelectorAll('.details').forEach(detail => detail.classList.replace('open', 'close'))
+  clone
+    .querySelectorAll('button.summary')
+    .forEach(button => button.setAttribute('aria-expanded', 'false'))
+  const source = document.createElement('a')
+  const destination = new URL(targetUrl)
+  destination.hash = hash
+  source.href = destination.toString()
+  source.className = 'internal transclude-src'
+  source.dataset.noPopover = 'true'
+  source.textContent = title
+  preview.append(clone, source)
+  prefixPopoverIds(preview)
+  return preview
+}
 
 function cleanAbsoluteElement(element: HTMLElement): HTMLElement {
   const refsAndNotes = element.querySelectorAll<HTMLElement>(
@@ -51,7 +82,7 @@ export function streamPopoverKey(targetUrl: URL): string {
   if (isStreamDocumentPath(targetUrl.pathname) && (entry || hash)) {
     return `popover-${targetUrl.pathname}-${entry || hash}`
   }
-  return `popover-${targetUrl.pathname}`
+  return `popover-${targetUrl.pathname}${hash ? `-${hash}` : ''}`
 }
 
 export function streamPopoverFetchUrl(targetUrl: URL): URL {
@@ -135,8 +166,59 @@ async function handleImageContent(targetUrl: URL, popoverInner: HTMLDivElement) 
   popoverInner.appendChild(img)
 }
 
-async function handleXmlContent(response: Response, popoverInner: HTMLDivElement) {
+async function handleXmlContent(response: Response, targetUrl: URL, popoverInner: HTMLDivElement) {
   const contents = await response.text()
+  const xml = p.parseFromString(contents, 'application/xml')
+  const atom =
+    xml.documentElement.localName === 'feed' &&
+    xml.documentElement.namespaceURI === 'http://www.w3.org/2005/Atom'
+  const channel = atom ? xml.documentElement : xml.querySelector('rss > channel')
+  if (channel && !xml.querySelector('parsererror')) {
+    const text = (node: Element, name: string) =>
+      Array.from(node.children)
+        .find(child => child.localName === name)
+        ?.textContent?.trim() ?? ''
+    const items = Array.from(channel.children).filter(
+      child => child.localName === (atom ? 'entry' : 'item'),
+    )
+    renderPagePreview(
+      {
+        kind: 'rss',
+        title: previewText(text(channel, 'title') || 'rss feed', 100),
+        href: targetUrl.href,
+        description:
+          previewText(text(channel, atom ? 'subtitle' : 'description'), 240) ||
+          'subscribe to this feed in your rss reader.',
+        meta: [
+          atom ? 'atom' : 'rss',
+          `${items.length} ${items.length === 1 ? 'entry' : 'entries'}`,
+        ],
+        rows: items.length
+          ? items.slice(0, 4).map(item => {
+              const date = new Date(
+                atom ? text(item, 'published') || text(item, 'updated') : text(item, 'pubDate'),
+              )
+              const href = atom
+                ? (Array.from(item.children)
+                    .find(
+                      child =>
+                        child.localName === 'link' &&
+                        (!child.getAttribute('rel') || child.getAttribute('rel') === 'alternate'),
+                    )
+                    ?.getAttribute('href') ?? '')
+                : text(item, 'link')
+              return {
+                title: previewText(text(item, 'title') || 'untitled', 100),
+                href: href ? previewHref(href, targetUrl.href) : undefined,
+                detail: Number.isNaN(date.valueOf()) ? undefined : date.toISOString().slice(0, 10),
+              }
+            })
+          : [{ title: 'no entries yet' }],
+      },
+      popoverInner,
+    )
+    return
+  }
   const rss = document.createElement('pre')
   rss.classList.add('rss-viewer')
   rss.append(xmlFormat(contents, { indentation: '  ', lineSeparator: '\n' }))
@@ -176,10 +258,20 @@ async function handleDefaultContent(
 ) {
   const contents = await response.text()
   const html = p.parseFromString(contents, 'text/html')
+  normalizeRelativeURLs(html, targetUrl)
+  const telescope = cloneTelescopicPreview(
+    html,
+    targetUrl,
+    hash,
+    html.querySelector('h1')?.textContent ?? html.title,
+  )
+  if (telescope) {
+    popoverInner.append(telescope)
+    return
+  }
   if (await renderPageDocumentPreview(html, targetUrl, popoverInner)) return
   if (await renderCustomPagePreview(html, targetUrl, popoverInner, signal)) return
   popoverInner.classList.add('grid')
-  normalizeRelativeURLs(html, targetUrl)
   prefixPopoverIds(html)
   const elts = [
     ...(html.getElementsByClassName('popover-hint') as HTMLCollectionOf<HTMLDivElement>),
@@ -192,8 +284,10 @@ async function handleDefaultContent(
 const contentHandlers: Record<string, ContentHandler> = {
   image: async (_, targetUrl, popoverInner) => handleImageContent(targetUrl, popoverInner),
   'application/pdf': handlePdfContent,
-  'application/xml': async (response, _targetUrl, popoverInner) =>
-    handleXmlContent(response, popoverInner),
+  'application/xml': handleXmlContent,
+  'text/xml': handleXmlContent,
+  'application/rss+xml': handleXmlContent,
+  'application/atom+xml': handleXmlContent,
   default: handleDefaultContent,
 }
 
@@ -258,10 +352,17 @@ export function populateStackedPayloadContent(
   payload: StackedNotePayload,
   targetUrl: URL,
   popoverInner: HTMLDivElement,
+  hash = '',
 ) {
   popoverInner.classList.add('grid')
   const html = p.parseFromString(payload.content, 'text/html')
   normalizeRelativeURLs(html, new URL(`/${payload.slug}`, targetUrl))
+  const telescope = cloneTelescopicPreview(html, targetUrl, hash, payload.title)
+  if (telescope) {
+    popoverInner.classList.remove('grid')
+    popoverInner.append(telescope)
+    return
+  }
   html.querySelectorAll('.byline, .page-footer').forEach(element => element.remove())
   prefixPopoverIds(html)
   const elements = Array.from(html.body.children).flatMap(el =>
