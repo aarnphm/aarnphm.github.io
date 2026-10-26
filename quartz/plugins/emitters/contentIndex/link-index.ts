@@ -27,6 +27,7 @@ export type ContentLayout =
   | 'courses'
   | 'fr'
   | 'university'
+  | 'pagerank'
   | 'flashcards'
   | 'resource'
   | 'study-log'
