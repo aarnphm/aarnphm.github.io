@@ -4,7 +4,7 @@ date: '2026-03-04'
 description: horology nerd.
 id: watch
 layout: technical
-modified: 2026-06-06 05:04:34 GMT-04:00
+modified: 2026-10-26 09:59:57 GMT-04:00
 tags:
   - evergreen
 title: watch
@@ -17,3 +17,4 @@ transclude:
 - A. Lange & Söhne LANGE 1 TIME ZONE ref. LSLS1363AG (136.029), [[thoughts/images/A34D3063-8B5C-4784-BC8E-3C018662D9FC_1_105_c.webp|caliber L141.1]]
 - Moonswatch Mission to Jupiter ref. SO33C100, [[thoughts/images/4D62A4C5-9B1E-4B4D-8741-D376E4B6C509_1_102_o.webp|Quartz movement]]
 - CASIO G-SHOCK ref. GA-2100-1A1, [[thoughts/images/DD9C0089-5908-4CE7-A9DE-00DE560B7412_1_102_o.webp|Quartz movement]]
+- Garmin Forerunner 970 ref. 010-02969-02, [[thoughts/images/IMG_5792.webp|Elevate Gen 5]]
