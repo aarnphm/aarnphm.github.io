@@ -275,3 +275,20 @@ quartz/runtime/native/packs/**/_build/
 .claude/*
 !.claude/skills
 docs/
+
+# Instagram archive: retain moving media and acquisition reports locally.
+/content/thoughts/images/instagram/**/*.mp4
+/content/thoughts/images/instagram/**/*.mov
+/content/thoughts/images/instagram/**/*.webm
+/content/thoughts/images/instagram/**/*.m4v
+/content/thoughts/images/instagram/**/*.mkv
+/content/thoughts/images/instagram/**/*.avi
+/content/thoughts/images/instagram/**/*.m4a
+/content/thoughts/images/instagram/**/*.mp3
+/content/thoughts/images/instagram/**/*.wav
+/content/thoughts/images/instagram/**/*.ogg
+/content/thoughts/images/instagram/**/*.aac
+/content/thoughts/images/instagram/**/*.zip
+/content/thoughts/images/instagram/**/*.json
+/content/thoughts/images/instagram/**/*.txt
+!/content/thoughts/images/instagram/attribution.json
