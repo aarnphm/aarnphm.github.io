@@ -14,7 +14,14 @@ interface StatusMotion {
 }
 
 const motions = new WeakMap<HTMLElement, StatusMotion>()
-const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
+let reducedQuery: MediaQueryList | undefined
+const reducedMotion = () =>
+  (reducedQuery ??= window.matchMedia('(prefers-reduced-motion: reduce)')).matches
+
+// A tick inside one phase is a digit swap at meter cadence; a new phase rolls in and holds long enough to read.
+const TICK_MS = 100
+const PHASE_HOLD_MS = 320
+const ROLL = '0.35em'
 
 function stop(motion: StatusMotion) {
   motion.generation++
@@ -32,48 +39,49 @@ function parts(text: string) {
     : { prefix: text.slice(0, separator + 3), value: text.slice(separator + 3) }
 }
 
+const isTick = (before: string, after: string) => {
+  const prefix = parts(before).prefix
+  return prefix !== '' && prefix === parts(after).prefix
+}
+
 function setReadout(motion: StatusMotion, text: string) {
   const next = parts(text)
   const fraction = next.value.match(/^([\d,.]+)\/([\d,.]+)(.*)$/u)
+  // Reserve the width of the total on both sides of the slash so the slash never walks.
+  const width = fraction ? `${2 * fraction[2].length + fraction[3].length + 1}ch` : ''
   motion.readout.toggleAttribute('data-numeric', fraction !== null)
-  motion.readout.style.minInlineSize = fraction
-    ? `${Math.max(fraction[1].length, fraction[2].length) + fraction[2].length + fraction[3].length + 1}ch`
-    : ''
-  motion.prefix.textContent = next.prefix
+  if (motion.readout.style.minInlineSize !== width) motion.readout.style.minInlineSize = width
+  if (motion.prefix.textContent !== next.prefix) motion.prefix.textContent = next.prefix
   motion.value.textContent = next.value
 }
 
 function render(motion: StatusMotion) {
   motion.timer = null
   if (motion.current === motion.next) return
-  const before = parts(motion.current)
-  const after = parts(motion.next)
-  const samePhase = before.prefix !== '' && before.prefix === after.prefix
   const previous = motion.current
   motion.current = motion.next
   motion.lastUpdate = performance.now()
   setReadout(motion, motion.current)
-  const outgoingHost = samePhase ? motion.readout : motion.view
-  outgoingHost.append(motion.outgoing)
-  motion.outgoing.textContent = samePhase ? before.value : previous
+  // Same phase: the tabular readout swaps digits in place, nothing moves.
+  if (isTick(previous, motion.current) || !previous) return
+  motion.outgoing.textContent = previous
   motion.view.dataset.flipping = ''
   const generation = ++motion.generation
-  // Keep the phase stationary. Only the changing readout moves, within one clipped line.
-  const incoming = samePhase ? motion.value : motion.label
+  // The old line leaves first and is mostly gone before the new one rises, so the two never read as one smear.
   motion.animations = [
-    incoming.animate(
-      [
-        { opacity: 0, transform: samePhase ? 'translateY(4px)' : 'none' },
-        { opacity: 1, transform: 'none' },
-      ],
-      { duration: 140, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' },
-    ),
     motion.outgoing.animate(
       [
         { opacity: 1, transform: 'none' },
-        { opacity: 0, transform: samePhase ? 'translateY(-4px)' : 'none' },
+        { opacity: 0, transform: `translateY(-${ROLL})` },
       ],
-      { duration: 140, easing: 'ease-out', fill: 'forwards' },
+      { duration: 120, easing: 'cubic-bezier(0.4, 0, 1, 1)', fill: 'forwards' },
+    ),
+    motion.label.animate(
+      [
+        { opacity: 0, transform: `translateY(${ROLL})` },
+        { opacity: 1, transform: 'none' },
+      ],
+      { duration: 200, delay: 60, easing: 'cubic-bezier(0.23, 1, 0.32, 1)', fill: 'backwards' },
     ),
   ]
   void Promise.allSettled(motion.animations.map(animation => animation.finished)).then(() => {
@@ -85,12 +93,13 @@ function render(motion: StatusMotion) {
 
 function schedule(motion: StatusMotion) {
   if (motion.current === motion.next || motion.animations.length || motion.timer !== null) return
-  const delay = Math.max(0, 240 - (performance.now() - motion.lastUpdate))
+  const gap = !motion.current ? 0 : isTick(motion.current, motion.next) ? TICK_MS : PHASE_HOLD_MS
+  const delay = Math.max(0, gap - (performance.now() - motion.lastUpdate))
   if (delay) motion.timer = window.setTimeout(() => render(motion), delay)
   else render(motion)
 }
 
-/** A stable phase and a bounded, latest-value readout transition. */
+/** A stable phase, an in-place tabular readout, and a short roll only when the phase changes. */
 export function setStatusText(host: HTMLElement, text: string) {
   let motion = motions.get(host)
   if (!motion) {
@@ -137,5 +146,6 @@ export function setStatusText(host: HTMLElement, text: string) {
     stop(motion)
     setReadout(motion, text)
     motion.current = text
+    motion.lastUpdate = performance.now()
   } else schedule(motion)
 }
