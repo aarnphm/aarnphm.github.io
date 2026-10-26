@@ -24,6 +24,15 @@ let activeToc: HTMLDivElement | null = null
 let tocEntryBySlug = new Map<string, HTMLElement>()
 
 const observer = new IntersectionObserver(entries => {
+  const intersecting: HTMLButtonElement[] = []
+  if (activeToc?.dataset.layout === 'minimal') {
+    for (const entry of entries) {
+      const button = tocEntryBySlug.get(entry.target.id)
+      if (entry.isIntersecting && entry.rootBounds?.height && button instanceof HTMLButtonElement)
+        intersecting.push(button)
+    }
+  }
+  const scroll = measureTocScroll(intersecting)
   for (const entry of entries) {
     const slug = entry.target.id
     const tocEntryElement = tocEntryBySlug.get(slug)
@@ -39,14 +48,12 @@ const observer = new IntersectionObserver(entries => {
     const inView = entry.boundingClientRect.y < windowHeight
     if (layout === 'minimal') {
       tocEntryElement.classList.toggle('in-view', inView)
-      if (entry.isIntersecting && tocEntryElement instanceof HTMLButtonElement) {
-        scrollTocButtonIntoView(tocEntryElement)
-      }
     } else {
       tocEntryElement.classList.toggle('in-view', inView)
       tocEntryElement.parentElement?.classList.toggle('in-view', inView)
     }
   }
+  if (scroll) scroll.nav.scrollTop = scroll.top
 })
 
 function onClick(evt: MouseEvent) {
@@ -143,8 +150,8 @@ function setupToc() {
 
   const controller = new AbortController()
   const { signal } = controller
-  let metrics = readTocButtonMetrics(buttons)
-  let maxScale = readTocMaxScale(nav, metrics)
+  const metrics = readTocButtonMetrics(buttons)
+  const maxScale = readTocMaxScale(nav, metrics)
   let navViewportTop = nav.getBoundingClientRect().top
 
   let frame = 0
@@ -166,13 +173,6 @@ function setupToc() {
       scrollEndTimer = 0
     }
     setTocScrolling(false)
-  }
-
-  const refreshTocGeometry = () => {
-    navViewportTop = nav.getBoundingClientRect().top
-    metrics = readTocButtonMetrics(buttons)
-    maxScale = readTocMaxScale(nav, metrics)
-    updateTocOverflow(nav)
   }
 
   const scheduleHover = () => {
@@ -282,17 +282,10 @@ function setupToc() {
     { passive: true, signal },
   )
 
-  let initFrame = requestAnimationFrame(() => {
-    initFrame = 0
-    refreshTocGeometry()
-  })
+  updateTocOverflow(nav)
 
   tocCleanup = () => {
     controller.abort()
-    if (initFrame !== 0) {
-      cancelAnimationFrame(initFrame)
-      initFrame = 0
-    }
     if (frame !== 0) {
       cancelAnimationFrame(frame)
       frame = 0
@@ -455,35 +448,46 @@ function updateTocOverflow(nav: HTMLElement) {
   nav.classList.toggle('at-end', scrollable && atEnd)
 }
 
-function scrollTocButtonIntoView(button: HTMLButtonElement) {
-  const nav = button.closest<HTMLElement>('#toc-vertical')
-  if (!nav || nav.scrollHeight <= nav.clientHeight + 1) return
+function measureTocScroll(buttons: HTMLButtonElement[]) {
+  const nav = buttons[0]?.closest<HTMLElement>('#toc-vertical')
+  if (!nav) return
+  const maxScroll = nav.scrollHeight - nav.clientHeight
+  if (maxScroll <= 1) return
 
   const navRect = nav.getBoundingClientRect()
-  const buttonRect = button.getBoundingClientRect()
-  const before = buttonRect.top - navRect.top - tocScrollBuffer
-  const after = buttonRect.bottom - navRect.bottom + tocScrollBuffer
-  let nextScroll = nav.scrollTop
-
-  if (before < 0) {
-    nextScroll += before
-  } else if (after > 0) {
-    nextScroll += after
+  const initialScroll = nav.scrollTop
+  let nextScroll = initialScroll
+  // Preserve the observer's sequential scroll decisions without writing between geometry reads.
+  for (const button of buttons) {
+    const rect = button.getBoundingClientRect()
+    const moved = nextScroll - initialScroll
+    const before = rect.top - navRect.top - tocScrollBuffer - moved
+    const after = rect.bottom - navRect.bottom + tocScrollBuffer - moved
+    const delta = before < 0 ? before : after > 0 ? after : 0
+    if (Math.abs(delta) >= 1) nextScroll = Math.max(0, Math.min(maxScroll, nextScroll + delta))
   }
 
-  if (Math.abs(nextScroll - nav.scrollTop) >= 1) {
-    nav.scrollTop = nextScroll
-  }
+  if (Math.abs(nextScroll - initialScroll) >= 1) return { nav, top: nextScroll }
 }
 
-window.addEventListener('resize', setupToc)
 document.addEventListener('nav', () => {
-  setupToc()
+  let setupFrame = 0
+  const scheduleSetup = () => {
+    cancelAnimationFrame(setupFrame)
+    setupFrame = requestAnimationFrame(() => {
+      setupFrame = 0
+      setupToc()
+    })
+  }
+  scheduleSetup()
+  window.addEventListener('resize', scheduleSetup)
   cacheTocEntries()
   observer.disconnect()
   tocHeadingTargets().forEach(header => observer.observe(header))
 
   window.addCleanup(() => {
+    cancelAnimationFrame(setupFrame)
+    window.removeEventListener('resize', scheduleSetup)
     cleanupToc()
     observer.disconnect()
     activeToc = null
