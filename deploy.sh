@@ -33,7 +33,7 @@ deploy() {
   GIT_LFS_SKIP_SMUDGE=1 run_stage git-pull git pull
   run_stage lfs-install git lfs install --local
   run_stage lfs-pull git lfs pull
-  run_stage lfs-required git lfs pull --include="quartz/runtime/native/packs/**,content/triathlon/wind/**/*.json" --exclude=""
+  run_stage lfs-required git lfs pull --include="quartz/runtime/native/packs/**,content/triathlon/wind/**/*.json,content/thoughts/images/**,content/hinterland/app/**" --exclude=""
   run_stage lfs-checkout git lfs checkout
   run_stage wind-validation pnpm exec tsx quartz/scripts/validate-wind-archive.ts
 
