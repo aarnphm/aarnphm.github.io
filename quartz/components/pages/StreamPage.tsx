@@ -371,21 +371,13 @@ export default (() => {
         class="stream main-col popover-hint"
         data-stream-canonical={canonicalPath}
         data-stream-view={streamView.kind}
-        data-stream-layout={isFeedView ? undefined : 'list'}
+        data-stream-layout={isFeedView ? undefined : 'table'}
       >
         {!isFeedView && (
           <div class="stream-archive-toolbar">
             <span class="stream-archive-heading">
               {fileData.frontmatter?.title ?? 'stream / on'}
             </span>
-            <div role="group" aria-label="archive view" class="stream-archive-views" hidden>
-              <button type="button" data-stream-layout-button="list" aria-pressed="true">
-                list
-              </button>
-              <button type="button" data-stream-layout-button="table" aria-pressed="false">
-                table
-              </button>
-            </div>
           </div>
         )}
         {isFeedView ? (

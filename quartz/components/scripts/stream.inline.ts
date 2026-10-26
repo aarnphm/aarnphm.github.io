@@ -478,37 +478,5 @@ const hydrateStream = (): void => {
 }
 
 document.addEventListener('nav', () => {
-  const archive = document.querySelector<HTMLElement>('.stream[data-stream-layout]')
-  if (archive) {
-    const views = archive.querySelector<HTMLElement>('.stream-archive-views')
-    const buttons = archive.querySelectorAll<HTMLButtonElement>('[data-stream-layout-button]')
-    const selectLayout = (layout: string): void => {
-      archive.dataset.streamLayout = layout === 'table' ? 'table' : 'list'
-      for (const button of buttons) {
-        button.setAttribute(
-          'aria-pressed',
-          String(button.dataset.streamLayoutButton === archive.dataset.streamLayout),
-        )
-      }
-    }
-    selectLayout(new URL(window.location.href).searchParams.get('view') ?? 'list')
-    if (views) views.hidden = false
-    const controller = new AbortController()
-    for (const button of buttons) {
-      button.addEventListener(
-        'click',
-        () => {
-          const layout = button.dataset.streamLayoutButton ?? 'list'
-          selectLayout(layout)
-          const url = new URL(window.location.href)
-          if (layout === 'table') url.searchParams.set('view', 'table')
-          else url.searchParams.delete('view')
-          window.history.replaceState(window.history.state, '', url)
-        },
-        { signal: controller.signal },
-      )
-    }
-    window.addCleanup(() => controller.abort())
-  }
   hydrateStream()
 })
