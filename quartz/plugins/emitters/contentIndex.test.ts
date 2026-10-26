@@ -242,7 +242,7 @@ test('content index partial emit ignores source asset changes', async () => {
   }
 })
 
-test('content index emit skips atom feeds while watching', async () => {
+test('content index emit publishes atom feeds while watching', async () => {
   const root = await mkdtemp(path.join(tmpdir(), 'quartz-content-index-watch-atom-'))
   try {
     const ctx = testCtx(root)
@@ -262,11 +262,11 @@ test('content index emit skips atom feeds while watching', async () => {
 
     const emitted = await collectEmitted(plugin.emit(ctx, [content], resources))
     const paths = outputPaths(ctx, emitted)
-    assert.equal(paths.includes('index.xml'), false)
-    assert.equal(paths.includes('thoughts/index.xml'), false)
+    assert.equal(paths.includes('index.xml'), true)
+    assert.equal(paths.includes('thoughts/index.xml'), true)
 
     const externalResources = plugin.externalResources?.(ctx)
-    assert.equal(externalResources?.additionalHead?.length, 1)
+    assert.ok((externalResources?.additionalHead?.length ?? 0) > 1)
   } finally {
     await rm(root, { recursive: true, force: true })
   }

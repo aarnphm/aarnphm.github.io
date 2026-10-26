@@ -107,9 +107,6 @@ export function atomFeedStylesheet(stylesheets: AtomFeedStylesheets): string {
           <xsl:value-of select="atom:link/@href" />
         </xsl:attribute>
         <div class="note-grid">
-          <div class="meta">
-            <xsl:value-of select="atom:publishedTime" />
-          </div>
           <div class="desc">
             <xsl:value-of select="atom:title" />
           </div>
@@ -120,6 +117,9 @@ export function atomFeedStylesheet(stylesheets: AtomFeedStylesheets): string {
               </li>
             </xsl:for-each>
           </menu>
+          <div class="meta">
+            <xsl:value-of select="atom:publishedTime" />
+          </div>
         </div>
       </a>
     </li>

@@ -3,6 +3,12 @@ import * as Component from './quartz/components'
 import { usesApparatus } from './quartz/util/apparatus'
 import { unitOf } from './quartz/util/course'
 
+// /fr and the course pages carry their own head; the description and meta line stay off them
+const hidesPageMeta = ({ fileData }: { fileData: { slug?: string } }) => {
+  const slug = fileData.slug ?? ''
+  return slug.startsWith('fr/') || slug.startsWith('courses/')
+}
+
 // components shared across all pages
 export const sharedPageComponents: SharedLayout = {
   head: Component.Head(),
@@ -52,7 +58,14 @@ export const defaultContentPageLayout: PageLayout = {
     Component.FrUnitBar(),
     // the university course trail on notes and notebooks inside a course folder
     Component.UniversityCrumbBar(),
-    Component.ArticleTitle(),
+    Component.ConditionalRender({
+      component: Component.ArticleTitle(),
+      condition: props => !hidesPageMeta(props),
+    }),
+    Component.ConditionalRender({
+      component: Component.ArticleTitle({ enableDescription: false }),
+      condition: hidesPageMeta,
+    }),
     // a problem set page is a course page: no note byline, the desk sits under the title
     Component.ConditionalRender({
       component: Component.Byline(
@@ -69,11 +82,17 @@ export const defaultContentPageLayout: PageLayout = {
         // a page with the margin apparatus (/fr, `layout: technical`) keeps only its tags here
         Component.ConditionalRender({
           component: Component.ContentMeta(),
-          condition: ({ fileData }) =>
-            !(fileData.slug ?? '').startsWith('fr/') && !usesApparatus(fileData),
+          condition: props => !hidesPageMeta(props) && !usesApparatus(props.fileData),
         }),
       ),
-      condition: ({ fileData }) => unitOf(fileData.slug ?? '')?.kind !== 'psets',
+      // where the meta line is hidden, an untagged page has nothing left for the byline to show
+      condition: props => {
+        const kind = unitOf(props.fileData.slug ?? '')?.kind
+        if (kind === 'psets') return false
+        return (
+          !hidesPageMeta(props) || kind === 'notes' || !!props.fileData.frontmatter?.tags?.length
+        )
+      },
     }),
     Component.CoursePsetDesk(),
   ],
