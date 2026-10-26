@@ -58,6 +58,8 @@ const getOpts = ({ target }: Event): { url: URL; scroll?: boolean } | undefined 
 }
 
 function notifyNav(url: FullSlug) {
+  // Standalone viewers own their initialization and have no Quartz page structure.
+  if (document.body.dataset.page === 'code-viewer') return
   const event: CustomEventMap['nav'] = new CustomEvent('nav', { detail: { url } })
   document.dispatchEvent(event)
 }
@@ -168,7 +170,7 @@ async function navigate(
     window.location.assign(url)
     return
   }
-  if (isBack && stacked.restore(url)) return
+  if (isBack && document.body.dataset.page !== 'code-viewer' && stacked.restore(url)) return
   if (isBack && stacked.active) stacked.destroy()
   if (!isBack && stacked.active) return await stacked.navigate(url)
 
@@ -190,6 +192,7 @@ async function navigate(
   if (!contents || options.signal?.aborted) return
 
   const html = parseHtml(contents)
+  const isCodeViewer = html.body.dataset.page === 'code-viewer'
   normalizeRelativeURLs(html, url)
   transformHostInternalLinks(html)
   // Link the page-scoped sheets the new body uses while the old page still shows; a stalled
@@ -197,29 +200,36 @@ async function navigate(
   await Promise.race([loadPageStyles(html.body), new Promise(resolve => setTimeout(resolve, 2000))])
   if (options.signal?.aborted) return
 
-  // notify about to nav
-  const event: CustomEventMap['prenav'] = new CustomEvent('prenav', { detail: {} })
-  document.dispatchEvent(event)
-
-  // cleanup old
-  cleanupFns.forEach(fn => fn())
-  cleanupFns.clear()
-
-  let title = html.querySelector('title')?.textContent
-  if (title) {
-    document.title = title
-  } else {
-    const h1 = document.querySelector('h1')
-    title = h1?.innerText ?? h1?.textContent ?? url.pathname
-  }
-  if (announcer.textContent !== title) {
-    announcer.textContent = title
-  }
-  announcer.dataset.persist = ''
-  html.body.appendChild(announcer)
-
-  // morph body
   const update = () => {
+    if (options.signal?.aborted) return
+    // notify about to nav
+    const event: CustomEventMap['prenav'] = new CustomEvent('prenav', { detail: {} })
+    document.dispatchEvent(event)
+
+    // cleanup old
+    cleanupFns.forEach(fn => fn())
+    cleanupFns.clear()
+
+    if (isCodeViewer) {
+      // Keep the sheets loaded for Back, without letting garden rules style the viewer.
+      const sheets = Array.from(document.styleSheets).filter(sheet => !sheet.disabled)
+      sheets.forEach(sheet => (sheet.disabled = true))
+      window.addCleanup(() => sheets.forEach(sheet => (sheet.disabled = false)))
+    }
+
+    let title = html.querySelector('title')?.textContent
+    if (title) {
+      document.title = title
+    } else {
+      const h1 = document.querySelector('h1')
+      title = h1?.innerText ?? h1?.textContent ?? url.pathname
+    }
+    if (announcer.textContent !== title) {
+      announcer.textContent = title
+    }
+    announcer.dataset.persist = ''
+    html.body.appendChild(announcer)
+
     micromorph(document.body, html.body)
 
     // scroll into place and add history
@@ -236,7 +246,15 @@ async function navigate(
     const elementsToRemove = document.head.querySelectorAll(':not([data-persist])')
     elementsToRemove.forEach(el => el.remove())
     const elementsToAdd = html.head.querySelectorAll(':not([data-persist])')
-    elementsToAdd.forEach(el => document.head.appendChild(el))
+    elementsToAdd.forEach(el => {
+      if (el instanceof HTMLScriptElement && el.hasAttribute('data-spa-init')) {
+        const script = document.createElement('script')
+        script.textContent = el.textContent
+        document.head.appendChild(script)
+      } else {
+        document.head.appendChild(el)
+      }
+    })
 
     // delay setting the url until now
     // at this point everything is loaded so changing the url should resolve to the correct addresses
@@ -246,7 +264,8 @@ async function navigate(
     notifyNav(getFullSlug(window))
     delete announcer.dataset.persist
   }
-  if (options.transition === false) update()
+  if (options.transition === false || isCodeViewer || document.body.dataset.page === 'code-viewer')
+    update()
   else startViewTransition(update)
   stopLoading()
 }

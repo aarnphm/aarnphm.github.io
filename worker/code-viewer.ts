@@ -190,6 +190,15 @@ code[data-theme*=' '] span {
 
 const PAGE_SCRIPT = `
 (() => {
+  const controller = new AbortController();
+  document.addEventListener('prenav', () => controller.abort(), { once: true, signal: controller.signal });
+  // Reloading a viewer can retain same-document history entries from the SPA session.
+  if (!window.spaNavigate) {
+    const pathname = window.location.pathname;
+    window.addEventListener('popstate', () => {
+      if (window.location.pathname !== pathname) window.location.reload();
+    }, { signal: controller.signal });
+  }
   try {
     const saved = localStorage.getItem('theme');
     if (saved === 'dark' || saved === 'light') {
@@ -213,8 +222,12 @@ const PAGE_SCRIPT = `
     });
     if (first) first.scrollIntoView({ block: 'center' });
   };
-  window.addEventListener('hashchange', applyLineHash);
-  window.addEventListener('DOMContentLoaded', applyLineHash, { once: true });
+  window.addEventListener('hashchange', applyLineHash, { signal: controller.signal });
+  if (document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', applyLineHash, { once: true, signal: controller.signal });
+  } else {
+    requestAnimationFrame(applyLineHash);
+  }
   document.addEventListener('click', event => {
     const target = event.target instanceof Element ? event.target.closest('[data-copy-code]') : null;
     if (!(target instanceof HTMLButtonElement)) return;
@@ -230,7 +243,7 @@ const PAGE_SCRIPT = `
         target.textContent = prev;
       }, 1500);
     });
-  });
+  }, { signal: controller.signal });
 })();
 `
 
@@ -266,9 +279,9 @@ export function codeViewerHtml(pathname: string, source: string): string {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escapeHTML(title)}</title>
 <style>${PAGE_STYLE}</style>
-<script>${PAGE_SCRIPT}</script>
+<script data-spa-init>${PAGE_SCRIPT}</script>
 </head>
-<body>
+<body data-page="code-viewer" data-slug="${escapeHTML(normalizedPath)}">
 <main class="code-viewer popover-hint">
 <header class="code-viewer-header">
 <div class="code-viewer-path">${breadcrumbHtml}</div>
