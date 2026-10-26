@@ -7,7 +7,7 @@ aliases:
 date: '2025-08-09'
 description: just another fish in the sea.
 id: dating
-modified: 2026-10-26 01:37:11 GMT-04:00
+modified: 2026-10-26 12:05:33 GMT-04:00
 slides: true
 tags:
   - evergreen
@@ -289,7 +289,7 @@ Steven Weinberg
 
 possible deal-breakers
 
-1. Historically speaking, my past relationships have been {{sidenotes[^polyamorous]}}. I found that my work schedule fits well with that style of romantic attachment, and I'm definitely not the jealous type. Though my previous partner and I ended on a sour note, I'm more than happy with the growth.
+1. Historically speaking, my past relationships have been {{sidenotes[^polyamorous]}}. I found that my work schedule fits well with that style of romantic attachment, and I'm definitely not the jealous type. Though my previous partner and I ended on a sour note, I'm more than happy with the growth. I've been in one monogamous relationship since then, and found that monogamy suits me a lot better
 2. I don't want kids, _yet_, at least for the next five years.
    - We are young still, many things yet to be explored.
    - I want to be focused on my work and dedication to my [[thoughts/craft|craft]].
