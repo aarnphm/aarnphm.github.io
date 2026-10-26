@@ -367,3 +367,8 @@ title: lists
 - parsimonious
 - almanac
 - obstreperous
+- credulous
+- perspicacious
+- paroxysm
+- dowdy
+- austere

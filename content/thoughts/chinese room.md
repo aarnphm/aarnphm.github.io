@@ -2,7 +2,7 @@
 date: '2025-11-10'
 description: syntax, semantics, and why computation is insufficient for understanding
 id: chinese room
-modified: 2026-06-05 15:08:07 GMT-04:00
+modified: 2026-10-25 17:56:58 GMT-04:00
 seealso:
   - '[[thoughts/functionalism|functionalism]]'
   - '[[thoughts/qualia|qualia]]'
@@ -15,13 +15,13 @@ tags:
 title: chinese room
 ---
 
+_the thought experiment asserts that executing a program (symbol manipulation) cannot constitute [[thoughts/Consciousness|understanding]], regardless of behavioral fidelity. a system can simulate understanding without possessing it._
+
 ```quotes
 Semantic is not syntatic.
 
 John Searle
 ```
-
-the thought experiment asserts that executing a program (symbol manipulation) cannot constitute [[thoughts/Consciousness|understanding]], regardless of behavioral fidelity. a system can simulate understanding without possessing it.
 
 ## syntax is insufficient for semantics
 
