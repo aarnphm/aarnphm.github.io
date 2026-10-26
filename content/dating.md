@@ -7,7 +7,7 @@ aliases:
 date: '2025-08-09'
 description: just another fish in the sea.
 id: dating
-modified: 2026-10-21 01:07:49 GMT-04:00
+modified: 2026-10-26 01:37:11 GMT-04:00
 slides: true
 tags:
   - evergreen
@@ -16,9 +16,9 @@ tags:
 title: dating me.
 ---
 
-> [!important] before you read this file!
+> [!important] before you read this!
 >
-> i'm no longer actively dating (quite busy nowadays), but more than happy to go on date and explore should our [Nash equilibrium](https://en.wikipedia.org/wiki/Nash_equilibrium) works out. If you are interested in me as a friend, then I have a [[friends|friends-equivalent]] docs.
+> i'm not actively looking for date (quite busy nowadays), but more than happy to meet you should our [Nash equilibrium](https://en.wikipedia.org/wiki/Nash_equilibrium) works out. If you are interested in me as a friend, then I have a [[friends|friends-equivalent]] docs.
 
 This document doesn't represent the whole me, but it should give you a sense of the "non-tech" version of who I am and what I do in my downtime.
 
