@@ -63,13 +63,20 @@ const formatForDisplay = (
   const queryTokens = tokenizeTerm(term)
   const titleTokens = tokenizeTerm(fileData.title ?? '')
   const titleMatch = titleTokens.some(t => queryTokens.includes(t))
+  let content: string | undefined
 
   return {
     id,
     slug,
     title: renderType === 'tags' || target ? fileData.title : highlight(term, fileData.title ?? ''),
     target,
-    content: matchExcerpt(term, fileData),
+    // Ranking needs metadata; format body excerpts only when their result page is mounted.
+    get content() {
+      return (content ??= matchExcerpt(term, fileData))
+    },
+    set content(value: string) {
+      content = value
+    },
     tags: highlightTags(term, fileData.tags, renderType),
     aliases: aliases,
     titleMatch,

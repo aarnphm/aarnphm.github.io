@@ -3,13 +3,11 @@ import type {
   NotebookKernelStatus,
 } from '../../../util/notebook-kernel-events'
 import type { CodeSearchClient } from '../code-search'
-import type { ImageSimilarity } from '../image-similarity'
 import type { PdfSemantic } from '../pdf-semantic'
 import type { SearchCompletions } from '../search-completions'
 import type { ResultPages } from '../search-result-pages'
 import { FullSlug } from '../../../util/path'
 import { SEARCH_QUERY_PLACEHOLDER } from '../../../util/search-completion'
-import { createImageSemantic, type ImageSemantic } from '../image-semantic'
 import { showSearchProgress } from '../search-progress'
 import { searchStatusTable } from '../search-results-table'
 import { siteSemantic, type SiteSemantic } from '../site-semantic'
@@ -46,7 +44,6 @@ export interface PaletteState {
   readonly helper: HTMLUListElement
   readonly rankButton: HTMLAnchorElement
   readonly progress: HTMLDivElement
-  readonly imageSimilarity: ImageSimilarity
   readonly codeSearch: CodeSearchClient
   readonly completions: SearchCompletions
   codePreview: AbortController | null
@@ -54,10 +51,6 @@ export interface PaletteState {
   readonly actionCache: WeakMap<Action, HTMLDivElement>
   readonly connectorActs: Action[]
   commandActs: Action[]
-  imageIds: ReadonlySet<string> | undefined
-  imageSemantic: ImageSemantic | null
-  imageReady: Promise<ImageSemantic> | null
-  imageActive: boolean
   currentHover: HTMLElement | null
   resultPages: ResultPages | null
   previousFocus: HTMLElement | null
@@ -72,23 +65,6 @@ export interface PaletteState {
   quickOpenSemantic: SiteSemantic | null
   quickOpenTimer: number
   measuredPaletteWidth: number
-}
-
-export function ensureImageSearch(s: PaletteState) {
-  s.imageReady ??= createImageSemantic()
-    .then(service => {
-      if (!s.imageActive) {
-        service.dispose()
-        throw new Error('image search page closed')
-      }
-      s.imageSemantic = service
-      return service
-    })
-    .catch(error => {
-      s.imageReady = null
-      throw error
-    })
-  return s.imageReady
 }
 
 export function quickOpenProgress(s: PaletteState, loading: boolean) {
@@ -139,8 +115,6 @@ export function quickOpenStatus(s: PaletteState, message: string) {
 export function hidePalette(s: PaletteState) {
   s.resultPages?.dispose()
   s.resultPages = null
-  s.imageSimilarity.cancel()
-  s.imageSemantic?.cancel()
   s.pdfSearch.cancel()
   s.codeSearch.cancel()
   s.codePreview?.abort()

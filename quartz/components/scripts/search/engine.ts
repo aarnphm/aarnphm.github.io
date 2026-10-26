@@ -7,34 +7,6 @@ import { getLexicalSearchClient } from '../lexical-search'
 import { siteSemantic } from '../site-semantic'
 import { shared, type SearchImage, type SearchMode, type SearchSession } from './state'
 
-const SEARCH_MODE_STORAGE_KEY = 'quartz:search:mode'
-
-export const loadStoredSearchMode = (): SearchMode | null => {
-  if (typeof window === 'undefined') {
-    return null
-  }
-
-  try {
-    const stored = window.localStorage.getItem(SEARCH_MODE_STORAGE_KEY)
-    return stored === 'lexical' || stored === 'semantic' ? stored : null
-  } catch (err) {
-    console.warn('[Search] failed to read stored search mode:', err)
-    return null
-  }
-}
-
-export const persistSearchMode = (mode: SearchMode) => {
-  if (typeof window === 'undefined') {
-    return
-  }
-
-  try {
-    window.localStorage.setItem(SEARCH_MODE_STORAGE_KEY, mode)
-  } catch (err) {
-    console.warn('[Search] failed to persist search mode:', err)
-  }
-}
-
 let searchDataPromise: Promise<ContentIndex> | null = null
 
 async function loadSearchData(): Promise<ContentIndex> {

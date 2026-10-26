@@ -8,13 +8,7 @@ import { getLexicalSearchClient } from './lexical-search'
 import { PdfSemantic } from './pdf-semantic'
 import { createSearchCompletions } from './search-completions'
 import { createSearchProgress } from './search-progress'
-import {
-  ensureSearchData,
-  getSearchData,
-  loadStoredSearchMode,
-  setSemanticState,
-  updateModeUI,
-} from './search/engine'
+import { ensureSearchData, getSearchData, setSemanticState, updateModeUI } from './search/engine'
 import { createImageGrid } from './search/image-grid'
 import {
   onType,
@@ -178,7 +172,6 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   window.addCleanup(() => s.imageGrid.dispose())
   window.addCleanup(() => s.resultPages?.dispose())
 
-  const storedMode = loadStoredSearchMode()
   if (shared.semanticReady) {
     setSemanticState(s, 'ready')
   } else if (shared.semanticInitFailed) {
@@ -186,7 +179,6 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   } else {
     setSemanticState(s, 'idle')
   }
-  if (storedMode) shared.searchMode = storedMode
   searchLayout.dataset.mode = shared.searchMode
   s.requestedMode = shared.searchMode
 

@@ -66,7 +66,17 @@ export function updateSearchProgress(
   }
 }
 
+/** Shows a settled message in the progress slot; the next showSearchProgress call replaces it. */
+export function showSearchNotice(progress: HTMLElement, label: string) {
+  progress.dataset.reason = 'notice'
+  progress.setAttribute('role', 'status')
+  progress.setAttribute('aria-hidden', 'false')
+  updateSearchProgress(progress, label)
+  progress.style.opacity = '1'
+}
+
 export function showSearchProgress(progress: HTMLElement, loading: boolean, reason = 'search') {
+  progress.setAttribute('role', 'progressbar')
   const unchanged =
     loading &&
     progress.getAttribute('aria-hidden') === 'false' &&

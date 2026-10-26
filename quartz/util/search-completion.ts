@@ -12,6 +12,10 @@ export interface SearchCompletion {
   to: number
 }
 
+export interface SearchCompletionOptions {
+  imageSearch?: boolean
+}
+
 const scopeDescriptions: Readonly<Record<string, string>> = {
   notes: 'includes notebooks',
   images: 'zines',
@@ -32,7 +36,11 @@ const languages = [
 ]
 
 /** Complete operators before source text; ast: owns everything after its prefix. */
-export function searchCompletions(raw: string, cursor: number): SearchCompletion[] {
+export function searchCompletions(
+  raw: string,
+  cursor: number,
+  options: SearchCompletionOptions = {},
+): SearchCompletion[] {
   if (raw.trimStart().startsWith('>')) return []
   const prefix = raw.slice(0, cursor)
   const tokens = [...codeQueryTokens(prefix)]
@@ -64,7 +72,10 @@ export function searchCompletions(raw: string, cursor: number): SearchCompletion
     if (typed && (typed in scopeDescriptions || languages.includes(typed))) return []
     return [
       ...Object.entries(scopeDescriptions)
-        .filter(([scope]) => scope.startsWith(typed))
+        .filter(
+          ([scope]) =>
+            scope.startsWith(typed) && (scope !== 'images' || options.imageSearch !== false),
+        )
         .map(([scope, description]) => choice('filter:', scope, description)),
       ...languages
         .filter(
@@ -77,7 +88,15 @@ export function searchCompletions(raw: string, cursor: number): SearchCompletion
     ]
   }
   if ('filter:'.startsWith(value.toLowerCase()))
-    return [choice('filter:', '', 'choose notes, images, PDF, code or a language')]
+    return [
+      choice(
+        'filter:',
+        '',
+        options.imageSearch === false
+          ? 'choose notes, PDF, code or a language'
+          : 'choose notes, images, PDF, code or a language',
+      ),
+    ]
   if (!parseCodeQuery(raw.slice(0, from))) return []
   if (value && 'path:'.startsWith(value) && value !== 'path:')
     return [choice('path:', '', 'limit code to a file or part of its path')]

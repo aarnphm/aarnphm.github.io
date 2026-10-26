@@ -1,7 +1,7 @@
 import { parseCodeQuery } from '../../../util/code-query'
 import { parseSearchQuery } from '../../../util/search-scope'
 import { isSearchModeToggle, isSearchToggle } from '../../../util/search-shortcuts'
-import { ensureSemantic, persistSearchMode, updateModeUI } from './engine'
+import { ensureSemantic, updateModeUI } from './engine'
 import { isImageGridDirection } from './image-grid'
 import {
   clearPreview,
@@ -49,7 +49,6 @@ export function triggerSearchWithMode(s: SearchSession, mode: SearchMode) {
   }
   shared.searchMode = mode
   updateModeUI(s, mode)
-  persistSearchMode(shared.searchMode)
   if (shared.rawSearchTerm.trim() !== '') {
     searchLayout.classList.add('display-results')
     const token = ++s.searchSeq
