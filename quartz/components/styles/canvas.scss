@@ -721,9 +721,8 @@ body[data-is-canvas='true'] {
   display: block;
   cursor: grab;
 
-  &:focus-visible {
-    outline: 2px solid var(--secondary);
-    outline-offset: -3px;
+  &:focus {
+    outline: none;
   }
 }
 
