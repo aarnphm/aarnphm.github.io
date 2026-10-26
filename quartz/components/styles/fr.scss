@@ -235,3 +235,20 @@
     transition: none;
   }
 }
+
+// /fr pages carry their own unit bar: the site header strip collapses like it does on course pages.
+// The palette and search popovers stay mounted in it.
+:is([data-slug='fr'], [data-slug^='fr/']) #quartz-root {
+  > section.header,
+  .header-content {
+    display: contents;
+  }
+
+  .header-content > .breadcrumb-container,
+  .header-content > .stacked-buttons,
+  .header-content > .keybind,
+  .header-content > .darkmode,
+  .header-content > .search > .search-button {
+    display: none;
+  }
+}

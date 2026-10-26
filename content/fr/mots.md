@@ -2,7 +2,7 @@
 date: '2026-10-04'
 description: vocabulaire de l'anglais vers le français, classé par thème, avec les variantes du Québec
 id: mots
-modified: 2026-10-12 19:29:44 GMT-04:00
+modified: 2026-10-25 20:41:38 GMT-04:00
 permalinks:
   - /mots
 socials:
@@ -15,14 +15,14 @@ tags:
 title: mots
 ---
 
-Vocabulaire général, de l'anglais vers le français. Les mots des leçons sont dans [[fr/words|la liste de la leçon]] et les phrases toutes faites dans [[fr/phrases|phrases]].
+Vocabulaire général, de l'anglais vers le français, enrichi avec les mots, expressions et tournures des leçons et des pratiques. Les ajouts commencent avec la [[fr/practices/261025|pratique du 25 octobre 2026]]. Voir aussi [[fr/words|la liste de la leçon]] et [[fr/phrases|phrases]].
 
 Le paquet de cartes donne le mot anglais et demande le mot français.
 
 ## parcours A1 → C1
 
 - **A1** : [[#le cours|le cours]], [[#le corps|le corps]], [[#la météo|la météo]], [[#les vêtements|les vêtements]], [[#la cuisine|la cuisine]], [[#les adjectifs|les adjectifs]], [[#les petits mots|les petits mots]], [[#le Québec et la France|le Québec et la France]]
-- **A2** : [[#le sport et l'entrainement|le sport]], [[#la santé|la santé]], [[#le logement|le logement]], [[#le travail et l'informatique|le travail]], [[#les sentiments et le caractère|les sentiments]], [[#la nature et le plein air|la nature]], [[#les faux amis|les faux amis]], [[#les mots de liaison|les mots de liaison]]
+- **A2** : [[#le sport et l'entrainement|le sport]], [[#la santé|la santé]], [[#le logement|le logement]], [[#le travail et l'informatique|le travail]], [[#les sentiments et le caractère|les sentiments]], [[#le cinéma et les souvenirs|le cinéma et les souvenirs]], [[#la nature et le plein air|la nature]], [[#la journée et les moments à deux|la journée et les moments à deux]], [[#les faux amis|les faux amis]], [[#les mots de liaison|les mots de liaison]]
 - **B1** : [[#l'école et l'université|l'école et l'université]], [[#en cuisine|en cuisine]], [[#la langue et la grammaire|la grammaire]], [[#les verbes à construction|les verbes à construction]], [[#les genres piégés|les genres piégés]], [[#les expressions|les expressions]], [[#Le Petit Prince|Le Petit Prince]]
 - **B2** : [[#les connecteurs|les connecteurs]], [[#les mathématiques et l'IA|les mathématiques et l'IA]], [[#le passé simple|le passé simple]], [[#la langue littéraire|la langue littéraire]], [[#les verbes de parole et de regard|les verbes de parole et de regard]]
 - **C1** : [[#L'Étranger|L'Étranger]], [[#le vocabulaire abstrait|le vocabulaire abstrait]], [[#l'argumentation|l'argumentation]]
@@ -263,6 +263,69 @@ Québec `gêné` means shy; in France it means embarrassed. `déçu` is disappoi
 | to smile                   | {{sourire}}                         |                                                                    |
 | to be bored                | {{s'ennuyer}}                       | `Je m'ennuie.`; Québec: `s'ennuyer de quelqu'un` = to miss someone |
 
+## le cinéma et les souvenirs
+
+Vocabulaire de la [[fr/practices/261025#résumé bilingue : Jodie Foster au Vidéo Club|pratique du 25 octobre 2026 : Jodie Foster au Vidéo Club]]. Les exemples ci-dessous sont des phrases d'entrainement.
+
+| English                                  | Français                                                  | note                                                  |
+| ---------------------------------------- | --------------------------------------------------------- | ----------------------------------------------------- |
+| a video rental shop                      | {{un vidéoclub}}                                          | `Les vidéoclubs lui manquent.`                        |
+| a shelf                                  | {{une étagère}}                                           | `Elle regarde les films sur les étagères.`            |
+| an interview                             | {{un entretien}}                                          | also a conversation; here, an interview               |
+| a director                               | {{un réalisateur}}, {{une réalisatrice}}                  | `Elle veut devenir réalisatrice.`                     |
+| a screenplay, a script                   | {{un scénario}}                                           | `Le scénario est bien écrit.`                         |
+| direction (of a film)                    | {{la réalisation}}                                        | `Elle admire la réalisation du film.`                 |
+| a character                              | {{un personnage}}                                         | `Je comprends les émotions du personnage.`            |
+| an actor, an actress                     | {{un acteur}}, {{une actrice}}                            | `le métier d'actrice` = acting as a profession        |
+| a series                                 | {{une série}}                                             | `une série télévisée`                                 |
+| a season (of a series)                   | {{une saison}}                                            | `la quatrième saison`                                 |
+| a scene                                  | {{une scène}}                                             | `la première scène du film`                           |
+| a line of dialogue                       | {{une réplique}}                                          | `Elle lit ses répliques.`                             |
+| filming, the shoot                       | {{le tournage}}                                           | `sur le tournage` = on set                            |
+| to play a role                           | {{jouer un rôle}}                                         | `Elle joue le rôle d'une mère.`                       |
+| a comedy                                 | {{une comédie}}                                           | `Cette comédie me fait rire.`                         |
+| a drama                                  | {{un drame}}                                              | also a tragic event                                   |
+| a documentary                            | {{un documentaire}}                                       | `Ce documentaire raconte sa vie.`                     |
+| an executive producer                    | {{un producteur exécutif}}, {{une productrice exécutive}} | the credit used in the practice note                  |
+| a pioneer                                | {{un pionnier}}, {{une pionnière}}                        | `une pionnière du cinéma`                             |
+| distribution (of a film)                 | {{la distribution}}                                       | here, getting a film to audiences; also a film's cast |
+| the general public, mainstream audiences | {{le grand public}}                                       | `Ce film est peu connu du grand public.`              |
+
+### raconter ses souvenirs et ses émotions
+
+| English                                      | Français                                  | note                                                           |
+| -------------------------------------------- | ----------------------------------------- | -------------------------------------------------------------- |
+| I miss it.                                   | {{Ça me manque.}}                         | `Aller au cinéma avec mes amis, ça me manque.`                 |
+| to be moved by                               | {{être touché par}}, {{être touchée par}} | `Je suis touché par cette histoire.`                           |
+| to tell, to recount                          | {{raconter}}                              | `Elle raconte un moment de sa vie.`                            |
+| to remind someone of something               | {{rappeler quelque chose à quelqu'un}}    | `Ce film me rappelle mon enfance.`                             |
+| to make someone laugh                        | {{faire rire}}                            | `Cette scène me fait rire.`                                    |
+| to be afraid of                              | {{avoir peur de}}                         | `J'avais peur de ce personnage.`                               |
+| to make someone want to                      | {{donner envie de}}                       | `Ce film me donne envie de voyager.`                           |
+| childhood                                    | {{l'enfance}} (f.)                        | `un souvenir d'enfance`                                        |
+| a feeling                                    | {{un sentiment}}                          | `parler de ses sentiments`                                     |
+| affection, fondness                          | {{l'affection}} (f.)                      | `Elle garde beaucoup d'affection pour son amie.`               |
+| attachment                                   | {{l'attachement}} (m.)                    | `son attachement au cinéma français`                           |
+| reserved, quiet                              | {{réservé}}, {{réservée}}                 | `une enfant réservée`                                          |
+| to leave a lasting impression on             | {{marquer}}                               | `La fin du film m'a marqué.`                                   |
+| to feel as though, to have the impression of | {{avoir l'impression de}}                 | + infinitive: `J'ai l'impression de découvrir un autre monde.` |
+| to have difficulty doing something           | {{avoir du mal à}}                        | + infinitive: `J'ai du mal à expliquer mes sentiments.`        |
+| to identify with, to see oneself in          | {{se reconnaitre dans}}                   | `Elle se reconnait dans ce personnage.`                        |
+| to make known, to introduce to an audience   | {{faire connaitre}}                       | `Le documentaire fait connaitre son histoire.`                 |
+| to be under contract with                    | {{être sous contrat avec}}                | `Elle était sous contrat avec Disney.`                         |
+
+Déjà dans la liste : `un souvenir` ([[#les genres piégés|les genres piégés]]), `avoir envie de` et `se souvenir de` ([[#les verbes à construction|les verbes à construction]]).
+
+### parler d'un film à l'oral
+
+Tournures de la [[fr/practices/261025#à pratiquer à l’oral|pratique orale du 25 octobre]].
+
+| English                             | Français                               | note                                                                                      |
+| ----------------------------------- | -------------------------------------- | ----------------------------------------------------------------------------------------- |
+| When I was little, I used to watch… | {{Quand j'étais petit, je regardais…}} | feminine: `petite`; the imperfect describes a past habit                                  |
+| This film made me…                  | {{Ce film m'a fait…}}                  | + infinitive: `rire`, `pleurer`, `réfléchir`; `fait` stays unchanged before an infinitive |
+| What moved me was…                  | {{Ce qui m'a touché, c'est…}}          | feminine: `touchée`; `Ce qui m'a touché, c'est la relation entre la mère et son enfant.`  |
+
 ## la météo
 
 weather takes the impersonal `il`: {{`Il fait froid.`}}, {{`Il pleut.`}}, {{`Il neige.`}} seasons split on the first sound: {{`au printemps`}}, then {{`en été`}}, {{`en automne`}}, {{`en hiver`}}, because `en` goes before a vowel.
@@ -502,6 +565,53 @@ pour discuter de « Faut-il éteindre les villes la nuit ? ». les tournures son
 | to switch off                    | {{éteindre}}                         | `j'éteins`, `nous éteignons`; past participle: `éteint`           |
 | to dim the lighting              | {{atténuer l'éclairage}}             | `j'atténue`, `nous atténuons`                                     |
 | to reduce                        | {{réduire}}                          | `je réduis`, `nous réduisons`; past participle: `réduit`          |
+
+## la journée et les moments à deux
+
+Vocabulaire de [[fr/practices/261025#Ma journée idéale|Ma journée idéale]], dans la pratique du 25 octobre 2026.
+
+| English                                   | Français                                                                | note                                                                                                |
+| ----------------------------------------- | ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| to wake up                                | {{se réveiller}}                                                        | `Je me réveille à sept heures.`                                                                     |
+| the countryside                           | {{la campagne}}                                                         | `partir à la campagne`                                                                              |
+| a leisurely walk or ride                  | {{une balade}}                                                          | here, `une balade à vélo`; one `l`, unlike `une ballade` (a song or poem)                           |
+| a face                                    | {{un visage}}                                                           | `Je sens l'air frais sur mon visage.`                                                               |
+| to go through, to cross                   | {{traverser}}                                                           | `La route traverse les champs.`                                                                     |
+| a field                                   | {{un champ}}                                                            | `les champs`                                                                                        |
+| a cow                                     | {{une vache}}                                                           | `des vaches qui mangent tranquillement`                                                             |
+| peacefully, quietly                       | {{tranquillement}}                                                      | `Les vaches mangent tranquillement.`                                                                |
+| the scenery, a landscape                  | {{le paysage}}                                                          | `Je profite du paysage.`                                                                            |
+| to move, to be active                     | {{bouger}}                                                              | `le plaisir de bouger`                                                                              |
+| to return home                            | {{rentrer}}                                                             | `Je rentre vers midi.`                                                                              |
+| to meet up with someone                   | {{retrouver quelqu'un}}                                                 | `Je retrouve ma copine.`; also to find someone again                                                |
+| my girlfriend                             | {{ma copine}}                                                           | `une copine` can also mean a female friend; context decides                                         |
+| to sleep together, to have sex            | {{coucher ensemble}}                                                    | `On couche ensemble.`; this expression has a sexual meaning                                         |
+| to take a shower                          | {{prendre une douche}}                                                  | `On prend une douche.`                                                                              |
+| to be close                               | {{être proche de}}                                                      | `être proches l'un de l'autre`; emotional or physical closeness                                     |
+| to take one's time                        | {{prendre son temps}}                                                   | `On prend notre temps.`                                                                             |
+| a picnic                                  | {{un pique-nique}}                                                      | `On va au parc avec un pique-nique.`                                                                |
+| to settle in, to make oneself comfortable | {{s'installer}}                                                         | `On s'installe dans l'herbe.`                                                                       |
+| grass                                     | {{l'herbe}} (f.)                                                        | `dans l'herbe`                                                                                      |
+| in the sun                                | {{au soleil}}                                                           | `On lit au soleil.`                                                                                 |
+| aloud                                     | {{à voix haute}}                                                        | `On lit une phrase à voix haute.`                                                                   |
+| to share                                  | {{partager}}                                                            | `On partage une phrase de notre livre.`                                                             |
+| each person, each one                     | {{chacun}}, {{chacune}}                                                 | `Chacun retourne à son livre.`; singular verb                                                       |
+| slowly, gently                            | {{doucement}}                                                           | `L'après-midi passe doucement.`                                                                     |
+| to go for a walk, to stroll               | {{se promener}}                                                         | `On se promène sans destination précise.`                                                           |
+| to end up doing something                 | {{finir par}}                                                           | + infinitive: `On finit par rentrer.`                                                               |
+| lost in thought                           | {{perdu dans ses pensées}}, {{perdue dans ses pensées}}                 | plural: `On est un peu perdus dans nos pensées.`                                                    |
+| to talk about this and that               | {{parler de tout et de rien}}                                           | `On mange, on rit et on parle de tout et de rien.`                                                  |
+| to have the whole evening ahead of us     | {{avoir toute la soirée devant nous}}                                   | `On a toute la soirée devant nous.`                                                                 |
+| one last time                             | {{une dernière fois}}                                                   | `On regarde le paysage une dernière fois.`                                                          |
+| to get into bed                           | {{se mettre au lit}}                                                    | `On se met au lit avec nos livres.`                                                                 |
+| side by side                              | {{côte à côte}}                                                         | `On lit côte à côte.`                                                                               |
+| until late at night                       | {{jusqu'à tard dans la nuit}}                                           | `On lit jusqu'à tard dans la nuit.`                                                                 |
+| from time to time                         | {{de temps en temps}}                                                   | `De temps en temps, on échange quelques mots.`                                                      |
+| to exchange a few words                   | {{échanger quelques mots}}                                              | `On échange quelques mots.`                                                                         |
+| near her                                  | {{près d'elle}}                                                         | `Je m'endors près d'elle.`; `près de` + noun or stressed pronoun                                    |
+| happy to have had time to                 | {{heureux d'avoir eu le temps de}}, {{heureuse d'avoir eu le temps de}} | + infinitive; `avoir eu` is a past infinitive: `heureux d'avoir eu le temps de vivre cette journée` |
+
+Déjà dans la liste : `profiter de`, `s'endormir` ([[#les verbes à construction|les verbes à construction]]), `reprendre` ([[#les verbes de parole et de regard|les verbes de parole et de regard]]) et `éteindre` ([[#l'éclairage et la biodiversité|l'éclairage et la biodiversité]]). Dans le texte : `La conversation reprend.`, `On éteint la lumière.`, `Je m'endors près d'elle.`
 
 ## le logement
 
