@@ -8,8 +8,8 @@ export function generateSiteMap(cfg: GlobalConfiguration, idx: ContentIndexMap):
   const base = cfg.baseUrl ?? ''
   const createURLEntry = (slug: SimpleSlug, content: ContentDetails): string => {
     let modifiedDate = content.date
-    if (!modifiedDate && content.fileData!.frontmatter?.modified) {
-      modifiedDate = new Date(content.fileData!.frontmatter.modified)
+    if (!modifiedDate && content.fileData?.frontmatter?.modified) {
+      modifiedDate = new Date(content.fileData.frontmatter.modified)
     }
     const lastModified =
       modifiedDate && Number.isFinite(modifiedDate.getTime())
@@ -22,6 +22,10 @@ export function generateSiteMap(cfg: GlobalConfiguration, idx: ContentIndexMap):
   }
 
   const urls = Array.from(idx)
+    .filter(([, content]) => {
+      const frontmatter = content.fileData?.frontmatter
+      return frontmatter?.noindex !== true && frontmatter?.protected !== true
+    })
     .sort(([slugA], [slugB]) => slugA.localeCompare(slugB))
     .map(([slug, content]) => createURLEntry(simplifySlug(slug), content))
     .join('')
