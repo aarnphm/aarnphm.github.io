@@ -1,3 +1,4 @@
+@use '../components/styles/status-flap.scss';
 @use './variables.scss' as *;
 @use 'sass:color';
 @use './pdf-embed-toolbar.scss';
@@ -553,7 +554,6 @@
   background: white;
 }
 
-.pdf-embed-loading,
 .pdf-embed-error {
   flex: 1 1 auto;
   display: flex;
@@ -641,4 +641,18 @@
   .pdf-viewer {
     padding: 0;
   }
+}
+
+.pdf-embed-loading {
+  flex-basis: 100%;
+  text-align: right;
+  margin-left: auto;
+  padding: 0.25rem 0.5rem;
+  color: var(--darkgray);
+  font: var(--text-meta)/1.4 var(--bodyFont);
+  white-space: nowrap;
+  visibility: hidden;
+}
+.pdf-embed[data-pdf-status='loading'] .pdf-embed-loading {
+  visibility: visible;
 }

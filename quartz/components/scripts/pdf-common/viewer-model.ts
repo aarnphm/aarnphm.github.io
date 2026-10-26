@@ -89,6 +89,7 @@ export interface PdfDocumentCacheEntry {
   promise: Promise<PdfDocument>
   refs: number
   destroyTimer: number
+  loaded: boolean
 }
 
 export interface PdfDocumentHandle {

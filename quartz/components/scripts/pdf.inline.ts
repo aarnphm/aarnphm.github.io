@@ -40,6 +40,7 @@ import {
   setupPdfEvents,
   targetAcceptsTextInput,
 } from './pdf-common/viewer-session'
+import { setStatusText } from './status-flap'
 
 const PDF_EMBED_SELECTOR = '.pdf-embed[data-pdf-src]:not([data-pdf-status])'
 const PDF_EMBED_CLEANUP_SELECTOR = '.pdf-embed[data-pdf-src], .pdf-embed[data-pdf-status]'
@@ -66,6 +67,10 @@ const pdfChromes = new WeakMap<HTMLElement, PdfChrome>()
 
 function createPdfChrome(options: PdfOptions): PdfChrome {
   const { toolbar, controls } = createControls(options)
+  const status = document.createElement('span')
+  status.className = 'pdf-embed-loading'
+  status.setAttribute('role', 'status')
+  toolbar.append(status)
   const scroller = document.createElement('div')
   scroller.className = 'pdf-viewer-container'
   scroller.tabIndex = 0
@@ -86,19 +91,13 @@ function createPdfChrome(options: PdfOptions): PdfChrome {
   return { toolbar, controls, body, scroller, shell, viewer, annotationRail, annotationStack }
 }
 
-function createPdfLoading(): HTMLDivElement {
-  const loading = document.createElement('div')
-  loading.className = 'pdf-embed-loading'
-  loading.textContent = 'Loading PDF'
-  return loading
-}
-
 function reusePdfChrome(root: HTMLElement, options: PdfOptions): PdfChrome | null {
   const chrome = pdfChromes.get(root)
   if (!chrome || chrome.toolbar.parentElement !== root || chrome.body.parentElement !== root) {
     return null
   }
   // The previous pages stay until the next document's slots replace them in one swap.
+  if (chrome.scroller.parentElement !== chrome.body) chrome.body.replaceChildren(chrome.scroller)
   resetControls(chrome.toolbar, chrome.controls, options)
   chrome.annotationStack.replaceChildren()
   return chrome
@@ -111,7 +110,6 @@ function schedulePdfStartup(callback: () => void) {
 }
 
 function renderPdfError(root: HTMLElement, options: PdfOptions) {
-  root.replaceChildren()
   const error = document.createElement('div')
   error.className = 'pdf-embed-error'
   const label = document.createElement('span')
@@ -122,33 +120,42 @@ function renderPdfError(root: HTMLElement, options: PdfOptions) {
   link.rel = 'noopener noreferrer'
   link.textContent = options.title
   error.append(label, link)
-  root.appendChild(error)
+  // The toolbar stays, so a failed document keeps the frame of a loaded one.
+  const chrome = pdfChromes.get(root)
+  if (chrome && chrome.toolbar.parentElement === root && chrome.body.parentElement === root) {
+    const status = chrome.toolbar.querySelector<HTMLElement>('.pdf-embed-loading')
+    if (status) setStatusText(status, '')
+    chrome.body.replaceChildren(error)
+    return
+  }
+  root.replaceChildren(error)
 }
 
 async function mountPdfEmbed(root: HTMLElement, options: PdfOptions, events: AbortController) {
   root.dataset.pdfStatus = 'loading'
   let chrome = reusePdfChrome(root, options)
-  if (!chrome) root.replaceChildren(createPdfLoading())
+  if (!chrome) {
+    chrome = createPdfChrome(options)
+    root.replaceChildren(chrome.toolbar, chrome.body, chrome.annotationRail)
+    pdfChromes.set(root, chrome)
+    resetControls(chrome.toolbar, chrome.controls, options)
+  }
+  const loading = chrome.toolbar.querySelector<HTMLElement>('.pdf-embed-loading')
+  if (loading) setStatusText(loading, 'loading PDF…')
   if (options.height) root.style.setProperty('--pdf-embed-height', `${options.height}px`)
 
   let documentHandle: PdfDocumentHandle | undefined
-  const pdfjs = await loadPdfJs()
   try {
+    const pdfjs = await loadPdfJs()
     if (events.signal.aborted || !root.isConnected || root.dataset.pdfStatus !== 'loading') return
-    documentHandle = await loadPdfDocument(pdfjs, options.src)
+    documentHandle = await loadPdfDocument(pdfjs, options.src, events.signal)
     const { loadingTask, document: pdfDocument } = documentHandle
     if (events.signal.aborted || !root.isConnected || root.dataset.pdfStatus !== 'loading') return
     const firstPage = await pdfDocument.getPage(1)
     if (events.signal.aborted || !root.isConnected || root.dataset.pdfStatus !== 'loading') return
     const firstViewport = firstPage.getViewport({ scale: 1 })
 
-    if (chrome) {
-      chrome.viewer.replaceChildren()
-    } else {
-      chrome = createPdfChrome(options)
-      root.replaceChildren(chrome.toolbar, chrome.body, chrome.annotationRail)
-      pdfChromes.set(root, chrome)
-    }
+    chrome.viewer.replaceChildren()
     const { toolbar, controls, scroller, shell, viewer, annotationRail, annotationStack } = chrome
     setPageCount(controls, pdfDocument.numPages)
     updateAutoPdfEmbedHeight(root, toolbar, scroller, firstViewport, options)
@@ -243,6 +250,8 @@ async function mountPdfEmbed(root: HTMLElement, options: PdfOptions, events: Abo
     }
     updateControls(state)
     root.dataset.pdfStatus = 'loaded'
+    const status = toolbar.querySelector<HTMLElement>('.pdf-embed-loading')
+    if (status) setStatusText(status, '')
     scrollToPage(state, state.currentPage)
     renderPdfAnnotations(state)
     if (options.preload) enqueuePreloadPages(state)
