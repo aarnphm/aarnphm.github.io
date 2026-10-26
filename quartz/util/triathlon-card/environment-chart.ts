@@ -1,9 +1,12 @@
 import type { EnvironmentChartSample } from '../activity-environment'
+import type { ElapsedPause } from '../elapsed-axis'
 import type { TriathlonPresentation } from '../triathlon-presentation'
 import type { TriNodeFactory } from './construction-contracts'
+import { elapsedAxis, formatElapsedPauses } from '../elapsed-axis'
 import { triText } from '../triathlon-i18n'
 import { axisFrame, type AxisYTick } from './chart-geometry'
 import { buildAnalysisSelectionRect } from './chart-selection'
+import { addElapsedBreaks } from './elapsed-chart'
 import { environmentChartReadout, environmentElapsedClock } from './environment-readout'
 import {
   ENVIRONMENT_CHART_BOTTOM,
@@ -30,15 +33,19 @@ export const environmentChartSeries = (
   elapsedTimeS: number,
   view: EnvironmentChartView,
   scoreModel: EnvironmentScoreModel | null = null,
+  pauses: readonly ElapsedPause[] = [],
 ): EnvironmentChartSeries[] => {
   const values = environmentChartValues(presentation, samples, view, scoreModel)
   if (values.length < 2 || elapsedTimeS <= 0) return []
   const windMetric = view === 'wind' ? environmentWindMetric(samples) : 'headwind'
   const scale = environmentChartScale(values, view, scoreModel, windMetric)
+  // A recording pause takes no width; samples inside it are dropped and lines lift at its join.
+  const axis = elapsedAxis(0, elapsedTimeS, pauses)
+  const insidePause = (elapsedS: number): boolean =>
+    axis.pauses.some(pause => elapsedS > pause.startS && elapsedS < pause.endS)
   const x = (elapsedS: number): number =>
     ENVIRONMENT_CHART_LEFT +
-    Math.min(1, Math.max(0, elapsedS / elapsedTimeS)) *
-      (ENVIRONMENT_CHART_RIGHT - ENVIRONMENT_CHART_LEFT)
+    axis.fraction(elapsedS) * (ENVIRONMENT_CHART_RIGHT - ENVIRONMENT_CHART_LEFT)
   const y = (value: number): number => environmentChartY(value, scale)
   const stepped =
     view === 'uv-index' || view === 'cloud-cover' || (view === 'wind' && windMetric === 'ambient')
@@ -48,6 +55,12 @@ export const environmentChartSeries = (
       const previous = environmentSampleValue(presentation, samples[index - 1], view, scoreModel)
       const current = environmentSampleValue(presentation, samples[index], view, scoreModel)
       if (previous == null || current == null) continue
+      if (
+        insidePause(samples[index - 1].elapsedS) ||
+        insidePause(samples[index].elapsedS) ||
+        axis.crossesPause(samples[index - 1].elapsedS, samples[index].elapsedS)
+      )
+        continue
       segments.push({
         path: `M${x(samples[index - 1].elapsedS).toFixed(3)},${y(previous).toFixed(3)}H${x(samples[index].elapsedS).toFixed(3)}V${y(current).toFixed(3)}`,
         color: environmentUvColor(previous),
@@ -58,13 +71,15 @@ export const environmentChartSeries = (
   const series: EnvironmentChartSeries[] = []
   let path = ''
   let previous: number | null = null
+  let previousS = 0
   for (const sample of samples) {
     const value = environmentSampleValue(presentation, sample, view, scoreModel, windMetric)
-    if (value == null || !Number.isFinite(value)) {
+    const gap = value == null || !Number.isFinite(value) || insidePause(sample.elapsedS)
+    if (gap || (path && axis.crossesPause(previousS, sample.elapsedS))) {
       if (path) series.push({ path, color: null })
       path = ''
       previous = null
-      continue
+      if (gap) continue
     }
     const px = x(sample.elapsedS).toFixed(3)
     const py = y(value).toFixed(3)
@@ -75,6 +90,7 @@ export const environmentChartSeries = (
     if (!path) path = `M${px},${py}`
     else path += stepped && previous != null ? `H${px}V${py}` : `L${px},${py}`
     previous = value
+    previousS = sample.elapsedS
   }
   if (path) series.push({ path, color: null })
   return series
@@ -88,7 +104,9 @@ export const buildEnvironmentChart = <N>(
   scoreModel: EnvironmentScoreModel | null,
   currentModel: { formulaId: string; formulaVersion: number } | null = null,
   provider: 'mywindsock' | 'garden' | null = null,
+  pauses: readonly ElapsedPause[] = [],
 ): N => {
+  const axis = elapsedAxis(0, elapsedTimeS, pauses)
   const chart = f.el('div', 'tri-environment-chart')
   const hasSamples = elapsedTimeS > 0 && environmentViewHasSamples(f.presentation, samples, view)
   const windMetric = view === 'wind' ? environmentWindMetric(samples) : 'headwind'
@@ -139,6 +157,7 @@ export const buildEnvironmentChart = <N>(
       : {}),
     'data-domain-start-elapsed-s': 0,
     'data-domain-end-elapsed-s': elapsedTimeS,
+    ...(axis.pauses.length ? { 'data-domain-pauses': formatElapsedPauses(axis.pauses) } : {}),
     'data-domain-start-x': ENVIRONMENT_CHART_LEFT,
     'data-domain-end-x': ENVIRONMENT_CHART_RIGHT,
   })
@@ -177,6 +196,7 @@ export const buildEnvironmentChart = <N>(
       elapsedTimeS,
       view,
       model,
+      axis.pauses,
     ))
       f.add(
         group,
@@ -194,6 +214,16 @@ export const buildEnvironmentChart = <N>(
   } else {
     addSeries(null)
   }
+  if (hasSamples)
+    addElapsedBreaks(
+      f,
+      svg,
+      axis,
+      ENVIRONMENT_CHART_BOTTOM,
+      fraction =>
+        ENVIRONMENT_CHART_LEFT + fraction * (ENVIRONMENT_CHART_RIGHT - ENVIRONMENT_CHART_LEFT),
+      ENVIRONMENT_CHART_TOP,
+    )
   if (hasSamples)
     f.add(
       svg,
@@ -231,7 +261,13 @@ export const buildEnvironmentChart = <N>(
           pct: ENVIRONMENT_CHART_LEFT,
           cls: 'tri-cax-xt--first',
         },
-        { label: environmentElapsedClock(elapsedTimeS / 2), pct: 50 },
+        // Labels keep elapsed clock time, so the middle tick includes stopped time before it.
+        {
+          label: environmentElapsedClock(
+            axis.pauses.length ? axis.elapsedAt(0.5) : elapsedTimeS / 2,
+          ),
+          pct: 50,
+        },
         {
           label: environmentElapsedClock(elapsedTimeS),
           pct: ENVIRONMENT_CHART_RIGHT,

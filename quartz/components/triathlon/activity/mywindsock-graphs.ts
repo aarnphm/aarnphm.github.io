@@ -6,13 +6,20 @@ import type {
 } from '../../../util/mywindsock-graphs'
 import type { TriathlonPresentation } from '../../../util/triathlon-presentation'
 import {
+  elapsedAxis,
+  formatElapsedPauses,
+  parseElapsedPauses,
+  type ElapsedPause,
+} from '../../../util/elapsed-axis'
+import {
   isMyWindsockArchiveReference,
   MYWINDSOCK_GRAPH_CATEGORIES,
   parseMyWindsockGraphs,
 } from '../../../util/mywindsock-graphs'
+import { addElapsedBreaks } from '../../../util/triathlon-card/elapsed-chart'
 import { triText } from '../../../util/triathlon-i18n'
 import { buildSelect, type Select } from '../../controls/select'
-import { applyI18n, el, setText, svg } from '../runtime/dom'
+import { applyI18n, createDomFactory, el, setText, svg } from '../runtime/dom'
 import { WIND_TRACE_COLORS } from './trace-colors'
 
 export async function loadMyWindsockGraphs(
@@ -123,6 +130,8 @@ const renderCartesian = (
   color: (id: string) => string,
   text: (key: string) => string,
   elapsedTimeS: number,
+  pauses: readonly ElapsedPause[],
+  presentation: TriathlonPresentation,
 ): void => {
   const series = plot.series.filter(series => active.has(series.id))
   const categorical = plot.xKind === 'category'
@@ -140,7 +149,19 @@ const renderCartesian = (
   const xHigh = elapsed ? Math.max(nativeHigh, elapsedTimeS * 1000) : nativeHigh
   const position = (x: number | string): number =>
     categorical ? categories.indexOf(String(x)) : typeof x === 'number' ? x : 0
-  const x = (value: number | string): number => ((position(value) - xLow) / (xHigh - xLow)) * 100
+  // Elapsed x is in milliseconds. A recording pause takes no width; without pauses the map is
+  // the linear one, so a ride with no pause renders the same paths.
+  const shownPauses = elapsed
+    ? elapsedAxis(xLow / 1000, xHigh / 1000, pauses).pauses
+    : ([] as ElapsedPause[])
+  const axis = elapsedAxis(
+    xLow,
+    xHigh,
+    shownPauses.map(pause => ({ startS: pause.startS * 1000, endS: pause.endS * 1000 })),
+  )
+  const x = (value: number | string): number => axis.fraction(position(value)) * 100
+  const insidePause = (at: number): boolean =>
+    axis.pauses.some(pause => at > pause.startS && at < pause.endS)
   const panel = el('div', 'tri-workspace-plot-panel')
   const chart = el('div', 'tri-workspace-chart')
   const plotHead = el('div', 'tri-workspace-plot-head')
@@ -165,12 +186,20 @@ const renderCartesian = (
       ? {
           'data-domain-start-elapsed-s': String(xLow / 1000),
           'data-domain-end-elapsed-s': String(xHigh / 1000),
+          ...(shownPauses.length ? { 'data-domain-pauses': formatElapsedPauses(shownPauses) } : {}),
         }
       : {}),
   })
   const grid = svg('g', { class: 'tri-workspace-grid' })
   for (const y of [0, 25, 50, 75, 100]) grid.append(svg('line', { x1: 0, x2: 100, y1: y, y2: y }))
   graph.append(grid)
+  if (shownPauses.length)
+    addElapsedBreaks(
+      createDomFactory(presentation),
+      graph,
+      elapsedAxis(xLow / 1000, xHigh / 1000, shownPauses),
+      100,
+    )
   // Series sharing a native axis share one scale; axes alternate sides like the workspace graph.
   const domains = new Map<string, [number, number]>()
   for (const axis of new Set(series.map(series => series.axis))) {
@@ -251,6 +280,7 @@ const renderCartesian = (
       upper = []
     }
     let continuous = false
+    let previousPosition = 0
     let previousX = 0
     let previousY = ''
     let previousUpper = ''
@@ -260,6 +290,14 @@ const renderCartesian = (
         closeArea()
         closeBand()
         continue
+      }
+      // Samples inside a removed pause have no place on the axis; the pen lifts at the join.
+      const at = position(point.x)
+      if (insidePause(at) || (continuous && axis.crossesPause(previousPosition, at))) {
+        continuous = false
+        closeArea()
+        closeBand()
+        if (insidePause(at)) continue
       }
       const currentX = x(point.x)
       const px = currentX.toFixed(3)
@@ -307,6 +345,7 @@ const renderCartesian = (
             ? ` H ${stepX} V ${py} H ${px}`
             : `${continuous ? ' L' : ' M'} ${px} ${py}`
       previousY = py
+      previousPosition = at
       previousX = currentX
       continuous = true
     }
@@ -344,13 +383,12 @@ const renderCartesian = (
           [0, 0.25, 0.5, 0.75, 1].map(fraction => Math.round(fraction * (categories.length - 1))),
         ),
       ]
-    : (elapsed ? [0, 0.5, 1] : [0, 0.25, 0.5, 0.75, 1]).map(
-        fraction => xLow + fraction * (xHigh - xLow),
-      )
+    : (elapsed ? [0, 0.5, 1] : [0, 0.25, 0.5, 0.75, 1]).map(axis.elapsedAt)
+  // Labels keep elapsed clock time, so a tick past a pause includes the stopped time.
   for (const value of tickValues)
     ticks.append(
       el('span', undefined, formatX(value), {
-        style: `inset-inline-start: ${((value - xLow) / (xHigh - xLow)) * 100}%`,
+        style: `inset-inline-start: ${categorical ? ((value - xLow) / (xHigh - xLow)) * 100 : x(value)}%`,
       }),
     )
   const cursor = svg('line', { x1: 0, x2: 0, y1: 0, y2: 100, class: 'tri-workspace-cursor' })
@@ -369,7 +407,8 @@ const renderCartesian = (
   values.replaceChildren(...items.map(entry => entry.item))
   const show = (next: number): void => {
     fraction = Math.max(0, Math.min(1, next))
-    const at = xLow + fraction * (xHigh - xLow)
+    // The readout jumps by the stopped time across a join.
+    const at = categorical ? xLow + fraction * (xHigh - xLow) : axis.elapsedAt(fraction)
     const descriptions = [`${text(plot.xLabel)} ${formatX(at)}`]
     setText(location, `${text(plot.xLabel).toLocaleLowerCase()} ${formatX(at)}`)
     for (const [index, line] of series.entries()) {
@@ -537,6 +576,7 @@ function mountMyWindsockGraphs(
   pickerHost: HTMLElement,
   presentation: () => TriathlonPresentation,
   elapsedTimeS: number,
+  pauses: readonly ElapsedPause[],
 ): (() => void) | null {
   const text = (key: string): string => triText(presentation().locale, key)
   const visibleGraphs = archive.graphs.filter(
@@ -626,7 +666,8 @@ function mountMyWindsockGraphs(
         'data-native-kind': plot.kind,
         'data-native-axis': plot.xKind,
       })
-      if (plot.kind === 'cartesian') renderCartesian(panel, plot, active, color, text, elapsedTimeS)
+      if (plot.kind === 'cartesian')
+        renderCartesian(panel, plot, active, color, text, elapsedTimeS, pauses, presentation())
       else if (plot.kind === 'unsupported')
         panel.append(
           el(
@@ -722,6 +763,7 @@ export function setupMyWindsockGraphs(
         pickerHost,
         presentation,
         Number.isFinite(elapsedTimeS) && elapsedTimeS > 0 ? elapsedTimeS : 0,
+        parseElapsedPauses(section.dataset.mywindsockPauses),
       )
       section.hidden = cleanup === null
       if (cleanup) mounted.set(section, cleanup)

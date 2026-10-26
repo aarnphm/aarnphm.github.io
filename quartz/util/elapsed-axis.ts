@@ -7,6 +7,15 @@ export interface ElapsedPause {
   endS: number
 }
 
+type PausedTrace = { pauses: readonly ElapsedPause[] } | null | undefined
+
+/** Recorded pauses of an activity, from whichever elapsed trace its sport carries. */
+export const activityRecordedPauses = (activity: {
+  cyclingPowerTrace?: PausedTrace
+  runHeartCost?: PausedTrace
+}): readonly ElapsedPause[] =>
+  activity.cyclingPowerTrace?.pauses ?? activity.runHeartCost?.pauses ?? []
+
 /** Maps elapsed time to a horizontal fraction that gives removed pauses no width. */
 export interface ElapsedAxis {
   startS: number

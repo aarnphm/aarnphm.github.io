@@ -47,19 +47,21 @@ export const addElapsedBreaks = <N>(
   f: TriNodeFactory<N>,
   graph: N,
   axis: ElapsedAxis,
-  height: number,
+  bottom: number,
+  x: (fraction: number) => number = fraction => fraction * 100,
+  top = 0,
 ): void => {
   for (const pause of axis.pauses) {
     if (pause.startS <= axis.startS || pause.endS >= axis.endS) continue
-    const x = (axis.fraction(pause.startS) * 100).toFixed(2)
+    const at = x(axis.fraction(pause.startS)).toFixed(2)
     f.add(
       graph,
       f.svg('line', {
         class: 'tri-elev-break',
-        x1: x,
-        x2: x,
-        y1: 0,
-        y2: height,
+        x1: at,
+        x2: at,
+        y1: top,
+        y2: bottom,
         'data-pause-start-elapsed-s': pause.startS,
         'data-pause-end-elapsed-s': pause.endS,
       }),
