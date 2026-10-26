@@ -13,103 +13,57 @@ title: Nietzsche's Life
 
 _1844-1900_
 
-Theology, acquainted with Greek philosophy
-
-_Twilight of the Idols, 1889_
+Reading notes on _Twilight of the Idols_ (1889), with related passages from _The Gay Science_, _Thus Spoke Zarathustra_ and _Beyond Good and Evil_.
 
 ## Problem of [[thoughts/Socrates|Socrates]].
 
-**Decadent: in decline, decay. "Doing a bad thing carefully."**
-
-> An unexamined life is not worth living. Only Knowledge alone makes life worth living
-
-Importance things in life: goodness, happiness, depends on reasons, arguments -> bizarre equations.
-
 > Maybe something wrong with this? What drives Socrates from this demands with reasons and knowledge? What are the motives?
 
-Hume: Common life
+The question is about the need for rational control. Nietzsche reads the Socratic formula as $\text{reason} = \text{virtue} = \text{happiness}$. He treats this as a response to conflicting instincts: reason becomes their ruler because they can no longer govern themselves. His term _decadence_ names that disorder and the remedies it demands. This is Nietzsche's interpretation of Socrates, rather than an established account of his psychology. (_Twilight_, “The Problem of Socrates,” §§4, 9-11.)
 
-Plato: Turns away from appearance, material life to know the true being
+The lecture formulation “An unexamined life is not worth living. Only Knowledge alone makes life worth living” joins Socrates' claim about examination to a stronger claim about knowledge. The first has its source in Plato's _Apology_ 38a; the second needs an argument. Nietzsche's challenge is to ask what kind of life needs that promise.
 
-Artist: playful presentation, loving life for the work
+The same question applies to [[thoughts/Plato|Plato]]'s preference for stable being over becoming. Nietzsche asks what motivates a philosopher to treat change and the body as obstacles to truth. A motive can explain a commitment while leaving its truth unsettled. Discovering a need for reassurance would not, on its own, refute an argument.
 
-Philosophers: Not joy, serious, engaged in serious business, striving to know the truth. Invent nothing, contemplate what is, what is true, "being qua being"
+In “The Problem of Socrates,” §2, Nietzsche argues that the value of life as a whole cannot be estimated.
 
-> One must be all means stretch out one's fingers and make the attempt to grasp this amazing finesse, that the value of life cannot be estimated. (269)
-
-Life is not a closed books, but evolving still.
+Nietzsche's reason is that a living judge is already a participant in life, while the dead cannot judge. A verdict on life as a whole therefore lacks the disinterested standpoint it claims. This leaves room to judge particular lives, commitments and acts. Life is still unfolding; a global verdict pretends to have finished it.
 
 ## God is Dead
 
-_God of the philosophers_
+Nietzsche asks what happens to the commitments built around belief in God.
 
-Atheism
+In _The Gay Science_ §125, the madman announces God's death to people who already disbelieve in God. Their disbelief has arrived before an understanding of its consequences. Section 343 identifies the event as the loss of credibility of the Christian God and asks what happens to the European morality supported by that belief. It also describes the prospect of new inquiry with excitement.
 
-Denis Diderot: "It is ... very important not to mistake hemlock for parsley; but to believe or not to believe in god, is not important at all"
+The further question in §344 concerns the unconditional value of truth. Scientific inquiry tests its claims, yet the decision to pursue truth at any cost is itself a commitment. Nietzsche asks whether that commitment retains the older faith that truth is divine. This challenges an inherited justification for valuing truth; it does not announce that scientific results have stopped being reliable.
 
-Nietzsche: "God is dead". Means optimism, faith in science, the redemptive power of knowledge is "dead", that is, unconvicing, hard to take seriously.
+_Nihilism_: the loss of authority of the values by which a life was directed. The problem remains after an argument against God's existence succeeds: which commitments survive, and what supports them?
 
-_Nihilism: The highest values are devaluing themselves_
-
-How do we have duty on truth?
-
-Doesn't need reasons to be atheism?
-
-For N, believing god is passing into the past, and have no feature. Science has devitalise god.
-
-So to die the superior value of truth. Value of Truth is problematic.
+How do we have a duty to truth? Does atheism settle that question, or leave it open?
 
 #### From _Thus Spoke Zarathustra_
 
-Contrast between Nobility and goodness
-_noble spirits vs. good_
-nobility > good
-noble people: maintain nobility, might considered by other as setback
-not become "a churl" (churlish, misanthropic, a hater of humanity)
+In “The Tree on the Mountainside” (also translated “The Tree on the Hill”), Zarathustra distinguishes the noble person's wish to create from the good person's wish to preserve what already exists. The youth's danger is becoming a bitter mocker who has given up that wish to create. The warning against becoming “a churl” in the lecture reader belongs to this passage. Mere opposition to accepted goodness supplies no new aim.
 
 #### Morality as Anti-Nature
 
-Critiques in Christianity,
+The target of this _Twilight_ chapter is a treatment of passion: trying to remove desire because it can lead to harm. Nietzsche contrasts this with giving a passion a more developed form, as sensuality can become love and hostility can become a productive relation to an opponent. His claim concerns how desires are cultivated. It offers no guarantee that following a desire will be good. (§§1-3.)
 
-- Anti-nature because anti-difference, when nature is all difference
-- Anti-nature because it values people all the same, when in nature, by nature, we are amazingly different.
+The lecture phrase “Obstacles that are good for us: Becomes who we are” belongs with this question. Some resistance can develop a capacity; whether a particular obstacle does so needs to be shown. Calling suffering necessary for growth would leave that distinction out.
 
-Security with "herd mentality"
+Nietzsche's criticism of equality and democracy is related, with its own argument. He thinks an ideal centred on shared security and comfort can suppress the development of exceptional people. The “herd” names a pattern of shared valuation and pressure to conform. It is a polemical description of a kind of society, rather than a definition of every human association. (_Beyond Good and Evil_, §§44, 202.)
 
-Regards as sign of decline, docile (democracy, or [[thoughts/John Stuart Mill|John Stuart Mill]]'s instution)
+The worry behind my [[singularity.canvas|singularity]] shorthand is a single moral standard imposed on people with different capacities and aims. Nietzsche's response is hierarchical: he denies that one morality benefits everyone equally. That judgment needs defending. Difference alone cannot establish which differences deserve authority.
 
-> Obstacles that are good for us: Becomes who we are
+[[thoughts/John Stuart Mill|John Stuart Mill]] is also a target, named among Nietzsche's adversaries in “Skirmishes of an Untimely Man,” §1. _Beyond Good and Evil_ §228 attacks English utilitarianism for treating its own conception of welfare as a universal goal. Mill's defence of individuality gives them a point of contact; their standards for evaluating a life remain different. Nietzsche's objections extend beyond Kantian duty.
 
-Herd = human society
-
-- like sheep: unhappy on our own. Watch each other carefully, follow into our line
-- all herd: All animals all nervously watch each others
-
-Peace is overrated, as defeats kind of challenges to grow for leaders
-
-herd = security (survival values, of Europe at this time?)
-
-Everything modern people thinks good is bad, things judges to be evil could turn out to be good in the future.
-
-Decadent: arts and philosophy
-
-=> artists wants to play with empiricists, doesn't care about the truth (philosophers' motive)
-
-Arguments against morality: One rule for everything
-
-Judge everything by one rules: Morality reduces human to [[singularity.canvas|singularity]]
-
-Object to Kant's Morals, but not [[thoughts/John Stuart Mill|John Stuart Mill]]'s Utilitarianism
-
-Respect for others is imposed on us => refused to embrace
-
-> Morals compromise creativity, and value more creativity more than morals (beyond good and evil)
+“Morals compromise creativity” is the lecture summary. The useful question is which moral demand blocks which activity, and why that activity should take priority. Reversing every accepted judgment would leave the argument unfinished.
 
 ## What I Owe the Ancients
 
-_The Birth of Tragedy, 1872_
+This heading names a chapter of _Twilight of the Idols_. _The Birth of Tragedy_ (1872) is an earlier work that the chapter revisits.
 
-Greek tragic drama
+Greek tragedies in the lecture:
 
 - Aeschylus, _Oresteia_
 - Sophocles, _Oedipus the King_
@@ -117,20 +71,20 @@ Greek tragic drama
 
 > Why do we enjoy tragedies? Why do we enjoy watching people suffer?
 
-> "All becoming and growing - all that guarantees a future - involves pain." (282)
+> “All becoming and growing - all that guarantees a future - involves pain.” (282)
 
-> "Art is worth more than truth."
+Nietzsche connects this claim to procreation and the Dionysian mysteries in “What I Owe the Ancients,” §4. In §5, tragic affirmation means being able to affirm existence while confronting destruction and suffering. Enjoying a tragedy need not amount to wanting the depicted suffering to happen. Neither does this account show that every actual injury benefits its victim.
 
-Shares' [[thoughts/Plato|Plato]]'s view of democracy. Values life of creativity, to invent new values.
+> “Art is worth more than truth.”
 
-Acknowledges death, suffering, tragedy. Not defects, or overcome by science.
+This belongs with Nietzsche's later reflections on _The Birth of Tragedy_, collected after his death in _The Will to Power_, §853 IV. That compilation is an editorial arrangement of notebooks, rather than a book he completed. The comparison concerns art's power to sustain an affirmation of existence.
 
-Knowledge can demoralise people (Knowledge is good)
+The lecture's final contrast is that science supplies no purpose in itself, while art can create values. Knowing how something happens leaves open what to make of it. The further question is how a created value earns commitment. Incompleteness of our experience leaves that question open; it does not establish that life has no value.
 
-Knowledge is a very thing that it is good. Knowledge is not the path to virtue and happiness
+### sources
 
-> Science tells us no good in itself, no purposes in itself. Values are selected by us, not stumbled upon.
-
-Life has no values, since we cannot see all that life has to offer. It is a place for adventure.
-
-Creating values is science not do, but art can => art is more important than truth.
+- Nietzsche, [_Twilight of the Idols_](https://www.gutenberg.org/files/52263/52263-h/52263-h.htm): “The Problem of Socrates,” §§2, 4, 9-11; “Reason in Philosophy,” §§1-2; “Morality as the Enemy of Nature,” §§1-3; “Things I Owe to the Ancients,” §§4-5. Chapter titles vary by translation. The retained page numbers refer to the lecture reader.
+- Nietzsche, [_The Gay Science_](https://www.gutenberg.org/files/52881/52881-h/52881-h.htm), §§125, 343-344; this translation is titled _The Joyful Wisdom_.
+- Nietzsche, [_Thus Spoke Zarathustra_](https://www.gutenberg.org/files/1998/1998-h/1998-h.htm), Part I, “The Tree on the Hill.”
+- Nietzsche, [_Beyond Good and Evil_](https://www.gutenberg.org/files/4363/4363-h/4363-h.htm), §§44, 202, 228.
+- Nietzsche, [_The Will to Power_](https://www.gutenberg.org/files/52915/52915-h/52915-h.htm), §853 IV, a posthumous notebook compilation.

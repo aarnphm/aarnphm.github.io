@@ -12,13 +12,13 @@ tags:
 title: PageRank
 ---
 
-PageRank gives every page one score computed from the link graph alone. Larry Page, Sergey Brin, Rajeev Motwani and Terry Winograd describe it in a Stanford report ([Page et al., 1999](http://ilpubs.stanford.edu:8090/422/)); the draft is dated January 29, 1998. The score does not depend on the query, so a [[thoughts/Search|search engine]] computes it once per crawl and uses it for every query. This garden computes the same score over its own notes on [[pagerank|/pagerank]].
+PageRank computes page scores from a link graph. Larry Page, Sergey Brin, Rajeev Motwani and Terry Winograd describe it in a Stanford report ([Page et al., 1999](http://ilpubs.stanford.edu:8090/422/)); the draft is dated January 29, 1998. The score does not depend on the query, so a [[thoughts/Search|search engine]] computes it once per crawl and uses it for every query. This garden computes the same score over its own notes on [[pagerank|/pagerank]].
 
 ## From citations to links
 
 Citation analysis counts how often other papers cite a paper. The report treats a link as a citation, so a page with many backlinks (inbound links) is probably important. Raw backlink counts fail on the web for two reasons. A web page costs nothing to publish, so anyone can make many pages that link to one target. And one link from the Yahoo home page says more about a page than many links from pages that nobody reads.
 
-PageRank uses a recursive rule instead: a page has a high rank when the ranks of the pages that link to it add up to a large number. Many backlinks raise a page, and so do a few backlinks from high-ranked pages. A page with no rank of its own passes on almost nothing, so a farm of new pages adds little.
+PageRank uses a recursive rule instead: a page has a high rank when the ranks of the pages that link to it add up to a large number. Many backlinks raise a page, and so do a few backlinks from high-ranked pages. A link contributes according to the source page's rank and outgoing links, so counting backlinks alone misses part of the calculation.
 
 ## The simplified rank
 
@@ -32,7 +32,7 @@ Each page divides its rank equally among its links, and each page receives the s
 
 The report's Figure 3 is a small example. A links to B and C, B links to C, and C links to A. The ranks $R(A) = 0.4$, $R(B) = 0.2$, $R(C) = 0.4$ are a fixed point: A sends $0.2$ on each of its two links, C receives $0.2$ from A and $0.2$ from B, and C sends all of its $0.4$ to A.
 
-In matrix form, let $M_{uv} = 1/N_v$ when $v$ links to $u$, and $0$ otherwise. Then $R = cMR$, so $R$ is an eigenvector of $M$.[^transpose] The report wants the dominant eigenvector, which power iteration finds: start from almost any vector and multiply by $M$ until the result stops changing.
+In matrix form, let $M_{uv} = 1/N_v$ when $v$ links to $u$, and $0$ otherwise. Then $R = cMR$, so $R$ is an eigenvector of $M$.[^transpose] If every page has an outgoing link, each column sums to $1$ and $c = 1$. Power iteration repeatedly multiplies an initial probability vector by $M$. It converges to a unique stationary distribution when the finite chain is irreducible and aperiodic. A two-page cycle already breaks convergence: all the mass alternates between the pages if it starts on one of them. Separate closed components can also give several stationary distributions.
 
 ## Rank sinks and the random surfer
 
@@ -44,15 +44,23 @@ $$
 R'(u) = c \sum_{v \in B_u} \frac{R'(v)}{N_v} + c\,E(u), \qquad \lVert R' \rVert_1 = 1
 $$
 
-The report explains $E$ with a random surfer. The surfer starts on a random page and keeps clicking links at random. A real person caught in a small loop would get bored and go to some other page. $E$ is the distribution of those jumps. Most of the report's experiments used a uniform $E$ with $\lVert E \rVert_1 = 0.15$.
+The report explains $E$ with a random surfer who sometimes stops following links and starts elsewhere. Its experiments mostly used a uniform source with $\lVert E \rVert_1 = 0.15$. That source includes both a distribution over destinations and an amount of rank to inject.
 
-The form used today writes the same model with a damping factor $d = 0.85$. At each step the surfer follows a random link on the current page with probability $d$ and jumps to a uniformly random page with probability $1 - d$. With $N$ pages and $L(q)$ links on page $q$:
+To separate them, write $E = e v$, where $e = \lVert E \rVert_1$ and $v$ is a probability vector. On a graph where every page has an outgoing link, summing the fixed-point equation gives
+
+$$
+1 = c(1+e), \qquad c = \frac{1}{1+e}.
+$$
+
+The resulting equation is $R' = cMR' + (1-c)v$. Thus the report's $e = 0.15$ gives $c = 1/1.15 \approx 0.8696$, rather than $0.85$. A source of mass $e = (1-d)/d$ gives a chosen damping factor $d$. This conversion assumes a column-stochastic link matrix; dangling pages need the treatment below.
+
+The usual probability-normalized form instead chooses $d = 0.85$ directly. At each step the surfer follows a random link with probability $d$ and restarts from $v$ with probability $1-d$. For uniform $v$, with $N$ pages and $L(q)$ links on page $q$:
 
 $$
 \mathrm{PR}(p) = \frac{1-d}{N} + d \sum_{q \to p} \frac{\mathrm{PR}(q)}{L(q)}
 $$
 
-$\mathrm{PR}(p)$ is the long-run fraction of steps that the surfer spends on $p$.[^anatomy] Without the jump, the surfer in a rank sink stays there forever. With the jump, the surfer leaves any loop within about $1/(1-d) \approx 6.7$ steps on average.
+$\mathrm{PR}(p)$ is the long-run fraction of steps that the surfer spends on $p$.[^anatomy] Without the jump, a surfer in a rank sink stays there. At $d = 0.85$, the mean wait until a restart is $1/(1-d) \approx 6.7$ steps. A restart can land in the same sink. For a closed set of $s$ pages under uniform restart, the mean wait to leave is $1/[(1-d)(1-s/N)]$ when $s < N$.
 
 ## Dangling pages
 
@@ -68,7 +76,7 @@ With this term the scores always sum to $1$, and no rank is lost.
 
 ## Computing it
 
-The report's algorithm keeps the jump term separate from the link matrix:
+The report's §2.6 prints the following lost-mass loop:
 
 $$
 \begin{aligned}
@@ -79,19 +87,41 @@ R_{i+1} &\leftarrow R_{i+1} + \delta_{\text{lost}}\, E \\
 \end{aligned}
 $$
 
-It repeats until $\delta < \epsilon$. Each step follows the links once, measures the rank that leaked out, and adds that amount back spread over $E$. (The report names the leaked amount $d$; it is a different quantity from the damping factor.)
+It repeats until $\delta < \epsilon$. The final addition preserves total mass only if the $E$ used in this loop sums to $1$: multiplying the lost mass by a source of mass $0.15$ replaces only $15\%$ of it. An undamped stochastic $A$ loses no mass at all, so that reading of the loop also supplies no restarts. The report's displayed source equation and loop therefore need their normalization conventions made explicit before use. (The report names the lost mass $d$; it is a different quantity from the damping factor.)
+
+For the probability-normalized model, let $M$ contain the link fractions and a zero column for each dangling page, and keep $v$ normalized. The corresponding mass-preserving update is
+
+$$
+\begin{aligned}
+y &\leftarrow dMr_i \\
+\ell &\leftarrow 1-\lVert y\rVert_1 \\
+r_{i+1} &\leftarrow y+\ell v.
+\end{aligned}
+$$
+
+Starting with $\lVert r_i\rVert_1 = 1$, the missing mass is $\ell = 1-d+d\sum_{L(q)=0}r_i(q)$. It includes both scheduled restarts and dangling-page mass. The same $v$ receives both here.
 
 The 1998 implementation gave each URL an integer ID and sorted the link table by source page. Only the current weights stayed in memory: 4 bytes for each of 75 million URLs is 300 MB. The sorted link table and the previous weights streamed from disk. One iteration took about 6 minutes on a workstation, and the whole computation took about 5 hours. The report notes that this cost is small next to building the full-text index.
 
 On 322 million links the computation reached its tolerance in about 52 iterations. On half the links it took about 45. Twice the data cost about 15% more iterations. The report explains the fast convergence with expander graphs: a random walk mixes in time logarithmic in the size of the graph when the gap between the first and second eigenvalues is large.
 
-A sharper result came later. For any link graph, the second eigenvalue of the PageRank matrix satisfies $\lvert\lambda_2\rvert \le d$ ([Haveliwala and Kamvar, 2003](http://ilpubs.stanford.edu:8090/582/)). The error of power iteration therefore shrinks by at least a factor of $d$ on every step, for any shape of web. The jump term also makes the Markov chain irreducible and aperiodic, so by the Perron–Frobenius theorem the stationary distribution exists and is unique. With $d = 0.85$, the change between steps falls below $10^{-10}$ after at most
+A sharper result came later. For any link graph with dangling columns repaired, the second eigenvalue of the PageRank matrix satisfies $\lvert\lambda_2\rvert \le d$ ([Haveliwala and Kamvar, 2003](http://ilpubs.stanford.edu:8090/582/)). A direct $L_1$ argument gives the per-step bound. Let $S$ be the column-stochastic matrix after dangling repair and $T(x)=dSx+(1-d)v$. For probability vectors $x$ and $z$, the restart terms cancel:
 
 $$
-k = \frac{\ln\left(2 \cdot 10^{10}\right)}{\ln(1/0.85)} \approx 146
+\lVert T(x)-T(z)\rVert_1
+= d\lVert S(x-z)\rVert_1
+\le d\lVert x-z\rVert_1.
 $$
 
-iterations, because the first change is at most $2$ in $L_1$. A smaller $d$ converges faster but gives the links less weight against the uniform jump.
+For $0<d<1$, this contraction gives a unique stationary distribution and convergence from every initial probability vector. Uniform restart also makes the chain irreducible and aperiodic. Personalized restart can leave some pages unreachable; contraction still gives uniqueness.
+
+Write $\Delta_k=\lVert r_k-r_{k-1}\rVert_1$. Since $\Delta_1\le2$, the bound is $\Delta_k\le2d^{k-1}$. With $d = 0.85$, a sufficient number of updates for $\Delta_k\le10^{-10}$ is
+
+$$
+k = 1 + \left\lceil\frac{\ln\left(2 \cdot 10^{10}\right)}{\ln(1/0.85)}\right\rceil = 147.
+$$
+
+This bounds the change between iterates in exact arithmetic. The distance to the stationary distribution is at most $d\Delta_k/(1-d)$, so a stopping tolerance on change is distinct from a tolerance on score error. A smaller $d$ strengthens the contraction and gives the links less weight.
 
 ## Personalized PageRank
 
@@ -116,14 +146,14 @@ The report lists other uses:
 [[pagerank|/pagerank]] runs the dangling-page formula above over the notes of this garden:
 
 - The nodes are the public notes. A link counts once for each pair of notes, a note's links to itself are dropped, and links to hidden notes are dropped.
-- $d = 0.85$. The computation starts from $1/N$ on every note and stops when the $L_1$ change is at most $10^{-10}$, or after 160 iterations. 160 is above the bound of 146, so the cap never stops a run early.
+- $d = 0.85$. The computation starts from $1/N$ on every note and stops when the $L_1$ change is at most $10^{-10}$, or after 160 iterations. The cap exceeds the exact-arithmetic bound of 147 updates; floating-point arithmetic can affect the measured change.
 - The table shows $x_p = N \cdot \mathrm{PR}(p)$, so $1.00\times$ is the mean note.
 
 In October 2026 the graph had 2,095 notes and 2,925 links, and the computation converged in 113 iterations. The top 10% of notes held 53% of the score. 1,243 notes, or 59%, had no inbound link. Each of those notes gets only the jump and dangling terms, about $0.38\times$ the mean, which is also the median score.
 
 The five highest notes were all course home pages, with MIT 18.156 at about $76\times$ the mean. This is the mailing-list problem from the report. A course home page links to its syllabus, assignments and lectures, and those pages link back, so rank circulates inside the course. The 18.156 syllabus has two inbound links and ranked 12th. The page has a courses toggle that hides course navigation pages, and homepage suggestions skip them.
 
-The quick-open palette with an empty query lists notes near the current one with personalized PageRank. $E$ is the current note, links count in both directions, and the surfer always jumps back to the current note. This is the McCarthy experiment with one note as the home page. Search results also show each note's global rank as a small mark.
+The quick-open palette with an empty query lists notes near the current one with personalized PageRank. The normalized restart vector $v$ puts all its mass on the current note, links count in both directions, and each restart returns there. This is the McCarthy experiment with one note as the home page. Search results also show each note's global rank as a small mark.
 
 [^transpose]: The report writes $A_{u,v} = 1/N_u$ for a link from $u$ to $v$ and then $R = cAR$. With those indices, $(AR)(u)$ is the average rank of the pages that $u$ links to. The equation needs the transpose, $R = cA^\top R$, which is the matrix $M$ here.
 
