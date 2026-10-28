@@ -11,7 +11,7 @@ tags:
   - letters
 title: social interactions
 notebook:
-  - "[[thoughts/friendship|friendship]]"
+  - '[[thoughts/friendship|friendship]]'
 ---
 
 social interactions as a la carte choices: modular, opt-in, and composable ways of relating to people.

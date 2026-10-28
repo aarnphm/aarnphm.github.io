@@ -11,27 +11,25 @@ title: Stoic
 
 ### Epictetus - Enchiridion
 
-What we can control: belongs to us
+Epictetus distinguishes our judgments, desires and choices from outcomes that depend on other people or circumstances (§1). We can influence our reputation and care for our body without securing either against loss.
 
-- opinion, pursuit, desire, aversion
+<p align='center'><b>Care of the self</b></p>
 
-What we can't control: belongs to others
+> Some things are in our control and others not. Things in our control are opinion, pursuit, desire, aversion, and, in a word, whatever are our own actions. Things not in our control are body, property, reputation, command, and, in one word, whatever are not our own actions.
 
-- property, reputation, command, body
+| In our control                     | Outside our control            |
+| ---------------------------------- | ------------------------------ |
+| Choosing how to act                | How others judge the action    |
+| Training our desires and aversions | Obtaining everything we desire |
 
-<p align='center'><b>Concern for care for self</b></p>
+Desire belongs on the first side of the distinction. Training it takes practice: examine an impression before acting on it, and stop treating an uncertain outcome as something owed to us (§§2, 10, 34).
 
-> Some things are in our control and others not. Things in our control are opinion, pursuit, desire, aversion, and, in a word, whatever are our own actions. Things not in our control are body, property, repu-tation, command, and, in one word, whatever are not our own actions.
+<p align='center'><b>Judgment and harm</b></p>
 
-| IN our control                      | NOT in our control               |
-| ----------------------------------- | -------------------------------- |
-| Action/pursuit (inflect reputation) | Reputation (perceived by others) |
-| Acting on desire                    | Feeling of desire                |
+In §5, distress depends on our judgment of an event. His claim that another person cannot harm us concerns our moral character (§§9, 30). Bodies can still be injured.
 
-> Epictetus saying that you can train of the feeling of desire.
+> Duties are universally measured by relations.
 
-<p align='center'><b>All harm comes from false belief</b></p>
+Our relations as children, siblings and citizens carry duties (§30). Tranquility therefore includes attending to how we act toward others.
 
-> Duties are universally measured by relations
-
-maintain tranquility
+Source: [Epictetus, _Enchiridion_, translated by Elizabeth Carter](https://classics.mit.edu/Epictetus/epicench.html).
