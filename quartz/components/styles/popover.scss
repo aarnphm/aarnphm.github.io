@@ -683,11 +683,6 @@
     stroke: color-mix(in srgb, var(--tri-popover-sport) 72%, var(--dark));
     stroke-width: 1.5;
   }
-
-  svg[data-solid] {
-    fill: currentColor;
-    stroke: none;
-  }
 }
 
 .document-popover-title {

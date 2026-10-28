@@ -101,6 +101,8 @@ li.section-li {
           border: 1px solid var(--gray);
           border-radius: var(--radius-none);
           @include tagLabel;
+          font-size: 12px;
+          overflow-wrap: anywhere;
         }
       }
 
@@ -111,7 +113,7 @@ li.section-li {
         font-family: var(--codeFont);
         font-variant-numeric: tabular-nums;
         white-space: nowrap;
-        font-size: var(--text-meta);
+        font-size: 12px;
         line-height: 1.4;
       }
     }
@@ -155,9 +157,11 @@ li.section-li {
   padding-left: calc(var(--kern) * 2);
   margin-top: 1rem;
 
-  // on desktop the aside takes as many tracks as the list beside it, so both columns share one width
+  // Preserve the aside's former three 192px tracks while the list follows the reading grid.
   @media all and ($desktop) {
     grid-column: 8 / span 3;
+    box-sizing: border-box;
+    max-inline-size: 576px;
   }
 }
 
