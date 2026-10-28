@@ -1,0 +1,317 @@
+@use './figure.scss' as *;
+
+.mooncake-flow {
+  @include figure-frame('mck-figure', 44rem);
+
+  --mck-cell-empty: var(--light);
+  --mck-cell-other: color-mix(in srgb, var(--gray) 30%, var(--light));
+  --mck-cell-hit: color-mix(in srgb, var(--fig-sage) 70%, var(--light));
+  --mck-cell-new: color-mix(in srgb, var(--fig-salmon) 75%, var(--light));
+  --mck-selected: var(--fig-grid-selected);
+  --mck-ease: 180ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+:root[saved-theme='dark'] .mooncake-flow {
+  --mck-cell-empty: var(--light);
+  --mck-cell-other: color-mix(in srgb, var(--gray) 40%, var(--lightgray));
+  --mck-cell-hit: color-mix(in srgb, var(--fig-sage) 38%, var(--lightgray));
+  --mck-cell-new: color-mix(in srgb, var(--fig-salmon) 42%, var(--lightgray));
+}
+
+.mck-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.25rem;
+  margin-bottom: 1rem;
+}
+
+// Segments wrap in a narrow frame; growing cells fill each row so no gap shows the grid line.
+.mck-seg-group {
+  @include figure-fieldset;
+  display: flex;
+  flex-wrap: wrap;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.mck-seg {
+  @include figure-grid-cell;
+  position: relative;
+  display: inline-flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  padding: 0.28rem 0.55rem;
+  color: var(--fig-tab-fg);
+  cursor: pointer;
+  font-family: var(--codeFont);
+  font-size: var(--text-meta);
+  line-height: 1.2;
+  white-space: nowrap;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease;
+
+  input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  &:has(input:checked) {
+    background: var(--fig-grid-selected);
+    color: var(--dark);
+  }
+
+  &:has(input:focus-visible) {
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: var(--dark);
+    }
+  }
+}
+
+// Labels hold 12px, so a frame under 600px swaps to the one-column drawing instead of shrinking
+// type or scrolling sideways.
+.mck-graph:is(.mck-graph--tall, .mks-graph--tall) {
+  display: none;
+  max-width: 22.5rem;
+  margin-inline: auto;
+}
+
+@container mck-figure (max-width: 37.4rem) {
+  .mck-graph:is(.mck-graph--wide, .mks-graph--wide) {
+    display: none;
+  }
+
+  .mck-graph:is(.mck-graph--tall, .mks-graph--tall) {
+    display: block;
+  }
+}
+
+.mck-graph {
+  display: block;
+  width: 100%;
+  height: auto;
+  // User units per rendered px; mooncake-flow.inline.ts keeps it current.
+  --mck-u: 1;
+
+  .mck-label {
+    fill: var(--dark);
+    font-family: var(--codeFont);
+    font-size: calc(var(--mck-u) * var(--text-meta));
+  }
+
+  .mck-label--head {
+    fill: var(--fig-note);
+  }
+
+  .mck-node {
+    fill: none;
+    stroke: var(--fig-stroke);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+    transition:
+      stroke var(--mck-ease),
+      stroke-width var(--mck-ease);
+
+    &[data-active='true'] {
+      stroke: var(--dark);
+      stroke-width: 2;
+    }
+  }
+
+  .mck-link {
+    fill: none;
+    stroke: var(--fig-stroke-soft);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+    transition:
+      stroke var(--mck-ease),
+      stroke-width var(--mck-ease);
+
+    &[data-active='true'] {
+      stroke: var(--dark);
+      stroke-width: 2;
+    }
+  }
+
+  .mck-rdma {
+    fill: var(--light);
+    stroke: var(--fig-stroke);
+    vector-effect: non-scaling-stroke;
+    transition: fill var(--mck-ease);
+
+    &[data-active='true'] {
+      fill: var(--mck-cell-new);
+      stroke: var(--dark);
+    }
+  }
+
+  .mck-cell {
+    fill: var(--mck-cell-empty);
+    stroke: var(--fig-stroke-soft);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+    transition:
+      fill var(--mck-ease),
+      stroke var(--mck-ease);
+
+    &[data-state='other'] {
+      fill: var(--mck-cell-other);
+    }
+
+    &[data-state='pending'] {
+      stroke: var(--dark);
+    }
+
+    &[data-state='hit'],
+    &[data-state='kept'] {
+      fill: var(--mck-cell-hit);
+      stroke: var(--fig-stroke);
+    }
+
+    &[data-state='new'] {
+      fill: var(--mck-cell-new);
+      stroke: var(--dark);
+    }
+  }
+}
+
+.mck-readouts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+
+  @container mck-figure (max-width: 34rem) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+// Scoped under the figure to outrank the `.table-container > table` prose rules.
+.mooncake-flow .mck-table {
+  width: 100%;
+  margin: 0;
+  border-collapse: collapse;
+  font-size: var(--text-meta);
+  line-height: 1.35;
+
+  th,
+  td {
+    // The prose table rule sets a 75px cell floor; four columns would overflow a phone frame.
+    min-width: 0;
+    padding: 0.35rem 0.5rem;
+    border: 1px solid var(--fig-grid-line);
+    background: var(--fig-grid-cell);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    transition: background-color var(--mck-ease);
+  }
+
+  thead th {
+    color: var(--fig-note);
+    font-weight: 400;
+  }
+
+  th:first-child {
+    text-align: left;
+  }
+
+  tbody th {
+    color: var(--dark);
+    font-weight: 400;
+  }
+
+  td {
+    color: var(--dark);
+    font-family: var(--codeFont);
+  }
+
+  tr[data-selected='true'] > * {
+    background: var(--mck-selected);
+  }
+}
+
+.mck-notes {
+  margin-top: 0.75rem;
+}
+
+.mck-note {
+  display: none;
+  margin: 0;
+  color: var(--fig-note);
+  font-size: var(--text-meta);
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+@each $stage in route, prefill, transfer, decode {
+  .mooncake-flow[data-mck-stage='#{$stage}'] [data-mck-note='#{$stage}'] {
+    display: block;
+  }
+}
+
+.mck-caption {
+  @include figure-caption;
+}
+
+.mck-math {
+  @include figure-caption-math-gap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mooncake-flow * {
+    transition: none !important;
+  }
+}
+
+.mks-graph {
+  .mks-lane {
+    fill: none;
+    stroke: var(--fig-stroke-soft);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .mks-bar {
+    stroke: var(--fig-stroke);
+    stroke-width: 0.5;
+    vector-effect: non-scaling-stroke;
+    transition:
+      x var(--mck-ease),
+      width var(--mck-ease);
+
+    &[data-kind='load'] {
+      fill: var(--mck-cell-hit);
+    }
+
+    &[data-kind='compute'] {
+      fill: var(--mck-cell-other);
+    }
+
+    &[data-kind='stream'] {
+      fill: var(--mck-cell-new);
+      stroke: var(--dark);
+    }
+  }
+
+  .mks-axis {
+    stroke: var(--fig-stroke);
+    vector-effect: non-scaling-stroke;
+  }
+
+  .mks-marker {
+    fill: none;
+    stroke: var(--dark);
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+  }
+}
