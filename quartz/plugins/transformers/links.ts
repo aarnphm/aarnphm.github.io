@@ -24,6 +24,7 @@ import {
   youtubeSvg,
   gwernSvg,
   modularSvg,
+  nvidiaSvg,
 } from '../../components/svg'
 import { parseLessWrongTarget } from '../../util/lesswrong'
 import {
@@ -210,6 +211,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
                 isLessWrong: matchesHost('lesswrong.com'),
                 isBentoml: matchesHost('bentoml.com'),
                 isModular: matchesHost('modular.com'),
+                isNvidia: matchesHost('nvidia.com') || matchesHost('nvidia.cn'),
                 isSep: matchesHost('plato.stanford.edu'),
                 isYoutube: matchesHost('youtube.com') || matchesHost('youtu.be'),
                 isGwern: matchesHost('gwern.net'),
@@ -249,6 +251,13 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
                   classes.push('modular-link')
                 }
                 ctx.node.properties.dataLinkVendor = 'modular'
+              }
+
+              if (linkTypes.isNvidia) {
+                if (!classes.includes('nvidia-link')) {
+                  classes.push('nvidia-link')
+                }
+                ctx.node.properties.dataLinkVendor = 'nvidia'
               }
 
               if (linkTypes.isGithub) {
@@ -446,6 +455,8 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
                   ctx.node.children.push(bentomlSvg, bentomlHoverSvg)
                 } else if (linkTypes.isModular) {
                   ctx.node.children.push(modularSvg)
+                } else if (linkTypes.isNvidia) {
+                  ctx.node.children.push(nvidiaSvg)
                 } else if (linkTypes.isSep) {
                   ctx.node.children.push(
                     createIconElement('/static/favicons/sep-man-red.png', 'SEP'),

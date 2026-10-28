@@ -282,13 +282,15 @@ img.inline-icons {
 // Vendor marks take the link's ink, so they follow hover and theme with the text. The white copies
 // date from the inverted-fill hover and stay hidden.
 a.bentoml-link,
-a.github-link {
+a.github-link,
+a.nvidia-link {
   display: inline;
   align-items: center;
   gap: 0.2em;
 
   [data-icon='bentoml'],
-  [data-icon='github'] {
+  [data-icon='github'],
+  [data-icon='nvidia'] {
     fill: currentColor;
   }
 
