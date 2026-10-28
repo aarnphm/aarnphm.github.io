@@ -1,6 +1,6 @@
 #!/bin/sh
 # Stage 2: one read-only boundary proposal per target from one worker, in parallel.
-#   harness/token-budget/dispatch.sh <run-dir> <sol|opus|argon> [<slug>...]
+#   harness/token-budget/dispatch.sh <run-dir> <sol|opus|argon|caw> [<slug>...]
 # Each <run-dir>/<slug>/brief.md becomes <slug>/<worker>/task.txt; the run writes events.ndjson,
 # stderr.txt and exit-code there (Codex and Claude also write last-message.txt). Workers read the tree at
 # TB_WORKSPACE (default: this checkout), so a `w` worktree can be the source as well.
@@ -42,6 +42,12 @@ case $W in
     ID="argon:$ARGON_MODEL"
     CONSTRAINT='common-caller'
     TEXT='Optimise for the most common caller: the production importers listed below should keep a trivial default call, even if the interface keeps a few more names. Group the implementation so that the change you expect most often touches one file.'
+    ;;
+  caw)
+    CAW_MODEL=${TB_CAW_MODEL:-}
+    ID="caw:${CAW_MODEL:-grok-4.7-medium}"
+    CONSTRAINT='minimise-interface'
+    TEXT='Minimise the interface: aim for the fewest names the production importers need (1 to 3 where possible) and the most leverage per name. Hide every export that production callers do not use, and plan to move tests that import internals to the entry interface.'
     ;;
   *) echo "unknown worker: $W" >&2; exit 2 ;;
 esac
@@ -93,6 +99,32 @@ EOF
         rc=0
         argon --workspace "$WS" --model "$ARGON_MODEL" --browser none --stream --timeout "$TB_ARGON_TIMEOUT" \
           < task.txt > events.ndjson 2> stderr.txt || rc=$?
+        echo "$rc" > exit-code ) &
+      ;;
+    caw)
+      ( cd "$d"
+        rc=0
+        caw --workspace "$WS" --mode plan --browser none --stream ${CAW_MODEL:+--model "$CAW_MODEL"} \
+          < task.txt > events.ndjson 2> stderr.txt || rc=$?
+        python3 -c '
+import json, sys
+res = ""
+try:
+  for line in open("events.ndjson"):
+    try:
+      obj = json.loads(line)
+      if obj.get("type") == "result":
+        res = obj.get("result", "")
+      elif obj.get("type") == "assistant" and "message" in obj:
+        parts = [c.get("text", "") for c in obj["message"].get("content", []) if c.get("type") == "text"]
+        if parts:
+          res = "".join(parts)
+    except:
+      pass
+except Exception:
+  pass
+print(res)
+' > last-message.txt 2>/dev/null || true
         echo "$rc" > exit-code ) &
       ;;
   esac

@@ -41,6 +41,8 @@ sites
 data/
 # activity/data.ts keeps its implementation in a private data/ module folder.
 !quartz/components/triathlon/activity/data/
+# render/icons.ts keeps its implementation in a private icons/ module folder (un-ignore global Icon?).
+!quartz/util/notebook/render/icons/
 model/
 content/thoughts/university/**/*.csv
 private
@@ -64,6 +66,8 @@ __pycache__/
 # Distribution / packaging
 .Python
 build/
+# quartz/build.ts keeps its implementation in a private build/ module folder.
+!quartz/build/
 develop-eggs/
 dist/
 downloads/
