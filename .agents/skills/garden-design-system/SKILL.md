@@ -15,7 +15,8 @@ The repo is the source of truth. When this skill and the code disagree, the code
 - Working surfaces use the recipe `line` (hairline, groups only), `surface` (raised ground: hover, toolbar, panel) and `selected` (selected or matched row, label `dark`). A border that marks where a control starts and stops uses `dark` or `darkgray`.
 - `gray` is structure only (gridlines, tag borders, inactive icons). It never carries text. `secondary` (sage) and `tertiary` (peach) are fills and series, never ink. Text on a solid accent uses `on-accent`.
 - Square corners everywhere (`radius-none`); only true handles are round. No `box-shadow`. No decorative left border. Group with a 1px border, a fill change or space.
-- Four families: `title` (Space Grotesk) for titles and headings, `body` (PP Neue Montreal) for prose and UI, `code` (Berkeley Mono) for code, dates, units, keys and readouts, `math` (KaTeX_Main) for LaTeX. Chrome uses `ui` (14px) and `meta` (12px); nothing a reader needs goes below `meta`.
+- Four families: `title` (Space Grotesk) for titles and headings, `body` (PP Neue Montreal) for prose and UI, `code` (Berkeley Mono) for code, dates, units, keys and readouts, `math` (KaTeX_Main) for LaTeX. Chrome uses `ui` (14px) and `meta` (12px), a ceiling and a floor: ticks, axis titles and toolbar labels are `meta`; chart legends, readout rows and data tables under a plot, and the PDF instrument labels, are the one named step below at `0.75rem` (10.5px); no chrome goes above `ui`. Text inside a scaled svg is a px size times the svg's user units per rendered px (`quartz/components/scripts/figure-scale.ts`), so it reads 12px inline, in Zoomable and on a phone; measure it, never eyeball it.
+- Compact tools (`references/compact.md`). A readout or small table is a hairline grid at `meta` with mono tabular values, and a column that changes reserves the widest value the data can produce (computed from the data, in `ch`, `nowrap`), so nothing shifts when `4` becomes `10`. Controls that act on one value join into an instrument: one 1px `darkgray` frame, `line` hairlines between cells, 1.5rem high, mono lowercase `meta`, fields sized to their widest value (`references/components/Instrument.md`). Loose boxes with `lightgray` borders are the old look.
 - Numbers: inside an argument, inline LaTeX (`28\,\mathrm{mm}`, `500{,}000`); in a tool, table or readout, `meta-mono` with `tabular-nums` (`28 mm`). Keep units, dates and sources. Show missing data as `–`. Label estimates as estimates.
 - Copy is first person, lowercase, literal. Controls are named by what they do ("list", "copy"). No emoji, no exclamation marks.
 - Two registers. Prose pages invert links on hover (`link-hover-bg` / `link-hover-ink`). Tool surfaces (Arena, triathlon, courses, stream, `/read`, Base views, tag and folder pages, Curius) use mono lowercase controls, the `line` / `surface` / `selected` recipe and scope their own hover (underline or `surface` fill).
@@ -26,21 +27,22 @@ The repo is the source of truth. When this skill and the code disagree, the code
 
 ## Read only what the task needs
 
-| Task                                                                      | Read                                                                     |
-| ------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| Anything new, or unsure                                                   | `references/brand-book.md` (the full brand book)                         |
-| A colour, size, space, radius or z-index value                            | `references/tokens.md`                                                   |
-| Page width, grid tracks, page mode                                        | `references/layout.md`                                                   |
-| A tool surface (Base views, stream, `/read`, tag or folder lists, Curius) | `references/tool-surfaces.md`                                            |
-| Arena                                                                     | `references/arena.md`                                                    |
-| Triathlon analytics, calendar, charts                                     | `references/triathlon.md`                                                |
-| Courses and flashcards                                                    | `references/courses.md`                                                  |
-| Home page widgets, trail, press kit                                       | `references/home.md`                                                     |
-| Math, numbers in prose, chart labels, TikZ                                | `references/math.md`                                                     |
-| Focus rings, `outline: none`, focus on tabs or charts                     | `references/focus.md`                                                    |
-| Brand art, mascot, social images                                          | `references/imagery.md`                                                  |
-| A specific component                                                      | `references/components/index.md`, then `references/components/<Name>.md` |
-| Calling a surface done                                                    | `references/review.md`                                                   |
+| Task                                                                                                         | Read                                                                     |
+| ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| Anything new, or unsure                                                                                      | `references/brand-book.md` (the full brand book)                         |
+| A colour, size, space, radius or z-index value                                                               | `references/tokens.md`                                                   |
+| Page width, grid tracks, page mode                                                                           | `references/layout.md`                                                   |
+| A tool surface (Base views, stream, `/read`, tag or folder lists, Curius)                                    | `references/tool-surfaces.md`                                            |
+| Arena                                                                                                        | `references/arena.md`                                                    |
+| Triathlon analytics, calendar, charts                                                                        | `references/triathlon.md`                                                |
+| Courses and flashcards                                                                                       | `references/courses.md`                                                  |
+| Home page widgets, trail, press kit                                                                          | `references/home.md`                                                     |
+| Math, numbers in prose, chart labels, TikZ                                                                   | `references/math.md`                                                     |
+| Text sizes, figure text on a phone or in Zoomable, small tables, readouts, joined controls, a Base-like page | `references/compact.md`, then `references/components/Instrument.md`      |
+| Focus rings, `outline: none`, focus on tabs or charts                                                        | `references/focus.md`                                                    |
+| Brand art, mascot, social images                                                                             | `references/imagery.md`                                                  |
+| A specific component                                                                                         | `references/components/index.md`, then `references/components/<Name>.md` |
+| Calling a surface done                                                                                       | `references/review.md`                                                   |
 
 A component README states what the component is, its tokens, its states and the source files in the repo. The Controls (Dropdown, Select, DatePicker, Calendar) wrap `quartz/components/controls/`; reuse those builders, do not write a new select or calendar. A CodeMirror completion list takes `completionTheme` from `quartz/util/codemirror-completion-theme.ts` (see Completion); tint it with `--control-accent`, never restyle it from page CSS. Quartz component READMEs describe what the site renders today; read the named source before changing it.
 
@@ -51,6 +53,7 @@ A component README states what the component is, its tokens, its states and the 
 - Surface prefixes: `--arena-*`, `--course-*`, `--pdf-*`, `--calendar-*`, `--tri-*`, `--exec-*`, `--race-*` in each surface's SCSS under `quartz/components/styles/`.
 - `surface`, `selected`, `line` and `fig-frame` are written with `color-mix()` in code; `references/tokens.md` gives each source mix next to the resolved hex. Reuse the existing variable for the surface you are in; do not paste the hex.
 - Figures: `quartz/components/styles/figure.scss` mixins and the `interactive-diagrams` skill.
+- Text sizes: `--text-ui` (1rem, 14px at the 14px root) and `--text-meta` (`6rem / 7`, 12px) in `quartz/styles/main.scss`. The svg scale factor: `observeSvgScale` in `quartz/components/scripts/figure-scale.ts` (`data-fig-scale` for figures without a script). Instrument mixins: `quartz/styles/pdf-instrument.scss`. A data-derived reserved column: `READOUT_VALUE_CH` in `quartz/components/mdx/CrosscoderMasks.tsx`.
 
 ## Contrast corrections
 
@@ -67,7 +70,7 @@ Text reaches 4.5:1 in every theme; text at 24px or more, borders, focus rings an
 
 ## Checking the work
 
-Run `references/review.md` on the rendered page, in both themes, at 320px and at desktop width. Follow the repo's AGENTS.md for how to get a rendered page (the running `quartz/scripts/dev.ts` watcher) and where to save evidence (`docs/verification/<task>/artifacts/`).
+Run `references/review.md` on the rendered page, in both themes, at 320px and at desktop width, and the five checks at the end of `references/compact.md` for anything with a figure, a changing number or a joined control. Follow the repo's AGENTS.md for how to get a rendered page (the running `quartz/scripts/dev.ts` watcher) and where to save evidence (`docs/verification/<task>/artifacts/`).
 
 ## Keeping this copy in sync
 

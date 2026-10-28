@@ -22,22 +22,25 @@ The PDF reader uses a quieter 90% mix (`pdf-surface`, `pdf-selected`). Tag and f
 
 ## Density
 
-| Page                     | Control height                          | Type for controls              | Frame                                    |
-| ------------------------ | --------------------------------------- | ------------------------------ | ---------------------------------------- |
-| Tag and folder lists     | rows padded `0.4rem 0.75rem`            | `ui`                           | `1px dark`                               |
-| Base views               | `control-base` 2.125rem                 | `ui`, 500                      | `lightgray` on buttons, `line` on tables |
-| Arena index and channel  | `control-collection` 1.75rem            | `arena-control` (mono 0.66rem) | `arena-line`                             |
-| Arena reader, PDF reader | `control-reader` / `control-pdf` 1.5rem | mono 0.66rem                   | `arena-line` / `pdf-line`                |
-| Course pages             | `--course-control-height` 1.75rem       | mono `meta`                    | `course-line`                            |
-| Triathlon calendar       | `control-calendar` 2rem                 | mono `meta`                    | `calendar-line`                          |
-| Triathlon panels         | about 1.55rem                           | `tri-tab` (mono 0.62rem)       | `line`                                   |
+| Page                                       | Control height                    | Type for controls              | Frame                                                                                                                             |
+| ------------------------------------------ | --------------------------------- | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
+| Tag and folder lists                       | rows padded `0.4rem 0.75rem`      | `ui`                           | `1px dark`                                                                                                                        |
+| Base views                                 | `control-base` 2.125rem           | `ui`, 500                      | `lightgray` on buttons, `line` on tables                                                                                          |
+| Arena index and channel                    | `control-collection` 1.75rem      | `arena-control` (mono 0.66rem) | `arena-line`                                                                                                                      |
+| Arena reader                               | `control-reader` 1.5rem           | mono 0.66rem                   | `arena-line`                                                                                                                      |
+| PDF reader (`/read`) and inline PDF embeds | `control-pdf` 1.5rem              | mono `meta`                    | instruments: `darkgray` frame, `line` between cells (the reader's margin, region, `?` and marks buttons still use 0.66rem frames) |
+| Course pages                               | `--course-control-height` 1.75rem | mono `meta`                    | `course-line`                                                                                                                     |
+| Triathlon calendar                         | `control-calendar` 2rem           | mono `meta`                    | `calendar-line`                                                                                                                   |
+| Triathlon panels                           | about 1.55rem                     | `tri-tab` (mono 0.62rem)       | `line`                                                                                                                            |
 
 Under `pointer: coarse` every control rises to `control-touch` (44px).
 
 ## Rules
 
 - Start a new tool surface from the shared recipe. Use the system names (`line`, `surface`, `selected`) and add a local alias only when the page needs its own value.
-- Controls are mono and lowercase. Labels at 0.62 to 0.66rem are existing dense exceptions; new labels start at `meta`.
+- Controls are mono and lowercase. Labels at 0.62 to 0.66rem are existing dense exceptions; new labels start at `meta` and stop at `ui`.
+- Controls that act on one value join into an instrument (Instrument, Compact tools): one `darkgray` frame, `line` hairlines between cells, fields that reserve their widest value. Loose boxes with `lightgray` borders beside a `gray` field border are the old look and are debt.
+- Small tables and readouts are hairline grids at `meta` with mono tabular values; a changing column reserves the widest value the data can produce (Compact tools).
 - Focus is the `focus` ring, inset (`-2px`) inside frames. Triathlon panels may use `tri-be-focus`. Sage rings in the current code are debt. The Focus section lists the allowed replacements for a removed outline.
 - `gray` labels in the current code (stream title actions, the Arena count, best-efforts captions, triathlon block titles) are debt. Use `darkgray`.
 - A full-viewport tool (`/read`, the Arena reader) owns `100dvh`, hides the page footer and lets each pane scroll on its own.

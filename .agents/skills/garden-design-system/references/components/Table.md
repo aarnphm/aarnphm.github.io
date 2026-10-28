@@ -13,3 +13,4 @@ A copy of the server-rendered markup from `/stream/on/2026/08/22` (selector `.ta
 - Focus: the ring on the scroll container sits inside at `-2px`, because an outside ring would be clipped (see `focus.md`, Ring placement).
 - The container scrolls sideways when the table is wider than the column.
 - Write absolute values as `\lvert x \rvert`; a literal `|` splits the cell.
+- A data table inside a tool or figure is compact: header and cells at `meta`, numbers in `code` with `tabular-nums` and right-aligned, 1px `line` between cells, no fill except `selected` on a matched row. A column whose value changes reserves its widest value with `nowrap`; the global `td { min-width: 75px }` is overridden inside such a table so it fits a phone (Compact tools).
