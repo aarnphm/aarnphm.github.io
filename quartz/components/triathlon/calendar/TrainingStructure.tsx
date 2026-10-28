@@ -272,7 +272,7 @@ const StructureChart = ({
 const structured = (workout: TrainingPeaksCalendarWorkout): StructuredWorkout | null =>
   workout.structure ? { ...workout, structure: workout.structure } : null
 
-// TrainingPeaks keeps no structure for swims, so the coach's set list is read from the description.
+// A swim without a provider structure can still carry a set list in the coach's description.
 const swimStructure = (workout: TrainingPeaksCalendarWorkout): SwimStructure | null =>
   !workout.structure && workout.sport === 'swim' ? parseSwimDescription(workout.description) : null
 
@@ -438,6 +438,10 @@ const SwimStructureView = ({
   return (
     <section class="tri-training-structure">
       <h4 class="tri-training-structure-title">{text('structure')}</h4>
+      <p class="tri-training-structure-source">
+        {totalText} {text('from workout text')}
+        {plannedText && ` · ${plannedText} ${text('planned')}`}
+      </p>
       {chartable(swim) && (
         <StructureChart
           blocks={swimBars(swim, formatter)}
@@ -512,9 +516,6 @@ const SwimStructureView = ({
           ),
         )}
       </table>
-      <p class="tri-training-structure-source">
-        {plannedText ? `${totalText} · ${plannedText} ${text('planned')}` : totalText}
-      </p>
     </section>
   )
 }
