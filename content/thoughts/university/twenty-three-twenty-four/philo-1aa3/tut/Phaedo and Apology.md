@@ -11,51 +11,37 @@ title: Phaedo and Apology
 
 ## Structure
 
-Problem --> Thesis --> Structure
+Problem → Thesis → Structure
 
 ## Apology
 
-- Outsider
-  - Speaking in a language that is not the court
+Socrates calls himself a stranger to courtroom speech because this is his first trial. He asks to use his usual conversational manner (_Apology_ 17c–18a).
 
-=> Knowing what good is enough for being good -> connect between wisdom and good action
-=> To find the truth of what is good
+Two layers of accusation:
 
-> Athenians are harming themselves since Socrates is the only one who concerns the truth and what truly good is.
+- **Older reputation:** investigating the heavens and the earth, making the weaker argument stronger, and teaching others to do this (18b–19d). Socrates separates himself from this comic portrait and denies charging for instruction.
+- **Current indictment:** corrupting the young, failing to recognise the city's gods, and introducing new divine beings (24b–c).
 
-- "Ancient" / Recent accusation
-  - Bad association with pre/post
-  - Ancient:
-    - Physicist -> enquire things in heaven and under the earth
-    - Sophist: Use arguments that leads people away from the truth
-      - Doesn't care about physics
-      - "human/political virtue" --> People aren't as wise as they were
+Against intentional corruption, he argues that corrupting his associates would expose him to harm from them. If he corrupts them unintentionally, Meletus should instruct him privately (25c–26a). The argument relies on the premise that nobody knowingly wants to be harmed. It leaves room for unintentional corruption, and Socrates says such a case calls for instruction rather than prosecution.
 
-- Corrupts the youth
-  - Hates democracy
-  - not believe to the gods of the state
-    => can't corrupt the youth: "No one does bad willingly. Corrupt person is more likely to harm people."
-    => If you know that you are harming people -> you should come to me
+Socrates presents his questioning as a service to Athens: it presses people to examine how they live (30d–31a).
 
 > The unexamined life is not worth living
 
-- Won't act as what is good and knowledge -> living a life of ignorance -> not a worth living life.
+_Apology_ 38a. He gives this as his reason for refusing a life in which he must stop examining himself and others.
 
 ## Phaedo
 
-- Pain and pleasure
-- How suicide is wrong, facing death = good ?
-- Philosophers desire death?
-- What if the soul is not immortal?
-  - Single vs composite
+- **Pain and pleasure:** relief from the fetter prompts the opening observation about their succession (60b–c).
+- **Why reject suicide while accepting death?** Socrates treats humans as under divine care, so they must await release. Philosophical preparation for death means loosening the soul's dependence on bodily distractions (61c–67e).
+- **What if the soul is not immortal?** The affinity argument compares the soul with stable, invisible realities and the body with composite, changeable things (78b–80b). This resemblance is Socrates's reason for expecting the soul to resist dissolution.
 
-> All knowing is remembering <-- posteriori
+Recollection (72e–77a):
 
-pp 62,63:
+1. Perceiving apparently equal sticks or stones leads us to think of the Equal itself.
+2. We judge the perceived things against that standard and find them deficient.
+3. Socrates argues that this judgment requires prior knowledge of the standard, acquired before sensory experience and therefore before birth.
 
-- We know absolute equality
-- Material equalities fall short of absolute equality
+Experience prompts recollection; it does not supply the prior knowledge the argument requires. Its conclusion about existence before birth still leaves survival after death to be established (77b–c).
 
-> To see inequality -> need to have knowledge of what absolute equality is, from experience
-
-For Socrates -> ideas are not fluid
+Source: Plato, [_Apology_](https://chs.harvard.edu/primary-source/plato-the-apology-of-socrates-sb/) and [_Phaedo_](https://chs.harvard.edu/primary-source/plato-phaedo-sb/), at the passages above.

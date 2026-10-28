@@ -29,8 +29,13 @@ See [[posts/Questions about Apology|Questions about Apology]]
 
 ### Symposium pp. 105-106
 
-1. Beauty of one thing
-2. Beauty in every body is the same
-3. Beauty in mind/soul
-4. Beauty in the institution/law/science
-5. Absolute beauty
+Diotima's ascent, as Socrates reports it in the [_Symposium_, 210a–211d](https://classics.mit.edu/Plato/symposium.html):
+
+1. Love of one beautiful body.
+2. Recognition that the beauty in different bodies is related, leading to love of bodily beauty generally.
+3. Greater concern for beauty of soul, expressed in care and conversation that help someone become better.
+4. Beauty in practices and laws.
+5. Beauty in branches of knowledge, widening inquiry beyond one person or practice.
+6. Beauty itself, which Diotima describes as unchanging and independent of particular beautiful things.
+
+The ascent changes what the lover understands and pursues. Its final object is the Form of Beauty.
