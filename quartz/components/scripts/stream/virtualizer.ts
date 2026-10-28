@@ -81,8 +81,6 @@ const createSpacer = (slot: StreamVirtualSlot, height: number): HTMLLIElement =>
   spacer.style.blockSize = `${height}px`
   spacer.setAttribute('aria-hidden', 'true')
   copySlotState(slot.node, spacer)
-  const streamLink = slot.node.querySelector<HTMLElement>('[data-stream-link][data-stream-href]')
-  if (streamLink?.dataset.streamHref) spacer.dataset.streamHref = streamLink.dataset.streamHref
   spacer.dataset.entryId = slot.source.entryId
   spacer.dataset.streamVirtual = 'spacer'
   return spacer

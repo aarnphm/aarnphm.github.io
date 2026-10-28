@@ -378,15 +378,15 @@ export default (() => {
         ) : streamView.kind === 'index' ? (
           renderIndex(years)
         ) : streamView.kind === 'year' ? (
-          matchingYear ? (
-            renderMonthGroups(matchingYear.months)
-          ) : (
-            <p class="stream-legend-count">0 entries</p>
-          )
-        ) : matchingMonth ? (
-          renderLegendEntries(matchingMonth.entries)
+          <section class="stream-legend" aria-label="stream entries by month">
+            <p class="stream-legend-count">{plural(matchingYear?.entries.length ?? 0, 'entry')}</p>
+            {matchingYear && renderMonthGroups(matchingYear.months)}
+          </section>
         ) : (
-          <p class="stream-legend-count">0 entries</p>
+          <section class="stream-legend" aria-label="stream entries in month">
+            <p class="stream-legend-count">{plural(matchingMonth?.entries.length ?? 0, 'entry')}</p>
+            {matchingMonth && renderLegendEntries(matchingMonth.entries)}
+          </section>
         )}
         {isDailyView && (
           <div class="stream-backlink">
