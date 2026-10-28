@@ -644,6 +644,7 @@
 }
 
 .pdf-embed-loading {
+  display: none;
   flex-basis: 100%;
   text-align: right;
   margin-left: auto;
@@ -651,8 +652,7 @@
   color: var(--darkgray);
   font: var(--text-meta)/1.4 var(--bodyFont);
   white-space: nowrap;
-  visibility: hidden;
 }
 .pdf-embed[data-pdf-status='loading'] .pdf-embed-loading {
-  visibility: visible;
+  display: block;
 }

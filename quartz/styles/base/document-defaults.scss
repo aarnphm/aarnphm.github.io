@@ -307,44 +307,6 @@ thead {
   }
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  &[id] {
-    // The icon is a fixed 16px svg on the baseline; size it to the heading and centre it on the
-    // lowercase letters.
-    a[data-role='anchor'] {
-      display: inline-flex;
-      vertical-align: middle;
-      opacity: 0;
-      transition: opacity 0.2s ease;
-      font-family: var(--codeFont);
-      user-select: none;
-
-      svg {
-        width: 0.7em;
-        height: 0.7em;
-      }
-    }
-  }
-
-  &[id]:hover {
-    a[data-role='anchor'] {
-      opacity: 1;
-      color: var(--foam);
-    }
-  }
-
-  &:not([id]) {
-    a[data-role='anchor'] {
-      display: none;
-    }
-  }
-}
-
 // typography improvements
 // https://type-scale.spencermortensen.com/
 h1 {
