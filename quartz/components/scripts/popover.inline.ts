@@ -66,8 +66,9 @@ function setupStackedPopoverLinks() {
   )
 
   stacked.addEventListener(
-    'mouseover',
+    'pointerover',
     event => {
+      if (event.pointerType !== 'mouse') return
       const link = closestStackedPopoverLink(event.target, stacked)
       if (!link || containsRelatedTarget(link, event.relatedTarget)) return
       if (popoverState.anchor === link && stackedPopoverForTarget(event.relatedTarget)) return
@@ -77,8 +78,9 @@ function setupStackedPopoverLinks() {
   )
 
   stacked.addEventListener(
-    'mouseout',
+    'pointerout',
     event => {
+      if (event.pointerType !== 'mouse') return
       const link = closestStackedPopoverLink(event.target, stacked)
       if (!link || containsRelatedTarget(link, event.relatedTarget)) return
       mouseLeaveHandler.call(link, event)
@@ -291,8 +293,9 @@ function setupPopoverDelegation(): void {
     { signal },
   )
   document.addEventListener(
-    'mouseover',
+    'pointerover',
     event => {
+      if (event.pointerType !== 'mouse') return
       const link = closestPopoverLink(event.target)
       if (!link || containsRelatedTarget(link, event.relatedTarget)) return
       void mouseEnterHandler.call(link, event)
@@ -300,8 +303,9 @@ function setupPopoverDelegation(): void {
     { signal },
   )
   document.addEventListener(
-    'mouseout',
+    'pointerout',
     event => {
+      if (event.pointerType !== 'mouse') return
       const link = closestPopoverLink(event.target)
       if (!link || containsRelatedTarget(link, event.relatedTarget)) return
       mouseLeaveHandler.call(link, event)
