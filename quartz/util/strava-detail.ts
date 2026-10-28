@@ -242,7 +242,7 @@ export function serializeStravaMapPayload(
       maxWatts: detail.maxWatts,
       deviceWatts: detail.deviceWatts,
       avgCadence:
-        detail.sport === 'walk' && detail.garmin?.avgCadence != null
+        (detail.sport === 'walk' || detail.sport === 'hike') && detail.garmin?.avgCadence != null
           ? detail.garmin.avgCadence / 2
           : detail.avgCadence,
       calories: detail.calories,

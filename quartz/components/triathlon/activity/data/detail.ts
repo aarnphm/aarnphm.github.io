@@ -185,7 +185,7 @@ export const isActivityDetail = (value: unknown): value is StravaActivityDetail 
     ((value.swimPhysiology != null || value.swimPower != null) && value.sport !== 'swim') ||
     !isHeartRatePhysiology(value.heartRatePhysiology, value.elapsedTimeS) ||
     !isWalkPower(value.walkPower, value.elapsedTimeS, value.date) ||
-    (value.walkPower != null && value.sport !== 'walk') ||
+    (value.walkPower != null && value.sport !== 'walk' && value.sport !== 'hike') ||
     value.elapsedTimeS < 0 ||
     value.elapsedTimeS > Number.MAX_SAFE_INTEGER ||
     !isCyclingTorqueTrace(value.cyclingTorque, value.elapsedTimeS) ||

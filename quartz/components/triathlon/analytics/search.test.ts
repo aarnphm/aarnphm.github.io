@@ -15,6 +15,7 @@ const activities: Pick<
   { id: 4, sport: 'run', name: 'Easy', date: '2026-09-05' },
   { id: 5, sport: 'bike', name: 'Morning', date: '2026-09-06' },
   { id: 6, sport: 'swim', name: 'Pool', date: '2026-09-06', virtual: true },
+  { id: 8, sport: 'hike', name: 'Trail', date: '2026-09-06' },
   { id: 7, sport: 'walk', name: 'Treadmill walk', date: '2026-09-06', treadmill: true },
 ]
 
@@ -66,4 +67,9 @@ test('partial commands normalize into the tokens used for suggestions and insert
   assert.deepEqual(activityQueryTokens('filter:run filter: tread'), ['filter:run', 'filter:tread'])
   assert.deepEqual(activityQueryTokens('filter: '), ['filter:'])
   assert.deepEqual(activityQueryTokens('  '), [])
+})
+
+test('hike filters keep hikes separate from walks', () => {
+  assert.deepEqual(matchingIds('filter:hike'), [8])
+  assert.deepEqual(matchingIds('filter:walk'), [7])
 })

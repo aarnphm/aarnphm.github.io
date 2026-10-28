@@ -138,11 +138,13 @@ test('maps official Wahoo workout types to triathlon sports', () => {
   assert.equal(normalizeWahooSport(67), 'run')
   assert.equal(normalizeWahooSport(25), 'swim')
   assert.equal(normalizeWahooSport(255, 'cycling'), 'bike')
-  for (const id of [6, 7, 8, 9, 10, 56]) assert.equal(normalizeWahooSport(id), 'walk')
+  for (const id of [6, 7, 8, 56]) assert.equal(normalizeWahooSport(id), 'walk')
+  for (const id of [9, 10]) assert.equal(normalizeWahooSport(id), 'hike')
   for (const id of [2, 18, 42, 43]) assert.equal(normalizeWahooSport(id), 'strength')
   assert.equal(normalizeWahooSport(66), 'yoga')
   assert.equal(normalizeWahooSport(255, 'training'), 'strength')
   assert.equal(normalizeWahooSport(255, 'walking'), 'walk')
+  assert.equal(normalizeWahooSport(255, 'hiking'), 'hike')
   assert.equal(normalizeWahooSport(255, 'yoga'), 'yoga')
   assert.equal(normalizeWahooSport(255, 'unrecognized'), null)
 })
@@ -256,6 +258,28 @@ test('parses non-triathlon kinds and recovers known kinds from existing uncatego
     assert.equal(parsed.activities[target.id].sport, kind)
     assert.deepEqual(parseWahooCache(parsed), parsed)
   }
+})
+
+test('corrects legacy Wahoo hike caches on read without overriding other saved sports', () => {
+  for (const workoutTypeId of [9, 10]) {
+    const data = cache()
+    const target = data.activities['wahoo:55']
+    target.workoutTypeId = workoutTypeId
+    target.sport = 'walk'
+    const parsed = parseWahooCache(data)
+    assert.equal(parsed.activities[target.id].sport, 'hike')
+    assert.equal(target.sport, 'walk')
+  }
+
+  const walk = cache()
+  walk.activities['wahoo:55'].workoutTypeId = 6
+  walk.activities['wahoo:55'].sport = 'walk'
+  assert.equal(parseWahooCache(walk).activities['wahoo:55'].sport, 'walk')
+
+  const otherSport = cache()
+  otherSport.activities['wahoo:55'].workoutTypeId = 9
+  otherSport.activities['wahoo:55'].sport = 'run'
+  assert.equal(parseWahooCache(otherSport).activities['wahoo:55'].sport, 'run')
 })
 
 test('stationary title matches require duration and reject other sports or recorded distance', () => {

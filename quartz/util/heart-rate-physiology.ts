@@ -31,7 +31,7 @@ export function applyHeartRatePhysiology(
 ): void {
   if (maxHeartRateBpm == null) return
   const samples =
-    detail.sport === 'walk' && detail.heartRateTrace.length >= 2
+    (detail.sport === 'walk' || detail.sport === 'hike') && detail.heartRateTrace.length >= 2
       ? detail.heartRateTrace
       : detail.route.length >= 2
         ? detail.route.map(point => ({

@@ -22,7 +22,7 @@ export const buildWalkPowerTrace = <N>(
   graphDomain?: ActivityGraphDomain | null,
 ): N | null => {
   const estimate = d.walkPower
-  if (d.sport !== 'walk' || d.deviceWatts || !estimate) return null
+  if ((d.sport !== 'walk' && d.sport !== 'hike') || d.deviceWatts || !estimate) return null
   const points = activityWalkPowerPoints(d)
   const source = f.el('span', 'tri-elev-range', triText(f.presentation.locale, 'calculated'), {
     'data-gloss': '',

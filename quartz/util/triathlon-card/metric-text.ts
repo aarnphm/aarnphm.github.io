@@ -124,13 +124,14 @@ export const formatMl = (value: number): string => {
 }
 
 export const activityCadenceScale = (sport: ActivityKind): number =>
-  sport === 'run' || sport === 'walk' ? 2 : 1
+  sport === 'run' || sport === 'walk' || sport === 'hike' ? 2 : 1
 
 export const activityCadenceUnit = (sport: ActivityKind): 'rpm' | 'spm' =>
   sport === 'bike' ? 'rpm' : 'spm'
 
 export const activityAverageCadence = (d: StravaActivityDetail): number | null => {
-  if (d.sport === 'walk' && d.garmin?.avgCadence != null) return d.garmin.avgCadence
+  if ((d.sport === 'walk' || d.sport === 'hike') && d.garmin?.avgCadence != null)
+    return d.garmin.avgCadence
   return d.avgCadence == null ? null : d.avgCadence * activityCadenceScale(d.sport)
 }
 

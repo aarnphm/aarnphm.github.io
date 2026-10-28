@@ -29,7 +29,7 @@ const ActivitySearchInput = ({ kind }: { kind: 'map' | 'compare' }) => (
   <input
     class={`tri-ana-search tri-${kind}-search`}
     type="search"
-    placeholder="search (filter:bike|run|swim|walk, sort:distance|pace|cadence)"
+    placeholder="search (filter:bike|run|swim|walk|hike, sort:distance|pace|cadence)"
     aria-label={kind === 'map' ? 'search routes' : 'search comparison activities'}
     aria-controls={kind === 'compare' ? 'tri-analytics-results' : undefined}
     autocomplete="off"

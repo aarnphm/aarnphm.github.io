@@ -186,7 +186,7 @@ export function activityDevice(
   activity: RawStravaActivity,
   garminMatch: GarminActivityMatch | null,
 ): ActivityDevice | null {
-  if (sport !== 'run' && sport !== 'walk' && sport !== 'swim') return null
+  if (sport !== 'run' && sport !== 'walk' && sport !== 'hike' && sport !== 'swim') return null
   return (
     normalizeActivityDevice(activity.deviceName) ??
     normalizeActivityDevice(garminMatch?.activity.sourceDevice)

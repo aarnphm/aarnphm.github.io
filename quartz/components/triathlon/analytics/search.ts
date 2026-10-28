@@ -43,13 +43,13 @@ export const ACTIVITY_FILTER_SPORTS: readonly ActivityKind[] = [
   'run',
   'swim',
   'walk',
+  'hike',
   'strength',
   'yoga',
   'sauna',
 ]
 
 export const ACTIVITY_FILTER_ALIASES: Readonly<Record<string, ActivityKind>> = {
-  hike: 'walk',
   weight: 'strength',
   gym: 'strength',
   pilates: 'yoga',

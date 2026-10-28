@@ -62,7 +62,7 @@ export const moreStatRows = (
   else if (d.avgWatts != null)
     rows.push([d.deviceWatts ? 'avg power' : 'est power', `${d.avgWatts} W`])
   else if (showRunPower) rows.push(['avg power', '—'])
-  if (d.sport === 'walk' && !d.deviceWatts && d.walkPower)
+  if ((d.sport === 'walk' || d.sport === 'hike') && !d.deviceWatts && d.walkPower)
     rows.push(['walking power', `${Math.round(d.walkPower.averageWatts)} W · estimated`])
   if (d.deviceWatts && d.maxWatts != null) rows.push(['max power', `${d.maxWatts} W`])
   else if (showRunPower) rows.push(['max power', '—'])
@@ -101,7 +101,10 @@ export const moreStatRows = (
     d.computerOverride ??
     (d.computer ? (d.wahoo?.sourceDevice ?? COMPUTER_LABEL[d.computer]) : null)
   if (computer) rows.push(['computer', computer])
-  if (d.device && (d.sport === 'run' || d.sport === 'walk' || d.sport === 'swim'))
+  if (
+    d.device &&
+    (d.sport === 'run' || d.sport === 'walk' || d.sport === 'hike' || d.sport === 'swim')
+  )
     rows.push(['device', DEVICE_LABEL[d.device]])
   if (d.sources?.length || d.garmin || d.wahoo)
     rows.push([

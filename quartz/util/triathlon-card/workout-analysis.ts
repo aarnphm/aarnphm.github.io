@@ -27,6 +27,7 @@ export const buildWorkoutAnalysisSection = <N>(
     swim: 'Swim',
     run: 'Run',
     walk: 'Walk',
+    hike: 'Hike',
     strength: 'Strength',
     yoga: 'Recovery',
     treatment: 'Physiotherapy',

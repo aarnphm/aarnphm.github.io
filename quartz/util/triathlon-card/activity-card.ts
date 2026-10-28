@@ -280,7 +280,7 @@ export const buildActivity = <N>(
             : null,
         ),
       )
-    if (d.sport === 'walk') {
+    if (d.sport === 'walk' || d.sport === 'hike') {
       const walkPower = buildWalkPowerTrace(f, d, analysisSelection)
       if (walkPower) activityGraphs.push(walkPower)
       const pace = buildPaceTrace(f, d, analysisSelection)
