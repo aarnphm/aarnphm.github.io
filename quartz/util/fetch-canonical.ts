@@ -166,6 +166,8 @@ export async function fetchCanonical(url: URL, init?: RequestInit): Promise<Resp
     const onAbort = () => {
       shared!.subscribers.delete(token)
       if (shared!.subscribers.size === 0) {
+        // The next navigation can subscribe before fetch's rejection settles.
+        if (inFlight.get(key) === shared) inFlight.delete(key)
         shared!.controller.abort()
       }
       reject(createAbortError())
