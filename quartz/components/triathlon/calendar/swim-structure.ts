@@ -68,7 +68,7 @@ const NESTED = /^(\d+)\s*[x×]\s*\((.+)\)$/i
 // "2(2 x 50) superman" repeats the bracketed set; the text after it describes the reps.
 const NESTED_BARE = /^(\d+)\s*\((\d+\s*[x×]\s*[^()]+)\)\s*(.*)$/i
 const ALTERNATION = new RegExp(
-  String.raw`^(\d+)\s+([a-z]+)(?:\s*\((\d+)\s*${TIME_UNIT}\))?\s*,\s*(\d+)\s+([a-z]+)(?:\s*\((\d+)\s*${TIME_UNIT}\))?\s*,?\s*repeat\.?$`,
+  String.raw`^(?:as\s+)?(\d+)\s*[x×]?\s*([a-z]+)(?:\s*\((\d+)\s*${TIME_UNIT}\))?\s*,\s*(\d+)\s*[x×]?\s*([a-z]+)(?:\s*\((\d+)\s*${TIME_UNIT}\))?\s*(?:,?\s*repeat)?\.?$`,
   'i',
 )
 const REST_TEXT: [RegExp, boolean][] = [
@@ -225,12 +225,13 @@ const parseStep = (line: string): SwimStep | null => {
   return { label: repLabel(ladder ?? reps, amountLabel(amount, unit)), reps, parts, rest, notes }
 }
 
-// "20 x 50m as" followed by "1 HARD (5sec), 1 EASY (20sec), repeat" alternates the reps.
+// Counted efforts may follow the distance inline or on the next line. Keep the rep distance
+// and send-off while expanding whole cycles; incomplete counts retain the original instruction.
 const alternate = (block: SwimBlock | undefined, line: string): SwimBlock | null => {
   const match = ALTERNATION.exec(line)
   if (!match || block?.kind !== 'set' || block.repeat !== 1 || block.steps.length !== 1) return null
   const [step] = block.steps
-  if (step.parts.length !== 1 || step.parts[0].effort !== null) return null
+  if (step.parts.length !== 1) return null
   const [
     ,
     firstCount,
@@ -244,7 +245,8 @@ const alternate = (block: SwimBlock | undefined, line: string): SwimBlock | null
   ] = match
   const counts = [Number(firstCount), Number(secondCount)]
   const cycle = counts[0] + counts[1]
-  if (!(cycle > 0) || step.reps % cycle !== 0) return null
+  if (counts.some(count => count <= 0) || step.reps % cycle !== 0) return null
+  if (!effortOf(firstText) || !effortOf(secondText)) return null
   const [part] = step.parts
   const leg = (
     count: number,
@@ -255,8 +257,8 @@ const alternate = (block: SwimBlock | undefined, line: string): SwimBlock | null
     label: repLabel(count, step.label.replace(/^.*×\s*/, '')),
     reps: count,
     parts: [{ ...part, effort: effortOf(text) }],
-    rest: rest ? { min: seconds(Number(rest), unit), max: null, interval: false } : null,
-    notes: [text.toLowerCase()],
+    rest: rest ? { min: seconds(Number(rest), unit), max: null, interval: false } : step.rest,
+    notes: [text.toLowerCase(), ...step.notes.filter(note => note !== line)],
   })
   return {
     kind: 'set',
@@ -312,7 +314,8 @@ export function parseSwimDescription(description: string): SwimStructure | null 
     }
     const step = parseStep(line)
     if (step) {
-      blocks.push({ kind: 'set', repeat: 1, steps: [step], rest: null })
+      const block: SwimBlock = { kind: 'set', repeat: 1, steps: [step], rest: null }
+      blocks.push(alternate(block, step.notes[0] ?? '') ?? block)
       continue
     }
     const alternated = alternate(previous, line)
