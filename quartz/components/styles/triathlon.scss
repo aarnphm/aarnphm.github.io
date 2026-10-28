@@ -56,8 +56,7 @@
 @use './triathlon/activity-grid';
 @use './triathlon/activity-detail-refinements';
 
-// Embeds with several activities page them in a snap track: two per view by default, one when the
-// reader asks or the card is too narrow for two, and all of them wrapped for the `all` layout.
+// Activity embeds default to one card; readers can compare two or wrap all activities.
 .tri-day-embed[data-triathlon-embedded='1'] > .tri-pop-card {
   > .tri-day-activities-title:has(+ .tri-day-pager) {
     flex: 1 1 auto;
@@ -76,14 +75,17 @@
   }
 
   > .tri-day-track {
-    --tri-day-per-page: 2;
-    --tri-day-align-sections: 1;
+    --tri-day-per-page: 1;
+    --tri-day-align-sections: 0;
+    --tri-day-activity-align: flex-start;
     --tri-day-gap: 1.6rem;
     display: flex;
     flex: 0 0 100%;
     gap: 1.2rem var(--tri-day-gap);
     min-width: 0;
+    height: var(--tri-day-track-height, auto);
     overflow-x: auto;
+    overflow-y: hidden;
     overscroll-behavior-x: contain;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
@@ -93,10 +95,17 @@
     }
 
     > .tri-act {
+      align-self: var(--tri-day-activity-align);
       flex: 0 0
         calc((100% - (var(--tri-day-per-page) - 1) * var(--tri-day-gap)) / var(--tri-day-per-page));
       min-width: 0;
       scroll-snap-align: start;
+
+      // Taller offscreen cards must not add vertical scroll range to the horizontal track.
+      &[data-tri-day-clipped] {
+        max-height: var(--tri-day-track-height, none);
+        overflow: clip;
+      }
     }
   }
 }
@@ -116,15 +125,17 @@
   border-color: var(--tri-accent);
 }
 
-.tri-day-embed[data-tri-activity-layout='one'] > .tri-pop-card > .tri-day-track {
-  --tri-day-per-page: 1;
-  --tri-day-align-sections: 0;
+.tri-day-embed[data-tri-activity-layout='two'] > .tri-pop-card > .tri-day-track {
+  --tri-day-per-page: 2;
+  --tri-day-align-sections: 1;
+  --tri-day-activity-align: stretch;
 }
 
 @container tri-day-card (max-width: 28rem) {
   .tri-day-embed[data-triathlon-embedded='1'] > .tri-pop-card > .tri-day-track {
     --tri-day-per-page: 1;
     --tri-day-align-sections: 0;
+    --tri-day-activity-align: flex-start;
   }
 
   // One activity per view is the only paged layout at this width, so the choice adds nothing.
@@ -141,6 +152,7 @@
 
 .tri-day-embed[data-tri-activity-layout='all'] > .tri-pop-card > .tri-day-track {
   --tri-day-align-sections: 1;
+  --tri-day-activity-align: stretch;
   flex-wrap: wrap;
   overflow: visible;
   scroll-snap-type: none;

@@ -28,7 +28,8 @@ export const mountDayTrack = (
   const modes = Array.from(pager.querySelectorAll<HTMLButtonElement>('.tri-day-mode'))
   const factory = createDomFactory(presentation)
   let tabs = Array.from(tablist.querySelectorAll<HTMLButtonElement>('.tri-day-page-tab'))
-  let tabsPerPage = 2
+  let tabsPerPage = 0
+  let trackPitch = 0
   let frame = 0
   // A tab click scrolls smoothly; the track passes earlier pages on the way, so the clicked page
   // stays selected until the scroll lands.
@@ -58,9 +59,29 @@ export const mountDayTrack = (
 
   const sync = (): void => {
     frame = 0
-    const { paged, perPage, index } = geometry()
+    const { pitch, paged, perPage, index } = geometry()
+    const resized = trackPitch > 0 && Math.abs(pitch - trackPitch) >= 0.5
+    trackPitch = pitch
+    if (resized) {
+      // Keep the selected activity when responsive card widths change the scroll offset.
+      pendingPage = null
+      scrollToIndex(Number(embed.dataset.triDayIndex) || 0, false)
+      return
+    }
     pager.dataset.paged = String(paged)
     embed.dataset.triDayIndex = String(index)
+    const single = perPage === 1 && embed.dataset.triActivityLayout !== 'all'
+    for (const [i, activity] of activities.entries())
+      activity.toggleAttribute('data-tri-day-clipped', single && i !== index)
+    // The selected activity has no height constraint, including after hydration or disclosure.
+    const height = single ? activities[index]?.getBoundingClientRect().height : undefined
+    if (height && height > 0) {
+      const value = `${height}px`
+      if (track.style.getPropertyValue('--tri-day-track-height') !== value)
+        track.style.setProperty('--tri-day-track-height', value)
+    } else {
+      track.style.removeProperty('--tri-day-track-height')
+    }
     if (!paged) return
     if (pendingPage !== null && pageFor(index, perPage) === pendingPage) pendingPage = null
     const page = pendingPage ?? pageFor(index, perPage)
@@ -98,6 +119,7 @@ export const mountDayTrack = (
 
   const applyLayout = (layout: TriActivityLayout): void => {
     const index = Number(embed.dataset.triDayIndex) || 0
+    pendingPage = null
     embed.dataset.triActivityLayout = layout
     for (const mode of modes)
       mode.setAttribute('aria-pressed', String(mode.dataset.layout === layout))
@@ -157,6 +179,7 @@ export const mountDayTrack = (
   window.addEventListener(TRI_ACTIVITY_LAYOUT_EVENT, onLayout)
   const resize = new ResizeObserver(schedule)
   resize.observe(track)
+  for (const activity of activities) resize.observe(activity)
   applyLayout(readTriActivityLayout())
 
   return () => {
@@ -167,5 +190,7 @@ export const mountDayTrack = (
     track.removeEventListener('scrollend', onScrollEnd)
     window.removeEventListener(TRI_ACTIVITY_LAYOUT_EVENT, onLayout)
     resize.disconnect()
+    track.style.removeProperty('--tri-day-track-height')
+    for (const activity of activities) activity.removeAttribute('data-tri-day-clipped')
   }
 }
