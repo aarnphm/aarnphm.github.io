@@ -338,7 +338,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
   const lg = options.lg.map(normalizePath)
   const sm = options.sm.map(normalizePath)
 
-  const PageList = PageListConstructor({ highlightTags: [...tags] })
+  const PageList = PageListConstructor()
   const Evergreen = EvergreenConstructor({ lg, sm, tags })
   const PermanentNotes = EvergreenPermanentNotes({ lg, sm, tags })
   const PageListSearch = PageListSearchConstructor()

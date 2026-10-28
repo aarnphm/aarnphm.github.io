@@ -165,6 +165,9 @@ body[data-slug='index'][data-trail-open='true'] {
     top: 0.5rem;
     right: calc(0.5rem + 88px);
   }
+  .homepage-trail:has(> .homepage-trail-toggle[hidden]) .trail-visitor-count {
+    right: calc(0.5rem + 44px);
+  }
 }
 // A board link that lights a trail underlines in that trail's blaze colour.
 .landing a[data-trail-blaze] {
