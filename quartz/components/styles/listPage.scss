@@ -101,7 +101,7 @@ li.section-li {
           border: 1px solid var(--gray);
           border-radius: var(--radius-none);
           @include tagLabel;
-          font-size: 12px;
+          font-size: 11px;
           overflow-wrap: anywhere;
         }
       }
@@ -113,7 +113,7 @@ li.section-li {
         font-family: var(--codeFont);
         font-variant-numeric: tabular-nums;
         white-space: nowrap;
-        font-size: 12px;
+        font-size: 11px;
         line-height: 1.4;
       }
     }

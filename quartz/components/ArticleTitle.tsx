@@ -118,9 +118,11 @@ export default ((userOpts?: Options) => {
               <a href={isStreamIndex ? '/stream' : '/stream/on'} class="internal" data-no-popover>
                 {isStreamIndex ? 'stream' : 'list'}
               </a>
-              <span class="stream-share-actions" role="group" aria-label="partager le stream">
-                <PressKitButtons citation={false} />
-              </span>
+              {slug !== 'stream' && (
+                <span class="stream-share-actions" role="group" aria-label="partager le stream">
+                  <PressKitButtons citation={false} />
+                </span>
+              )}
             </nav>
           )}
         </hgroup>

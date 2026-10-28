@@ -23,6 +23,8 @@
   margin-bottom: 0.75rem;
 }
 
+// Legend, readouts and the data table are chart furniture: 0.75rem (10.5px at the 14px root),
+// below the 12px ticks and axis titles by design.
 .dch-legend {
   display: flex;
   flex-wrap: wrap;
@@ -31,7 +33,7 @@
   padding: 0;
   list-style: none;
   color: var(--dark);
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.35;
 
   li {
@@ -293,7 +295,7 @@
 
 .dch-readout {
   @include figure-table;
-  font-size: 12px;
+  font-size: 0.75rem;
 
   &[hidden] {
     display: none;
@@ -306,7 +308,7 @@
 
 .dch-details {
   margin-top: 0.6rem;
-  font-size: 12px;
+  font-size: 0.75rem;
 
   summary {
     width: max-content;
@@ -336,7 +338,7 @@
   width: 100%;
   margin: 0;
   border-collapse: collapse;
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.35;
 
   th,
