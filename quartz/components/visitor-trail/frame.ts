@@ -1,7 +1,6 @@
 import { playhtml } from 'playhtml'
 import { trailSceneSeed } from '../../util/trail-preference'
 import { mountAlpineJourneys } from './alpine-journey'
-import { mountTrailBlazes } from './blazes'
 import { mountCampCommunity } from './camp-community'
 import { campSites } from './camp-layout'
 import { connectCampPresence } from './camp-presence'
@@ -199,7 +198,6 @@ if (host.hidden) {
   mountSceneCompositor(scene, host, signal, opening)
 }
 mountSceneLighting(scene, signal)
-mountTrailBlazes(scene, signal)
 mountLeafFall(scene, signal, motionTuning.settings)
 const jay = mountJay(scene, host, signal)
 const frog = mountFrog(scene, host, signal)
