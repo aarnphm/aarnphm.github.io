@@ -177,7 +177,19 @@ A KV cache stores the key and value representations from earlier positions at ea
 
 Mooncake organizes serving around this cache and [[thoughts/PD disaggregated serving|prefill and decode disaggregation]]. Its cache transfers and placement policies are system-level choices. [@qin2024mooncakekvcachecentricdisaggregatedarchitecture]
 
-![[thoughts/images/mooncake-pd.webp|KV-centric optimization]]
+```jsx imports={Zoomable,MooncakeFlow}
+<Zoomable label="Mooncake KVCache-centric serving">
+  <MooncakeFlow caption="Mooncake's conductor routes each request to the prefill instance with the lowest estimated TTFT, which trades a cached prefix against queued work. A block holds 512 tokens as in the paper; instance counts, queue depths and the 40 ms per block prefill cost are illustrative. Each instance's messenger moves KV over RDMA into the decode node's CPU DRAM. Pick a request, then step through the stages; sage marks reused or settled KV, salmon marks KV being computed or moved. After Qin et al. (2024)." />
+</Zoomable>
+```
+
+Prefill streams KV one layer at a time. Before layer $\ell$ runs attention, the node waits for that layer's cached prefix to arrive and starts loading layer $\ell+1$; after attention, the messenger ships layer $\ell$ to the decode node. Prefill time is then about the longer of KV loading and compute, so the network shows up only when nearly the whole prompt is cached or the link is slow.
+
+```jsx imports={Zoomable,MooncakeLayerStream}
+<Zoomable label="Mooncake layer-wise KV streaming">
+  <MooncakeLayerStream caption="One prefill of LLaMA3-70B (80 layers, 8 KV heads of dimension 128 in bf16, so 4 KiB of KV per token per layer) on an 8×A800 node. Sage bars load the cached prefix from the pool, gray bars compute a layer, salmon bars stream that layer's KV to the decode node; the bottom lane runs the same work without overlap. KV sizes are exact: 128k tokens give 40 GiB, the payload Mooncake benchmarks its Transfer Engine on. RoCE rates are those measured rates (87 and 190 GB/s); the TCP rate comes from the reported 4.6× gap. Compute assumes 50% MFU and is an estimate. Bars shorter than one unit are drawn at one unit. After Qin et al. (2024), §5.2." />
+</Zoomable>
+```
 
 ### next-token prediction.
 
