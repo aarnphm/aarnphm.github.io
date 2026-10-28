@@ -77,7 +77,7 @@ export function transformHostInternalLinks(root: Document | Element) {
   const host = window.location.hostname
   if (host !== STREAM_HOSTNAME && host !== TRIATHLON_HOSTNAME && host !== NOTES_HOSTNAME) return
 
-  const anchors = root.querySelectorAll<HTMLAnchorElement>('a.internal')
+  const anchors = root.querySelectorAll<HTMLAnchorElement>('a.internal, a[data-stream-link]')
   anchors.forEach(anchor => {
     if (host === STREAM_HOSTNAME) {
       const preferred = anchor.dataset.slug ?? anchor.getAttribute('href') ?? ''
@@ -90,7 +90,7 @@ export function transformHostInternalLinks(root: Document | Element) {
       if (anchor.getAttribute('href') !== absoluteHref) {
         anchor.setAttribute('href', absoluteHref)
       }
-      anchor.dataset.routerIgnore = 'true'
+      if (!target.streamRoute) anchor.dataset.routerIgnore = 'true'
       if (!triathlonPreviewTarget(anchor.href)) anchor.dataset.noPopover = 'true'
     } else if (host === TRIATHLON_HOSTNAME) {
       anchor.href = triathlonHostLinkUrl(anchor.href, window.location.href)

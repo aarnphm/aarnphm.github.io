@@ -73,7 +73,15 @@ export function byDateAndAlphabetical(cfg: GlobalConfiguration): SortFn {
 
 type Props = { limit?: number; sort?: SortFn; presorted?: boolean } & QuartzComponentProps
 
-export default (() => {
+interface Options {
+  highlightTags: string[]
+}
+
+const defaultOptions: Options = { highlightTags: [] }
+
+export default ((userOpts?: Options) => {
+  const opts = { ...defaultOptions, ...userOpts }
+
   const PageList: QuartzComponent = ({
     cfg,
     fileData,
@@ -97,6 +105,7 @@ export default (() => {
         {list.map((page, idx) => {
           const title = unwrapTitleQuotes(page.frontmatter?.title ?? '')
           const tags = page.frontmatter?.tags ?? []
+          const highlightedTags = opts.highlightTags.filter(tag => tags.includes(tag))
           const date = getDate(cfg, page) ?? new Date(0)
           const isPdf = /\.pdf$/i.test(page.slug ?? '')
           const isFolder = tags.includes('folder')
@@ -122,9 +131,9 @@ export default (() => {
                     {title}
                     {isFolder && <span>/</span>}
                   </div>
-                  {tags.length > 0 && (
+                  {highlightedTags.length > 0 && (
                     <menu class="tag-highlights">
-                      {tags.map(el => (
+                      {highlightedTags.map(el => (
                         <li class="tag" data-tag={el}>
                           {el}
                         </li>
