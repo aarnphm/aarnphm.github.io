@@ -1,7 +1,6 @@
 .stream[data-stream-layout] {
   --stream-line: color-mix(in srgb, var(--gray) 55%, transparent);
   --stream-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
-  --stream-toolbar-height: 2.75rem;
   --stream-group-height: 2.25rem;
   --stream-year-offset: 0rem;
   --stream-month-offset: 0rem;
@@ -10,37 +9,19 @@
     --stream-year-offset: var(--stream-group-height);
   }
 
+  &[data-stream-view='year'],
+  &[data-stream-view='month'] {
+    margin-top: 1.5rem;
+  }
+
   &[data-stream-view='index'],
   &[data-stream-view='year'] {
     --stream-month-offset: var(--stream-group-height);
   }
 
-  .stream-archive-toolbar {
-    position: sticky;
-    top: 0;
-    z-index: calc(var(--z-sticky) + 3);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-    height: var(--stream-toolbar-height);
-    box-sizing: border-box;
-    background: var(--light);
-    border-bottom: 1px solid var(--stream-line);
-    font: max(12px, 0.75rem) var(--codeFont);
-    color: var(--dark);
-  }
-
-  .stream-archive-heading {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
   .stream-legend-row {
     position: sticky;
-    top: var(--stream-toolbar-height);
+    top: 0;
     z-index: calc(var(--z-sticky) + 2);
     box-sizing: border-box;
     height: var(--stream-group-height);
@@ -51,7 +32,7 @@
   }
 
   .stream-legend-month > .stream-legend-row {
-    top: calc(var(--stream-toolbar-height) + var(--stream-year-offset));
+    top: var(--stream-year-offset);
     z-index: calc(var(--z-sticky) + 1);
   }
 
@@ -89,8 +70,7 @@
   }
   .stream-legend-summary-metric,
   .stream-legend-meta,
-  .stream-legend-month > .stream-legend-row .stream-legend-row-title,
-  .stream-entry-tag {
+  .stream-legend-month > .stream-legend-row .stream-legend-row-title {
     font-size: max(12px, 0.75rem);
   }
   .stream-legend-lock {
@@ -98,24 +78,20 @@
   }
 
   box-sizing: border-box;
-  border-inline: 1px solid var(--stream-line);
-
-  .stream-archive-toolbar {
-    padding-inline: 0.5rem;
+  padding: 0;
+  > .stream-legend > .stream-legend-groups,
+  > .stream-legend-groups,
+  > .stream-legend-table {
+    box-sizing: border-box;
     border-top: 1px solid var(--stream-line);
-  }
-
-  .stream-legend-count {
-    padding-inline: 0.5rem;
+    border-inline: 1px solid var(--stream-line);
   }
 
   .stream-legend-columns {
     display: table-header-group;
     th {
       position: sticky;
-      top: calc(
-        var(--stream-toolbar-height) + var(--stream-year-offset) + var(--stream-month-offset)
-      );
+      top: calc(var(--stream-year-offset) + var(--stream-month-offset));
       z-index: var(--z-sticky);
       background: var(--stream-surface);
       color: var(--darkgray);
@@ -153,6 +129,9 @@
       display: table-cell;
     }
     .stream-entry-tag {
+      font-size: 10px;
+      line-height: 1.2;
+      padding: 1px 3px;
       display: inline-block;
       margin: 0 0.25rem 0.25rem 0;
     }
@@ -186,7 +165,6 @@
   }
 
   @media (pointer: coarse) {
-    --stream-toolbar-height: 3.25rem;
     .stream-legend-entry a {
       min-height: 44px;
       align-content: center;

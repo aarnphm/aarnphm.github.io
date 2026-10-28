@@ -373,13 +373,6 @@ export default (() => {
         data-stream-view={streamView.kind}
         data-stream-layout={isFeedView ? undefined : 'table'}
       >
-        {!isFeedView && (
-          <div class="stream-archive-toolbar">
-            <span class="stream-archive-heading">
-              {fileData.frontmatter?.title ?? 'stream / on'}
-            </span>
-          </div>
-        )}
         {isFeedView ? (
           renderFeed()
         ) : streamView.kind === 'index' ? (
