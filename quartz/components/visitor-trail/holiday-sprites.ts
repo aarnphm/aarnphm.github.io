@@ -1,29 +1,9 @@
 import { holidayDetails } from './holiday-details'
+import * as halloween from './holiday-sprites/halloween-art'
 import { pixels } from './pixels'
 
 // Opus pixel grids are palette indices, not executable SVG or external assets. Ground props draw
 // at the scene's 2 px cell, like the campers and their gear; animals keep their 1.5 px cell.
-const pumpkin = [
-  '....bv....',
-  '..iiiiii..',
-  '.iosoosoi.',
-  'iooloolooi',
-  'iolloolloi',
-  'iolooooloi',
-  'ioolollooi',
-  '.iosoosoi.',
-  '..iiiiii..',
-]
-const pumpkinSmall = [
-  '...bv...',
-  '.iiiiii.',
-  'iolooloi',
-  'iooooooi',
-  'iolllloi',
-  '.iosooi.',
-  '..iiii..',
-]
-
 // A pair of grids side by side, sharing the bottom row.
 function beside(left: readonly string[], right: readonly string[]) {
   const height = Math.max(left.length, right.length)
@@ -92,9 +72,22 @@ export const holidayArt = {
     'ii.......ii',
   ],
   treeStar: ['..g..', '.ggg.', 'ggggg', '.ggg.', '.g.g.'],
-  // Carved faces are `l`: dark by day, lit from inside at night.
-  pumpkin,
-  lanterns: beside(pumpkin, pumpkinSmall),
+  pumpkin: halloween.pumpkin,
+  lanterns: beside(halloween.pumpkin, halloween.pumpkinSmall),
+  pumpkinPatch: beside(beside(halloween.pumpkin, halloween.vine), halloween.pumpkinSmall),
+  gallowsTree: halloween.gallowsTree,
+  raven: halloween.raven,
+  gaslamp: halloween.gaslamp,
+  mausoleum: halloween.mausoleum,
+  ironFence: halloween.ironFence,
+  crowLine: halloween.crowLine,
+  hearse: halloween.hearse,
+  mourner: halloween.mourner,
+  resurrectionists: halloween.resurrectionists,
+  scarecrow: halloween.scarecrow,
+  guillotine: halloween.guillotine,
+  coffin: halloween.coffin,
+  candles: halloween.candles,
   ghost: [
     '..iiii..',
     '.ippppi.',
