@@ -9,69 +9,36 @@ tags:
 title: Socrates
 ---
 
-[[thoughts/university/twenty-three-twenty-four/philo-1aa3/Presocratics|Pre-Socratic]] lives by materialism
+[[thoughts/university/twenty-three-twenty-four/philo-1aa3/Presocratics|Pre-Socratic]] inquiry asks what nature is and how things come to be. In the _Phaedo_ (96a–99d), Plato's Socrates recalls his own early interest in such explanations and his disappointment with accounts that leave out why something is best.
 
-refers to Ionian:
-
-> keen on _nature_ science. Why it comes to be, why exists?
-
-Dissatisfied with nature science
-
-Apolo's oracle at Delphi: `Know yourself`
-
-He knows nothing about superior things and right way to live
-
-He is not wise
-
-> Cannot be wise about nature, without wise of ourself for how we live and love
-
-Use the knowledge well
+Apollo's oracle at Delphi: Chaerephon asks whether anyone is wiser than Socrates. The answer is no (_Apology_ 20e–21a). The Delphic maxim “know yourself” is a different saying; Socrates invokes it in the _Phaedrus_ (229e–230a).
 
 ### Wisdom
+
+Lecture summary:
 
 > Begins in self-understanding
 
 What is the way we ought to live?
 
-Philo-sophia
-love-wisdom != not being wise
+Socrates tests the oracle by questioning people reputed to be wise. His advantage is limited: when he lacks knowledge, he does not assume he has it (_Apology_ 21b–23b). The craftsmen know their crafts; their mistake is taking that expertise as authority about everything important.
 
-Can only love what we lack
+_Philo-sophia_: love of wisdom. In Diotima's account in the _Symposium_ (203e–204b), the philosopher recognises a lack and seeks wisdom. The already-wise have no need to seek it; the complacently ignorant see no need. Her account places Eros, a _daimon_, between mortal and divine (202d–203a).
 
-> Precisely not to be wise
+Socrates asks: what is $X$?
 
-Philosophers vs. Fool: Philosophers knows hes not wise, whereas a fool doesn't
+- What account applies to every case?
+- What explains why a particular thing is an instance of $X$?
 
-Longs for wisdom --> only god is wise
-complete wisdom are not for human
-
-Learn from Pythagorias
-
-Soul is not human life, paradoxical of life
-
-Hermenedies: Pythagorian cares for the soul (rational, pursue for rational)
-
-Neither gods nor beast
-Spiritual beings operate between gods and beast
-
-- not posses wisdom but can have the ability to pursue such wisdom
-
-Socrates
-
-What is X?
-
-- True of all case
-- Reason why something is an X
-
-ex: Logos what gods love some, not others
+In the _Euthyphro_ (6d–8b), calling pious whatever the gods love produces a problem when the gods disagree: the same act could count as both pious and impious. The definition has to survive that contradiction.
 
 > Platonic Idea (Form)
 > The idea of X is the form all particular Xs share, and which cause them to be X.
 
-Plato --> Idea for all Socrates asks
---> More than materialism
---> from Socratic or Platonic is wrong - Idea is not material, not body in space or time - Ordinary experience
+This lecture summary matches the explanatory role Plato gives Forms in the _Phaedo_ (100b–101d): beautiful things are beautiful through Beauty. A Form is intelligible and stable; a particular body can change. These are claims made through Socrates in Plato's dialogues, so they need to be distinguished from a secure account of the historical Socrates.
 
 Charges for Athenian trials?
 
 Animosity with regards to his way of being?
+
+Sources: Plato, [_Apology_](https://classics.mit.edu/Plato/apology.html), [_Phaedo_](https://chs.harvard.edu/primary-source/plato-phaedo-sb/), [_Phaedrus_](https://classics.mit.edu/Plato/phaedrus.html), [_Symposium_](https://classics.mit.edu/Plato/symposium.html), and [_Euthyphro_](https://classics.mit.edu/Plato/euthyfro.html), at the passages above.

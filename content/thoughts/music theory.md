@@ -8,11 +8,9 @@ tags:
 title: Music theory
 ---
 
-Half steps -> between E-F, B-C
+Between natural notes, E–F and B–C are half steps. E–F♯ is a whole step.
 
-Full step from E -> F#
-
-Minor -> Flat major scale
+For a [parallel natural minor scale](https://musictheory.pugetsound.edu/mt21c/MinorScales.html), keep the major scale's tonic and lower its third, sixth and seventh degrees by a half step. C major becomes C natural minor: C, D, E♭, F, G, A♭, B♭. Harmonic and melodic minor alter this pattern.
 
 Elements per side for a House/Techno:
 L-R: Perc, piano, strings, pads, guitars, synths, fx, bv
@@ -23,7 +21,7 @@ M: vocals, snare, bass, kick
 
 ### Vocals
 
-Call and responses
+Call and response
 
 ### Mids
 
@@ -38,13 +36,13 @@ Tools:
 - Ableton Operator
 - Serum
 
-1/16 note grid
+Sixteenth-note grid
 
 i-iv-vii
 
 ### Drums
 
-UKG: -> Swing (1/16th bar off)
+UKG sketch: sixteenth-note swing delays the second note in each pair of sixteenths, giving alternating long and short intervals. The amount varies with the groove. In Live, try a swing groove and adjust its Timing amount in the [Groove Pool](https://www.ableton.com/en/manual/using-grooves/).
 
 #### Kick
 
@@ -52,7 +50,7 @@ UKG: -> Swing (1/16th bar off)
 
 #### Hats
 
-Jacking hi-hats: closed followed by a open hi-hats or vice versa
+Jacking hi-hats: a closed hi-hat followed by an open hi-hat, or vice versa.
 
 #### Claps
 
@@ -62,7 +60,4 @@ Jacking hi-hats: closed followed by a open hi-hats or vice versa
 
 ### Major third
 
-For any given scale, choose an altered chords:
-
-- Instead of a III as a minor, play as a major
-  - major III to a minor VI
+In a major key, try changing the minor iii chord to major before vi. In C major, that gives E major followed by A minor. The G♯ in E major leads up to A. In this context, E major acts as the [secondary dominant of vi](https://musictheory.pugetsound.edu/mt21c/Tonicization.html), written $\mathrm{V/vi}$.
