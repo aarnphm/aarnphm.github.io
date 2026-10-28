@@ -29,9 +29,7 @@ import {
 } from './triathlon-panels'
 
 const PX_PER_MIN = 2.4
-const BIKE_PX_PER_MIN = 1.2
-const RUN_PX_PER_MIN = 2
-const SAUNA_PX_PER_MIN = 1.2
+const NORMALIZED_PX_PER_MIN = 1.2
 const MAX_BAR = 300
 const KNEE_BAR = 200
 const MIN_SEG = 3
@@ -43,9 +41,8 @@ const RACE_TABLE_DISTANCES = TRI_RACE_DISTANCES.toSorted(
 )
 
 const timelinePxPerMin = (sport: ActivityKind): number => {
-  if (sport === 'bike') return BIKE_PX_PER_MIN
-  if (sport === 'run') return RUN_PX_PER_MIN
-  if (sport === 'sauna') return SAUNA_PX_PER_MIN
+  if (sport === 'bike' || sport === 'run' || sport === 'walk' || sport === 'sauna')
+    return NORMALIZED_PX_PER_MIN
   return PX_PER_MIN
 }
 
@@ -162,7 +159,7 @@ export default (() => {
                 <div class="tri-track">
                   <nav
                     class="tri-bars"
-                    aria-label={`${payload.totalCount} sessions, bar height by duration with cycling, running, and sauna normalized, long days compressed`}
+                    aria-label={`${payload.totalCount} sessions, bar height by duration with cycling, running, walking, hiking, and sauna on the same scale, long days compressed`}
                   >
                     {payload.days.map((d, dayIndex) => {
                       const rest = d.items.length === 0

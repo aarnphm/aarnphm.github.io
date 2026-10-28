@@ -12,7 +12,6 @@ import {
 import { parseTrainingPeaksCalendar } from '../../../util/trainingpeaks-calendar'
 import { trainingPeaksExecution, trainingPeaksHasPlan } from '../../../util/trainingpeaks-execution'
 import { calendarToday } from '../calendar/display'
-import { parseSwimDescription } from '../calendar/swim-structure'
 import { TrainingStructure } from '../calendar/TrainingStructure'
 import { TrainingStructureHover } from '../calendar/TrainingStructureHover'
 import { TrainingInstructions, TrainingWorkoutTotals } from '../calendar/TrainingWorkoutPlan'
@@ -61,22 +60,6 @@ const loadPlanned = async (signal: AbortSignal): Promise<PlannedIndex | null> =>
   return { calendar, byActivity }
 }
 
-// A swim set list read from free text is drawn only when it adds up to the coach's planned volume;
-// otherwise the parser missed part of the coach's format and the chart would misstate the plan.
-const PLAN_TOLERANCE = 0.05
-const showsStructure = (workout: TrainingPeaksCalendarWorkout): boolean => {
-  if (workout.structure) return true
-  if (workout.sport !== 'swim') return false
-  const swim = parseSwimDescription(workout.description)
-  const [total, planned] =
-    swim?.unit === 'meters'
-      ? [swim.meters, workout.planned.distanceMeters]
-      : swim?.unit === 'seconds'
-        ? [swim.seconds, workout.planned.durationSeconds]
-        : [0, null]
-  return planned !== null && planned > 0 && Math.abs(total - planned) <= planned * PLAN_TOLERANCE
-}
-
 const PlannedWorkout = ({
   id,
   workout,
@@ -105,9 +88,7 @@ const PlannedWorkout = ({
           </span>
         </div>
         <div class="tri-planned-body">
-          {showsStructure(workout) && (
-            <TrainingStructure workout={workout} zones={calendar} formatter={formatter} />
-          )}
+          <TrainingStructure workout={workout} zones={calendar} formatter={formatter} />
           <div class="tri-planned-summary">
             <TrainingWorkoutTotals workout={workout} formatter={formatter} today={today} />
             <TrainingInstructions workout={workout} formatter={formatter} />
