@@ -419,15 +419,7 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = userOpts => {
     },
     externalResources: (ctx, content = []) => {
       const { cfg } = ctx
-      const additionalHead: StaticResources['additionalHead'] = [
-        <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"
-          media="print"
-          // @ts-ignore
-          onload="this.media='all'"
-        />,
-      ]
+      const additionalHead: StaticResources['additionalHead'] = []
 
       if (opts.enableAtom) {
         // Capture feed eligibility before concurrent emitters render page heads.
