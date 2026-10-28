@@ -1,12 +1,10 @@
 import { Element } from 'hast'
 import { headingRank } from 'hast-util-heading-rank'
-import { h, s } from 'hastscript'
-import rehypeAutolinkHeadings from 'rehype-autolink-headings'
+import { h } from 'hastscript'
 import rehypeSlug from 'rehype-slug'
 import remarkGfm from 'remark-gfm'
 import smartypants from 'remark-smartypants'
 import { visit } from 'unist-util-visit'
-import { svgOptions } from '../../components/svg'
 import { QuartzTransformerPlugin } from '../../types/plugin'
 
 export const checkFootnoteRef = ({ type, tagName, properties }: Element) =>
@@ -40,17 +38,5 @@ export const GitHubFlavoredMarkdown: QuartzTransformerPlugin = () => ({
         }
       })
     },
-    [
-      rehypeAutolinkHeadings,
-      {
-        behavior: 'append',
-        properties: { 'data-role': 'anchor', 'data-no-popover': true },
-        content: s(
-          'svg',
-          { ...svgOptions, fill: 'none', stroke: 'currentColor', strokewidth: '2' },
-          [s('use', { href: '#github-anchor' })],
-        ),
-      },
-    ],
   ],
 })
