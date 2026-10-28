@@ -184,33 +184,33 @@
       }
 
       > .tri-act-toggle {
-        margin-top: var(--tri-toggle-margin, 0px);
+        margin-top: calc(var(--tri-toggle-margin, 0px) * var(--tri-day-align-sections, 1));
       }
 
       > .tri-act-more > .tri-workout-analysis {
-        margin-top: var(--tri-workout-margin, 0px);
+        margin-top: calc(var(--tri-workout-margin, 0px) * var(--tri-day-align-sections, 1));
         height: var(--tri-workout-analysis-height, #{tri-graph-span(2)});
       }
 
       > .tri-act-more > .tri-environment {
-        margin-top: var(--tri-environment-margin, 0px);
+        margin-top: calc(var(--tri-environment-margin, 0px) * var(--tri-day-align-sections, 1));
       }
 
       @each $metric in stamina, performance-condition, heat-strain-index, core-temperature,
         skin-temperature, hr, respiration, temperature, cadence
       {
         > .tri-act-more > [data-tri-trace='#{$metric}'] {
-          margin-top: var(--tri-#{$metric}-margin, 0px);
+          margin-top: calc(var(--tri-#{$metric}-margin, 0px) * var(--tri-day-align-sections, 1));
         }
       }
 
       > .tri-act-more > .tri-training-effect {
-        margin-top: var(--tri-training-effect-margin, 0px);
+        margin-top: calc(var(--tri-training-effect-margin, 0px) * var(--tri-day-align-sections, 1));
       }
 
       > .tri-act-more
         > :is(.tri-zone-duo, [data-tri-trace='heart-rate-zones'], [data-tri-trace='power-zones']) {
-        margin-top: var(--tri-zones-margin, 0px);
+        margin-top: calc(var(--tri-zones-margin, 0px) * var(--tri-day-align-sections, 1));
       }
 
       > .tri-act-strength,

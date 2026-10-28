@@ -47,12 +47,7 @@ export const SeasonSummary = ({ totals, strengthTotal, activities }: SeasonSumma
           <span class="tri-leg" key={sport}>
             <svg class="tri-ico tri-leg-ico" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               {SPORT_ICON[sport].map(d => (
-                <path
-                  d={d}
-                  style={
-                    sport === 'treatment' ? { fill: 'currentColor', stroke: 'none' } : undefined
-                  }
-                />
+                <path d={d} />
               ))}
             </svg>
             <span class="tri-leg-body">

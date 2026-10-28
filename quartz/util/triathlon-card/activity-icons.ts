@@ -13,11 +13,7 @@ const BATTERY = [
 ]
 
 export const buildIcon = <N>(f: TriNodeFactory<N>, sport: ActivityKind): N => {
-  const icon = f.svg('svg', {
-    class: sport === 'treatment' || sport === 'yoga' ? 'tri-ico tri-ico--solid' : 'tri-ico',
-    viewBox: '0 0 24 24',
-    fill: 'none',
-  })
+  const icon = f.svg('svg', { class: 'tri-ico', viewBox: '0 0 24 24', fill: 'none' })
   for (const d of SPORT_ICON[sport]) f.add(icon, f.svg('path', { d }))
   return icon
 }

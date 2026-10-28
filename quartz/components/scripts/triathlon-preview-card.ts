@@ -90,7 +90,6 @@ function icon(name: string): SVGSVGElement {
   glyph.setAttribute('viewBox', '0 0 24 24')
   glyph.setAttribute('aria-hidden', 'true')
   if (sport) glyph.dataset.sport = name
-  if (name === 'yoga' || name === 'treatment') glyph.dataset.solid = ''
   for (const d of sport ? SPORT_ICON[name] : (ICONS[name] ?? ICONS.day)) {
     const path = document.createElementNS(SVG_NS, 'path')
     path.setAttribute('d', d)

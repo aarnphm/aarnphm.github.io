@@ -294,7 +294,7 @@ maintenance:
           - end: null
             start: '2026-10-05'
       - reason: null
-modified: 2026-10-21 00:45:52 GMT-04:00
+modified: 2026-10-27 21:14:03 GMT-04:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
@@ -1871,6 +1871,22 @@ virtual: true
 ```tracking
 activity: 20731306790
 garmin: 24851844921
+```
+
+```tracking
+title: Guided Down, Deep Stretch
+date: 2026-10-27
+time: 17:30
+duration: 70 mins
+activity: sauna
+temperature: 160F
+humidity: 11%
+cooldown: cold plunge
+lap-phases: break | hot sauna | cold plunge | hot sauna | break
+location: Othership Adelaide
+htl: 7.7
+strava: 20757815001
+garmin: 24875271878
 ```
 
 <!-- training plan start

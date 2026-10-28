@@ -227,15 +227,14 @@ export function sportIcon(
   ink: string,
 ): SVGElement | undefined {
   if (!isActivityKind(sport)) return undefined
-  const solid = sport === 'treatment' || sport === 'yoga'
   const icon = node('svg', {
     x,
     y,
     width: size,
     height: size,
     viewBox: '0 0 24 24',
-    fill: solid ? ink : 'none',
-    stroke: solid ? 'none' : ink,
+    fill: 'none',
+    stroke: ink,
     'stroke-width': 1.5,
     'stroke-linecap': 'round',
     'stroke-linejoin': 'round',
