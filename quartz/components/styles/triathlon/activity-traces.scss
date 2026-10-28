@@ -227,6 +227,7 @@
 .tri-elev-cap {
   position: relative;
   display: flex;
+  align-items: baseline;
   flex-wrap: wrap;
   justify-content: flex-start;
   gap: 0.9rem;
@@ -355,7 +356,7 @@
 
 .tri-cycling-power-legend {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   flex: 1;
   flex-wrap: wrap;
   min-width: 0;
@@ -443,11 +444,12 @@
 
 .tri-cycling-power-key {
   display: inline-flex;
-  align-items: center;
+  align-items: baseline;
   gap: 0.3rem;
 
   &::before {
     content: '';
+    align-self: center;
     display: inline-block;
     width: 0.9rem;
     height: 0;

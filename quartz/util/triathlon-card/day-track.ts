@@ -44,17 +44,19 @@ export const buildDayPageTabs = <N>(
     return tab
   })
 
-// Server output assumes the default two-up layout; the client rebuilds the page tabs and the
-// pressed mode once it reads the stored layout and measures the track.
+// The client rebuilds these tabs after reading the saved layout and measuring the track.
 export const buildDayTrackPager = <N>(f: TriNodeFactory<N>, sports: readonly ActivityKind[]): N => {
   const locale = f.presentation.locale
-  const pager = f.el('div', 'tri-day-pager', undefined, { 'data-paged': String(sports.length > 2) })
+  const perPage = DEFAULT_TRI_ACTIVITY_LAYOUT === 'two' ? 2 : 1
+  const pager = f.el('div', 'tri-day-pager', undefined, {
+    'data-paged': String(sports.length > perPage),
+  })
   const pages = f.el('div', 'tri-map-tablist tri-day-pages', undefined, {
     role: 'tablist',
     'aria-label': triText(locale, 'activities'),
     'data-i18n-aria-label': 'activities',
   })
-  f.add(pages, ...buildDayPageTabs(f, sports, 2, 0))
+  f.add(pages, ...buildDayPageTabs(f, sports, perPage, 0))
   const modes = f.el('div', 'tri-map-tablist tri-day-modes', undefined, {
     role: 'group',
     'aria-label': triText(locale, 'activity layout'),

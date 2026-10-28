@@ -154,7 +154,7 @@
 .tri-power-balance-summary,
 .tri-power-balance-legend-item {
   display: inline-flex;
-  align-items: center;
+  align-items: baseline;
 }
 
 .tri-power-balance-summary {
@@ -167,6 +167,7 @@
 }
 
 .tri-power-balance-legend-line {
+  align-self: center;
   display: inline-block;
   width: 0.82rem;
   height: 1px;
@@ -209,7 +210,7 @@
 .tri-cycling-dynamics-summary,
 .tri-cycling-dynamics-legend-item {
   display: inline-flex;
-  align-items: center;
+  align-items: baseline;
 }
 
 .tri-cycling-dynamics-summary {
@@ -227,6 +228,7 @@
 }
 
 .tri-cycling-dynamics-legend-line {
+  align-self: center;
   display: inline-block;
   width: 0.82rem;
   height: 1px;
@@ -281,11 +283,12 @@
 
 .tri-stamina-legend-item {
   display: inline-flex;
-  align-items: center;
+  align-items: baseline;
   gap: 0.18rem;
 }
 
 .tri-stamina-legend-line {
+  align-self: center;
   display: inline-block;
   width: 0.82rem;
   height: 1px;
@@ -329,7 +332,7 @@
 .tri-shift-summary,
 .tri-shift-legend-item {
   display: inline-flex;
-  align-items: center;
+  align-items: baseline;
 }
 
 .tri-shift-summary {
@@ -345,6 +348,7 @@
 }
 
 .tri-shift-legend-line {
+  align-self: center;
   display: inline-block;
   width: 0.82rem;
   height: 1px;

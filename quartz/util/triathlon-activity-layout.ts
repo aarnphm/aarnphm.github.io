@@ -2,9 +2,8 @@ export const TRI_ACTIVITY_LAYOUTS = ['one', 'two', 'all'] as const
 
 export type TriActivityLayout = (typeof TRI_ACTIVITY_LAYOUTS)[number]
 
-// The stylesheet pages two activities when an embed has no layout attribute, so server output
-// already matches the default before any script runs.
-export const DEFAULT_TRI_ACTIVITY_LAYOUT: TriActivityLayout = 'two'
+// Keep the stylesheet's attribute-free layout and the server-rendered pager in sync.
+export const DEFAULT_TRI_ACTIVITY_LAYOUT: TriActivityLayout = 'one'
 
 export const TRI_ACTIVITY_LAYOUT_KEY = 'tri-activity-layout'
 
