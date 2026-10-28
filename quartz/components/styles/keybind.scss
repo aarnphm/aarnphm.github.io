@@ -87,6 +87,41 @@
   }
 }
 
+.homepage-shortcut-help {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem 0.75rem;
+  border-top: 1px solid var(--lightgray);
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-size: var(--text-meta);
+
+  button {
+    padding: 0;
+    min-block-size: 24px;
+    background: transparent;
+    border: 0;
+    color: inherit;
+    font: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: 3px;
+    }
+  }
+}
+
+@media (pointer: coarse) {
+  .homepage-shortcut-help button {
+    min-block-size: 44px;
+  }
+}
+
 .link-hint-marker {
   position: fixed;
   background: var(--pine);

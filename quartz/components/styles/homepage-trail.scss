@@ -169,8 +169,3 @@ body[data-slug='index'][data-trail-open='true'] {
     right: calc(0.5rem + 44px);
   }
 }
-// A board link that lights a trail underlines in that trail's blaze colour.
-.landing a[data-trail-blaze] {
-  text-decoration-color: var(--trail-blaze);
-  text-decoration-thickness: 2px;
-}

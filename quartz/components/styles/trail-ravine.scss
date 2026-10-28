@@ -304,41 +304,9 @@
     fill: color-mix(in srgb, #eef4f3 88%, var(--light));
   }
   $blazes: (#d14d41, #879a39, #da702c, #4385be, #d0a215, #8b7ec8);
-  // While one trail is lit, the others fade back.
-  .trail-scene[data-trail-lit] .trail-steps {
-    opacity: 1;
-    [data-route] {
-      opacity: 0.3;
-    }
-  }
-  .trail-scene[data-trail-lit-blaze] [class^='trail-wayside-blaze-'] {
-    opacity: 0.45;
-  }
-  $routes: (main, pines, grove, ridge, meadow, switchback);
   @for $route from 1 through list.length($blazes) {
-    $blaze: list.nth($blazes, $route);
-    $id: list.nth($routes, $route);
     .trail-wayside-blaze-#{$route - 1} {
-      fill: $blaze;
-    }
-    // A board link points at this trail: its blazes blink and its footprints walk out from the
-    // trailhead in the blaze colour.
-    .trail-scene[data-trail-lit-blaze='#{$route - 1}'] .trail-wayside-blaze-#{$route - 1} {
-      opacity: 1;
-      animation: trail-blaze-blink 0.6s steps(1, end) infinite;
-    }
-    .trail-scene[data-trail-lit='#{$id}'] .trail-steps [data-route='#{$id}'] {
-      fill: $blaze;
-      opacity: 1;
-      // Far footprints are a pixel or two across; a screen-width stroke keeps them legible.
-      stroke: $blaze;
-      stroke-width: 1.5px;
-      vector-effect: non-scaling-stroke;
-      & > * {
-        vector-effect: non-scaling-stroke;
-        animation: trail-blaze-walk 0.2s steps(1, end) both;
-        animation-delay: calc(var(--step, 0) * 22ms);
-      }
+      fill: list.nth($blazes, $route);
     }
   }
   .trail-wayside-leaf-red {
@@ -554,26 +522,5 @@
   }
   97% {
     opacity: 1;
-  }
-}
-
-@keyframes trail-blaze-blink {
-  50% {
-    fill: color-mix(in srgb, #fffcf0 70%, var(--light));
-  }
-}
-
-@keyframes trail-blaze-walk {
-  from {
-    opacity: 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .homepage-trail-scene .trail-scene[data-trail-lit] {
-    .trail-steps [data-route] > *,
-    [class^='trail-wayside-blaze-'] {
-      animation: none;
-    }
   }
 }

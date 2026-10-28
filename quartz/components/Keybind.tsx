@@ -6,6 +6,8 @@ import {
 } from '../types/component'
 import { classNames } from '../util/lang'
 // @ts-ignore
+import homepageShortcuts from './scripts/homepage-shortcuts.inline'
+// @ts-ignore
 import script from './scripts/keybind.inline'
 import style from './styles/keybind.scss'
 
@@ -81,7 +83,7 @@ export default ((userOpts?: Partial<Options>) => {
   }
 
   Keybind.css = style
-  Keybind.afterDOMLoaded = script
+  Keybind.afterDOMLoaded = [script, homepageShortcuts]
 
   return Keybind
 }) satisfies QuartzComponentConstructor
