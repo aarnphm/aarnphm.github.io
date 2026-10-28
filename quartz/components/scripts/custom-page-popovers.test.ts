@@ -61,7 +61,7 @@ test('custom page and Curius link popovers use the shared browser lifecycle', as
         }
         function enter(a) {
           const rect = a.getBoundingClientRect()
-          a.dispatchEvent(new MouseEvent('mouseover', {
+          a.dispatchEvent(new PointerEvent('pointerover', { pointerType: 'mouse',
             bubbles: true, clientX: rect.left + 10, clientY: rect.top + 10,
           }))
         }
@@ -135,6 +135,11 @@ test('custom page and Curius link popovers use the shared browser lifecycle', as
             document.querySelector('#curius-fragments').append(trailRow)
             const trailCard = await preview(trailRow.querySelector('a'), 'curius-link')
             check(trailCard.textContent.includes('Trail link'), 'trail links without topics or highlights still render')
+            escape()
+            document.querySelector('#ordinary').dispatchEvent(new PointerEvent('pointerover', { bubbles: true, pointerType: 'touch' }))
+            document.querySelector('#ordinary').dispatchEvent(new MouseEvent('mouseover', { bubbles: true }))
+            await new Promise(r => setTimeout(r, 50))
+            check(!document.querySelector('.active-popover'), 'touch and compatibility mouse events do not open previews')
             await preview(document.querySelector('#curius-page'), 'curius')
             check(document.querySelectorAll('.active-popover .page-preview-list li').length === 3, 'Curius page shows three saved links')
             check(!document.querySelector('.active-popover a[href^="javascript:"]'), 'unsafe feed destinations are dropped')
@@ -200,7 +205,7 @@ test('custom page and Curius link popovers use the shared browser lifecycle', as
               check(getComputedStyle(popup.querySelector('.expanded')).display !== 'none', id + ': expanded text is visible')
               escape()
             }
-            document.querySelector('#optout').dispatchEvent(new MouseEvent('mouseover', { bubbles: true }))
+            document.querySelector('#optout').dispatchEvent(new PointerEvent('pointerover', { pointerType: 'mouse', bubbles: true }))
             await new Promise(r => setTimeout(r, 50))
             check(!document.querySelector('.active-popover'), 'explicit popover opt-out survives')
             for (const fn of cleanups) fn()
