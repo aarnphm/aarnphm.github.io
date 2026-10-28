@@ -27,10 +27,45 @@ function strava(overrides: Partial<RawStravaActivity> = {}): RawStravaActivity {
   }
 }
 
-test('normalizes walking and hiking as walk activities', () => {
+test('keeps Garmin walking and hiking as distinct activities', () => {
   assert.equal(normalizeGarminSport('walking'), 'walk')
-  assert.equal(normalizeGarminSport('HIKING'), 'walk')
+  assert.equal(normalizeGarminSport('HIKING'), 'hike')
+  assert.equal(normalizeGarminSport('mountaineering'), 'hike')
   assert.equal(normalizeGarminSport('trail_running'), 'run')
+})
+
+test('matches a Strava hike against a legacy Garmin walk cache entry within activity tolerances', () => {
+  const hike = strava({
+    sportType: 'Hike',
+    distance: 12_000,
+    movingTime: 3600,
+    elapsedTime: 3900,
+    startDate: '2026-10-26T12:00:00Z',
+    startDateLocal: '2026-10-26T08:00:00',
+  })
+  const legacyWalk = {
+    id: 'connect:24870078315',
+    name: 'October hike',
+    sport: 'walk' as const,
+    startDate: hike.startDate,
+    startDateLocal: hike.startDateLocal,
+    distanceM: 12_050,
+    movingTimeS: 3610,
+    elapsedTimeS: 3910,
+    sourceDevice: 'Forerunner',
+    sourceFile: '24870078315.fit',
+    metrics: emptyGarminMetrics(),
+    fueling: emptyGarminFueling(),
+  }
+  const cache: GarminCache = { lastSync: 0, activities: { [legacyWalk.id]: legacyWalk } }
+
+  assert.equal(normalizeGarminSport('walking'), 'walk')
+  assert.equal(matchGarminActivity(hike, 'hike', cache)?.activity.id, legacyWalk.id)
+  assert.equal(
+    matchGarminActivity({ ...hike, startDate: '2026-10-27T12:00:00Z' }, 'hike', cache),
+    null,
+  )
+  assert.equal(matchGarminActivity({ ...hike, distance: 30_000 }, 'hike', cache), null)
 })
 
 test('explicit Garmin links bypass distance heuristics and reject missing or unrelated records', () => {

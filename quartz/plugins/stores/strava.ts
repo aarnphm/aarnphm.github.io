@@ -71,7 +71,7 @@ export {
 } from './strava/manual-enrichment'
 export { buildPayload } from './strava/build-payload'
 
-export const ROUTE_SPORTS: readonly ActivityKind[] = ['bike', 'run', 'swim', 'walk']
+export const ROUTE_SPORTS: readonly ActivityKind[] = ['bike', 'run', 'swim', 'walk', 'hike']
 
 export const isActivityKind = (value: unknown): value is ActivityKind =>
   ACTIVITY_KINDS.some(kind => kind === value)
@@ -101,6 +101,7 @@ export const SPORT_ICON: Record<ActivityKind, string[]> = {
     'M23 14.4V9.6C23 9.26863 22.7314 9 22.4 9H20.6C20.2686 9 20 9.26863 20 9.6V14.4C20 14.7314 20.2686 15 20.6 15H22.4C22.7314 15 23 14.7314 23 14.4Z',
     'M8 12H16',
   ],
+  hike: ['M3 20L10 5l5 10 3-5 4 10Z', 'M7 11l3 2 3-2'],
   walk: [
     'M15 4a2 2 0 1 0-4 0a2 2 0 1 0 4 0',
     'M12.6 6.4L11 13L8 16.5L7.5 21',

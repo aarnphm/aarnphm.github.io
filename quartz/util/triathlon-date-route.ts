@@ -155,7 +155,7 @@ export interface TriathlonTreeYear {
   months: TriathlonTreeMonth[]
 }
 
-const SPORT_ORDER = ['swim', 'bike', 'run', 'walk']
+const SPORT_ORDER = ['swim', 'bike', 'run', 'walk', 'hike']
 
 const sortSports = (sports: Iterable<string>): string[] =>
   [...sports].sort((left, right) => {

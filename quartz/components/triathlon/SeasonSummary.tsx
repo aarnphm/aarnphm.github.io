@@ -27,14 +27,16 @@ export const SeasonSummary = ({ totals, strengthTotal, activities }: SeasonSumma
   if (strengthTotal.count > 0)
     summaries.push({ sport: 'strength', distanceKm: null, ...strengthTotal })
 
-  for (const sport of ['walk', 'sauna', 'treatment'] satisfies ActivityKind[]) {
+  for (const sport of ['walk', 'hike', 'sauna', 'treatment'] satisfies ActivityKind[]) {
     const matching = activities.filter(activity => activity.sport === sport)
     if (matching.length === 0) continue
     summaries.push({
       sport,
       count: matching.length,
       distanceKm:
-        sport === 'walk' ? matching.reduce((sum, activity) => sum + activity.distanceKm, 0) : null,
+        sport === 'walk' || sport === 'hike'
+          ? matching.reduce((sum, activity) => sum + activity.distanceKm, 0)
+          : null,
       movingTimeS: matching.reduce((sum, activity) => sum + activity.movingTimeS, 0),
     })
   }

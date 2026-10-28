@@ -351,7 +351,8 @@ export function normalizeGarminSport(value: string | null | undefined): Activity
   )
     return 'bike'
   if (sport.includes('run')) return 'run'
-  if (sport.includes('walk') || sport.includes('hike') || sport.includes('hiking')) return 'walk'
+  if (sport.includes('hik') || sport.includes('mountaineer')) return 'hike'
+  if (sport.includes('walk')) return 'walk'
   return null
 }
 
@@ -398,6 +399,14 @@ function withDevice(fueling: GarminFueling, sourceDevice: string | null): Garmin
   return { ...fueling, sourceDevice: fueling.sourceDevice ?? sourceDevice }
 }
 
+function matchesGarminSport(activitySport: ActivityKind | null, sport: ActivityKind): boolean {
+  return (
+    activitySport == null ||
+    activitySport === sport ||
+    (sport === 'hike' && activitySport === 'walk')
+  )
+}
+
 export function matchGarminActivity(
   strava: RawStravaActivity,
   sport: ActivityKind,
@@ -411,7 +420,7 @@ export function matchGarminActivity(
   if (activityId != null) {
     const activity =
       cache.activities[`connect:${activityId}`] ?? cache.activities[String(activityId)]
-    if (!activity || (activity.sport != null && activity.sport !== sport)) return null
+    if (!activity || !matchesGarminSport(activity.sport, sport)) return null
     const garminStart = Date.parse(activity.startDate)
     const startDiffMs = Math.abs(garminStart - stravaStart)
     if (!Number.isFinite(startDiffMs)) return null
@@ -435,7 +444,7 @@ export function matchGarminActivity(
 
   let best: { score: number; activity: GarminActivity } | null = null
   for (const activity of Object.values(cache.activities)) {
-    if (activity.sport != null && activity.sport !== sport) continue
+    if (!matchesGarminSport(activity.sport, sport)) continue
     if (sport === 'strength' && positive(activity.distanceM) != null) continue
     const garminStart = Date.parse(activity.startDate)
     if (!Number.isFinite(garminStart)) continue

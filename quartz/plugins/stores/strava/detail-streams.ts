@@ -197,7 +197,7 @@ export function projectHeartRateTrace(
   }
   if (time[time.length - 1] <= time[0]) return []
   const distanceAlignment =
-    sport === 'swim' || sport === 'walk' ? timedStreamAlignment(streams) : null
+    sport === 'swim' || sport === 'walk' || sport === 'hike' ? timedStreamAlignment(streams) : null
   if (sport === 'swim' && !distanceAlignment) return []
   const available = values.map(value => Number.isFinite(value) && value > 0)
   const hasThermal =

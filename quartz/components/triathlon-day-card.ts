@@ -28,6 +28,7 @@ const TRIATHLON_SPORT_ANCHOR: Record<string, NonNullable<DayCardExtras['sport']>
   cycle: 'bike',
   run: 'run',
   walk: 'walk',
+  hike: 'hike',
 }
 const isStringArray = (value: unknown): value is string[] =>
   Array.isArray(value) && value.every(segment => typeof segment === 'string')

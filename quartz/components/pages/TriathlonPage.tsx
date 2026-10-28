@@ -41,7 +41,13 @@ const RACE_TABLE_DISTANCES = TRI_RACE_DISTANCES.toSorted(
 )
 
 const timelinePxPerMin = (sport: ActivityKind): number => {
-  if (sport === 'bike' || sport === 'run' || sport === 'walk' || sport === 'sauna')
+  if (
+    sport === 'bike' ||
+    sport === 'run' ||
+    sport === 'walk' ||
+    sport === 'hike' ||
+    sport === 'sauna'
+  )
     return NORMALIZED_PX_PER_MIN
   return PX_PER_MIN
 }

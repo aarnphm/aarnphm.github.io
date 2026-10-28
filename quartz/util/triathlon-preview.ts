@@ -21,6 +21,7 @@ const PREVIEW_KINDS: readonly ActivityKind[] = [
   'run',
   'strength',
   'walk',
+  'hike',
   'yoga',
   'treatment',
   'sauna',

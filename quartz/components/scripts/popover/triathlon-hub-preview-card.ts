@@ -6,7 +6,7 @@ import { miniatureList, windowPreview } from '../triathlon-preview-card'
 
 const SVG_NS = 'http://www.w3.org/2000/svg'
 // Bikes cover the most ground, so they go down first and runs and swims stay readable on top.
-const DRAW_ORDER: readonly ActivityKind[] = ['bike', 'walk', 'run', 'swim']
+const DRAW_ORDER: readonly ActivityKind[] = ['bike', 'walk', 'hike', 'run', 'swim']
 
 /** Every route at a low alpha on one plane: a street ridden twenty times draws twenty times darker. */
 function heatFigure(preview: TriathlonHubPreview): SVGSVGElement | null {

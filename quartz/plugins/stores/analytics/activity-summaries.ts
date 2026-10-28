@@ -35,30 +35,32 @@ export function buildActivitySummaries(scope: ActivitySummaryScope): ActivitySum
     paceIntensityFactorById,
     swimMetrics,
   } = scope
-  const walkSummaries: ActivitySummary[] = Object.values(cache.activities)
+  const footSummaries: ActivitySummary[] = Object.values(cache.activities)
     .filter(
       a =>
         !saunaActivityIds.has(a.id) &&
-        normalizeKind(a.sportType) === 'walk' &&
+        (normalizeKind(a.sportType) === 'walk' || normalizeKind(a.sportType) === 'hike') &&
         !isTreatment(a.sportType, a.name),
     )
     .filter(a => !sinceDay || a.startDateLocal.slice(0, 10) >= sinceDay)
-    .map(a => ({
-      id: a.id,
-      date: a.startDateLocal.slice(0, 10),
-      sport: 'walk' as const,
-      name: a.name ?? '',
-      distanceKm: round(a.distance / 1000, 1),
-      movingTimeS: a.movingTime,
-      load: 0,
-      paceIntensityFactor: null,
-      effort: a.sufferScore ?? null,
-      cadence: a.averageCadence ?? null,
-      strokes: null,
-      windKph: inputs.weather?.activities[String(a.id)]?.windKph ?? null,
-      windDir: inputs.weather?.activities[String(a.id)]?.windDir ?? null,
-      windGustKph: inputs.weather?.activities[String(a.id)]?.windGustKph ?? null,
-    }))
+    .map(
+      (a): ActivitySummary => ({
+        id: a.id,
+        date: a.startDateLocal.slice(0, 10),
+        sport: a.sportType === 'Hike' ? 'hike' : 'walk',
+        name: a.name ?? '',
+        distanceKm: round(a.distance / 1000, 1),
+        movingTimeS: a.movingTime,
+        load: 0,
+        paceIntensityFactor: null,
+        effort: a.sufferScore ?? null,
+        cadence: a.averageCadence ?? null,
+        strokes: null,
+        windKph: inputs.weather?.activities[String(a.id)]?.windKph ?? null,
+        windDir: inputs.weather?.activities[String(a.id)]?.windDir ?? null,
+        windGustKph: inputs.weather?.activities[String(a.id)]?.windGustKph ?? null,
+      }),
+    )
   const strengthSummaries: ActivitySummary[] = Object.values(cache.activities)
     .filter(
       a =>
@@ -165,7 +167,7 @@ export function buildActivitySummaries(scope: ActivitySummaryScope): ActivitySum
       windDir: inputs.weather?.activities[String(act.a.id)]?.windDir ?? null,
       windGustKph: inputs.weather?.activities[String(act.a.id)]?.windGustKph ?? null,
     }))
-    .concat(walkSummaries, strengthSummaries, treatmentSummaries, yogaSummaries, saunaSummaries)
+    .concat(footSummaries, strengthSummaries, treatmentSummaries, yogaSummaries, saunaSummaries)
     .sort((p, q) => q.date.localeCompare(p.date))
   return activities
 }

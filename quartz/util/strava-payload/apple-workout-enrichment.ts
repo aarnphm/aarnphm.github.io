@@ -139,6 +139,7 @@ const APPLE_DEVICE_START_TOLERANCE_MS = 5 * 60 * 1_000
 
 const appleWorkoutActivity = (sport: StravaActivityDetail['sport']): string | null => {
   if (sport === 'run') return 'running'
+  if (sport === 'hike') return 'hiking'
   if (sport === 'walk') return 'walking'
   if (sport === 'swim') return 'swimming'
   return null

@@ -122,7 +122,7 @@ export function projectDetail(
     : undefined
   // Walk physiology needs the recorded session timeline, including privacy-trimmed route sections.
   const walkHeartRateStreams =
-    sport === 'walk' &&
+    (sport === 'walk' || sport === 'hike') &&
     stravaStreams?.time &&
     stravaStreams.time.length >= 2 &&
     stravaStreams.heartrate?.length === stravaStreams.time.length &&
@@ -134,7 +134,7 @@ export function projectDetail(
     input: StravaStreams | GarminStreams | undefined,
     inputSource: WalkPowerEstimate['inputSource'],
   ): WalkPowerEstimate | null =>
-    sport === 'walk' &&
+    (sport === 'walk' || sport === 'hike') &&
     !a.deviceWatts &&
     garmin?.avgPower == null &&
     weight?.date === a.startDateLocal.slice(0, 10) &&
@@ -406,7 +406,7 @@ export function projectDetail(
     route,
     walkPower,
     heartRateTrace:
-      route.length >= 2 && sport !== 'walk'
+      route.length >= 2 && sport !== 'walk' && sport !== 'hike'
         ? []
         : projectHeartRateTrace(
             sport,

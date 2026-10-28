@@ -5,7 +5,7 @@ import type { WahooMetrics } from '../wahoo'
 
 export type Sport = 'swim' | 'bike' | 'run'
 
-export type ActivityKind = Sport | 'strength' | 'walk' | 'yoga' | 'treatment' | 'sauna'
+export type ActivityKind = Sport | 'strength' | 'walk' | 'hike' | 'yoga' | 'treatment' | 'sauna'
 
 export const ACTIVITY_KINDS: readonly ActivityKind[] = [
   'swim',
@@ -13,6 +13,7 @@ export const ACTIVITY_KINDS: readonly ActivityKind[] = [
   'run',
   'strength',
   'walk',
+  'hike',
   'yoga',
   'treatment',
   'sauna',
@@ -286,8 +287,9 @@ export function normalizeKind(sportType: string): ActivityKind | null {
     case 'Crossfit':
       return 'strength'
     case 'Walk':
-    case 'Hike':
       return 'walk'
+    case 'Hike':
+      return 'hike'
     case 'Yoga':
     case 'Pilates':
       return 'yoga'

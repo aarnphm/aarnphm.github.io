@@ -22,7 +22,7 @@ const PAD = 0.06
 // thousands of samples do not outvote a 5 km run.
 const CORE_QUANTILE = 0.08
 const METRES_PER_DEGREE = 111_320
-const HUB_SPORTS: readonly ActivityKind[] = ['swim', 'bike', 'run', 'walk']
+const HUB_SPORTS: readonly ActivityKind[] = ['swim', 'bike', 'run', 'walk', 'hike']
 
 export interface TriathlonHubRoute {
   sport: ActivityKind

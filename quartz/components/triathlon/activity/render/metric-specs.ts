@@ -102,7 +102,7 @@ export const metricSpecs = (
     if (hasElev) specs.push(elevSpec)
     if (hasPower) specs.push(powerSpec)
     if (hasThermal) specs.push(temperatureSpec)
-  } else if (d.sport === 'walk') {
+  } else if (d.sport === 'walk' || d.sport === 'hike') {
     specs.push(paceSpec)
     if (hasPower) specs.push(powerSpec)
     else if (!d.deviceWatts && d.walkPower)

@@ -104,6 +104,7 @@ function sportMatches(
   return (
     activity.sport === 'strength' ||
     activity.sport === 'walk' ||
+    activity.sport === 'hike' ||
     activity.sport === 'yoga' ||
     activity.sport === 'treatment' ||
     activity.sport === 'sauna'
