@@ -157,9 +157,9 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
   for (const cite of article.querySelectorAll<HTMLAnchorElement>('a[data-bib]')) {
     const id = decodeURIComponent(new URL(cite.href).hash.slice(1))
     const entry = id
-      ? article.querySelector<HTMLElement>(`.fr-gloss#${CSS.escape(id)}`)?.closest<HTMLElement>(
-          '.fr-entry',
-        )
+      ? article
+          .querySelector<HTMLElement>(`.fr-gloss#${CSS.escape(id)}`)
+          ?.closest<HTMLElement>('.fr-entry')
       : null
     if (!entry) continue
     let held = false
