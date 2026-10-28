@@ -10,7 +10,7 @@ export {
   youtubeSvg,
 } from './svg/social-marks'
 export { hfSvg } from './svg/hugging-face-mark'
-export { anthropicSvg, modularSvg, openaiSvg, ycSvg } from './svg/technology-marks'
+export { anthropicSvg, modularSvg, nvidiaSvg, openaiSvg, ycSvg } from './svg/technology-marks'
 export { doiSvg, gwernSvg, obsidianSvg } from './svg/knowledge-marks'
 export { bentomlHoverSvg, bentomlSvg } from './svg/bentoml-marks'
 
