@@ -37,6 +37,7 @@
 | [Footer](Footer.md)                         | The minimal page footer: licence and social links in one row.                                                                                                                  |
 | [Footnotes](Footnotes.md)                   | The footnote list at the end of a note, with back-references to each call site.                                                                                                |
 | [HomepageTrail](HomepageTrail.md)           | The shared walking trail on the home page.                                                                                                                                     |
+| [Instrument](Instrument.md)                 | A joined control: one `darkgray` frame around cells split by `line` hairlines, such as the PDF pager (`‹ \| 4 / 36 \| ›`) and zoom stepper (`− \| 90% \| + \| fit`).           |
 | [KVHeadGrouping](KVHeadGrouping.md)         | Grouped-query attention: query heads sharing KV heads, with a cache-bandwidth readout.                                                                                         |
 | [KeyHint](KeyHint.md)                       | A small mono chip above a control that shows its keyboard shortcut when hints are on.                                                                                          |
 | [Keybind](Keybind.md)                       | The keyboard-shortcut help: the shortcut chip and the list of bindings it opens.                                                                                               |

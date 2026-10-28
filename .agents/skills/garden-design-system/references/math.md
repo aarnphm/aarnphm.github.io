@@ -40,6 +40,8 @@ A number in an argument sets in math, in the same face as the symbols around it.
 - Gridlines in `line`; data and model strokes in `dark`; reference lines in `darkgray`, dashed. A computed estimate is dashed too.
 - Salmon marks the one element to look at. Structure stays in `dark`, `darkgray` and `line`, and a second series is `secondary`. Each series also gets a second cue: marker shape, dash pattern or a direct label.
 - The caption names the source or hardware, gives the key number with its unit, and says what the reader should see.
+- Sizes hold in every frame: ticks and axis titles are 12px (`meta`); the legend, readout rows and the data table under the plot are 0.75rem (10.5px), so the furniture reads under the ticks; superscripts 9px, markers 5.5px across with a 1px `non-scaling-stroke`, hover bands at least 24px wide. Inside the svg each size is a px value times the svg's user units per rendered px (`figure-scale.ts`, `--dch-u` in DataChart), never a bare user unit. An axis title is never larger than its ticks.
+- A legend or readout column that changes with the data reserves the widest value the data can produce (`ch` in the value font, `nowrap`), so the plot does not shift when `4` becomes `10`. The Compact tools section has the rule.
 
 ## Colour
 
