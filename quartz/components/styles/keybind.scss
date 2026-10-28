@@ -1,4 +1,5 @@
 @use '../../styles/variables.scss' as *;
+@use '../../styles/shortcut-hint.scss' as hint;
 
 .keybind {
   flex-grow: 0 !important;
@@ -122,19 +123,21 @@
   }
 }
 
-.link-hint-marker {
+.link-hint-marker,
+.link-hint-marker-exiting {
+  @include hint.badge;
   position: fixed;
-  background: var(--pine);
-  color: var(--light);
-  padding: 0.2rem 0.4rem;
-  border-radius: var(--radius-none);
-  font-size: 9px;
-  font-weight: bold;
-  font-family: var(--codeFont);
   z-index: var(--z-max);
-  pointer-events: none;
-  box-shadow: none;
-  text-transform: uppercase;
+}
+
+.link-hint-marker {
+  @include hint.shown;
+}
+
+.link-hint-typed {
+  color: var(--dark);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
 }
 
 kbd.clickable {

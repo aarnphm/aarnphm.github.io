@@ -7,6 +7,7 @@ import {
 import { STREAM_HOSTNAME } from '../../util/stream-host'
 import { TRIATHLON_HOSTNAME } from '../../util/triathlon-host'
 import { registerEscapeHandler } from './escape-handler'
+import { createLinkHints } from './keybind/link-hints'
 import { currentNavSignal } from './nav-lifecycle'
 
 type Browser = 'Safari' | 'Chrome' | 'Firefox' | 'Edge' | 'Opera' | 'Other'
@@ -243,9 +244,6 @@ document.addEventListener('nav', () => {
     return palette?.classList.contains('active') ?? false
   }
 
-  // Character set used for link hint markers
-  const HINT_CHARS = 'asdfghjklzxcvbnm'
-
   // Track 'g' key for 'gg' sequence
   let waitingForSecondG = false
   let ggTimeout: number | null = null
@@ -347,218 +345,7 @@ document.addEventListener('nav', () => {
   document.addEventListener('keydown', suppressPaletteBindings, true)
   window.addCleanup(() => document.removeEventListener('keydown', suppressPaletteBindings, true))
 
-  // Link hints mode state
-  let hintsActive = false
-  let hintElements: Array<{ element: HTMLElement; hint: string }> = []
-  let hintMarkers: HTMLElement[] = []
-  let typedHint = ''
-
-  // Generate hint strings (up to 4 chars)
-  function generateHints(count: number): string[] {
-    const chars = HINT_CHARS
-    const hints: string[] = []
-
-    if (count <= chars.length) {
-      // Single character hints
-      for (let i = 0; i < count; i++) {
-        hints.push(chars[i])
-      }
-    } else if (count <= chars.length * chars.length) {
-      // Two character hints
-      for (let i = 0; i < chars.length && hints.length < count; i++) {
-        for (let j = 0; j < chars.length && hints.length < count; j++) {
-          hints.push(chars[i] + chars[j])
-        }
-      }
-    } else if (count <= chars.length * chars.length * chars.length) {
-      // Three character hints
-      for (let i = 0; i < chars.length && hints.length < count; i++) {
-        for (let j = 0; j < chars.length && hints.length < count; j++) {
-          for (let k = 0; k < chars.length && hints.length < count; k++) {
-            hints.push(chars[i] + chars[j] + chars[k])
-          }
-        }
-      }
-    } else {
-      // Four character hints
-      for (let i = 0; i < chars.length && hints.length < count; i++) {
-        for (let j = 0; j < chars.length && hints.length < count; j++) {
-          for (let k = 0; k < chars.length && hints.length < count; k++) {
-            for (let l = 0; l < chars.length && hints.length < count; l++) {
-              hints.push(chars[i] + chars[j] + chars[k] + chars[l])
-            }
-          }
-        }
-      }
-    }
-
-    return hints
-  }
-
-  // Check if element is visible and clickable
-  function isElementVisible(el: HTMLElement): boolean {
-    // Special case: clipboard buttons can be invisible but still interactable
-    const isClipboardButton = el.classList.contains('clipboard-button')
-    if (isClipboardButton) {
-      return true
-    }
-
-    const rect = el.getBoundingClientRect()
-    const style = window.getComputedStyle(el)
-
-    return (
-      rect.width > 0 &&
-      rect.height > 0 &&
-      rect.top < window.innerHeight &&
-      rect.bottom > 0 &&
-      rect.left < window.innerWidth &&
-      rect.right > 0 &&
-      style.visibility !== 'hidden' &&
-      style.display !== 'none' &&
-      style.opacity !== '0'
-    )
-  }
-
-  // Collect all clickable elements
-  function collectClickableElements(): HTMLElement[] {
-    // Check for various active modals and scope to them
-    let rootElement: Element | null = null
-
-    // Check arena modal
-    const arenaModal = document.querySelector('#arena-modal') as HTMLElement | null
-    if (
-      arenaModal &&
-      arenaModal.classList.contains('active') &&
-      window.getComputedStyle(arenaModal).display !== 'none'
-    ) {
-      rootElement = arenaModal.querySelector('.arena-modal-content')
-    }
-
-    // Check reader mode
-    if (!rootElement) {
-      const readerView = document.querySelector('.reader') as HTMLElement | null
-      if (
-        readerView &&
-        readerView.classList.contains('active') &&
-        window.getComputedStyle(readerView).display !== 'none'
-      ) {
-        rootElement = readerView.querySelector('.reader-content')
-      }
-    }
-
-    // Check headings modal
-    if (!rootElement) {
-      const headingsModal = document.querySelector<HTMLDialogElement>('dialog.headings-modal')
-      if (headingsModal?.open) {
-        rootElement = headingsModal.querySelector('.headings-list')
-      }
-    }
-
-    // Default to quartz root
-    if (!rootElement) {
-      rootElement = document.querySelector('#quartz-root')
-    }
-
-    if (!rootElement) return []
-
-    const selectors = [
-      'a[href]',
-      'button',
-      'span[role="button"]',
-      'div[role="button"]',
-      '[onclick]',
-      'input[type=submit]',
-      'input[type=button]',
-      'label',
-      '.clipboard-button',
-    ]
-
-    const elements: HTMLElement[] = []
-    const seen = new Set<HTMLElement>()
-
-    selectors.forEach(selector => {
-      rootElement.querySelectorAll(selector).forEach(el => {
-        const htmlEl = el as HTMLElement
-        if (!seen.has(htmlEl) && isElementVisible(htmlEl)) {
-          elements.push(htmlEl)
-          seen.add(htmlEl)
-        }
-      })
-    })
-
-    return elements
-  }
-
-  // Show hint markers
-  function showHints() {
-    const elements = collectClickableElements()
-    if (elements.length === 0) return
-
-    const hints = generateHints(elements.length)
-    hintElements = elements.map((el, i) => ({ element: el, hint: hints[i] }))
-    typedHint = ''
-
-    hintElements.forEach(({ element, hint }) => {
-      const rect = element.getBoundingClientRect()
-      const marker = document.createElement('div')
-      marker.className = 'link-hint-marker'
-      marker.textContent = hint
-      marker.style.top = `${rect.top}px`
-      marker.style.left = `${rect.left}px`
-
-      document.body.appendChild(marker)
-      hintMarkers.push(marker)
-    })
-
-    hintsActive = true
-  }
-
-  // Clear hint markers
-  function clearHints() {
-    hintMarkers.forEach(marker => marker.remove())
-    hintMarkers = []
-    hintElements = []
-    typedHint = ''
-    hintsActive = false
-  }
-
-  // Handle hint typing
-  function handleHintKey(key: string) {
-    typedHint += key.toLowerCase()
-
-    // Find matching hints
-    const matches = hintElements.filter(({ hint }) => hint.startsWith(typedHint))
-
-    if (matches.length === 0) {
-      // No matches - reset
-      clearHints()
-      return
-    }
-
-    if (matches.length === 1 && matches[0].hint === typedHint) {
-      // Exact match - click the element
-      const { element } = matches[0]
-      clearHints()
-      element.click()
-      return
-    }
-
-    // Update markers to show only matching hints
-    hintMarkers.forEach((marker, i) => {
-      const { hint } = hintElements[i]
-      if (hint.startsWith(typedHint)) {
-        // Highlight typed portion
-        const typed = hint.slice(0, typedHint.length)
-        const remaining = hint.slice(typedHint.length)
-        const typedSpan = document.createElement('span')
-        typedSpan.style.opacity = '0.5'
-        typedSpan.textContent = typed
-        marker.replaceChildren(typedSpan, document.createTextNode(remaining))
-      } else {
-        marker.style.display = 'none'
-      }
-    })
-  }
+  const linkHints = createLinkHints(signal)
 
   function activeNotebookCellIndex(cells: HTMLElement[]): number {
     const active = activeNotebookCellFrame(document)
@@ -615,27 +402,7 @@ document.addEventListener('nav', () => {
       return
     }
 
-    // Handle hint mode
-    if (hintsActive) {
-      if (e.key === 'Escape') {
-        e.preventDefault()
-        clearHints()
-        return
-      }
-
-      // Check if key is a hint character
-      if (
-        e.key.length === 1 &&
-        HINT_CHARS.includes(e.key.toLowerCase()) &&
-        !e.ctrlKey &&
-        !e.metaKey
-      ) {
-        e.preventDefault()
-        handleHintKey(e.key)
-        return
-      }
-      return
-    }
+    if (linkHints.handleKeydown(e)) return
 
     if (e.ctrlKey || e.metaKey || e.altKey) {
       clearGPrefix()
@@ -662,7 +429,7 @@ document.addEventListener('nav', () => {
     switch (e.key) {
       case 'f':
         e.preventDefault()
-        showHints()
+        if (!e.repeat) linkHints.show()
         break
 
       case 'j':
@@ -782,19 +549,9 @@ document.addEventListener('nav', () => {
   document.addEventListener('keydown', vimNavigationHandler)
   document.addEventListener('keydown', ctrlScrollHandler)
 
-  // Clear hints on scroll or resize
-  const clearHintsOnScroll = () => {
-    if (hintsActive) clearHints()
-  }
-  window.addEventListener('scroll', clearHintsOnScroll, { passive: true })
-  window.addEventListener('resize', clearHintsOnScroll)
-
   window.addCleanup(() => {
     document.removeEventListener('keydown', vimNavigationHandler)
     document.removeEventListener('keydown', ctrlScrollHandler)
-    window.removeEventListener('scroll', clearHintsOnScroll)
-    window.removeEventListener('resize', clearHintsOnScroll)
-    clearHints()
     clearGPrefix()
   })
 
