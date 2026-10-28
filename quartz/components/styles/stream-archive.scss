@@ -9,11 +9,6 @@
     --stream-year-offset: var(--stream-group-height);
   }
 
-  &[data-stream-view='year'],
-  &[data-stream-view='month'] {
-    margin-top: 1.5rem;
-  }
-
   &[data-stream-view='index'],
   &[data-stream-view='year'] {
     --stream-month-offset: var(--stream-group-height);
@@ -80,8 +75,7 @@
   box-sizing: border-box;
   padding: 0;
   > .stream-legend > .stream-legend-groups,
-  > .stream-legend-groups,
-  > .stream-legend-table {
+  > .stream-legend > .stream-legend-table {
     box-sizing: border-box;
     border-top: 1px solid var(--stream-line);
     border-inline: 1px solid var(--stream-line);

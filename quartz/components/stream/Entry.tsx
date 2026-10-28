@@ -208,7 +208,6 @@ export const renderStreamEntry = (
             href={onPath}
             data-stream-group-id={options.groupId}
             data-stream-timestamp={timestampAttr}
-            data-stream-href={onPath}
             data-stream-link
             aria-label={ariaLabel ?? undefined}
           >

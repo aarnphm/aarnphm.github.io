@@ -192,12 +192,7 @@ const hydrateStream = (): void => {
   const isStreamHost = window.location.hostname === STREAM_HOSTNAME
   const canonicalizePath = (path: string): string =>
     isStreamHost ? streamHostPathname(path) : path
-  const canonicalPath = canonicalizePath(root.dataset.streamCanonical ?? '/stream')
   const sentinel = root.querySelector<HTMLElement>('[data-stream-feed-sentinel]')
-  const originalUrl = new URL(window.location.href)
-  const originalSearch = originalUrl.search
-  const originalHash = originalUrl.hash
-  let activeTimestamp: string | null = null
   let manifestRequest: Promise<StreamManifestGroup[]> | null = null
   const groupDocumentRequests = new Map<string, Promise<Document>>()
   let refreshVirtualFeed = (): void => {}
@@ -227,13 +222,6 @@ const hydrateStream = (): void => {
   const streamEntries = (): HTMLElement[] =>
     Array.from(feed.querySelectorAll<HTMLElement>(':scope > [data-entry-id]'))
 
-  const streamLinks = (): HTMLAnchorElement[] =>
-    Array.from(
-      feed.querySelectorAll<HTMLAnchorElement>(
-        '.stream-entry-date[data-stream-link][data-stream-timestamp]',
-      ),
-    )
-
   const notifyProtectedContent = (): void => {
     document.dispatchEvent(
       new CustomEvent('protectedcontentloaded', { detail: { container: root } }),
@@ -256,48 +244,16 @@ const hydrateStream = (): void => {
     if (hasEntryTarget && entryId) root.dataset.streamActiveEntry = entryId
     else root.removeAttribute('data-stream-active-entry')
 
-    if (activeTimestamp) root.dataset.streamActiveTimestamp = activeTimestamp
-    else root.removeAttribute('data-stream-active-timestamp')
-
     for (const entry of entries) {
       const matchesEntry = hasEntryTarget && entry.dataset.entryId === entryId
-      const matchesTimestamp =
-        activeTimestamp !== null && entry.dataset.streamTimestamp === activeTimestamp
-      const visible = hasEntryTarget ? matchesEntry : activeTimestamp === null || matchesTimestamp
-      entry.hidden = !visible
-      entry.classList.toggle('stream-entry-active', matchesEntry || matchesTimestamp)
-    }
-    for (const link of streamLinks()) {
-      const active = activeTimestamp !== null && link.dataset.streamTimestamp === activeTimestamp
-      link.classList.toggle('is-active', active)
-      if (active) link.setAttribute('aria-current', 'page')
-      else link.removeAttribute('aria-current')
+      entry.hidden = hasEntryTarget && !matchesEntry
+      entry.classList.toggle('stream-entry-active', matchesEntry)
     }
     if (sentinel?.isConnected) {
-      sentinel.hidden = activeTimestamp !== null || root.dataset.streamSearchActive === 'true'
+      sentinel.hidden = root.dataset.streamSearchActive === 'true'
     }
     refreshVirtualFeed()
     notifyProtectedContent()
-  }
-
-  const applyHistory = (path: string): void => {
-    const url = new URL(window.location.href)
-    url.pathname = path
-    url.search = originalSearch
-    url.hash = originalHash
-    window.history.replaceState(window.history.state, '', url)
-  }
-
-  const timestampForPath = (path: string): string | null => {
-    for (const entry of streamEntries()) {
-      const href = entry.dataset.streamHref
-      if (href && canonicalizePath(href) === path) return entry.dataset.streamTimestamp ?? null
-    }
-    for (const link of streamLinks()) {
-      const href = link.dataset.streamHref
-      if (href && canonicalizePath(href) === path) return link.dataset.streamTimestamp ?? null
-    }
-    return null
   }
 
   const mountEntry = (entry: HTMLElement, group: StreamManifestGroup): void => {
@@ -410,64 +366,6 @@ const hydrateStream = (): void => {
     if (searchCleanup) cleanups.push(searchCleanup)
   }
 
-  const onClick = (event: MouseEvent): void => {
-    if (
-      !isRoot ||
-      root.dataset.streamSearchActive === 'true' ||
-      event.button !== 0 ||
-      event.metaKey ||
-      event.ctrlKey ||
-      event.shiftKey ||
-      event.altKey
-    )
-      return
-    const target = event.target
-    if (!(target instanceof Element)) return
-    const link = target.closest<HTMLAnchorElement>(
-      '.stream-entry-date[data-stream-link][data-stream-timestamp]',
-    )
-    if (!link || !feed.contains(link)) return
-    const timestamp = link.dataset.streamTimestamp
-    const href = link.dataset.streamHref
-    if (!timestamp || !href) return
-    event.preventDefault()
-    activeTimestamp = activeTimestamp === timestamp ? null : timestamp
-    applyHistory(activeTimestamp ? canonicalizePath(href) : canonicalPath)
-    applyFilters()
-    link.focus({ preventScroll: true })
-    window.scrollTo({ top: 0, behavior: 'instant' })
-  }
-
-  const onKeydown = (event: KeyboardEvent): void => {
-    if (event.key !== 'Escape' || activeTimestamp === null) return
-    event.preventDefault()
-    activeTimestamp = null
-    applyHistory(canonicalPath)
-    applyFilters()
-  }
-
-  const onFocusout = (): void => {
-    window.setTimeout(() => {
-      if (signal.aborted || activeTimestamp === null) return
-      const active = document.activeElement
-      if (active instanceof Node && root.contains(active)) return
-      activeTimestamp = null
-      applyHistory(canonicalPath)
-      applyFilters()
-    }, 0)
-  }
-
-  const onPopstate = (): void => {
-    activeTimestamp = isRoot ? timestampForPath(window.location.pathname) : null
-    applyFilters()
-  }
-
-  root.addEventListener('click', onClick, { signal })
-  root.addEventListener('keydown', onKeydown, { signal })
-  root.addEventListener('focusout', onFocusout, { capture: true, signal })
-  window.addEventListener('popstate', onPopstate, { signal })
-
-  if (isRoot) activeTimestamp = timestampForPath(window.location.pathname)
   applyFilters()
 
   window.addCleanup(() => {
