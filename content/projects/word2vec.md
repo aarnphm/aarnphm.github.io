@@ -12,7 +12,7 @@ tags:
   - ml
 title: word2vec
 notebook:
-  - "[[thoughts/Machine learning|Machine learning]]"
+  - '[[thoughts/Machine learning|Machine learning]]'
 ---
 
 letter-sized notes on building a recommendation system grounded in word2vec-style embeddings and distributional semantics.

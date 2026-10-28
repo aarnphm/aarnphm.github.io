@@ -11,120 +11,106 @@ title: Spinoza
 
 ## Ethics (1677)
 
-Deus sive Nature
-European considered Spinoza as Atheist => but his works mentioned God
+_Deus sive Natura_: God, or Nature (Part IV, preface). The Amsterdam Jewish community expelled Spinoza in 1656, and many readers called him an atheist. The _Ethics_ still talks about God on almost every page. The question is what he means by the word.
 
 ## God of the Philosophers/Metaphysicians
 
-- Unmoved Mover of Aristotle (pre-Socratic Ionian Xenophanes)
+- Aristotle's unmoved mover (_Metaphysics_ XII). Xenophanes had already described one god who does not move and who thinks.
+- A god reached by argument, valued by philosophers for explaining the world. It is a different god from the one ordinary believers pray to.
+- No personal attachments: Spinoza's God loves and hates no one (5P17 corollary).
 
-=> Value of philosophers esteemed, not the value of the normal being
+Monotheism: God $\neq$ nature. God creates nature and stays outside it.
 
-- Not a personal being with loves or being
-- but more rationalistic god
+Spinoza: God = nature. God is the most powerful and perfect being, and nature is that being.
 
-Monotheistic
+## Substance
 
-God $\neq$ nature => God creates nature
+**Aristotle**: a substance is neither said of a subject nor exists in a subject (_Categories_ 5, 2a11). This horse is a substance; its color exists in the horse.
 
-Spinoza: God = nature
+**Descartes**: strictly only God is a substance, but created things divide into two kinds of substance, mind and body (_Principles_ I.51–53). This is his dualism.
 
-- powerful, perfect being
+**Parmenides**: one should say and think only that Being is (fragment B6). Being is single and numerically one.
 
-Substances
+**Spinoza**: substance is "what is in itself and is conceived through itself" (1D3). Combine this with Parmenides's conclusion and there can be only one substance.
 
-**Aristotle**: Substance is that which exists in itself and not in another
+What is it like? One infinite being that is alive, intelligent and all-powerful, and that is also material and spatial.
 
-**Descartes**: Two substances, mental and physical (dualism)
+> God is not a transcendent, supernatural cause. God is nature. God is the immanent cause of all things (1P18).
 
-**Parmenides**: "Say and think only this: Being is" A single substance, numerically one.
+## Self-caused
 
-**Spinoza**: Combine the conclusion of Aristotle about what substance is with the argument of Parmenides, that there can be only one _single one substance_
+A cause of itself (_causa sui_) is that whose essence involves existence (1D1). Its nature cannot be conceived except as existing.
 
-What is this?
-One being is alive, infinite, intelligent, all-powerful
-material, spacial
-
-> God is not transcend natural, not super nature cause
-> God is nature
-
-## Substances
-
-(1D3)
-
-Substance is cause of itself, causa sui
-
-Cause of itself (causa sui) = necessary existence
-
-Something that doesn't exist but how it can beomce?
-
-Substances has no cause, belongs to the substance it is
-
-It has to exists, essence includes existence
+Substance cannot be produced by anything else (1P6 corollary). Nothing outside it causes it, so its existence must come from its own nature (1P7). It has to exist.
 
 ## Monism
 
 > Substance is unique. There exists only one substance. Not one _kind_ of substance, but _numerically one single substance_
 
-1. Something exists
-2. What ever exists has a sufficient cause
-3. Therefore a causa sui substance must exist, and
-4. There is at most one
+The lecture's version, from the principle of sufficient reason:
 
-Why one?
+1. Something exists.
+2. Whatever exists has a sufficient cause.
+3. Therefore a self-caused substance must exist.
+4. There is at most one.
 
-1. If there are two causa sui substances, must be difference
-2. If there is a difference, then there must be a cause
-3. One causa sui substance cannot cause change in another self-caused being
+Why at most one?
 
-## Aristotle's Idea of Substance
+1. Two self-caused substances would have to differ in something.
+2. A difference needs a cause.
+3. One self-caused substance cannot cause anything in another, since each is conceived through itself (1P6). Nothing could ground the difference.
 
-Color does not exists in the horse, instead of the form
+Spinoza's own route in Part I:
 
-Horse would exists with itself?
+1. Two substances cannot share an attribute (1P5).
+2. God has all attributes (1D6).
+3. So any second substance would share an attribute with God. There is no substance except God (1P14).
+
+## Aristotle and Spinoza on substance
+
+For Aristotle the color exists in the horse, and the horse exists in nothing else. The horse is a primary substance. For Spinoza the horse is itself "in another": it is a mode of God.
 
 > Nature is not a totality of things
 
+Finite things are modifications of one substance. Nature is the substance they modify, and the finite things are not parts added together to make it.
+
 ## Mode and Attribute
 
-**Attribute**: That which is intellect perceives of substances as constituting its essence (1D4)
+**Attribute**: "that which the intellect perceives of a substance as constituting its essence" (1D4).
 
-Substances has inf attributes, each attributes has inf mode
+Substance has infinitely many attributes, and each attribute has infinitely many modes.
 
-**Mode**: The affections of a stubstance; that is, that which is in something else and conceived through somethign else (1D5)
+**Mode**: "the affections of a substance, or that which is in another through which it is also conceived" (1D5).
 
-Each mode is connected, can be modified by others
+Finite modes are connected: each is caused by other finite modes, without end (1P28).
 
-"Mode" = modification, modality way. A mode of substance is a modification of it, some way in which substnace is modified.
+"Mode" = modification, a way of being. A mode of substance is some way in which substance is modified.
 
-"Conceived through" = explained by, made intelligible, reasonable by
+"Conceived through" = explained by, made intelligible by.
 
-## Spinoza's idea of Substances (=God)
+## Spinoza's idea of Substance (= God)
 
-One single, infinite, eternal, complex substance, comprising infinitely many modes of infinitely many attributes
+One single, infinite, eternal substance, comprising infinitely many attributes, each expressed in infinitely many modes.
 
-Substances > Attribute > Mode
+Substance > Attribute > Mode
 
-Invisibility implies corruption
+Divisibility implies corruption. If substance could be divided, its parts would either keep its nature, so there would be several substances, or lose it, so substance could stop existing (1P12, 1P13).
 
-God can't have parts and pieces
+God can't have parts and pieces. Is God divisible? No: an absolutely infinite substance is indivisible (1P13). Bodies look divisible only when we picture them in the imagination (1P15 scholium).
 
-Is god divisible?
+Definition 6: "By God I mean a being absolutely infinite, that is, a substance consisting of infinite attributes, each of which expresses eternal and infinite essence."
 
-Definition 6: By God I emean an absolutely infinite being; that is, substances
-
-Proposition 11:
+Proposition 11: "God, or a substance consisting of infinite attributes, each of which expresses eternal and infinite essence, necessarily exists."
 
 ### Method for the proof of god
 
-Ontological Proof: Explain God as a being that cannot not exist. God's essence includes existence
+Ontological proof: God is a being that cannot fail to exist, because God's essence includes existence.
 
-Cosmological Proof: God is the first cause, the ultimate cause of everything else. Without God the chain of cause and effect would recede forever, and the world would be without a rational foundation.
-Aristotle's proof of the Unmoved Mover in Metaphysics was this type of proof
+Cosmological proof: God is the first cause of everything else. Without God the chain of cause and effect would go back forever, and the world would have no rational foundation. Aristotle's proof of the unmoved mover in the _Metaphysics_ has this form.
 
-Teleological Proof ("Design argument"): Nature shows evidence of intelligent design. <- Spinoza rejects the _Teleological proof_. His three arguments in Proposition 11
+Teleological proof ("design argument"): nature shows evidence of intelligent design. Spinoza rejects it. Explaining nature by purposes projects human wants onto God (Part I, appendix). None of his three demonstrations of Proposition 11 uses it.
 
-#### Reduction of Absurdity (reductio ad absurdum)
+#### Reduction to absurdity (reductio ad absurdum)
 
 ```prolog
 To prove P:
@@ -135,25 +121,32 @@ To prove P:
   therefore P
 ```
 
-First proof: (ontological argument)
+First proof (ontological):
 
-1. Suppose God does not exist
-2. Axiom 7: If a thing can be conceived as not existing, its essence does not involve existence
-3. Prop. 7: Existence belongs to the nature of substance. - Why?
-   a. Substance cannot be produced by another
-   b. So, from def.1, substance is self-caused, also its essence involves existence
-4. The hypothetical non-existence of God reduces to contradiction
+1. Suppose God does not exist.
+2. Axiom 7: if a thing can be conceived as not existing, its essence does not involve existence.
+3. Proposition 7: existence belongs to the nature of substance. Why?
+   a. Substance cannot be produced by another.
+   b. So, by Definition 1, substance is self-caused, and its essence involves existence.
+4. God is a substance, so the supposed non-existence of God contradicts Proposition 7.
 5. Therefore, God exists.
 
-Second proof: (cosmological argument)
+Second proof (cosmological):
 
-1. For everything, there must be a cause, either of its existence or its nonexistence.
-2. The cause, whether of existence or non-existence, is either in the thing or in another
+1. For everything there must be a cause, either of its existence or of its nonexistence.
+2. The cause, whether of existence or non-existence, is either in the thing or in another.
 3. A thing necessarily exists if no cause prevents its existence.
-4. So, if God does not exist, there must be a cause of non-existence, and this cause must be in another
-5. What causes God not to exist must absolutely exclude God from being, and can therefore have nothing in common with God
-6. If two things have nothing in common, one cannot prevent the other's existence
-7. Therefore, no cause prevents God's existence
+4. God's nature does not contain a contradiction, so if God does not exist, the cause of non-existence must be in another thing.
+5. What prevents God from existing would have to be another substance with nothing in common with God.
+6. If two things have nothing in common, one cannot cause anything in the other (1P3).
+7. Therefore, no cause prevents God's existence.
 8. So, God exists.
 
-> There is nothing of which we can be more certain than the existence of an absolutely infinite or perfect entity
+Third proof (from power):
+
+1. Being able to not exist is a lack of power; being able to exist is power.
+2. Suppose only finite things necessarily exist. Then finite things would be more powerful than an absolutely infinite being, which is absurd.
+3. We exist, either in ourselves or in something else that necessarily exists.
+4. So an absolutely infinite being necessarily exists.
+
+> There is nothing of which we can be more certain than the existence of an absolutely infinite or perfect being, that is, God. (1P11 scholium)

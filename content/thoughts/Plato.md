@@ -13,370 +13,118 @@ title: Plato
 
 # Apology
 
-- Defence against charges against them
-- Promote study under the earth and sky
-- Corrupt youth use of Athens -> promote new gods (last for 1 day)
+Plato presents Socrates' defence at his trial in Athens in 399 BCE. This is a composed account of the speech, so Socrates here means Plato's Socrates.
 
-Poisons
+Two sets of accusations matter ([_Apology_ 18a–24b](https://classics.mit.edu/Plato/apology.html)):
 
-- Contrary to the charges -> never takes money for instruction
-  - Available to anyone without any fees -> Socrates didn't teach, just talk in public
-  - Converse with knowledgable -> these ppl never shares their wisdom
-  - Socrates go after people?
-    - Need to embarrass them?
-    - Oracle at Delphi -> Anyone wiser than Socrates?
-      - No one is wiser than Socrates
-    - Socrates doesn't feel wise?
-      - Enquire about what _wisdom_ is?
-    - Enquire knowledgable -> bored
-    - Enquire poets -> Wisdom doesn't come from poets (poets inspired from wisdom of the god)
-    - Enquire technicians -> not the right source of knowledge for wisdom
-      - Craftman == incapable of explain why he does what he does --> verbal explanation is irrelevant
+- The old public image: a natural philosopher who studies the sky and the earth, makes weak arguments defeat strong ones, and charges for teaching. Socrates denies that this describes his activity.
+- The formal indictment: corrupting the young and failing to acknowledge the city's gods while introducing new divine beings.
 
-> Wisdom can be used both for good and bad
+Socrates says that anyone can listen to him, rich or poor, without paying. He denies having a body of instruction that makes him responsible for everything a listener later does (33a–b).
 
-```poetry
-    Wisdom is a penetrate into the goods, not the bad
-```
+The oracle at Delphi said that nobody was wiser than Socrates. He tests this by questioning people reputed to be wise (20e–23b):
 
-Oracle at Delphi -> reputation for enigma (ironic, play with words)
+1. Politicians appear knowledgeable until they have to give an account of what they claim to know.
+2. Poets produce fine work, yet cannot adequately explain it. Socrates attributes their success to inspiration and questions the further wisdom they claim on its strength.
+3. Craftsmen really do know things he does not. Their mistake is treating expertise in a craft as authority about the most important human questions.
 
-Oracle could mock humanity
+His advantage is limited: where he lacks knowledge, he does not suppose that he possesses it. The oracle gives him a reason to keep examining people. It also explains the resentment: an audience may enjoy someone's embarrassment while the person being questioned blames Socrates.
 
-```poetry
-    No one is wiser than Socrates
-```
-
-- He is the wisest
-- No one is wise (Socrates is as wise, and he knows he is not wise -> no hope)
-- He is the wisest because he knows he is not wisest
-
-> He does not know anything **fine** and **good**
-
-Socrates posses no expertise in making goodness
-
-> Socrates: Mission to relentless for people to confront them for their ignorance, takes care of your soul
-
-Convicted by the stupidity of them all
+Does the examination need to embarrass people? What makes wisdom so good?
 
 ### Dialog
 
-_Dikasts_ -> Arguments:
+The _dikasts_ are the citizen jurors. Socrates argues that Meletus has not thought through the charge of corrupting the young. Meletus first treats practically everyone except Socrates as an improving influence; Socrates challenges this using the example of the few people capable of training horses. He then argues that deliberate corruption would expose him to harm from those around him (24c–26a).
 
-- Behaviour is not subversive, contrary to their beliefs, and doesn't harm the city
-- Actions are sanctified by the gods -> You don't understand anything
-- Follow his conscience rather than follow their democracy
-- Contempt towards democracy, Mockery
-- Democracy is a childish form of government
+Socrates says that he would continue philosophising even if acquittal required him to stop. His divine obligation takes priority over that demand (29c–30b). He also refuses to obtain acquittal by bringing his children before the jury to solicit pity: the jury should decide according to justice and its oath (34b–35d).
 
-> My trial will be equivalent to a doctor being prosecuted by a pastry-cook before a jury of children
+The doctor prosecuted by a pastry-cook before children belongs to [_Gorgias_ 521e–522a](https://classics.mit.edu/Plato/gorgias.html). It describes the political vulnerability of someone who improves people through unpleasant treatment. It is not a quotation from the _Apology_.
 
 #### Context of the trial
 
-- Athens -> democracy from 508 to 322 BCE
-- Peloponnesian War -> Sparta defats Athens
-- Alkibiades: friend of Socrates
-  - Dissolute
-  - Conflicted about this character
-    - Admire his charm, leadership quality
-    - Poty, aristocratic -> fear from his ambition
-    - Fear from friends of Alkibiades
-    - His family is from Spartan
-    - Charges for treason -> Sentenced to death -> Resurface in Spartan -> democracy is corrupted
-  - Assassination attempted
-  - Return to Athens as a hero
-  - 404 -> Athens accepted terms to surrender to Spartan
-  - Assassinated while traveling
+The trial follows Athens' defeat in the Peloponnesian War and the rule of the Thirty. Socrates' associations with Alcibiades and Critias form part of that political background. Calling him a scapegoat does not, by itself, establish why the jurors convicted him.
 
--> probable enemy of Democracy (Socrates) -> look for someone to blame
+His own defence includes resistance to two regimes. Under the democracy, he opposed an illegal collective trial of generals; under the Thirty, he refused an order to help arrest Leon for execution (_Apology_ 32a–e). His stated rule is to avoid injustice even when an authority demands it.
 
-- Because he was a friend of Alkibiades -> find scapegoat for a failing democracy
+_Reaction_: Convicted by the stupidity of them all.
 
-Among philoshophers, poets to be contempted with Athens democracy:
+The wider proposal that philosophers should rule belongs to the _Republic_ (473c–e). It requires education and knowledge of the good; inherited rank does not supply that knowledge. Keep this proposal separate from the defence speech and its particular jury.
 
-- Masses are childish, fickle, easily misled
-- Unnatural, tyranny of the weak over the strong
-- Confuses freedom with lack of restraint, favors flatterers
-- Inefficient
-
-> Government should be efficient -> chose the best person to govern
-
-Socratic rules would not be Aristocrat, rather experts, masters acquired by rulership.
-Philosophical rulers ->
-
-- Crucial to make them wise and knowledgable
-- Establish education -> reason well and follow reasons
-
-[[thoughts/Nietzsche|Nietzsche]] -> problems with Socrates
-
-- Reasoned and consciously sound
-- Un-examined mind is not worth living?
-
-> What makes wisdom so good?
+[[thoughts/Nietzsche|Nietzsche]] questions Socrates' commitment to reason. The unexamined life is not worth living (_Apology_ 38a): what makes examination worth this much?
 
 ## Socratic Idea of Good
 
-> Something is good when it contributes to the full flourishing of a human being in all our powers and faculties for the natural duration of life.
+The recurring demand is care for the soul: examine whether one's judgments and actions are just, instead of letting money, reputation or power decide what matters (_Apology_ 29d–30b).
 
-Know how to use all things in a way it tends good
+What does wisdom do for us? In [_Euthydemus_ 278e–282d](https://classics.mit.edu/Plato/euthydemus.html), possessions and abilities benefit us through their right use. Wisdom directs that use. Merely having more resources does not settle whether they make a life go well.
 
 What is not good might not be wise?
 
--> really cares about Athens, wisdom, then why not participate and join in debates?
+If Socrates really cares about Athens, why does he avoid its public debates? He says his divine sign, the _daimonion_, turns him away from proposed actions and has kept him from a political career. Someone consistently resisting public injustice would soon be killed (31c–32a). His examples of resisting both regimes also limit the claim that he never participated in public affairs.
 
-- Afraid participating in this democracy?
-  - Heard this voice -> never tells him what to do, speak against things from what he is considering doing
-  - Turned him away from doing wrong things
-  - Too honest to survive if occupied with justice
-  - Can't serve justice with service
-  - Man whose serve justice must live a private not public life
+At the trial the sign is silent, including during his defence. Socrates takes this as a reason to hope that the outcome is good (40a–c). His refusal to escape is argued separately in [_Crito_ 46b–54d](https://classics.mit.edu/Plato/crito.html), through the question of whether escape would be just.
 
--> Never does the voice tells him to defence himself
--> Thought about fleeing -> Voice told him not to
--> What happens after trial may be not a bad thing -> Death is not a bad thing
+He knows there is a life after death? The _Apology_ leaves two possibilities: dreamless unconsciousness or a migration of the soul (40c–41c). His claim that a good person cannot be harmed (41c–d) therefore needs its ethical sense kept in view: execution cannot force him to commit injustice. The trial plainly can kill him.
 
--> Socrates is unmoved after receiving death
-
-> You too must be a good hope in place of death. A good man cannot be harmed
-
-What you think to harm me harms you a lot more
-
-He knows there is a life after death ?
-
-> Divine mission: encourage Athenians in self-reflection for good moral life
-
-Difference
-
-- Gods are perfectly just and follow moral standard, whereas everyone else (Holmer show us Gods brought up death) doesn't
-- Poets: Gods bring meaningless suffering to people
-
--> Socrates thinks this is wrong, and poets should be defamed by not worshipping gods
-
-Virtuous
-
-- masculine
-
-- Conventionally good, knowledge within wisdom are good only if it is used wisely
-
-What does wisdom do for us?
-
-- Knowledge of the goods, and the power that comes with it
-- Knowing the good universally and philosophically, and from that
-
-> A good person cannot be harmed
-> The unexamined life is not worth living
-> Doing wrong is worse than suffering wrong
-> Riches and power contribute nothing to happiness. Only wisdom and virtue matter, and wisdom is the ultimate virtue
+Doing wrong is worse than suffering wrong is defended in _Gorgias_ 469b–c. The further claim that wrongdoing comes from ignorance concerns what an agent takes to be good; knowing a rule is not yet the wisdom Socrates seeks. These claims need arguments of their own.
 
 # Phaedo
 
-_by Plato_
-_a month later, Socrates' in jail, waiting for his execution_
+Socrates spends his last day discussing the soul with friends in prison. The sacred mission to Delos has delayed his execution (_Phaedo_ 58a–c). In prison he has composed a hymn to Apollo and put Aesop's fables into verse, responding to a recurring dream that told him to practise music (60d–61b).
 
-Tries to write poetry
+Death is the separation of soul and body. Philosophical training prepares for it by disciplining bodily desires and reasoning about things such as equality or justice themselves (64c–67e). This account depends on the soul being capable of thought apart from the body. Calling the body a distraction does not establish that independence.
 
-- Write to gods of Apollo (Oracle at Delphi)
-- fables of issa
-- Recurring dream across his life
-  -> ends with him hearing a voice: Socrates, practice art
+Is there another side? Life after death? The arguments seem contrived and unconvincing; identify the premise being asked for each time.
 
-_last day of life_
-jurors thinks death is the worst harm, yet Socrates said:
+1. **Opposites** (70c–72e). Waking comes from sleeping, and sleeping from waking. Socrates extends this pattern to life and death: the living must also come from the dead. The disputed step is whether that cycle applies to death and requires surviving souls.
+2. **Recollection** (72e–77a). Equal-looking sticks can fall short of Equality itself. Socrates argues that judging the shortfall requires prior acquaintance with Equality, acquired before birth. This assumes that sensory learning cannot explain the standard. Pre-existence would still leave survival after death to be shown.
+3. **Affinity** (78b–80b). Bodies resemble visible, changing, composite things; souls resemble intelligible and stable things. Socrates infers that a soul is less liable to dissolution. Resemblance to an indissoluble thing does not yet prove that a soul is indissoluble. Simmias' harmony and Cebes' weaver objections press the possibility that a soul could still perish (85e–88b).
+4. **Life-bearing soul** (102a–107b). What necessarily brings a property excludes its opposite: three brings oddness, fire brings heat, and soul brings life. Socrates argues that soul therefore excludes death. To establish survival he also needs the deathless to be indestructible, a further premise explicitly accepted in the dialogue. The argument depends on these Forms and their relation to souls, not merely on the definition of a living body.
 
-> That might be true for somebody. Philosophers should fear death less than anyone else
-> Philosophy is a apparition of practice of death
+[_Phaedo_, full text](https://www.platonicfoundation.org/translation/phaedo/), especially 105c–107b for the final distinction between excluding death and surviving destruction.
 
-What is death?
-
-- Turning away images of body, to intellectual form of ideas
-- Free their souls from the confusion of the mind
-- Body is an obstacle to knowledge
-- Truth is known by intellect, reasoning -> involves the best part of the body, ignoring all sense
-
-> The body confuses the soul and does not allow it to acquire truth and wisdom. As long as we have a body and our soul is fused with such an evil and well shall never adequately attain what we want, which truth.
-
-> If we are ever to have pure knowledge, we must escape from the body and observe things in themselves with the soul by itself. It seems likely that we shall attain. wisdom only when we are dead (65d-66e)
-
-Explains the value of philosophy as a preparation of death
-free of deception, sensory of self -> attain the wisdom that wait us from the other side
-Is there another side?
-
-Last hour:
-
-Prove: The soul cannot die.
-
-- Contrived and unconvincing
-- Life after death?
-
-Arguments:
-
-1. Arguments of survival
-   1. All things come into being from their opposite
-      Living come from the dead, and the dead comes from the living
-   - To have come from the dead the soul
-2. 1. Understanding of perfection is independent of sense experience
-      1. A _priori knowledge_: independent of experience
-      2. A _posterior knowledge_: depends on experience
-   2. To have knowledge independently of experience -> the soul must have been alive prior to bodily life -> will it survive death?
-   3. Yes, because a soul that exists before birth must come from something dead -> association with a living body is not essential to a soul
-      Do not require a living body to be a living soul
-3. Against soul scattering
-   - Soul can dissolve and scatter must be composite -> _What is composite changes, what is simple does not change_
-   - Ideas like Equality or Justice do not change -> Ideas are simple, not composite (simple = non-composite)
-   - Understanding ideas is a **pure** power of mind and does not depend on the body
-   - Since ideas are simple -> soul that understands them must also be simple
-   - So a soul does not consist of parts, is indivisible, and therefore cannot change
-   - So death cannot change the soul
-4. 1. Soul brings life to the body -> makes body a live, in the way that the form of the even make six, for of Hot make fire hot
-   2. The idea of Even cannot become odd, the idea of the hot cannot become cold.
-
-> Pythagorean: Soul is more than all of what makes a body -> Soul is a being in its own right, separate entity, detachable from body, which makes the body alive
-
-No one does evil without knowing that they are doing evil
-
-=> Conclude: Cannot harm a good man, cannot kill a soul, tranquil
-
-I shall no longer with you, offer his cup of poison -> reminds what is important
-
-Reserve to Crito:
-
-- We owe a cock to a Symposium. Make the offering and do not forgive
-
--> cure to a disease, from his body. Cannot trust from the world. It lacks things from what we need
--> The nether is much better
-
-Plato: Such was the end of the comrade. The men who does he knows
-
-Conquer the west
--> Western civilisation places a lot of sign in faith
+Socrates drinks the poison calmly. His final instruction to Crito concerns a cock owed to Asclepius (118a), the healing god. Reading this as gratitude for release from bodily life is an interpretation; the line does not state which illness has been cured. The dialogue ends with Phaedo's praise of his friend, rather than an independent confirmation of the afterlife.
 
 ### Symposium
 
-_some time after Socrates' death_
-_Agathon, a poet of tragedies, is the host_
+The banquet at Agathon's house takes place while Socrates is alive. A later narrator recounts it from another participant's report (_Symposium_ 172a–173b).
 
-> Soul is an abstraction from empirical knowledge.
+Alcibiades describes the conflict Socrates produces in him: he is ashamed of neglecting his soul, then returns to the public approval he wants (215a–216c). His attempted seduction treats his beauty as something to exchange for Socrates' wisdom. Socrates questions both the exchange and Alcibiades' estimate of what he would receive (217a–219d). Alcibiades' frustration does not establish that Socrates regards him as incapable of learning.
 
-Alkibiades, of Scocrates:
+Socratic irony needs attention to the particular exchange. In [_Euthyphro_ 4e–5a](https://classics.mit.edu/Plato/euthyfro.html), Socrates invites the man confidently prosecuting his own father to teach him what piety is. The invitation exposes Euthyphro's claim to knowledge to questioning. Calling everything Socrates says insincere would erase the inquiry along with the mockery.
 
-> This utterly unnatural, this truly extraordinary man ... this hopelessly arrogant, this unbelievably insolent man ... [of] amazing arrogance and pride ... he unique
-
-- Seduction: is a game wrt Socrates
-
--> Socrates life is one big game of irony
-
-Alkibiades: Seduction for a trade
-
-- invites Socrates to wrestle in the gym <-- doesn't work
-- drunk (no one has seen him drunk). Lies down -> makes move -> nothing
-
-> Finding yourself falling in love with Socrates
->
-> - Pretends to fall in love -> others will fall in love with him
-
-Ordinary irony: False --> to implies the opposite
-
-Socratic irony: Both is and is not seriously meant --> True in one way, false in another
-
-> _to Euthyphro_: You think that your knowledge of the divine, and of piety and impiety, is so accurate that ... you have no fear of having acted impiously in bringing your father to trial
-
-- Knowledge of divine is false --> false
-
---> Euthyphro: self-righteous fouls doesn't understand anything
-
-Angers when seeing Socrates falling for someone else.
-
-Future replicates the past. Love must be more than intense alliances from others.
-
-> Socrates can't teach anybody anything that they don't already know
->
-> - Alkibiades is so rough beneath the smooth surface -> not interesting to bring in as disciple
-> - Alkibiades knows himself too much to love, to be drawn to Socrates
-> - Maybe Alkibiades can be redeemed by philosophers
+Love must be more than intense alliances with others. Diotima's account moves from attachment to one beautiful body toward beautiful souls, practices, knowledge and Beauty itself (_Symposium_ 210a–212a). Alcibiades' speech brings that account back to a particular attachment that remains unresolved. [_Symposium_, full text](https://www.platonicfoundation.org/translation/symposium/).
 
 ## Republic
 
-1. Metaphysics: philosophical theory of being
+Metaphysics asks what there is and what it is. Plato's Forms are intelligible objects, such as Beauty itself, distinguished from the many beautiful things we perceive (_Republic_ 475e–480a). A sensible thing may appear beautiful in one respect and ugly in another; the Form supplies the stable object of inquiry.
 
-> To be is to be an idea.
-
-Idea means ideal form, means it is perfect, doesn't know by the triad or the body
-
-Idea is intelligible (things grasped by intellect), not sensible (sense-perceptible things) being.
-
-True reality is world of ideas and immaterial, changeless, ethereal, fully rational.
-
-> Opinions without knowledge are shameful and ugly things.
-
-Sounds are copy of ideas <- bad
-
-> Idea of good is the idea to make things to be good.
-
-1. Idea of good is the most important thing that everyone know
-   - By conforming this, everything else would be useful and beneficient
-   - Don't know the idea of good = everything else is useless
-
-> Obtain knowledge of good is the foundation of Platonic philosophy
-
-Merely believed to be true: Everyone wants what is good
-
-> Every souls persue the goods and do what it is good
-
-Can't understand our own goods without knowing how our own goods integrate with the best self of everything.
-
--> makes people the best of what they can be.
+Socrates makes knowledge of the Good necessary for the education of the rulers (504d–506b). Everyone pursues what they take to be good, so mistaken judgments about the good can misdirect a whole life or city. His claim still leaves the problem of explaining what the Good is. He offers the sun analogy because he is not giving a direct account of it (506d–e).
 
 Satisfied with opinion where knowledge is out there to be found?
 
-Opinion: doxa
-Knowledge: episteme
-Understanding: nous
-
-• Belief is liable to error, knowledge is not.
-• Belief can be changed by persuasion, knowledge cannot be.
-• Belief does not bring understanding, knowledge does.
-• True belief, right opinion, is still essentially belief or opinion,
-and cannot be knowledge since its truth is accidental.
-• Opinion is shameful because it is not a passive thing that
-innocently occurs to a person.
+_Doxa_ is opinion; _epistēmē_ is knowledge. Their distinction concerns their objects and the understanding one can give of them. A belief can happen to be true while its holder lacks an account of why it is true. The _Republic_'s divided line develops a more specific hierarchy of cognitive states (509d–511e).
 
 ### Sun: Visible Things : Sight
 
-Idea of good stands to intelligible things as intelligible things stand to understanding
+The analogy has two corresponding relations ([_Republic_ 507b–509c](https://classics.mit.edu/Plato/republic.7.vi.html)):
 
-Good illuminate to us understanding
+- The sun makes visible things visible and enables the eye to see them.
+- The Good makes intelligible things knowable and enables the mind to know them.
 
-- Cause of beings for ideas
-- Cause for knowledge
+Socrates extends the relation: the sun sustains growth, and the Good gives the objects of knowledge their being and essence. He places the Good beyond being in dignity and power (509b).
 
-Virtually all ideas (white light is virtually all colors)
+The divided line distinguishes four states (509d–511e):
 
---> Makes all minds to be true and understanding.
+1. _Eikasia_: apprehension of images, shadows and reflections.
+2. _Pistis_: belief concerning the visible things those images depict.
+3. _Dianoia_: reasoning from hypotheses, exemplified by mathematics.
+4. _Noēsis_: dialectical understanding that examines those hypotheses and seeks a first principle.
 
-> To understand is to focus intellect on the form, idea (stare into the sun and not be blinded)
-
-Understand an idea is understand what true being is.
-
-Knowledge knows what is is and must be it is
-
-Criterion of knowledge:
-
-- Infallibility, the impossibility of error
-
-Understanding (nous) --> Philosophy
-Beauty, justice are entities
-
-Thought (dianoia) --> Science
-
-- Requires some intellectual understanding -> thoughts
-- Hypothesis: first principle of science yet stayed unexplained
-
-Perception (aesthesis) --> Opinion
-
-> How do we understand philosophy?
+The mathematical diagram is visible; the square being studied is intelligible. Mathematical reasoning remains hypothetical when it takes its starting points for granted. Perception alone therefore does not name every state below philosophical understanding.
 
 ## Dialetic
 
-> Inquiry that systematically attempts to grasp with respect to each thing itself what they being of it is ( that is, the idea)
+Dialectic seeks an account of what each thing is and tests that account through objections. In [_Republic_ 532a–534c](https://classics.mit.edu/Plato/republic.8.vii.html), it examines the hypotheses the mathematical disciplines leave standing and aims to reach an unhypothetical first principle. A person who claims knowledge of the Good must be able to defend an account of it.
 
-Does away with presuppositions. It overcomes everything hypothetical in thought and leads to presuppositionless knowledge.
+How do we understand philosophy? Here the demand is to explain and defend one's starting points as well as the conclusions drawn from them. Whether Plato's proposed ascent reaches a secure first principle remains a question for the argument.

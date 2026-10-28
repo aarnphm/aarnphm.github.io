@@ -2,7 +2,7 @@
 date: '2023-10-18'
 description: the state of being.
 id: play
-modified: 2026-06-05 15:08:07 GMT-04:00
+modified: 2026-10-27 09:56:22 GMT-04:00
 tags:
   - pattern
   - philosophy
@@ -44,16 +44,16 @@ Can we shift [[thoughts/education#system|education system]] away from assessing 
 
 [Magic Circle](https://subconscious.substack.com/p/magic-circles) or [from squishy\[dot\]computer](https://newsletter.squishy.computer/p/magic-circles)
 
-- is a space which a game takes place. Once we step into it, we suspend the rules of life, allow the rules of the game to take over our interactions
+- A magic circle marks the space and time in which participants follow the rules of a game. Those rules give actions their meaning: moving a chess piece counts as a move because the players have agreed to play. The boundary remains permeable to ordinary life.
 
 - boundaries of magic circle often via ceremonies:
   - National Anthem before olympics game
   - Gong before yoga class
   - Walking down the aisle at a wedding
 
-=> similar to the idea of [liminal space](https://en.wikipedia.org/wiki/Liminality) in anthropology, or [Game of life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life)
+The threshold suggests a connection to [liminal space](https://en.wikipedia.org/wiki/Liminality) in anthropology. [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) raises a separate question about what rules can generate. Its cellular patterns follow fixed update rules; the magic circle concerns the meanings participants give to playing. [An interactive Life implementation](https://www.physics.umd.edu/hep/drew/life/) makes those update rules visible.
 
-Graeber on [What's the point of we can't have fun](https://davidgraeber.org/articles/whats-the-point-if-we-cant-have-fun/)
+Graeber on [What's the point if we can't have fun](https://davidgraeber.org/articles/whats-the-point-if-we-cant-have-fun/)
 
 > Why does the existence of action carried out for the sheer pleasure of acting, the exertion of powers for the sheer pleasure of exerting them, strike us as mysterious? What does it tell us about ourselves that we instinctively assume that it is?
 
@@ -63,16 +63,15 @@ Man plays only when he is in the full sense of the word a man
 Friedrich Schiller, 1795
 ```
 
-### [[tags/philosophy|philosophy]]
+### #philosophy
 
 > [!notes] Philosophy as play
 >
 > Involves a form of perspective shifting: trying on or inhabit alternative perspective
 
-Intellectual playfulness[^1], loosely, is the disposition to try out new ideas, perspectives and systems of thought (involves perspective shifting) for the sheer joy of it. It is a disposition to explore ideas for the value of exploration itself.
+C. Thi Nguyen calls trying out other belief systems for fun intellectual playfulness.[^1] An epistemic trap shapes what someone counts as evidence: a conspiracy theory can treat every challenge as further proof of the conspiracy. Play can prompt someone to explore a perspective their usual beliefs would dismiss. Nguyen argues that this offers a possible way out of such traps; enjoying an idea does not establish that it is true.
 
-- intellectually playful exploration sometimes can better serve the goal of finding the truth, than will exploration that is strictly aimed at finding the truth
-- it functions against epistemic traps: belief systems that undermine our epistemic efforts, leaving us stuck inside them
+[^1]: C. Thi Nguyen, [Playfulness Versus Epistemic Traps](https://philpapers.org/archive/NGUPVE.pdf)
 
 or also, [trying playing if you haven't in a while](https://zaira.blog/blog/try-playing-if-you-havent-in-a-while/)
 
@@ -88,12 +87,10 @@ To be playful about games is neither to be utterly serious, or utterly ironic, b
 
 > To be playful is to be pretentious
 
-#### Pretentious: Why It Matters by Daniel Fox
+#### pretentiousness
 
-- argues that pretentious invokes curiosity and creativity, instead of negative connotation
+In [[library/Pretentiousness|Pretentiousness: Why It Matters]], Dan Fox defends the room to try unfamiliar forms of art and ways of living. Calling someone pretentious can discourage that exploration, especially when it tells them to stay within their class or social role.
 
 Necessitates freedom, conditional freedom?
 
 Play often initiate some sort of pressure, such that it expects us to be a part of the construction.
-
-[^1]: excerpt from [Playfulness vs Epistemic Traps](https://philpapers.org/archive/NGUPVE.pdf)
