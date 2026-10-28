@@ -47,10 +47,18 @@ export interface ClampFit {
 export function mountClamps(article: HTMLElement, relayout: () => void, signal: AbortSignal) {
   const open = new Set<HTMLElement>()
   const controls = new Map<HTMLElement, HTMLButtonElement>()
-  const bodyOf = (entry: HTMLElement) => entry.querySelector<HTMLElement>('.fr-entry-body')!
+  // Inline folds reparent bodies outside their entries; keep their identity across layout passes.
+  const bodies = new Map(
+    [...article.querySelectorAll<HTMLElement>('.fr-entry')].map(entry => [
+      entry,
+      entry.querySelector<HTMLElement>('.fr-entry-body')!,
+    ]),
+  )
+  const bodyOf = (entry: HTMLElement) => bodies.get(entry)!
   for (const [i, entry] of [...article.querySelectorAll<HTMLElement>('.fr-entry')].entries()) {
     const body = bodyOf(entry)
     body.id ||= `fr-body-${entry.closest<HTMLElement>('.fr-group')?.dataset.n ?? 0}-${i}`
+    entry.querySelector('.fr-entry-label')?.setAttribute('aria-controls', body.id)
     const more = document.createElement('button')
     more.type = 'button'
     more.className = 'fr-btn fr-link fr-more'
