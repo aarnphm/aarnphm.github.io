@@ -116,6 +116,7 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
 
   // the number is the cross-reference; pointing at either side lights the other
   const siblings = new Map<HTMLElement, HTMLElement[]>()
+  const lights = new Map<HTMLElement, (on: boolean) => void>()
   for (const group of groups) {
     const anchor = anchors.get(group)!
     siblings.set(anchor, [...(siblings.get(anchor) ?? []), group])
@@ -128,6 +129,7 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
         for (const path of leaderOf.get(group) ?? []) path.classList.toggle('fr-hot', on)
       }
     }
+    for (const group of mine) lights.set(group, light)
     for (const node of [anchor, ...mine]) {
       node.addEventListener('pointerenter', () => light(true), { signal })
       node.addEventListener('pointerleave', () => light(false), { signal })
@@ -153,7 +155,8 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
   const clamps = mountClamps(article, () => queue(), signal)
 
   // a citation's reference sits in a margin bibliographie, which stands in for its popover; pointing
-  // at the citation opens a cut entry until the pointer leaves both, an open entry stays as it is
+  // at the citation lights the entry, its leader and number, and opens a cut entry until the pointer
+  // leaves both; an open entry stays as it is
   for (const cite of article.querySelectorAll<HTMLAnchorElement>('a[data-bib]')) {
     const id = decodeURIComponent(new URL(cite.href).hash.slice(1))
     const entry = id
@@ -162,17 +165,27 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
           ?.closest<HTMLElement>('.fr-entry')
       : null
     if (!entry) continue
+    const light = lights.get(entry.parentElement as HTMLElement)
+    let lit = false
     let held = false
     const release = (event: PointerEvent) => {
       const to = event.relatedTarget as Node | null
-      if (!held || (to && (cite.contains(to) || entry.contains(to)))) return
+      if (!lit || (to && (cite.contains(to) || entry.contains(to)))) return
+      lit = false
+      entry.classList.remove('fr-hot')
+      light?.(false)
+      if (held) clamps.hold(entry, false)
       held = false
-      clamps.hold(entry, false)
     }
     cite.addEventListener(
       'pointerenter',
       () => {
-        if (held || article.dataset.frMode !== 'margin') return
+        if (article.dataset.frMode !== 'margin') return
+        // back from the entry, whose group just went dark on leaving
+        light?.(true)
+        if (lit) return
+        lit = true
+        entry.classList.add('fr-hot')
         held = clamps.hold(entry, true)
       },
       { signal },
