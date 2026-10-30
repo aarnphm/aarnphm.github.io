@@ -1,13 +1,7 @@
 @use '../../mixin.scss' as *;
 
-// The text face is Source Serif 4 (Adobe, OFL), the face gwern.net sets its prose in. Subset to
-// Latin with old-style figures and true small capitals kept; a page downloads only the styles it
-// uses (~45kb for the roman). The files are served from the FONTS KV at /fonts/, like Parclo and
-// Berkeley Mono.
-@include font-face('Source Serif 4', 'source-serif-4-Regular.woff2', 'woff2', normal, 400);
-@include font-face('Source Serif 4', 'source-serif-4-It.woff2', 'woff2', italic, 400);
-@include font-face('Source Serif 4', 'source-serif-4-Semibold.woff2', 'woff2', normal, 600);
-@include font-face('Source Serif 4', 'source-serif-4-SemiboldIt.woff2', 'woff2', italic, 600);
+// The text face is Source Serif 4 (Adobe, OFL), the face gwern.net sets its prose in. Its
+// @font-face rules live in styles/fonts.scss with every other face (core + extended subsets).
 
 // callouts.scss pins margin-left with !important inside the base layer, and an unlayered
 // !important cannot beat a layered one, so the centring override has to live in that layer.
