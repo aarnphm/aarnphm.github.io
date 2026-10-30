@@ -5390,6 +5390,437 @@ title: are.na
 
 ## places
 
+- https://sangsgreat.nextcard.ai/ -- Sang's Great Seafood Restaurant
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant]
+    - coord: [43.6551644, -79.3986346]
+    - address: 343 Spadina Avenue, Toronto, ON M5T 2G3, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/Dd7kqfJpljI/
+- https://goo.gl/maps/t58xJyCGTZaQwAZD7 -- Imanishi Japanese Kitchen
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant]
+    - coord: [43.6496675, -79.4265348]
+    - address: 1330 Dundas Street West, Toronto, ON M6J 1Y1, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/Dd7kqfJpljI/
+- https://maps.app.goo.gl/7WANRgDyxCJPP3Ht8 -- Proper
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant]
+    - coord: [43.6508739, -79.4510691]
+    - address: 392 Roncesvalles Avenue, Toronto, ON M6R 2M9, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/Dd7kqfJpljI/
+- https://www.instagram.com/uh_bar/ -- UH Bar
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [bar]
+    - coord: [43.6493186, -79.42295519999999]
+    - address: 1221 Dundas Street West, Unit 5, basement, Toronto, ON M6J 1X3, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/Dd7kqfJpljI/
+- https://richmondstation.ca/ -- Richmond Station
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant]
+    - coord: [43.6514536, -79.3794917]
+    - address: 1 Richmond Street West, Toronto, ON M5H 3W4, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/Dd7kqfJpljI/
+- https://elijahsautomatic.com/ -- Elijah's Automatic
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant]
+    - coord: [43.6249034, -79.5079883]
+    - address: 821 The Queensway, Toronto, ON M8Z 1N6, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/Dd7kqfJpljI/
+- https://www.pompette.ca/bakery -- Bakery Pompette
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [bakery]
+    - coord: [43.654912, -79.4161963]
+    - address: 655 College Street, Toronto, ON M6G 1B7, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/Dd7kqfJpljI/
+- https://sugotoronto.com/ -- Sugo
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant]
+    - coord: [43.65834479999999, -79.4423589]
+    - address: 1281 Bloor Street West, Toronto, ON M6H 1N7, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/Dd7kqfJpljI/
+- https://www.instagram.com/no.idea.temporary/ -- No Idea
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [coffee shop, bar, sandwich shop]
+    - coord: [43.6496800, -79.4200200]
+    - address: 1110 Dundas Street West, Toronto, ON, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/Dd7kqfJpljI/
+- https://robotboilhouse.com/ -- Robot Boil House Yonge
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant]
+    - coord: [43.6746935, -79.3883431]
+    - address: 895 Yonge Street, Toronto, ON M4W 2H2, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/Dd7kqfJpljI/
+- https://goo.gl/maps/DQqGPn8GrCDF3SJf7 -- Fat Rabbit St. Catharines
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant]
+    - coord: [43.1615418, -79.2396747]
+    - address: 34 Geneva Street, St. Catharines, ON L2R 4M4, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/Dd7kqfJpljI/
+- https://maps.app.goo.gl/KHTxBLNFaKPHKvZA8 -- TigerBaby Coffee and Clay
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [coffee shop, workshops]
+    - coord: [43.6531705, -79.4275282]
+    - address: 977 College Street, Toronto, ON M6H 1A6, Canada
+    - later: true
+    - source: https://tigerbabycc.com/
+- https://www.lilianatoronto.com/ -- Liliana
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant]
+    - coord: [43.6427611, -79.4265867]
+    - address: 1198 Queen Street West, Toronto, ON M6J 1J6, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/De-bxAeNwZA/
+- https://maps.app.goo.gl/mqrBFyHBigcYVTzj9 -- Dreyfus
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant]
+    - coord: [43.6630633, -79.4033017]
+    - address: 96 Harbord Street, Toronto, ON, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/De-bxAeNwZA/
+- https://www.casapaco.ca/ -- Casa Paco
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant]
+    - coord: [43.6554814, -79.41410619999999]
+    - address: 50C Clinton Street, Toronto, ON M6G 2Y3, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/De-bxAeNwZA/
+- https://www.mineralto.com/mineral-home -- Mineral
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant]
+    - coord: [43.67780735, -79.3896187]
+    - address: 1027 Yonge Street, Toronto, ON M4W 2K9, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/De-bxAeNwZA/
+- https://whitelilydiner.ca/pages/location -- White Lily Diner
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant, diner]
+    - coord: [43.658694, -79.351167]
+    - address: 678 Queen Street East, Toronto, ON M4M 1G8, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DdpjBtqJlMt/
+- https://linnysrestaurant.com/contact/ -- Linny's
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant]
+    - coord: [43.648182, -79.42057]
+    - address: 176 Ossington Avenue, Toronto, ON M6J 2Z7, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DdpjBtqJlMt/
+- https://www.destinationtoronto.com/neighbourhoods/eastside/the-beaches/ -- The Beaches
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [places]
+    - coord: [43.6710244, -79.296712]
+    - address: The Beaches neighbourhood, Toronto, ON, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DdpjBtqJlMt/
+- https://mamasboysburgers.wixsite.com/mamasboysburgers -- Mama's Boys Burgers
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant]
+    - coord: [43.70862460000001, -79.2676998]
+    - address: 480 Danforth Road, Scarborough, Toronto, ON M1K 1C7, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DdpjBtqJlMt/
+- https://www.foxtheatre.ca/contact-us/ -- Fox Theatre
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [theatre]
+    - coord: [43.672842, -79.287292]
+    - address: 2236 Queen Street East, Toronto, ON M4E 1G2, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DdpjBtqJlMt/
+- https://www.estiatoriomilos.com/location/montreal/ -- Estiatorio Milos Montréal
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant]
+    - coord: [45.5217348, -73.6004519]
+    - address: 5357 avenue du Parc, Montréal, QC H2V 4G9, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DdpjBtqJlMt/
+- https://goo.gl/maps/GjTRg8sNWTCmaZVG7 -- Moishes
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant]
+    - coord: [45.5024522, -73.5623494]
+    - address: 1001 rue du Square-Victoria, Montréal, QC H2Z 2A8, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DdpjBtqJlMt/
+- https://schwartzsdeli.com/ -- Schwartz's Deli
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant]
+    - coord: [45.51635029999999, -73.5776401]
+    - address: 3895 boulevard Saint-Laurent, Montréal, QC H2W 1X9, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DdpjBtqJlMt/
+- https://maps.app.goo.gl/MBCHKjDE9Awhk7r66 -- Café Saint-Henri Centre-ville
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [coffee shop]
+    - coord: [45.500989, -73.564411]
+    - address: 1001 boulevard Robert-Bourassa, Montréal, QC H3B 4L5, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfDjo7boVwH/
+- https://maps.app.goo.gl/TKDVAMxWQSnBzD2K8 -- Nous Sommes Café × VOTTA
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [coffee shop]
+    - coord: [45.5042124, -73.5628609]
+    - address: 333 rue De La Gauchetière Ouest, Montréal, QC, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfDjo7boVwH/
+- https://ambroscoffee.com/pages/caf-alphabet -- Café Alphabet
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [coffee shop]
+    - coord: [45.5268082, -73.6024596]
+    - address: 5765 rue Clark, Montréal, QC H2T 2V5, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfDjo7boVwH/
+- https://maps.app.goo.gl/djVQLMW3WgCNthWU9 -- Escape Lab à Café
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [coffee shop]
+    - coord: [45.4912641, -73.5660303]
+    - address: 1420 rue Notre-Dame Ouest, Montréal, QC H3C 1K9, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfDjo7boVwH/
+- https://baultberri.com/ -- Maison BaultBerri
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [coffee shop]
+    - coord: [45.5145943, -73.5590898]
+    - address: 1275 rue Berri, Montréal, QC H2L 4X4, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfDjo7boVwH/
+- https://www.instagram.com/barratonlaveur/ -- Bar Raton Laveur
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [bar]
+    - address: 130 Foxley Place, Toronto, ON, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/Dd6jtNURXQf/
+- https://imanishisandobar.square.site/ -- Imanishi Sando Bar
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [sandwich shop, coffee shop]
+    - coord: [43.6470413, -79.4336391]
+    - address: 179 Brock Ave, inside McCormick Park, Toronto, ON, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/Dc9qKlyJoqt/
+- https://www.toronto.ca/explore-enjoy/parks-recreation/places-spaces/parks-and-recreation-facilities/location/?id=60&title=McCormick-Park -- McCormick Park
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [park]
+    - coord: [43.6469884, -79.4334992]
+    - address: 66 Sheridan Ave, Toronto, ON, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/Dc9qKlyJoqt/
+- https://samplemtl.com/ -- Sample Listening Bar
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [bar]
+    - coord: [45.5041073, -73.5538235]
+    - address: 101 rue de la Commune Ouest, Montréal, QC H2Y 2C7, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/Dd2TtS6OV4o/
+- https://radiciproject.ca/ -- Radici Project
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant]
+    - coord: [43.6553998, -79.4135591]
+    - address: 588 College St, Toronto, ON, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfDq5exJTTN/
+- https://www.instagram.com/wenonalodge/ -- Wenona Lodge
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [bar]
+    - coord: [43.6602979, -79.4327875]
+    - address: 1069 Bloor St W, Toronto, ON, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfDq5exJTTN/
+- https://www.takja.ca/ -- Takja BBQ House
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant]
+    - coord: [43.6535988, -79.4273958]
+    - address: 962 College St, Toronto, ON M6H 1A5, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfDq5exJTTN/
+- https://boxcarsocial.ca/pages/laneway -- Boxcar Social Laneway
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [coffee shop]
+    - coord: [43.6556368, -79.4093363]
+    - address: 298 Markham St, end of the laneway, Toronto, ON, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfDq5exJTTN/
+- https://voodoochildcafe.com/ -- Voodoo Child
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [coffee shop, bar]
+    - coord: [43.6570588, -79.4055011]
+    - address: 388 College St, Toronto, ON M5T 1S7, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfDq5exJTTN/
+- https://www.bakerbotsbaking.com/ -- Bakerbots Baking
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [bakery]
+    - coord: [43.6591254, -79.4399924]
+    - address: 1242 Bloor St W, Toronto, ON M6H 1N5, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfDq5exJTTN/
+- https://www.instagram.com/lamorenastclair/ -- La Morena St Clair
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant]
+    - coord: [43.6776366, -79.4434217]
+    - address: 1175A St Clair Ave W, Toronto, ON M6E 1B5, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfDq5exJTTN/
+- https://www.lachuperia.ca/ -- La Chuperia
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant, bar]
+    - coord: [43.654701, -79.4150269]
+    - address: 635 College St, Toronto, ON M6G 1B5, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfDq5exJTTN/
+- https://www.bathurstlocal322.com/ -- Bathurst Local
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [bar]
+    - coord: [43.6514918, -79.4058339]
+    - address: 322 Bathurst St, Toronto, ON M5T 2S3, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfDq5exJTTN/
+- https://www.civillibertiesbar.com/ -- Civil Liberties
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [bar]
+    - coord: [43.6622024, -79.4251735]
+    - address: 878 Bloor St W, Toronto, ON M6G 1M5, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfDq5exJTTN/
+- https://www.instagram.com/nonotescocktails/ -- No Notes Cocktails
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [bar]
+    - coord: [43.6613177, -79.4303677]
+    - address: 3 Westmoreland Ave, Toronto, ON M6H 2Z6, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfDq5exJTTN/
+- https://antyliatoronto.com/ -- Antylia
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant]
+    - coord: [43.6603541, -79.4325104]
+    - address: 1059 Bloor St W, Toronto, ON M6H 1M3, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfDq5exJTTN/
+- https://www.fixcb.ca/service/ -- Fix Coffee + Bikes Gladstone
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [coffee shop, shop]
+    - coord: [43.6449986, -79.4282048]
+    - address: 80 Gladstone Ave, Unit 1, Toronto, ON M6J 3K9, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfGYfWsRxzh/
+- https://www.instagram.com/dads.goodmorning/ -- Dad's Breakfast & Coffee
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [coffee shop, sandwich shop]
+    - coord: [43.6495179, -79.4309746]
+    - address: 1473 Dundas St W, Toronto, ON, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfGYfWsRxzh/
+- https://stemargscot.com/ -- Ste. Marg. Scot.
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [shop]
+    - coord: [43.6496971, -79.4291222]
+    - address: 1412A Dundas St W, Toronto, ON M6J 1Y5, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfGYfWsRxzh/
+- https://www.kittenandthebear.com/pages/contact -- Kitten and the Bear
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [bakery, coffee shop]
+    - coord: [43.6496965, -79.4292379]
+    - address: 1414 Dundas St W, Toronto, ON M6J 1Y5, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfGYfWsRxzh/
+- https://www.thewanderly.com/ -- The Wanderly
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [shop]
+    - coord: [43.6497067, -79.4353505]
+    - address: 1613 Dundas St W, Toronto, ON M6K 1T9, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfGYfWsRxzh/
+- https://www.martini-fashions.com/ -- Martini Fashions
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [shop]
+    - coord: [43.649413, -79.4277426]
+    - address: 1363 Dundas St W, Toronto, ON M6J 1Y3, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfGYfWsRxzh/
+- https://rotatethis.com/ -- Rotate This
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [shop]
+    - coord: [43.6484698, -79.4205645]
+    - address: 186 Ossington Ave, Toronto, ON M6J 2Z7, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfGYfWsRxzh/
+- https://dovercourt.pizzeriabadiali.com/ -- Pizzeria Badiali Dovercourt
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant]
+    - coord: [43.6461313, -79.4232807]
+    - address: 181 Dovercourt Rd, Toronto, ON M6J 3C6, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfGYfWsRxzh/
+- https://www.toronto.ca/explore-enjoy/parks-recreation/places-spaces/parks-and-recreation-facilities/location/?id=394&title=Sunnyside-Park -- Sunnyside Beach
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [beach]
+    - coord: [43.6366276, -79.4510753]
+    - address: 1755 Lake Shore Blvd W, Toronto, ON, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfGYfWsRxzh/
 - https://deargrain.com/pages/toronto-ossington -- Dear Grain Ossington
   - [meta]:
     - date: 10/29/2026
