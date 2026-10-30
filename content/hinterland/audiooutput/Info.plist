@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+<key>CFBundleIdentifier</key><string>xyz.aarnphm.audiooutput</string>
+<key>CFBundleName</key><string>Audio Output</string>
+<key>CFBundleDisplayName</key><string>Audio Output</string>
+<key>CFBundleExecutable</key><string>AudioOutput</string>
+<key>CFBundlePackageType</key><string>APPL</string>
+<key>CFBundleShortVersionString</key><string>0.1.0</string>
+<key>CFBundleVersion</key><string>1</string>
+<key>LSMinimumSystemVersion</key><string>14.2</string>
+<key>LSUIElement</key><true/>
+<key>NSAudioCaptureUsageDescription</key><string>Route audio from the applications you choose to your selected speakers or headphones. Audio is processed locally and is never recorded or uploaded.</string>
+</dict></plist>

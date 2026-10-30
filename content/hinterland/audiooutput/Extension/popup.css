@@ -1,0 +1,25 @@
+:root {
+  color-scheme: light dark;
+}
+body {
+  width: 280px;
+  margin: 18px;
+  font: 13px system-ui;
+  color: CanvasText;
+  background: Canvas;
+}
+h1 {
+  font-size: 17px;
+  margin: 0 0 12px;
+}
+p {
+  line-height: 1.5;
+}
+button {
+  font: inherit;
+  padding: 7px 10px;
+  cursor: pointer;
+}
+.hint {
+  font-size: 12px;
+}

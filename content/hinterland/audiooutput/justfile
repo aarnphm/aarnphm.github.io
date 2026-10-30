@@ -1,0 +1,23 @@
+build:
+    ./scripts/build.sh
+
+run: build
+    open "dist/Audio Output.app"
+
+check:
+    swift build
+    plutil -lint Info.plist
+
+probe:
+    python3 scripts/verify-route.py
+
+install-bridge: build
+    python3 scripts/install-bridge.py
+
+extension-check:
+    node --check Extension/background.js
+    node --check Extension/content.js
+    node --check Extension/popup.js
+
+bridge-check:
+    python3 scripts/verify-bridge.py
