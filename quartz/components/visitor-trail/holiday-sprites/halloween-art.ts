@@ -26,16 +26,7 @@ export const pumpkinSmall = [
   '..iiii..',
 ]
 
-export const vine = [
-  '......',
-  '..v...',
-  '.vv.v.',
-  'v..vv.',
-  'v...v.',
-  '.vv.v.',
-  '...vv.',
-  '....v.',
-]
+export const vine = ['......', '..v...', '.vv.v.', 'v..vv.', 'v...v.', '.vv.v.', '...vv.', '....v.']
 
 // A dead oak in mourning black: a raven on the left limb, a noose from the right. Drawn at 3 px.
 export const gallowsTree = [
@@ -67,12 +58,7 @@ export const gallowsTree = [
 ]
 
 // Ravens leave the gallows tree; placed with the bats.
-export const raven = [
-  '.hh.....',
-  'hhhh..hh',
-  '.hhhhhh.',
-  '...hh...',
-]
+export const raven = ['.hh.....', 'hhhh..hh', '.hhhhhh.', '...hh...']
 
 // A street lamp off the lower trail. The glass is `l`, so it burns after dark.
 export const gaslamp = [
