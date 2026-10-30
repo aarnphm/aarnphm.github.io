@@ -25846,6 +25846,462 @@ title: are.na
 
 ## organizations
 
+- https://ai.google -- Google AI
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [ai lab, google]
+    - later: true
+  - X: [@GoogleAI](https://x.com/GoogleAI)
+- https://ssi.inc -- Safe Superintelligence (SSI)
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [ai lab, superintelligence]
+    - later: true
+  - X: [@ssi](https://x.com/ssi)
+- https://qwen.ai -- Qwen
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [ai lab, open models]
+    - later: true
+  - X: [@Alibaba_Qwen](https://x.com/Alibaba_Qwen)
+- https://stepfun.ai -- StepFun
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [ai lab, open models]
+    - later: true
+  - X: [@StepFun_ai](https://x.com/StepFun_ai)
+- https://cohere.com/research -- Cohere Labs
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [ai lab, open science]
+    - later: true
+  - X: [@Cohere_Labs](https://x.com/Cohere_Labs)
+- https://reflection.ai -- Reflection
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [ai lab, open models]
+    - later: true
+  - X: [@reflection_ai](https://x.com/reflection_ai)
+- https://arcee.ai -- Arcee AI
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [ai lab, open models]
+    - later: true
+  - X: [@arcee_ai](https://x.com/arcee_ai)
+- https://zyphra.com -- Zyphra
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [ai lab, open models]
+    - later: true
+  - X: [@ZyphraAI](https://x.com/ZyphraAI)
+- https://www.recursive.com -- Recursive
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [ai lab, self-improvement]
+    - later: true
+  - X: [@Recursive_SI](https://x.com/Recursive_SI)
+- https://mirendil.com -- Mirendil
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [ai lab, ai for science]
+    - later: true
+  - X: [@mirendil](https://x.com/mirendil)
+- https://www.adaptionlabs.ai -- Adaption Labs
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [ai lab, continual learning]
+    - later: true
+  - X: [@adaption_ai](https://x.com/adaption_ai)
+- https://prismml.com -- PrismML
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [ai lab, efficiency]
+    - later: true
+  - X: [@PrismML](https://x.com/PrismML)
+- https://coreauto.com -- Core Automation
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [ai lab, automation]
+    - later: true
+  - X: [@coreauto](https://x.com/coreauto)
+- https://generalintuition.com -- General Intuition
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [ai lab, world models]
+    - later: true
+  - X: [@gen_intuition](https://x.com/gen_intuition)
+- https://odyssey.systems -- Odyssey
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [ai lab, world models]
+    - later: true
+  - X: [@odysseyml](https://x.com/odysseyml)
+- https://runway.com -- Runway
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [world models, generative video]
+    - later: true
+  - X: [@runwayml](https://x.com/runwayml)
+- https://elevenlabs.io -- ElevenLabs
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [voice ai, audio models]
+    - later: true
+  - X: [@ElevenLabs](https://x.com/ElevenLabs)
+- https://www.simile.com -- Simile
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [simulation, human behavior]
+    - later: true
+  - X: [@simile_ai](https://x.com/simile_ai)
+- https://engram.com -- Engram
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [ai lab, context]
+    - later: true
+  - X: [@EngramLab](https://x.com/EngramLab)
+- https://hivemind.ai -- Hivemind
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [ai lab]
+    - later: true
+  - X: [@hivemind](https://x.com/hivemind)
+- https://inherentlabs.ai -- Inherent
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [ai lab]
+    - later: true
+  - X: [@inherent_labs](https://x.com/inherent_labs)
+- https://axiommath.ai -- Axiom
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [ai lab, math, reasoning]
+    - later: true
+  - X: [@axiommathai](https://x.com/axiommathai)
+- https://paradigma.inc -- Paradigma
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [ai for science, automation]
+    - later: true
+  - X: [@paradigmainc](https://x.com/paradigmainc)
+- https://www.apolloresearch.ai -- Apollo Research
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [ai safety, evals]
+    - later: true
+  - X: [@ApolloResearch](https://x.com/ApolloResearch)
+- https://www.patronus.ai -- Patronus AI
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [evals, rl environments]
+    - later: true
+  - X: [@PatronusAI](https://x.com/PatronusAI)
+- https://datacurve.ai -- Datacurve
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [training data, frontier models]
+    - later: true
+  - X: [@datacurve](https://x.com/datacurve)
+- https://arena.ai -- Arena.ai
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [evals, leaderboard]
+    - later: true
+  - X: [@arena](https://x.com/arena)
+- https://exa.ai -- Exa
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [search, ai lab]
+    - later: true
+  - X: [@ExaAILabs](https://x.com/ExaAILabs)
+- https://grok.com -- Grok
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [ai assistant, xai]
+    - later: true
+  - X: [@grok](https://x.com/grok)
+- https://turbopuffer.com -- turbopuffer
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [search, vector database]
+    - later: true
+  - X: [@turbopuffer](https://x.com/turbopuffer)
+- https://www.modular.com -- Modular
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [inference, compilers]
+    - later: true
+  - X: [@Modular](https://x.com/Modular)
+- https://ollama.com -- ollama
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [inference, local models]
+    - later: true
+  - X: [@ollama](https://x.com/ollama)
+- https://moondream.ai -- moondream
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [vision models, inference]
+    - later: true
+  - X: [@moondreamai](https://x.com/moondreamai)
+- https://etched.com -- Etched
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [hardware, inference, chips]
+    - later: true
+  - X: [@Etched](https://x.com/Etched)
+- https://www.tenstorrent.com -- Tenstorrent
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [hardware, chips]
+    - later: true
+  - X: [@tenstorrent](https://x.com/tenstorrent)
+- https://www.amd.com -- AMD
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [hardware, chips]
+    - later: true
+  - X: [@AMD](https://x.com/AMD)
+- https://extropic.ai -- Extropic
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [hardware, thermodynamic computing]
+    - later: true
+  - X: [@extropic](https://x.com/extropic)
+- https://substrate.com -- Substrate
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [semiconductors, foundry]
+    - later: true
+  - X: [@substrate](https://x.com/substrate)
+- https://fab2.com -- Fab2
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [semiconductors, fabrication]
+    - later: true
+  - X: [@fab2](https://x.com/fab2)
+- https://spacex.com -- SpaceX
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [aerospace, rockets]
+    - later: true
+  - X: [@SpaceX](https://x.com/SpaceX)
+- https://physicalintelligence.company -- Physical Intelligence
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [robotics, physical ai]
+    - later: true
+  - X: [@physical_int](https://x.com/physical_int)
+- https://www.clonerobotics.com -- Clone
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [robotics, humanoids]
+    - later: true
+  - X: [@clonerobotics](https://x.com/clonerobotics)
+- https://comma.ai -- comma
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [self-driving, robotics]
+    - later: true
+  - X: [@comma_ai](https://x.com/comma_ai)
+- https://www.untillabs.com -- Until
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [biotech, cryopreservation]
+    - later: true
+  - X: [@untillabs](https://x.com/untillabs)
+- https://githubnext.com -- GitHub Next
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [developer tools, research]
+    - later: true
+  - X: [@GitHubNext](https://x.com/GitHubNext)
+- https://www.microsoft.com -- Microsoft
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [big tech]
+    - later: true
+  - X: [@Microsoft](https://x.com/Microsoft)
+- https://x.com/Engineering -- Engineering (X)
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [engineering, x]
+    - later: true
+  - X: [@Engineering](https://x.com/Engineering)
+- https://bun.com -- Bun
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [javascript, runtime, tools]
+    - later: true
+  - X: [@bunjavascript](https://x.com/bunjavascript)
+- https://interfere.com -- Interfere
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [developer tools, reliability]
+    - later: true
+  - X: [@interfere_](https://x.com/interfere_)
+- https://tldraw.com -- tldraw
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [canvas, tools]
+    - later: true
+  - X: [@tldraw](https://x.com/tldraw)
+- https://www.figma.com -- Figma
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [design, tools]
+    - later: true
+  - X: [@figma](https://x.com/figma)
+- https://variant.com -- Variant
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [design, ai tools]
+    - later: true
+  - X: [@variantui](https://x.com/variantui)
+- https://www.diabrowser.com -- The Browser Company
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [browser, products]
+    - later: true
+  - X: [@browsercompany](https://x.com/browsercompany)
+- https://superwhisper.com -- superwhisper
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [voice, tools]
+    - later: true
+  - X: [@superwhisper](https://x.com/superwhisper)
+- https://www.superlogical.com -- Superlogical
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [productivity, tools]
+    - later: true
+  - X: [@superlogical](https://x.com/superlogical)
+- https://endex.ai -- Endex
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [finance, ai tools]
+    - later: true
+  - X: [@EndexAI](https://x.com/EndexAI)
+- https://rubriclabs.com -- Rubric Labs
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [ai agency, agents]
+    - later: true
+  - X: [@RubricLabs](https://x.com/RubricLabs)
+- https://pangram.com -- Pangram
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [ai detection]
+    - later: true
+  - X: [@pangram](https://x.com/pangram)
+- https://rabbit.tech -- rabbit
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [consumer ai, hardware]
+    - later: true
+  - X: [@rabbit_hmi](https://x.com/rabbit_hmi)
+- https://teameigen.com -- Eigen
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [social, networking]
+    - later: true
+  - X: [@eigenhq](https://x.com/eigenhq)
+- https://restream.com -- Restream
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [livestreaming, tools]
+    - later: true
+  - X: [@Restreamio](https://x.com/Restreamio)
+- https://manifold.markets -- Manifold
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [prediction markets]
+    - later: true
+  - X: [@ManifoldMarkets](https://x.com/ManifoldMarkets)
+- https://lighthousehq.com -- Lighthouse
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [immigration, startups]
+    - later: true
+  - X: [@lighthousehq_](https://x.com/lighthousehq_)
+- https://www.kleinerperkins.com -- Kleiner Perkins
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [vc]
+    - later: true
+  - X: [@kleinerperkins](https://x.com/kleinerperkins)
+- https://www.luxcapital.com -- Lux Capital
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [vc, deep tech]
+    - later: true
+  - X: [@Lux_Capital](https://x.com/Lux_Capital)
+- https://www.fiftyyears.com -- Fifty Years
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [vc, deep tech]
+    - later: true
+  - X: [@fiftyyears](https://x.com/fiftyyears)
+- https://joinodf.com -- ODF (On Deck Founders)
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [community, startups]
+    - later: true
+  - X: [@joinodf](https://x.com/joinodf)
+- https://www.beaconholdings.com -- Beacon Holdings
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [holding company]
+    - later: true
+  - X: [@beaconholdings](https://x.com/beaconholdings)
+- https://www.citriniresearch.com -- Citrini Research
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [investment research, markets]
+    - later: true
+  - X: [@citrini](https://x.com/citrini)
+- https://www.youtube.com/@allin -- The All-In Podcast
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [podcast, tech]
+    - later: true
+  - X: [@theallinpod](https://x.com/theallinpod)
+- https://thisweekinstartups.com -- This Week in Startups
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [podcast, startups]
+    - later: true
+  - X: [@twistartups](https://x.com/twistartups)
+- https://betakit.com -- BetaKit
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [media, canadian tech]
+    - later: true
+  - X: [@BetaKit](https://x.com/BetaKit)
+- https://a24films.com -- A24
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [film, studio]
+    - later: true
+  - X: [@A24](https://x.com/A24)
+- https://canadaspends.com -- Canada Spends
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [government spending, canada]
+    - later: true
+  - X: [@canada_spends](https://x.com/canada_spends)
+- https://www.canada.ca/en/immigration-refugees-citizenship.html -- IRCC (Immigration, Refugees and Citizenship Canada)
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [immigration, canada]
+    - later: true
+  - X: [@CitImmCanada](https://x.com/CitImmCanada)
+- https://growsf.org/voter-guide -- GrowSF
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [civic, san francisco]
+    - later: true
+  - X: [@GrowSF](https://x.com/GrowSF)
 - https://www.axibo.com -- Axibo Humanoid
   - [meta]:
     - date: 10/22/2026
