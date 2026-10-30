@@ -155,6 +155,11 @@ $fr-gutter: 3rem;
     border-radius: var(--radius-none);
   }
 
+  // the entry a hovered citation points at (fr-margins.inline.ts)
+  .fr-entry.fr-hot {
+    border-color: var(--dark);
+  }
+
   .fr-entry-label {
     cursor: default;
   }
