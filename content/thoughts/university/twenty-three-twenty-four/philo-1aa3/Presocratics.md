@@ -11,18 +11,9 @@ title: Presocratics philosophers
 
 ### Anaximander
 
-> material cause and first element of things was the unbounded _aperion_
+Anaximander's first principle is the _apeiron_, the boundless or indefinite. The hot and cold separate from it in the formation of a world. Calling it the material cause uses Aristotle's later vocabulary; we know much of this account through later reports.
 
-- earth is cylindrical form, that its depth is as a third part of its breath
-- begetting hot and cold was separated off from the eternal at the origin of the world.
-
-  The heavenly bodies are wheels of fire separated off from the fire which encircles the world, enclosed with air
-
-  Living creatures arose from the moist element as it was evaporated by the sun. Man was like another animal, namely, a fish, in the beginning.
-
-often associated with _aperion_ and _infinite_ as the fundamental of the universe
-
-> Human arose from inside of the fish, and become capable of protecting themselves.
+Those reports describe a cylindrical earth with depth one-third of its breadth, heavenly wheels of fire enclosed in air, and early animals arising in moisture. Human beings develop inside fish-like creatures until they can survive independently. These are ancient cosmological proposals. The fish account addresses a specific problem: human infants need prolonged care, so the first humans could not have survived unaided. [Testimonia in Fairbanks, especially Hippolytus I.6 and pseudo-Plutarch, _Stromateis_ 2](https://history.hanover.edu/texts/presoc/anaximan.html).
 
 ### Xenophanes
 
@@ -32,67 +23,24 @@ often associated with _aperion_ and _infinite_ as the fundamental of the univers
 
 #### Parmenides
 
-> Archaic
-> The questions of the beginning
+In the poem's argument, what-is cannot arise from what-is-not: non-being supplies nothing from which something could come. Fragment B8 develops this constraint into an account of what-is as ungenerated, imperishable, continuous and unmoving. Its completeness rules out becoming and perishing in the account of truth.
 
-    Originate from the gods?
-     Natural occurrence of where things from
-
-- Pythagoras
-  - Scientific
-
-> Being is one entities
-> Not being is not known
-
-| Change is not being -> not green is
-
-Logic convince `changes is not real`
-Appearance of changes = dilusion
-
-> Truth is being -> homogeneous changes
-
-Ultimate being is not one ->
+The poem also gives a cosmology of mortal opinion. How that cosmology relates to the argument is an interpretive problem. [Poem, especially DK B2 and B8, translated by Burnet](https://en.wikisource.org/wiki/Early_Greek_Philosophy/Parmenides_of_Elea).
 
 ## Materialism
 
 atheist?
 
+Explaining bodies through material constituents leaves a further question about gods and souls. Empedocles names his roots with divine names; Democritus gives the soul an atomic constitution. A material explanation alone does not settle the question.
+
 ### Empedocles
 
-Perspective of nature
-
-- configuration of _materialism_
-
-Elements: Earth, Air, Fire and Water
-Elemental force: Love and Strifes
-
-real difference upon things
-
-manifestation of these real articles
+Four enduring roots: earth, air, fire and water. Love brings them together; Strife separates them. The things we encounter differ through their mixtures and proportions. Birth and death are names for the mixing and separation of constituents that persist. This lets Empedocles explain changing things without making the roots themselves arise from nothing or disappear into nothing. [Fragments B6, B8, B12 and B17, translated by Burnet](https://en.wikisource.org/wiki/Early_Greek_Philosophy/Empedokles_of_Akragas).
 
 ### Democritus
 
-Atomism
+Atoms and void. The atoms are indivisible bodies; the void allows them to move and remain distinct. Bodies form when atoms join and break up when they separate. Their different shapes, arrangements and orientations account for differences among compounds. The atoms persist through these changes. [Aristotle's report, _On Generation and Corruption_ I.1–2 and I.8](https://classics.mit.edu/Aristotle/gener_corr.1.i.html).
 
-Atomic hypothesis -> nature is Atoms and Void
+Aristotle reports that Democritus identifies soul with fine spherical atoms, whose mobility explains how living bodies move. The claim concerns a particular atomic constitution, rather than an identity between soul and every kind of body. [_On the Soul_ I.2, 403b31–404a16](https://classics.mit.edu/Aristotle/soul.1.i.html).
 
-- Nature is body and void, nothing else, not purpose or design
-- Soul is the body
-  System of the atom
-  Atoms of different sizes and shape
-  Coalesce and accumulate -> soul
-  > Soul is the matter of the finest, smallest, matter, coherently all part of the organism
-- Primary and secondary qualities
-  - Primary: atoms are size, shape, and height
-  - Secondary: molecular combinations include hot/cold, moist/dry
-
-> Sweet exists by convention, bitter by convention, colour by convention.
-
-Division comes to a stop when atom -> Atom is the least divisible factor
-
-Absolute stopping point for destruction -> rearrangement of these atoms are indispensable
-
-If there are gods -> they have to have body -> no atom is immortal
--> Gods are immortal.
-
-For Greek, Gods are human are indifferent.
+The distinction between primary and secondary qualities is a later way to frame his account. Shape and size belong to atoms; sweetness, heat and colour depend on their effects in perception. Fragment B9 contrasts these perceived qualities with atoms and void. The atoms' persistence does not establish the immortality of a compound organism. [Democritus B9 and the surviving reports](https://plato.stanford.edu/entries/democritus/).

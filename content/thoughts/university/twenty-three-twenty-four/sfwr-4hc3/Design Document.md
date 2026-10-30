@@ -213,7 +213,7 @@ title: Design Document
 
 ## Sketches
 
-![[thoughts/university/twenty-three-twenty-four/hci-4hc3/Shape.svg]]
+![[thoughts/university/twenty-three-twenty-four/sfwr-4hc3/Shape.svg]]
 
 ### Interactions:
 
@@ -249,7 +249,7 @@ title: Design Document
 - **Scalability**: The "Load more" button suggests there may be many study places, but too many listings could overwhelm the user.
 - **Feedback Mechanism**: There is no clear way for users to provide feedback on study places, which is crucial for a review-based app.
 - **Recommendation Logic**: There's a tag for "recommended," but it's unclear what criteria are used for recommendations. This could be recommended based on users needs, feedback?
-  ![[thoughts/university/twenty-three-twenty-four/hci-4hc3/Shape 6M.svg]]
+  ![[thoughts/university/twenty-three-twenty-four/sfwr-4hc3/Shape 6M.svg]]
 
 ### Interactions:
 

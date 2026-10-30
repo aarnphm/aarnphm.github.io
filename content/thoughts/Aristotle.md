@@ -9,61 +9,34 @@ tags:
 title: Aristotle
 ---
 
-Two types of learning
+## From perception to explanation
 
-- From perception to habit. Animal association of particulars.
-- From perception to belief. Rational cognition of particulars. This is the learning of experience (emperia).
+In _Metaphysics_ I.1, Aristotle starts with perception. Some animals retain memories; repeated memories of similar cases give humans experience (_empeiria_). A craft develops when someone can make a general judgment about those cases and explain the cause. Knowing that a treatment helped Callias and Socrates is experience. Understanding why it helps people with a particular condition belongs to the craft of medicine. Experience still matters: a doctor treats this patient, and a general account can fail when applied badly. ([I.1, 980a21–981b13](https://classics.mit.edu/Aristotle/metaphysics.1.i.html))
 
-> being qua being
+## Being, form and matter
 
-> Metaphysics: The philosophical study of being qua being
+_Being qua being_ means being considered as being. Aristotle asks what belongs to things because they exist, including their dependence on substance, rather than restricting the inquiry to numbers or living bodies. ([_Metaphysics_ IV.1–2, 1003a21–1003b19](https://classics.mit.edu/Aristotle/metaphysics.4.iv.html))
 
-Against Plato
+For a sensible thing, distinguish:
 
-- being = idea
-  - how do ideas cause particulars?
-  - how do ideas cause motion?
+- **Matter**: what can receive a form. Bronze can become a statue.
+- **Form**: what makes the material a thing of this kind, such as the organization of a living body.
+- **Essence**: what a thing is in itself, expressed in its definition. Someone's being musical is incidental to what makes them human.
 
-> ideas, immaterial and changeless, are real seems unrealistic
-
-Form: a thing's organization or disposition to behave
-
-Essence: a principle of reality
-
-Matter: potential for a substance to change
+The bronze statue is the composite. Casting it gives this bronze a form; it does not produce a separately existing statue-form. Matter and form explain one thing under different descriptions. ([_Metaphysics_ VII.3–4, 1029a1–1030a17; VII.8, 1033a24–1034a8](https://classics.mit.edu/Aristotle/metaphysics.7.vii.html))
 
 ### Are Aristotle's forms the same as Plato's Ideas?
 
-They are similar in what they are expected to do, but they work in different ways.
+Aristotle's objection to separate Platonic Forms concerns explanation: how does a changeless Form explain a particular thing's coming into being or movement? Calling the Form a pattern leaves the source of change unspecified. ([_Metaphysics_ I.9, 991a8–991b9](https://classics.mit.edu/Aristotle/metaphysics.1.i.html))
 
-For Plato, the Idea of horse is different from every particular horse. It is a separate entity, immaterial, changeless, and better, more real than any fleshy animal.
+For sensible substances, form is what makes a particular material thing the kind of thing it is; it can be distinguished in an account of the thing. Aristotle also argues for a separate, immaterial substance in Book XII, so his rejection of separate Platonic Forms has a specific target. ([_Metaphysics_ VIII.1, 1042a24–31](https://classics.mit.edu/Aristotle/metaphysics.8.viii.html))
 
-For Aristotle, forms have no existence separate from the individual substances whose form they are. Where there is a form, there is a particular substance.
+## Light and the transparent medium
 
-Light is the actualization of a potential state of a transparent medium.
-
-It is an accident of a transparent medium.
-
-The medium is a substance: air.
-
-It has accidents.
-
-One of these accidents is to become illuminated in the presence of colored bodies.
-
-Which is what we see as light.
+In _De Anima_ II.7, air and water can serve as transparent media. Light is the actuality of the transparent as transparent, brought about by fire or a celestial source. Ordinary colour acts on the medium once it is illuminated, and the medium affects the eye. The coloured object therefore depends on light for its visibility. This is Aristotle's account of vision, with its own claim that a medium is necessary, rather than a statement of modern optics. ([418a26–419a21](https://classics.mit.edu/Aristotle/soul.2.ii.html))
 
 ## The Unmoved Mover (Metaphysics, Books 12, Chapter 6-7)
 
-Unmoved Mover causes motion without itself moving.
+Aristotle assumes eternal motion and asks what can account for its continuity. A capacity that might remain unused cannot guarantee perpetual activity. He argues for an eternal, immaterial substance whose essence is actuality. In XII.7 it moves as an object of thought and desire: it is the end toward which motion is directed. The first heaven moves; its final cause remains unmoved. ([1071b3–1072b14](https://classics.mit.edu/Aristotle/metaphysics.12.xii.html))
 
-Even without moving, a thing can cause other things to move toward it by causing love or desire.
-
-Something loved or desired need make no motion of its own to cause things move toward it; it initiates motion without moving.
-
-That is how the Unmoved Mover moves things—by being the object of love and desire
-
-• Necessarily exists (cannot not exist)
-• The final cause of motion in nature
-• The comprehensive reason for everything else
-• Divine
-• Alive and happy (because imperturbable)
+He calls this substance necessary and divine. Its life is the continuous activity of thinking, which grounds his account of its goodness and pleasure. These conclusions depend on his account of actuality and eternal celestial motion. ([XII.7, 1072b14–1073a13](https://classics.mit.edu/Aristotle/metaphysics.12.xii.html))

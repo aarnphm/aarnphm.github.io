@@ -5390,6 +5390,46 @@ title: are.na
 
 ## places
 
+- https://deargrain.com/pages/toronto-ossington -- Dear Grain Ossington
+  - [meta]:
+    - date: 10/29/2026
+    - tags: [bakery, coffee shop]
+    - coord: [43.645292, -79.4194131]
+    - address: 48 Ossington Ave, Toronto, ON M6J 2Y7, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfDXzo3BDEg/
+- https://unclexstudios.com/blogs/lookbook?view=the-store-page -- Uncle Studios Ossington
+  - [meta]:
+    - date: 10/29/2026
+    - tags: [shop, coffee shop]
+    - coord: [43.6452089, -79.4193678]
+    - address: 46 Ossington Ave, Toronto, ON M6J 2Y7, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfDXzo3BDEg/
+- https://www.misccoffee.com/ossington -- Misc Coffee Ossington
+  - [meta]:
+    - date: 10/29/2026
+    - tags: [coffee shop]
+    - coord: [43.6509051, -79.4211512]
+    - address: 299 Ossington Ave, Toronto, ON M6J 3A1, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfDXzo3BDEg/
+- https://www.google.com/maps/search/?api=1&query=43.65303%2C-79.4041285&query_place_id=ChIJ6WFHd3w1K4gRerr6HGTIzO4 -- Made Rite Coffee
+  - [meta]:
+    - date: 10/29/2026
+    - tags: [coffee shop, sandwich shop]
+    - coord: [43.65303, -79.4041285]
+    - address: 68 Wales Ave, Toronto, ON M5T 1J3, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfDXzo3BDEg/
+- https://sunnyschinese.com/ -- Sunnys Chinese
+  - [meta]:
+    - date: 10/29/2026
+    - tags: [restaurant]
+    - coord: [43.6543631, -79.4006578]
+    - address: 60 Kensington Ave, Units 6–14, Toronto, ON M5T 2K1, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfDXzo3BDEg/
 - https://www.wearecono.com/ -- Cono
   - [meta]:
     - date: 10/15/2026
