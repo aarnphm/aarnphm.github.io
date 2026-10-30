@@ -9,7 +9,7 @@ from pathlib import Path
 from fontTools import subset
 from fontTools.ttLib import TTFont
 from fontTools.varLib import instancer
-from .faces import KEEP_FEATURES, SRC_CACHE, STATIC, Face
+from .faces import FETCH_HEADERS, KEEP_FEATURES, SRC_CACHE, STATIC, Face
 
 
 def fetch_source(face: Face, source_url: str) -> Path:
@@ -20,9 +20,7 @@ def fetch_source(face: Face, source_url: str) -> Path:
   if not dst.exists():
     url = source_url.rstrip('/') + '/' + face.source
     print(f'fetch {url}')
-    req = urllib.request.Request(
-      url, headers={'Referer': 'https://aarnphm.xyz/'}
-    )
+    req = urllib.request.Request(url, headers=FETCH_HEADERS)
     with urllib.request.urlopen(req, timeout=60) as r:
       dst.write_bytes(r.read())
   return dst
