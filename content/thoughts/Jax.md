@@ -1,6 +1,6 @@
 ---
 date: '2022-11-07'
-description: Numpy + [[thoughts/Autograd|Autograd]]. Use [[thoughts/XLA|XLA]] to compile and run NumPy code on accelerators. JIT compilation
+description: array computation with automatic differentiation, vectorisation and compilation of supported Python functions through XLA.
 id: Jax
 modified: 2026-10-24 01:39:45 GMT-04:00
 tags:
@@ -8,127 +8,88 @@ tags:
 title: Jax
 ---
 
-- notable function:
-  - `jit()` for compilation of multiple computations
-  - `grad()` for performing transformation (autodiff, [[thoughts/Vector calculus#Jacobian matrix|Jacobian]]-vector product)
-  - `vmap()` for auto-vectorisation
+JAX supplies NumPy-style array operations and transformations of Python functions. `jax.numpy` is the array interface; [[thoughts/Autograd|automatic differentiation]] and compilation operate on functions built from supported operations.
+
+- [`jax.jit`](https://docs.jax.dev/en/latest/_autosummary/jax.jit.html) traces a function and compiles its array computation through [[thoughts/XLA|XLA]]. Python side effects are outside the ordinary pure-function contract.
+- [`jax.grad`](https://docs.jax.dev/en/latest/_autosummary/jax.grad.html) returns the gradient of a scalar-valued function with respect to selected arguments.
+- [`jax.jvp`](https://docs.jax.dev/en/latest/_autosummary/jax.jvp.html) returns the function value and a [[thoughts/Vector calculus#Jacobian matrix|Jacobian]]-vector product. For $f:\mathbb{R}^n\to\mathbb{R}^m$, its tangent output is $J_f(x)v$.
+- [`jax.vmap`](https://docs.jax.dev/en/latest/_autosummary/jax.vmap.html) maps a function over specified array axes, propagating that batch dimension through the operations.
 
 > [!important] immutability
-> Arrays are **immutable** in Jax
+> Ordinary `jax.Array` values are immutable. An update such as `x.at[i].set(value)` returns a new array value. The compiler can reuse storage when that preserves the program's semantics.
 
-- Treat functions as pure as to compiled with [[thoughts/XLA|XLA]]
+For example, normalise finite logits along the last axis by subtracting `logsumexp`:
 
-```python title="entropix/dslider.py"
-from functools import partial
-from typing import NamedTuple, Tuple
-
+```python
 import jax
 import jax.numpy as jnp
-import jax.scipy as jsp
 
 
 @jax.jit
-def kl_divergence(logp: jnp.ndarray, logq: jnp.ndarray) -> jnp.ndarray:
-  """Compute KL divergence between two log probability distributions."""
-  p = jnp.exp(logp)
-  return jnp.sum(jnp.where(p > 0, p * (logp - logq), 0.0), axis=-1)
+def normalize_logits(logits):
+  return jax.nn.log_softmax(logits, axis=-1)
 
 
-@jax.jit
-def ent_varent(logp: jnp.ndarray) -> Tuple[jnp.ndarray, jnp.ndarray]:
-  """Compute entropy and varentropy from log probabilities."""
-  p = jnp.exp(logp)
-  ent = -jnp.sum(p * logp, axis=-1)
-  diff = logp + ent[..., None]
-  varent = jnp.sum(p * diff**2, axis=-1)
-  return ent, varent
-
-
-@jax.jit
-def normalize_logits(logits: jnp.ndarray, noise_floor: float) -> jnp.ndarray:
-  """Normalize logits to log probabilities with noise floor truncation."""
-  shifted = logits - jnp.max(logits, axis=-1, keepdims=True)
-  normalized = shifted - jax.nn.logsumexp(
-    shifted + EPS, axis=-1, keepdims=True
-  )
-  # noise floor calculated for bfloat16
-  return jnp.where(normalized < noise_floor, jnp.log(EPS), normalized)
+logp = normalize_logits(jnp.array([1.0, 2.0, 3.0]))
+print(jnp.exp(logp).sum())  # approximately 1.0
 ```
 
-_references: [github](https://github.com/xjdr-alt/entropix/blob/main/entropix/dslider.py)_
+This computes $\log p_i=\ell_i-\log\sum_j\exp(\ell_j)$, with a numerically stable implementation. Clipping individual log probabilities afterward changes their total probability mass, so a noise floor needs a separate normalization policy. Related implementation: [Entropix's `dslider.py`](https://github.com/xjdr-alt/entropix/blob/main/entropix/dslider.py).
 
 ## asynchronous dispatch
 
-for sync use `block_until_ready()`
+JAX can return an array handle before the device has finished computing its contents. Python can enqueue further work while the device runs. Reading the value on the host forces a wait; `.block_until_ready()` waits without requiring a host copy. See [asynchronous dispatch](https://docs.jax.dev/en/latest/async_dispatch.html).
 
-```python shell
-import jax.numpy as jnp
-from jax import random
-
-key = random.PRNGKey(0)
-x = random.normal(key, (10,))
-jnp.dot(x, x.T).block_until_ready()
+```python
+x = jnp.arange(10, dtype=jnp.float32)
+result = jnp.dot(x, x).block_until_ready()
+print(result)  # 285.0
 ```
+
+For a benchmark, warm up the compiled function first, then time a call that waits for its result. Otherwise compilation or dispatch can dominate the measured interval.
 
 ## control flow
 
-see also [link](https://jax.readthedocs.io/en/latest/notebooks/Common_Gotchas_in_JAX.html#python-control-flow-jit)
+During ordinary `jit` tracing, array arguments carry shape and dtype information, while their values remain unknown. Python can unroll `for i in range(3)` during tracing. A Python `if x < 3` needs the value of `x` to select a branch, so it fails when `x` is a dynamic scalar argument. See the [control-flow discussion](https://jax.readthedocs.io/en/latest/notebooks/Common_Gotchas_in_JAX.html#python-control-flow-jit).
 
-The following works:
-
-```python /jax.jit/
-@jax.jit
-def f(x):
-  for i in range(3):
-    x = 2 * x
-  return x
-
-
-print(f(3))
-
-
-@jax.jit
-def g(x):
-  y = 0.0
-  for i in range(x.shape[0]):
-    y = y + x[i]
-  return y
-
-
-print(g(jnp.array([1.0, 2.0, 3.0])))
-```
-
-> [!warning]- doesn't work
->
-> ```python {2-4}
-> @jax.jit
-> def fail(x):
->   if x < 3: return 3. * x ** 2
->   else    : return -4 * x
->
-> fail(2)
-> ```
-
-Reasoning: `jit` traces code on `ShapedArray` abstraction, where each abstract value represents the set of all array values with a fixed shape and dtype
-
-> [!important]+ type coercion tradeoff
->
-> If we trace a Python function on a `ShapedArray((), jnp.float32)` that isn’t committed to a specific concrete value,
-> when we hit a line like if `x < 3`, the expression x < 3 evaluates to an abstract `ShapedArray((), jnp.bool_)` that represents the set `{True, False}`.
-
-Fix: you can use `static_argnums` to specify which argument should be treated as static
+Use [`lax.cond`](https://docs.jax.dev/en/latest/_autosummary/jax.lax.cond.html) for a scalar predicate that must be evaluated at runtime:
 
 ```python
-@jit(static_argnums=(0,))
-def f(x):
+@jax.jit
+def piecewise(x):
+  return jax.lax.cond(
+    x < 3,
+    lambda value: 3.0 * value**2,
+    lambda value: -4.0 * value,
+    x,
+  )
+
+
+print(piecewise(2.0))  # 12.0
+print(piecewise(4.0))  # -16.0
+```
+
+Both branches are traced and must return compatible structures, shapes and dtypes. Their Python side effects therefore cannot represent runtime branch execution.
+
+Alternatively, mark a hashable Python argument as static when specialization on its value is intended:
+
+```python
+from functools import partial
+
+
+@partial(jax.jit, static_argnums=(0,))
+def static_piecewise(x):
   if x < 3:
     return 3.0 * x**2
-  else:
-    return -4 * x
+  return -4.0 * x
 ```
+
+Distinct static values enter the compilation cache key and can require separate compilations. This is useful for a few configuration choices; a frequently changing data value can cause repeated compilation. The [`jit` guide](https://docs.jax.dev/en/latest/jit-compilation.html) explains this tradeoff.
 
 ## buffers
 
 > [!question] How does JAX handle memory buffers?
 
-[fast replay buffers](https://github.com/instadeepai/flashbax)
+Array immutability describes the values visible to the program. It leaves the compiler free to reuse buffers internally. At a compiled-call boundary, [buffer donation](https://docs.jax.dev/en/latest/buffer_donation.html) explicitly gives up an input buffer so that it can be reused for an output. A donated input must not be used afterward; suitable output shapes and dtypes are also needed for reuse.
+
+[Flashbax](https://github.com/instadeepai/flashbax) supplies replay-buffer data structures for reinforcement learning, a separate concern from JAX's device-buffer ownership.
