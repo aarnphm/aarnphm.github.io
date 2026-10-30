@@ -5,6 +5,8 @@ struct SiteRule: Codable, Identifiable, Equatable {
     var name: String
     var outputUID: String
     var outputName: String
+    var volume: Double? = nil
+    var gain: Double { min(3, max(0, volume ?? 1)) }
 }
 
 struct SiteConfiguration: Codable {

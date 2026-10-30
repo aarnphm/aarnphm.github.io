@@ -13,6 +13,10 @@ just run
 
 Choose an output beside an application or site. **Normal output** removes the override. **Pause** releases routes without deleting assignments. Disconnected devices fall back to normal playback and resume when reconnected. Grant System Audio Recording access for native-app routes.
 
+Each application and site has a 0–300% volume slider in 5% steps and a 100% reset. Volume is saved independently of the output selection; native applications can follow the system output with a volume override. 0% mutes, 200% doubles sample amplitude, and 300% triples it. Native output clamps peaks to full scale, so boosting loud material can distort. Pause restores normal playback.
+
+Website volume requires local blob media or explicitly CORS-enabled media, an unprotected player, and browser support for AudioContext output selection. Click the player if the browser requires a playback gesture. Reload the extension and player tabs after upgrading. Players that already own their media element through Web Audio cannot be boosted by a second graph.
+
 The gear menu contains the standalone window, login-item switch, extension folder, and capture-permission settings. Keep the app at a stable path before enabling login startup.
 
 ## YouTube Music and other websites

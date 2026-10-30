@@ -14,13 +14,13 @@ final class AudioRoute {
     var frames: UInt64 { renderState.map(ao_render_frames) ?? 0 }
     var nonzeroFrames: UInt64 { renderState.map(ao_render_nonzero_frames) ?? 0 }
 
-    init(processes: [AudioObjectID], device: OutputDevice, progress: (String) -> Void = { _ in }) throws {
+    init(processes: [AudioObjectID], device: OutputDevice, gain: Float = 1, progress: (String) -> Void = { _ in }) throws {
         self.processes = processes
         self.device = device
-        do { try start(progress: progress) } catch { stop(); throw error }
+        do { try start(gain: gain, progress: progress) } catch { stop(); throw error }
     }
 
-    private func start(progress: (String) -> Void) throws {
+    private func start(gain: Float, progress: (String) -> Void) throws {
         progress("Creating process tap")
         let description = CATapDescription(stereoMixdownOfProcesses: processes)
         description.name = "Audio Output route"
@@ -79,12 +79,17 @@ final class AudioRoute {
         }
         progress("Registering audio callback")
         guard let state = ao_render_create(inputOffset) else { throw AudioFailure(message: "Could not allocate audio state.") }
+        ao_render_set_gain(state, gain)
         renderState = state
         try checkAudio(AudioDeviceCreateIOProcID(aggregate, ao_render, UnsafeMutableRawPointer(state), &callback), "Register audio renderer")
         guard let callback else { throw AudioFailure(message: "Audio callback was not created.") }
         try checkAudio(ao_select_tap_input(aggregate, callback, inputOffset), "Disable physical input streams")
         progress("Starting audio IO")
         try checkAudio(AudioDeviceStart(aggregate, callback), "Start audio routing (check System Audio Recording permission)")
+    }
+
+    func setGain(_ gain: Float) {
+        if let renderState { ao_render_set_gain(renderState, gain) }
     }
 
     func stop() {

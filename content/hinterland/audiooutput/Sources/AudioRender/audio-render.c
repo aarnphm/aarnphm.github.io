@@ -6,14 +6,21 @@
 
 struct AORenderState {
     uint32_t inputOffset;
+    _Atomic float gain;
     _Atomic uint64_t frames;
     _Atomic uint64_t nonzeroFrames;
 };
 
 AORenderState *ao_render_create(uint32_t inputOffset) {
     AORenderState *state = calloc(1, sizeof(*state));
-    if (state) state->inputOffset = inputOffset;
+    if (state) {
+        state->inputOffset = inputOffset;
+        atomic_init(&state->gain, 1.0f);
+    }
     return state;
+}
+void ao_render_set_gain(AORenderState *state, float gain) {
+    atomic_store_explicit(&state->gain, isfinite(gain) ? fminf(3, fmaxf(0, gain)) : 1, memory_order_relaxed);
 }
 void ao_render_destroy(AORenderState *state) { free(state); }
 uint64_t ao_render_frames(AORenderState *state) {
@@ -51,6 +58,7 @@ OSStatus ao_render(AudioObjectID device, const AudioTimeStamp *now,
     for (UInt32 b = 0; b < output->mNumberBuffers; b++) outputChannels += output->mBuffers[b].mNumberChannels;
     channel = 0;
     UInt32 rendered = 0;
+    const float gain = atomic_load_explicit(&state->gain, memory_order_relaxed);
     for (UInt32 b = 0; b < output->mNumberBuffers; b++) {
         AudioBuffer *buffer = &output->mBuffers[b];
         if (!buffer->mNumberChannels) continue;
@@ -63,7 +71,8 @@ OSStatus ao_render(AudioObjectID device, const AudioTimeStamp *now,
                 float value = outputChannels == 1
                     ? (source[0][f * stride[0]] + source[1][f * stride[1]]) * 0.5f
                     : source[channel][f * stride[channel]];
-                destination[f * buffer->mNumberChannels] = isfinite(value) ? value : 0;
+                value = isfinite(value) ? value * gain : 0;
+                destination[f * buffer->mNumberChannels] = fminf(1, fmaxf(-1, value));
             }
             rendered = n;
         }
