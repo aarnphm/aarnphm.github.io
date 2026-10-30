@@ -8,6 +8,8 @@ struct Assignment: Codable, Identifiable {
     var name: String
     var deviceUID: String
     var deviceName: String
+    var volume: Double? = nil
+    var gain: Double { min(3, max(0, volume ?? 1)) }
 }
 
 @available(macOS 14.2, *)
@@ -26,6 +28,7 @@ final class RouterModel: ObservableObject {
     @Published var activeCount = 0
     private var routes: [String: AudioRoute] = [:]
     private var failures: [String: String] = [:]
+    private var defaultOutputID: AudioObjectID = 0
     private var sleeping = false
     private var timer: Timer?
     private var observers: [NSObjectProtocol] = []
@@ -56,6 +59,7 @@ final class RouterModel: ObservableObject {
         do {
             outputs = try Hardware.outputs()
             let defaultID = try Hardware.scalar(Hardware.system, kAudioHardwarePropertyDefaultOutputDevice, initial: AudioObjectID(0))
+            defaultOutputID = defaultID
             defaultOutputName = outputs.first { $0.id == defaultID }?.name ?? "Unavailable"
             for site in SiteRouting.load().sites where !siteRules.contains(where: { $0.id == site.id }) {
                 siteRules.append(site)
@@ -70,6 +74,7 @@ final class RouterModel: ObservableObject {
                    let index = siteRules.firstIndex(where: { $0.id == host }) {
                     siteRules[index].outputUID = old.deviceUID
                     siteRules[index].outputName = old.deviceName
+                    siteRules[index].volume = old.volume
                     assignments.removeAll { $0.id == app.id }
                     persist()
                 }
@@ -93,7 +98,7 @@ final class RouterModel: ObservableObject {
                 let status = SiteRouting.status(site.id)
                 let detail: String
                 if paused { detail = "Paused" }
-                else if site.outputUID.isEmpty { detail = "Normal output" }
+                else if site.outputUID.isEmpty && site.gain == 1 { detail = "Normal output" }
                 else if let status, status.outputUID == site.outputUID { detail = status.detail }
                 else { detail = "Waiting for browser extension" }
                 return (site.id, detail)
@@ -101,12 +106,37 @@ final class RouterModel: ObservableObject {
         } catch { issue = error.localizedDescription }
     }
 
+    func setVolume(_ app: AudioApplication, percent: Double) {
+        let gain = min(300, max(0, percent)) / 100
+        if let index = assignments.firstIndex(where: { $0.id == app.id }) {
+            assignments[index].volume = gain
+            if gain == 1 && assignments[index].deviceUID.isEmpty {
+                assignments.remove(at: index)
+                routes.removeValue(forKey: app.id)?.stop()
+                failures.removeValue(forKey: app.id)
+            }
+        } else if gain != 1 {
+            assignments.append(Assignment(id: app.id, name: app.name, deviceUID: "", deviceName: "Normal output", volume: gain))
+        }
+        persist()
+        reconcile()
+    }
+
+    func setSiteVolume(_ site: SiteRule, percent: Double) {
+        guard let index = siteRules.firstIndex(where: { $0.id == site.id }) else { return }
+        siteRules[index].volume = min(300, max(0, percent)) / 100
+        publishSites()
+    }
+
     func assign(_ app: AudioApplication, uid: String) {
+        let gain = assignments.first { $0.id == app.id }?.gain ?? 1
         routes.removeValue(forKey: app.id)?.stop()
         failures.removeValue(forKey: app.id)
         assignments.removeAll { $0.id == app.id }
         if let device = outputs.first(where: { $0.uid == uid }) {
-            assignments.append(Assignment(id: app.id, name: app.name, deviceUID: uid, deviceName: device.name))
+            assignments.append(Assignment(id: app.id, name: app.name, deviceUID: uid, deviceName: device.name, volume: gain))
+        } else if gain != 1 {
+            assignments.append(Assignment(id: app.id, name: app.name, deviceUID: "", deviceName: "Normal output", volume: gain))
         }
         persist()
         reconcile()
@@ -141,7 +171,7 @@ final class RouterModel: ObservableObject {
         var nextStatuses: [String: String] = [:]
         for assignment in assignments {
             let app = applications.first { $0.id == assignment.id }
-            let device = outputs.first { $0.uid == assignment.deviceUID }
+            let device = outputs.first { assignment.deviceUID.isEmpty ? $0.id == defaultOutputID : $0.uid == assignment.deviceUID }
             guard !paused, let app, !app.processes.isEmpty, let device else {
                 routes.removeValue(forKey: assignment.id)?.stop()
                 failures.removeValue(forKey: assignment.id)
@@ -164,19 +194,20 @@ final class RouterModel: ObservableObject {
                 failures.removeValue(forKey: app.id)
             }
             if routes[app.id] == nil && failures[app.id] != signature {
-                do { routes[app.id] = try AudioRoute(processes: app.processes, device: device) }
+                do { routes[app.id] = try AudioRoute(processes: app.processes, device: device, gain: Float(assignment.gain)) }
                 catch {
                     failures[app.id] = signature
                     statuses[app.id] = error.localizedDescription
                 }
             }
             if let route = routes[app.id] {
+                route.setGain(Float(assignment.gain))
                 nextStatuses[app.id] = route.nonzeroFrames > 0 ? "Routing to \(device.name)" : "Listening · waiting for audio"
             } else { nextStatuses[app.id] = statuses[app.id] ?? "Route unavailable · retry" }
         }
         statuses = nextStatuses
         activeCount = routes.count + (paused ? 0 : siteRules.filter { site in
-            guard !site.outputUID.isEmpty, let status = SiteRouting.status(site.id) else { return false }
+            guard !site.outputUID.isEmpty || site.gain != 1, let status = SiteRouting.status(site.id) else { return false }
             return status.state == "routing" && status.outputUID == site.outputUID
         }.count)
     }

@@ -7,6 +7,7 @@ struct RouterView: View {
     @State private var search = ""
 
     var body: some View {
+        let applications = model.applications.filter { !$0.id.hasPrefix("com.apple.") && $0.siteHost == nil }
         VStack(alignment: .leading, spacing: 18) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 4) {
@@ -34,15 +35,15 @@ struct RouterView: View {
                             siteRow(site)
                             Divider()
                         }
-                        if model.applications.isEmpty {
+                        if applications.isEmpty {
                             Text("Play audio in an application to make it appear here.")
                                 .foregroundStyle(.secondary).padding(.vertical, 24)
                         }
-                        ForEach(model.applications.filter { $0.siteHost == nil && (search.isEmpty || $0.name.localizedCaseInsensitiveContains(search) || $0.id.localizedCaseInsensitiveContains(search)) }) { app in
+                        ForEach(applications.filter { search.isEmpty || $0.name.localizedCaseInsensitiveContains(search) || $0.id.localizedCaseInsensitiveContains(search) }) { app in
                             applicationRow(app)
                             Divider()
                         }
-                        ForEach(model.assignments.filter { saved in !model.applications.contains { $0.id == saved.id } }) { saved in
+                        ForEach(model.assignments.filter { saved in !saved.id.hasPrefix("com.apple.") && !model.applications.contains { $0.id == saved.id } }) { saved in
                             HStack {
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(saved.name)
@@ -87,6 +88,18 @@ struct RouterView: View {
         .frame(minWidth: 510, minHeight: 460)
     }
 
+    private func volumeControl(name: String, value: Binding<Double>) -> some View {
+        HStack(spacing: 8) {
+            Slider(value: value, in: 0...300, step: 5) { Text("Volume for \(name)") }
+                .accessibilityValue("\(Int(value.wrappedValue)) percent")
+            Text("\(Int(value.wrappedValue))%")
+                .monospacedDigit().frame(width: 44, alignment: .trailing)
+            Button("100%") { value.wrappedValue = 100 }
+                .help("Reset volume for \(name)")
+        }.frame(width: 210)
+         .help("0% mutes; 100% is unchanged. Boosting can distort peaks.")
+    }
+
     private func siteRow(_ site: SiteRule) -> some View {
         HStack(spacing: 12) {
             Image(systemName: "globe").frame(width: 30, height: 30)
@@ -96,16 +109,22 @@ struct RouterView: View {
                     .font(.caption).foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }.frame(maxWidth: .infinity, alignment: .leading).help(site.id)
-            Picker("Output for \(site.name)", selection: Binding(
-                get: { model.siteRules.first { $0.id == site.id }?.outputUID ?? "" },
-                set: { model.assignSite(site, uid: $0) }
-            )) {
-                Text("Normal output").tag("")
-                ForEach(model.outputs) { device in Text(device.name).tag(device.uid) }
-                if !site.outputUID.isEmpty && !model.outputs.contains(where: { $0.uid == site.outputUID }) {
-                    Text("\(site.outputName) (disconnected)").tag(site.outputUID)
-                }
-            }.labelsHidden().frame(width: 210)
+            VStack(alignment: .trailing, spacing: 6) {
+                Picker("Output for \(site.name)", selection: Binding(
+                    get: { model.siteRules.first { $0.id == site.id }?.outputUID ?? "" },
+                    set: { model.assignSite(site, uid: $0) }
+                )) {
+                    Text("Normal output").tag("")
+                    ForEach(model.outputs) { device in Text(device.name).tag(device.uid) }
+                    if !site.outputUID.isEmpty && !model.outputs.contains(where: { $0.uid == site.outputUID }) {
+                        Text("\(site.outputName) (disconnected)").tag(site.outputUID)
+                    }
+                }.labelsHidden().frame(width: 210)
+                volumeControl(name: site.name, value: Binding(
+                    get: { (model.siteRules.first { $0.id == site.id }?.gain ?? 1) * 100 },
+                    set: { model.setSiteVolume(site, percent: $0) }
+                ))
+            }
         }.padding(.vertical, 12)
     }
 
@@ -118,17 +137,24 @@ struct RouterView: View {
                 Text(app.sharedAudioOwner.map { "Shares \($0) audio" } ?? model.statuses[app.id] ?? "Normal output").font(.caption).foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }.frame(maxWidth: .infinity, alignment: .leading).help(app.id)
-            Picker("Output for \(app.name)", selection: Binding(
-                get: { model.assignments.first { $0.id == app.id }?.deviceUID ?? "" },
-                set: { model.assign(app, uid: $0) }
-            )) {
-                Text("Normal output").tag("")
-                ForEach(model.outputs) { device in Text(device.name).tag(device.uid) }
-                if let saved = model.assignments.first(where: { $0.id == app.id }),
-                   !model.outputs.contains(where: { $0.uid == saved.deviceUID }) {
-                    Text("\(saved.deviceName) (disconnected)").tag(saved.deviceUID)
-                }
-            }.labelsHidden().frame(width: 210).disabled(app.sharedAudioOwner != nil)
+            VStack(alignment: .trailing, spacing: 6) {
+                Picker("Output for \(app.name)", selection: Binding(
+                    get: { model.assignments.first { $0.id == app.id }?.deviceUID ?? "" },
+                    set: { model.assign(app, uid: $0) }
+                )) {
+                    Text("Normal output").tag("")
+                    ForEach(model.outputs) { device in Text(device.name).tag(device.uid) }
+                    if let saved = model.assignments.first(where: { $0.id == app.id }),
+                       !saved.deviceUID.isEmpty,
+                       !model.outputs.contains(where: { $0.uid == saved.deviceUID }) {
+                        Text("\(saved.deviceName) (disconnected)").tag(saved.deviceUID)
+                    }
+                }.labelsHidden().frame(width: 210)
+                volumeControl(name: app.name, value: Binding(
+                    get: { (model.assignments.first { $0.id == app.id }?.gain ?? 1) * 100 },
+                    set: { model.setVolume(app, percent: $0) }
+                ))
+            }.disabled(app.sharedAudioOwner != nil)
         }.padding(.vertical, 12)
     }
 }

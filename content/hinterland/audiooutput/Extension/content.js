@@ -7,6 +7,7 @@
   let pending = false
   let notice
   let reconnect
+  const audioGraphs = new Map()
   let dismissedUID
 
   function report(state, detail) {
@@ -77,23 +78,83 @@
     return actual === expected || actual.startsWith(`${expected} (`)
   }
 
-  async function setOutput(id) {
+  function desiredGain() {
+    const gain = desired.rule?.volume
+    return desired.enabled && Number.isFinite(gain) ? Math.min(3, Math.max(0, gain)) : 1
+  }
+
+  async function setOutput(id, gain = 1) {
     const elements = [...document.querySelectorAll('audio, video')]
-    for (const element of elements) {
-      if (typeof element.setSinkId !== 'function')
-        throw new Error('This browser does not support per-site audio output')
-      if (element.sinkId !== id) await element.setSinkId(id)
-      if (element.sinkId !== id) throw new Error('The browser did not apply the output selection')
+    for (const [element, graph] of audioGraphs) {
+      if (!element.isConnected) {
+        graph.gain.gain.value = 1
+        await graph.context.setSinkId('')
+      }
     }
-    return elements.length
+    for (const element of elements) {
+      let graph = audioGraphs.get(element)
+      if (!graph && gain !== 1 && element.currentSrc) {
+        // Remote URLs can redirect to media without CORS. Only attach to local
+        // blob media or an explicitly CORS-enabled element.
+        const sourceURL = new URL(element.currentSrc, location.href)
+        const localBlob = sourceURL.protocol === 'blob:' && sourceURL.origin === location.origin
+        if (!localBlob && element.crossOrigin === null)
+          throw new Error('Volume needs CORS-enabled or local blob media. Normal playback retained.')
+        if (element.mediaKeys)
+          throw new Error('Volume is unavailable for protected media. Normal playback retained.')
+        const context = new AudioContext()
+        if (typeof context.setSinkId !== 'function') {
+          await context.close()
+          throw new Error('This browser does not support volume with output routing')
+        }
+        // Resume before taking ownership of the element, so autoplay restrictions
+        // cannot silence its original playback.
+        void context.resume().catch(() => {})
+        await new Promise(resolve => setTimeout(resolve, 50))
+        if (context.state !== 'running') {
+          await context.close()
+          throw new Error('Click the player to enable volume, then retry')
+        }
+        try {
+          await context.setSinkId(id)
+          const source = context.createMediaElementSource(element)
+          const amplifier = context.createGain()
+          amplifier.gain.value = gain
+          source.connect(amplifier).connect(context.destination)
+          graph = { context, gain: amplifier, source }
+          audioGraphs.set(element, graph)
+        } catch (error) {
+          await context.close()
+          throw error
+        }
+      }
+      if (graph) {
+        if (graph.context.sinkId !== id) await graph.context.setSinkId(id)
+        graph.gain.gain.setTargetAtTime(gain, graph.context.currentTime, 0.015)
+      } else {
+        if (typeof element.setSinkId !== 'function')
+          throw new Error('This browser does not support per-site audio output')
+        if (element.sinkId !== id) await element.setSinkId(id)
+        if (element.sinkId !== id) throw new Error('The browser did not apply the output selection')
+      }
+    }
+    return elements.filter(element => element.currentSrc).length
   }
 
   async function apply() {
     const rule = desired.rule
-    if (!desired.enabled || !rule?.outputUID) {
+    if (!desired.enabled || !rule) {
       await setOutput('')
       removeNotice()
       report('normal', desired.error || 'Normal output')
+      return
+    }
+    const gain = desiredGain()
+    if (!rule.outputUID) {
+      const count = await setOutput('', gain)
+      removeNotice()
+      report(gain === 1 ? 'normal' : count ? 'routing' : 'waiting',
+        count ? `Normal output · ${Math.round(gain * 100)}%` : 'Waiting for a media element')
       return
     }
     const devices = (await navigator.mediaDevices.enumerateDevices()).filter(
@@ -133,11 +194,11 @@
       else removeNotice()
       return
     }
-    const count = await setOutput(device.deviceId)
+    const count = await setOutput(device.deviceId, gain)
     removeNotice()
     report(
       count ? 'routing' : 'waiting',
-      count ? `Routing to ${rule.outputName}` : 'Waiting for a media element',
+      count ? `Routing to ${rule.outputName} · ${Math.round(gain * 100)}%` : 'Waiting for a media element',
     )
   }
 
@@ -190,6 +251,11 @@
       schedule()
   }).observe(document.documentElement, { childList: true, subtree: true })
   document.addEventListener('play', schedule, true)
+  document.addEventListener('loadedmetadata', schedule, true)
+  document.addEventListener('click', () => {
+    for (const graph of audioGraphs.values()) void graph.context.resume().catch(() => {})
+    schedule()
+  }, true)
   navigator.mediaDevices.addEventListener('devicechange', schedule)
   connect()
 })()

@@ -4,6 +4,7 @@
 
 typedef struct AORenderState AORenderState;
 AORenderState * _Nullable ao_render_create(uint32_t inputOffset);
+void ao_render_set_gain(AORenderState * _Nonnull state, float gain);
 void ao_render_destroy(AORenderState * _Nonnull state);
 uint64_t ao_render_frames(AORenderState * _Nonnull state);
 uint64_t ao_render_nonzero_frames(AORenderState * _Nonnull state);
