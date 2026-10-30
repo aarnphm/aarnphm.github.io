@@ -30,6 +30,7 @@ export type ContentLayout =
   | 'pagerank'
   | 'flashcards'
   | 'resource'
+  | 'newspaper'
   | 'study-log'
   | 'statements'
 export type ContentDetails = {

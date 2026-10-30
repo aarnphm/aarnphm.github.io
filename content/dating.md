@@ -5,58 +5,57 @@ aliases:
   - hinge
   - bumble
 date: '2025-08-09'
-description: just another fish in the sea.
+description: maybe i'm that fish in the sea, for you.
 id: dating
-modified: 2026-10-26 12:05:33 GMT-04:00
+layout: newspaper
+modified: 2026-10-29 13:00:00 GMT-04:00
+readonly: true
 slides: true
 tags:
   - evergreen
   - love
   - fruit
-title: dating me.
+title: don't date me.
 ---
 
-> [!important] before you read this!
+_epistemic status: personal anecdote, proceed with caution. I don't really care what you do, as long as there are subjects/topics that excite you: beauty of math and science, the amazing feats of human engineering, the drive to help people, etc. I also value my relationship with my friends. I also travel around with my bike a lot._
+
+Most people know me online as `aarnphm` /urn-fm/, but you can call me _Aaron_ (or [a-a-ron](https://www.youtube.com/watch?v=zRpsRKuyi3Y&ab_channel=ComedyCentralUK)).
+
+> [!important] should we go on a date?
 >
-> i'm not actively looking for date (quite busy nowadays), but more than happy to meet you should our [Nash equilibrium](https://en.wikipedia.org/wiki/Nash_equilibrium) works out. If you are interested in me as a friend, then I have a [[friends|friends-equivalent]] docs.
+> I'm more than happy to meet and go on a date should our [Nash equilibrium](https://en.wikipedia.org/wiki/Nash_equilibrium) works out. If you are interested in me as a friend, then I have a [[friends|friends-equivalent]] doc. I love to meet new people, well... _what is life if not the people you share it with?_
 
-This document doesn't represent the whole me, but it should give you a sense of the "non-tech" version of who I am and what I do in my downtime.
+Dating is a notorious numbers game, and us [[triathlon|triathletes]] are notoriously _lazy_ [^lazy] and pretty tired after a long work day and [brick sessions](https://triathlonmagazine.ca/training/why-bricks-matter-more-than-you-think/). I also don't like to repeat myself, making a dating docs seems like an reasonable next thing—something I can share with someone I find attractive.
 
-I hate dating apps. I know it's a numbers game, but I got lazy and tired of the repetition and algorithms, so I decided to make this instead—something I can share with someone I find attractive.
+[^lazy]: Or at least I'm 😸
 
-I'm hoping to find a wonderful woman to be my partner [^partner], someone I can share a life with for many years to come ♥
+I was born in '01. I work on [[thoughts/Machine learning|ML]] system and make sure they _behave themselves_. I'm hoping to find a wonderful woman to be my partner [^partner], someone I can share a life with for many years to come ♥
 
-[^partner]:
-    And I meant, [wife](https://en.wikipedia.org/wiki/Wife). In terms of spousal responsibility, because i believe that marriage and polyamory are orthogonal axes.
+[^partner]: And I meant, [wife](https://en.wikipedia.org/wiki/Wife). More on spousal responsibility a bit later, but I've been in both polyamorous and monogamous relationship.
 
-    I argue that the definition of wife in the polycule is closely related to a nesting partner—a person that you cohabitate with (hierarchical is also implied here.)
-
-![[thoughts/images/selfie-1.webp]]
-![[thoughts/images/me-in-park.webp]]
+![[thoughts/images/me-hand-on-cheek.webp]]
+![[thoughts/images/me-autumn-maples.webp]]
 
 <div id="tldr">
 
-Here's 30 second about me. By all means explore the rest of the documents.
+Here's me in 30 seconds. By all means explore the rest of the documents. [^onion]
 
-According to ["what vegetable are you?"](https://sophie006liu.github.io/vegetal/), I'm an [[thoughts/images/onion.webp|onion.]] [^onion]
+[^onion]: According to ["what vegetable are you?"](https://sophie006liu.github.io/vegetal/), I'm an [[thoughts/images/onion.webp|onion.]] This is hilarious because I actually love _onion_!
 
-I work on [[thoughts/LLMs|large language models]], and I like to cook: I make fresh pasta (tortellini, tagliatelle) every Sunday, velouté and beef stocks from time to time. I collect vinyl, [[triathlon|training for a nearby IRONMAN]], and read math textbooks.
+I'm a bit obsessive with what [[thoughts/craft|I do]], especially when thinking about the wellfare of others. Working on important problems is something I care a lot about. But most importantly, I want to share a life with someone and build a family with. I work a lot—it's all I do these days—but I also want to build for something more than just myself. I'm lucky to date a lot of amazing women and men, but always the _wrong timing_ or we aren't aligned for the same thing. Hence, this document is more/less an encapsulation of what I want as well as the life I wish for as earnestly, openly, and honestly as possible.
 
-[^onion]: This is somewhat hilarious given that I actually love [[thoughts/images/onionnnnnnnnnn.webp|onion]]!
+I'm the 3am call who shows up. I used to be in a few polycules with several partners; my last relationship showed me I'm better suited to monogamy. My [love languages](https://en.wikipedia.org/wiki/The_Five_Love_Languages) are physical touch and quality time. I'm ["securely attached"](https://en.wikipedia.org/wiki/Attachment_theory#Attachment_styles_in_adults:~:text=%5B116%5D-,Securely%20attached,-%5Bedit%5D).
 
-I'm a bit obsessive with what [[thoughts/craft|I do]], especially when thinking about [[thoughts/Machine learning|stochastic]] model. It is all I do these days, other than caring for my friends and people in my life (obv)
+My Myers-Briggs is ENTJ-A, though it often swings to INTJ-T [^personality]
 
-I'm the 3am call who shows up. I used to be poly, then found that I'm more suited for monogamy from previous relationship. My [love language](https://en.wikipedia.org/wiki/The_Five_Love_Languages) is physical touch. I'm ["securely attached"](https://en.wikipedia.org/wiki/Attachment_theory#Attachment_styles_in_adults:~:text=%5B116%5D-,Securely%20attached,-%5Bedit%5D).
-
-My Myers-Briggs is ENTJ-A, though it swings to INTJ-T a lot of times. You can also find the [[personality|personality report]] from Clearer Thinking's [Ultimate Personality Test](https://www.clearerthinking.org/tools/the-ultimate-personality-test)
+[^personality]: You can also find the [[personality|personality report]] from Clearer Thinking's [Ultimate Personality Test](https://www.clearerthinking.org/tools/the-ultimate-personality-test)
 
 I moved continents at a young age, and learnt very early on that _solitude makes presence precious_.
 
 I like the em-dash (—) (contrary to _many, many recent_ beliefs), parentheticals and non-sequiturs.
 
-I listen to quite a bit of <span style="text-decoration: underline;">Rachmaninoff</span>, Schubert, and garage/drill, and often find myself rabbit-holing on random #math topics.
-
-epistemic status: I don't really care what you do, as long as you think hard about the world and your value and have a clear Bayesian reasoning for it. I value my relationship with my female friends. I'm based in Toronto for the time being, but _I travel around with my bike a lot_.
+I listen to quite a bit of <span style="text-decoration: underline;">Rachmaninoff</span>, Bill Evans, UK garage, and often find myself rabbit-holing on random #math topics.
 
 </div>
 
@@ -71,7 +70,7 @@ N
 ```
 
 ```quotes
-[Aaron] is someone with very kind and warm energy. I always appreciate seeing you.
+[Aaron] is someone with very kind and warm energy. I always appreciate seeing [him].
 
 T
 ```
@@ -82,7 +81,10 @@ I think that Aaron is someone I trust to be there for me at the drop of a hat, n
 C
 ```
 
-I'm a _honest_ person, and I'm not afraid to admit to mistakes. I'm sure I'll make _even more mistakes_, but no one is ✨ _perfect_ ✨ and we only have one life to live 🙂
+I'm an _honest_ person, and I'm not afraid to admit to mistakes. I'm sure I'll make _even more mistakes_, but no one is ✨ _perfect_ ✨ and we only have one life to live 🙂
+
+![[thoughts/images/me-laughing.webp|guess what I'm looking at]]
+![[thoughts/images/me-picnic-table.webp|thinking about a dad joke]]
 
 I try to live this life well. I'm pretty goofy around my friends and people I trust. That said, I find myself drawn to more spontaneous people, probably because I tend to be more reserved. _Well_:
 
@@ -92,14 +94,14 @@ I'm someone you can rely on[^1] --when I make a commitment to you, I'll be 100% 
 
 [^1]: reliable in both logistics and emotional capacity, but I'm still human at the end of the day.
 
-I want to build an animal sanctuary one day, and a high believer in lab-grown meat [^lab-grown]
+I want to build an animal sanctuary one day, and a firm believer in lab-grown meat [^lab-grown]
+
+![[thoughts/images/baloo-leo-shere-khan.webp|Baloo, Leo and Shere Khan, rescued together from an Atlanta basement in 2001 and raised as brothers at Noah's Ark Animal Sanctuary in Georgia.]]
 
 [^lab-grown]:
-    This will be one of the most important innovation in the 21st century. I would still like to raise cattle ethically, alongside with this.
+    This will be one of the most important innovations of the 21st century. I would still like to raise cattle ethically alongside this.
 
-    I would expect having 3-4 families to share a cow. In this case, it would be a lot cheaper for each family comparing to getting their stock at Costco.
-
-Most people know me online as `aarnphm` /urn-fm/, but you can call me _Aaron_ (or [a-a-ron](https://www.youtube.com/watch?v=zRpsRKuyi3Y&ab_channel=ComedyCentralUK)).
+    I'd expect 3-4 families to share a cow, which works out a lot cheaper per family than buying from Costco.
 
 ---
 
@@ -107,11 +109,11 @@ Most people know me online as `aarnphm` /urn-fm/, but you can call me _Aaron_ (o
 
 <figure class='float-right'>
 
-![[thoughts/images/me-at-htn.webp|This is also me at Hack The North]]
+![[thoughts/images/moomin-whittling.webp]]
 
 </figure>
 
-I was an early [[thoughts/Transformers#inference.|inference]] optimization {{sidenotes[engineer]: which means I'm a software engineer working on optimizing [[thoughts/LLMs|LLMs]]}}. at [BentoML](https://bentoml.com/) before [Modular](https://www.modular.com/) acquired us. Then early May 2026 Qualcomm then [acquired](https://www.qualcomm.com/news/releases/2026/06/qualcomm-to-acquire-modular) Modular. I'm now at NVIDIA working on [[thoughts/vllm|vLLM]] and supporting pretraining Nemotron.
+I was an early [[thoughts/Transformers#inference.|inference]] optimization {{sidenotes[engineer]: which means I'm a software engineer working on optimizing [[thoughts/LLMs|LLMs]]}}. at [BentoML](https://bentoml.com/) before [Modular](https://www.modular.com/) acquired us. In early May 2026, Qualcomm [acquired](https://www.qualcomm.com/news/releases/2026/06/qualcomm-to-acquire-modular) Modular. I'm now at NVIDIA working on [[thoughts/vllm|vLLM]] and supporting pretraining Nemotron.
 
 I take my [[thoughts/craft|work]] seriously. I interned at the business analytics division of a bank back in 2018, doing behavioral analysis on customer usage patterns.
 This was my first real exposure to [supervised learning](https://en.wikipedia.org/wiki/Supervised_learning) and I was immediately hooked.
@@ -119,15 +121,15 @@ This was my first real exposure to [supervised learning](https://en.wikipedia.or
 I pretty much didn't know a thing back then, but that didn't bother me much: I found the problem fascinating and knew I would _try_ to solve it, because I wanted to. I definitely still have a ton to learn, but over time you tend to pick up skills along the way.
 
 Early on, I noticed that most of [[thoughts/Machine learning|ML]]'s [technical debt](https://proceedings.neurips.cc/paper_files/paper/2015/file/86df7dcfd896fcaf2674f757a2463eba-Paper.pdf) comes down to scaling, which inherently is an _engineering_ problem.
-This led me to join BentoML, as a software engineer. The mission statement and positions has shifted quite a bit since then, but the core remains the same: optimizing [[thoughts/LLMs|statistical models]] to be as fast and accessible as possible.
+This led me to join BentoML, as a software engineer. The mission statement and positioning have shifted quite a bit since then, but the core remains the same: optimizing [[thoughts/LLMs|statistical models]] to be as fast and accessible as possible.
 
 My approach to problems has stayed consistent since I learned arithmetic: ==don't quit, managed obsession [^obsession], and get your hands dirty== [^work].
 
 [^work]: I should say I've been very fortunate professionally, working at a startup meant tackling loosely-defined problems and developing my own research and engineering [[thoughts/taste|taste]].
 
-[^obsession]: Allocating 15-20 minutes a day to _one_ problem, without distraction. These days it's often 30-60 minute stints for me. I have a squad of Claude and Claude Code (for general discoverability), Gemini (large context handling), GPT-5 and Codex (raw intelligence), Kimi K2 + GLM 4.6 (raw agentic tool calling) that I built as my own "researchers"/"curators"/"verifiers". These tools has becoming a very good discovery tools for me.
+[^obsession]: Allocating 15-20 minutes a day to _one_ problem, without distraction. These days it's often 30-60 minute stints for me. I have a squad of Claude and Claude Code (for general discoverability), Gemini (large context handling), GPT-5 and Codex (raw intelligence), Kimi K2 + GLM 4.6 (raw agentic tool calling) that I built as my own "researchers"/"curators"/"verifiers". They've become very good discovery tools for me.
 
-I might not be good at something initially, but i find being autistic enough to care about a specific domain (_scaling [[thoughts/AGI|intelligence]]_) has got me to a spot that make 5-year-old Aaron proud.
+I might not be good at something initially, but i find being autistic enough to care about a specific domain (_scaling [[thoughts/AGI|intelligence]]_) has got me to a spot that makes 5-year-old Aaron proud.
 
 I have some [[research|research interests]] I'm currently chasing — read them if you're curious. I know it's a bit long, so feel free to skip [[#personal life.|to the next topic]]. Otherwise hopefully it captures what I'm fascinated with as of Oct, 2025.
 
@@ -146,6 +148,9 @@ That said, I care deeply about the well-being of the people around me. My [heads
 This might be connected to something else, though—I moved abroad at 17 to study at a private all-boys boarding school in Vancouver, and I think that left me a bit more anxious than I'd like to admit [^being-human].
 
 My mom says I was always shy growing up. These days I'm much more social, though I suppose the right word is _ambivert_: I'm comfortable in social settings, but I also treasure my alone time.
+
+![[thoughts/images/pooh-moon.webp]]
+![[thoughts/images/heath-ledger-friends.webp]]
 
 [^being-human]: Regardless, this was life-changing, as it taught me a lot about [[thoughts/being|being]] _human_.
 
@@ -176,14 +181,16 @@ triathlon
 - <div data-triathlon-latest />
 - I'm training for IRONMAN Lanzarote 2027. Feel free to check out progress in [daily stream](https://stream.aarnphm.xyz) or the [feed](https://t.aarnphm.xyz/feed)/[calendar](https://t.aarnphm.xyz/calendar)
 
+![[thoughts/images/bike-trainer.webp]]
+
 </section>
 
 <section data-activities>
 
 bouldering
 
-- I used to climb alot V3-V5 most days. I still have a lot to improve, technique and strength-wise. My goal is to comfortably climb {{sidenotes[V7-V8.]: Grading varies from gym-to-gym. I mostly climb at Joe's Rock, which their grading systems somewhat follows [Olympic standard for grades](https://en.wikipedia.org/wiki/Sport_climbing_at_the_Summer_Olympics)}}
-- This is currently on-pause circa IRONMAN training.
+- I used to climb a lot, V3-V5 most days. I still have a lot to improve, technique and strength-wise. My goal is to comfortably climb {{sidenotes[V7-V8.]: Grading varies from gym-to-gym. I mostly climb at Joe's Rock, which their grading systems somewhat follows [Olympic standard for grades](https://en.wikipedia.org/wiki/Sport_climbing_at_the_Summer_Olympics)}}
+- On pause during IRONMAN training.
 
 </section>
 
@@ -222,11 +229,11 @@ cooking
 
 [[mixed#vinyl|vinyl]]/[[cinematheque.base|movies]]
 
-- I collect vinyl and produced throwaway tunes in my free time.
+- I collect vinyl and produce throwaway tunes in my free time.
 - Music is a huge part of my life—I honestly wouldn't be able to function without it.
 - I prefer classical orchestra, a mix of blues and jazz, 80s rock, and I have a deep appreciation for house and garage culture.
   - Rach 3, Rhapsody on Paganini
-- A bit of a cinemaphile
+- A bit of a cinephile
   - La Haine, The Defiant Ones, Dead Poets Society, Good Will Hunting are top-4
 - I use YouTube Music, beyerdynamic DT 1990 Pro
   - This comes with [YouTube](https://www.youtube.com/feed/subscriptions) Premium. [I](https://www.youtube.com/watch?v=z0bSdV8DA4M&ab_channel=EpsilonDelta) [watch](https://www.youtube.com/watch?v=cKS47dq5RtA&ab_channel=essentialsalts) [a](https://www.youtube.com/watch?v=BXwALAkPubc&t=673s&ab_channel=HarvardMathematicsDepartment) [decent](https://www.youtube.com/watch?v=i2acsy7Zzfo&ab_channel=HarvardMathematicsDepartment) [amount](https://www.youtube.com/watch?v=4jQTb6sRGLg&ab_channel=GPUMODE) [of](https://www.youtube.com/watch?v=noC3G9oNxro&ab_channel=JuliandeMedeiros) [YouTube](https://www.youtube.com/watch?v=KniNW8Xe4Us&t=3s&ab_channel=SimonOz), [esp](https://www.youtube.com/watch?v=68UcnUdt6xA&t=4s&ab_channel=Sisyphus55) [when](https://www.youtube.com/watch?v=Mc3tTRkjCvE) [I'm](https://www.youtube.com/watch?v=6QyzGgq64MM&ab_channel=CharStiles) [winding](https://www.youtube.com/watch?v=Tt_hDVN5TZE) [down](https://www.youtube.com/watch?v=30YWsGDr8mA&list=PLcGKfGEEONaBNsY_bOj8IhbCPvj6OAdWo&ab_channel=StrangeLoopConference).
@@ -259,7 +266,7 @@ design
   - I use [Curius](https://curius.app/aaron-pham) to save links on the go, but often transfer them back here later.
   - If you're interested in [[colophon|how this website was built]]
 - I find essay and fiction formats very refreshing.
-  - I'm heavily influenced by Michel Foucault, Albert Camus, Ludwig Wittgenstein, Franz Kafka, Raymond Carver, and a few more researchers (that I can proudly call them my friends)
+  - I'm heavily influenced by Michel Foucault, Albert Camus, Ludwig Wittgenstein, Franz Kafka, Raymond Carver, and a few researchers I'm proud to call friends
 - I also maintain an [[antilibrary.base|antilibrary]] of literature that I've enjoyed.
 - I read [[/arena/papers|papers]] and #math textbooks for fun sometimes.
   - Yes, I know, it is a thing.
@@ -271,7 +278,7 @@ design
 photography
 
 - I used to own a FX3 for film-related projects, but sold it two years ago to buy cookware 😅
-- A7III w/ a bunch of [[thoughts/lenses|lenses]] and {{sidenotes[rigs]: One day I would clean-up and polish my photography portfolio.}}
+- A7III w/ a bunch of [[thoughts/lenses|lenses]] and {{sidenotes[rigs]: One day I'll clean up and polish my photography portfolio.}}
 
 </section>
 
@@ -293,31 +300,32 @@ possible deal-breakers
 2. I don't want kids, _yet_, at least for the next five years.
    - We are young still, many things yet to be explored.
    - I want to be focused on my work and dedication to my [[thoughts/craft|craft]].
-   - I will pursue academia at some points, or at least working on my independent [[research|research]].
+   - I will pursue academia at some point, or at least work on my independent [[research|research]].
    - That said, I'd make it work for the _right_ person.
 3. I care deeply about my friends, and I believe that as partners, we don't have to do everything {{sidenotes[together.]: I definitely want to spend the majority of my time with you, but I'll need "boys" time.}}
 4. Most of my friends are female. I have very clear boundaries with friends, but I want all my female friendships—especially with N, C, Si—to remain strong.
-5. There are a few special people in my {{sidenotes[life,]:I won't disclosed here to respect their privacy}} that I would also like to maintain strong connections {{sidenotes[with.]: Meaning, I would make plans to fly over and see them from time to time.}}
-6. I'm currently reside in Toronto, Canada. I'm open to long-distance (but prefer not to) if there's a good chance we'd end up in the same city, assuming everything goes well! San Francisco, Berkeley, New York, and Boston are all possibilities.
+5. There are a few special people in my {{sidenotes[life,]:I won't disclose them here, to respect their privacy}} that I would also like to maintain strong connections {{sidenotes[with.]: Meaning, I would make plans to fly over and see them from time to time.}}
+6. I currently live in Toronto, Canada. I'm open to long-distance (but prefer not to) if there's a good chance we'd end up in the same city, assuming everything goes well! San Francisco, Berkeley, New York, and Boston are all possibilities.
    - I do plan to move back to the US in the future, in the next 5-7 years.
 
 </section>
 
 {{sidenotes[polyamorous]}}:
 
-    I believe partners should provide certain functions to each others, and being in relationships shouldn't be a constraint that prevent you from exploring something different and _new_.
-
-    With that being said, I'm open to monogamy. But this means I must be very much _in love_ with you as a whole.
+    I believe partners should provide certain functions to each other, and being in a relationship shouldn't stop you from exploring something different and _new_.
 
 <section data-compat>
 
 what i'm offering in a relationship
 
 1. I'm cautiously optimistic, sometimes a bit self-deprecating.
-2. My attachment style has always been ["securely attached"](https://en.wikipedia.org/wiki/Attachment_theory#Attachment_styles_in_adults:~:text=%5B116%5D-,Securely%20attached,-%5Bedit%5D), though I found that my previous partner was ["anxious-preoccupied"](https://en.wikipedia.org/wiki/Attachment_theory#Attachment_styles_in_adults:~:text=%5B118%5D-,Anxious%2Dpreoccupied,-%5Bedit%5D), which is a bit easier to give them "word of affirmation". I'm a caregiver at heart, so I definitely want to look after you.
+2. My attachment style has always been ["securely attached"](https://en.wikipedia.org/wiki/Attachment_theory#Attachment_styles_in_adults:~:text=%5B116%5D-,Securely%20attached,-%5Bedit%5D), though I found that my previous partner was ["anxious-preoccupied"](https://en.wikipedia.org/wiki/Attachment_theory#Attachment_styles_in_adults:~:text=%5B118%5D-,Anxious%2Dpreoccupied,-%5Bedit%5D), which made it a bit easier to give them "words of affirmation". I'm a caregiver at heart, so I definitely want to look after you.
 3. I will cook for you. You don't have to come into the kitchen, but you're more than welcome to join.
 4. My [love languages](https://en.wikipedia.org/wiki/The_Five_Love_Languages) are physical touch, and quality time. I think of a life _partner_ as someone you're mutually supportive of and committed to—someone you're building something together with.
 5. I will get you flowers.
+
+   ![[thoughts/images/irving-penn-poppy.webp|Irving Penn, poppy, 1968.]]
+
 6. I will write letters to you.
 
 </section>
@@ -326,17 +334,19 @@ what i'm offering in a relationship
 
 what i'm looking for in a partner
 
-By all means, this is _not all checkbox that I'm looking for_, but good signals for a good relationship:
+Read these as signals that a relationship with me would go well:
 
 1. driven, high empathy, emotional maturity
 2. witty / sharp
-3. we can meanders about nothing for hours
+3. we can meander about nothing for hours
 4. confidence or being in stem is _sooooooo attractive to me_
-5. non-avoidance attachment style
+5. non-avoidant attachment style
 6. spontaneous and adventurous soul
 7. have her own opinions on most things
 8. si vous parlez français, fantastique je t'aime
 9. open-minded, with a bit of je ne sais quoi, fabuleuse
+
+![[thoughts/images/billions-dinner.webp]]
 
 </section>
 
@@ -346,15 +356,16 @@ if this sounds like _you_
 
 I'd love to:
 
-1. take you out on a picnic date where we can rent a vhs and eat strawberry, or
-2. checking out #places around Toronto, or
-3. we can go bouldering, grab food, then spend the night watching "paris, texas", or
+1. take you on a picnic date where we rent a VHS and eat strawberries, or
+2. check out #places around Toronto, or
+3. go bouldering, grab food, then spend the night watching "paris, texas", or
 4. go for a walk in hyde park, and enjoy the nature.
-5. we can [trade blogpost](https://kami.bearblog.dev/lets-trade-blogposts/)
-6. Something else
+5. [trade blogposts](https://kami.bearblog.dev/lets-trade-blogposts/)
+6. something else
 
 ![[thoughts/images/3DA0F7DF-8F9B-47D8-BAA7-114429E5C359_1_105_c.webp]]
 ![[thoughts/images/0181AD4F-3C0A-4D99-9AF5-9145AFE56E22.webp]]
+![[thoughts/images/blob-cat.webp]]
 
 Aight, enough of me. [Contact me](https://f.aarnphm.xyz) if you want to learn more 😅
 
