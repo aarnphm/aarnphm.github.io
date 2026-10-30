@@ -8,7 +8,7 @@ date: '2025-08-09'
 description: maybe i'm that fish in the sea, for you.
 id: dating
 layout: newspaper
-modified: 2026-10-29 13:00:00 GMT-04:00
+modified: 2026-10-30 01:19:58 GMT-04:00
 readonly: true
 slides: true
 tags:
@@ -113,7 +113,9 @@ I want to build an animal sanctuary one day, and a firm believer in lab-grown me
 
 </figure>
 
-I was an early [[thoughts/Transformers#inference.|inference]] optimization {{sidenotes[engineer]: which means I'm a software engineer working on optimizing [[thoughts/LLMs|LLMs]]}}. at [BentoML](https://bentoml.com/) before [Modular](https://www.modular.com/) acquired us. In early May 2026, Qualcomm [acquired](https://www.qualcomm.com/news/releases/2026/06/qualcomm-to-acquire-modular) Modular. I'm now at NVIDIA working on [[thoughts/vllm|vLLM]] and supporting pretraining Nemotron.
+I was an early [[thoughts/Transformers#inference.|inference]] optimization engineer [^engineer] at [BentoML](https://bentoml.com/) before [Modular](https://www.modular.com/) acquired us. In early May 2026, Qualcomm [acquired](https://www.qualcomm.com/news/releases/2026/06/qualcomm-to-acquire-modular) Modular. I'm now at NVIDIA working on [[thoughts/vllm|vLLM]] and supporting pretraining Nemotron.
+
+[^engineer]: which means I'm a software engineer working on optimizing [[thoughts/LLMs|LLMs]]
 
 I take my [[thoughts/craft|work]] seriously. I interned at the business analytics division of a bank back in 2018, doing behavioral analysis on customer usage patterns.
 This was my first real exposure to [supervised learning](https://en.wikipedia.org/wiki/Supervised_learning) and I was immediately hooked.
