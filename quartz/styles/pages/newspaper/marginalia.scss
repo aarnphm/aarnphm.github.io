@@ -1,0 +1,240 @@
+// Marginalia: sidenotes and footnotes arrive as aside.profile-note right after the block that
+// cites them (Profile transformer). Inline they read as a hairline-ruled note; when the page is
+// wide they hang in a rail at their static position, and profile-notes.inline.ts only nudges
+// neighbours apart.
+[data-layout='newspaper'] {
+  .breadcrumb-container,
+  .page-content > .aside-container.left-col {
+    display: none;
+  }
+
+  // The masthead's double rule opens the page; the sticky header keeps no rule of its own.
+  section.header {
+    border-bottom: 0;
+  }
+
+  .page-content {
+    container: profile-page / inline-size;
+  }
+
+  .profile-note {
+    display: block;
+    margin: 0.4rem 0 1rem;
+    padding-left: 0.75rem;
+    border-left: 1px solid var(--gray);
+    font-family: var(--mag-text);
+    font-style: normal;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--dark);
+    text-align: start;
+    text-indent: 0;
+    hyphens: manual;
+    break-inside: avoid;
+
+    p {
+      margin: 0 0 0.35rem;
+      text-indent: 0;
+      text-align: start;
+    }
+
+    ul,
+    ol {
+      margin: 0.2rem 0;
+      padding-inline-start: 1rem;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    // The mark runs in on the first line.
+    .profile-note-mark {
+      float: left;
+      margin-right: 0.6ch;
+      line-height: inherit;
+    }
+
+    .profile-note-mark + * {
+      margin-top: 0;
+    }
+
+    &[data-kind='footnote'] .profile-note-mark {
+      font-family: var(--codeFont);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      color: var(--tertiary);
+    }
+
+    &[data-kind='sidenote'] .profile-note-mark {
+      font-style: italic;
+    }
+  }
+
+  // Long notes (a recipe, a list) are a boxed aside in the body, never in the rail.
+  .profile-note.profile-note-boxed {
+    margin: 1rem 0;
+    padding: 0.6rem 0;
+    border-left: 0;
+    border-block: 1px solid var(--mag-rule);
+  }
+
+  // Inside the tldr box the notes collect at the bottom as the box's own footnotes.
+  #tldr > .profile-note {
+    column-span: all;
+    margin: 0.5rem 0 0;
+    padding: 0;
+    border: 0;
+  }
+
+  #tldr > .profile-note:first-of-type {
+    margin-top: 1rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--mag-hair);
+  }
+
+  // A sidenote's label already reads as a link; the note carries the word, not an arrow.
+  .sidenote[data-note] .sidenote-label svg {
+    display: none;
+  }
+
+  .sidenote[data-note] .sidenote-label {
+    border-bottom: 1px dotted var(--gray);
+  }
+
+  // In the text a footnote is a small square; the number lives on the note itself. The digits stay
+  // in the DOM at zero size, so screen readers and find-in-page still get them.
+  sup:has(> a[data-footnote-ref]) {
+    vertical-align: 0.3em;
+    line-height: 0;
+  }
+
+  a[data-footnote-ref] {
+    display: inline-block;
+    width: 0.42rem;
+    height: 0.42rem;
+    margin-inline: 0.15rem 0.05rem;
+    border: 1px solid currentColor;
+    font-size: 0;
+    text-decoration: none;
+    vertical-align: baseline;
+  }
+
+  a[data-footnote-ref]:is(:hover, :focus-visible) {
+    background: currentColor;
+  }
+
+  // Hand-placed floats keep their side inside the column, boxed as before.
+  .profile-frame.float-right,
+  .profile-frame.float-left {
+    --frame-w: min(46%, 14rem);
+    max-width: none;
+    margin-block: 0.4rem 1rem;
+    padding: 0.6rem;
+    border: 1px solid var(--gray);
+  }
+
+  // A float sits at the column's edge, not the article's: the inset is zero inside a section
+  // body (already the column) and half the spare width when the parent is the whole article.
+  .profile-frame.float-right {
+    float: right;
+    margin-inline: 1.25rem max(0px, calc(50% - var(--mag-measure) / 2));
+  }
+
+  .profile-frame.float-left {
+    float: left;
+    margin-inline: max(0px, calc(50% - var(--mag-measure) / 2)) 1.25rem;
+  }
+
+  // Justified text beside a float opens rivers; the wrapping paragraph sets ragged.
+  .profile-frame:is(.float-right, .float-left) + p {
+    text-align: start;
+  }
+}
+
+@media all and (min-width: 1400px) {
+  // The desktop grid keeps the article to four tracks; a feature takes every content track.
+  [data-layout='newspaper'] .page-content > article.main-col {
+    grid-column: 3 / -3;
+  }
+}
+
+@container profile-page (min-width: 62rem) {
+  [data-layout='newspaper'] article {
+    --mag-rail: 13rem;
+    --mag-gap: 3rem;
+    --mag-offset: 3rem;
+    --mag-inset: 0px;
+    // The body's axis: the middle of the article between the left inset and the notes rail.
+    --mag-centre: calc(
+      var(--mag-inset) + (100% - var(--mag-inset) - var(--mag-rail) - var(--mag-gap)) / 2
+    );
+    position: relative;
+    padding-right: calc(var(--mag-rail) + var(--mag-gap));
+
+    section.collapsible-header {
+      position: static;
+    }
+
+    // profile-notes.inline.ts sets each note's top level with the word that cites it.
+    .profile-note:not(.profile-note-boxed) {
+      position: absolute;
+      left: min(
+        calc(var(--mag-centre) + var(--mag-measure) / 2 + var(--mag-offset)),
+        calc(100% - var(--mag-rail))
+      );
+      width: var(--mag-rail);
+      margin: 0;
+      padding: 0;
+      border: 0;
+
+      // The rule spans the note and hangs above it, so its first line sits level with the citation.
+      &::before {
+        content: '';
+        position: absolute;
+        top: -0.4rem;
+        left: 0;
+        width: 100%;
+        border-top: 1px solid var(--mag-rule);
+      }
+
+      & + p {
+        margin-top: 0;
+      }
+    }
+
+    // Lede notes clear the opening spread (52rem photos and tldr) by a gap, not the page edge.
+    & > .profile-note:not(.profile-note-boxed) {
+      left: min(calc(var(--mag-centre) + 26rem + var(--mag-offset)), calc(100% - var(--mag-rail)));
+    }
+
+    #tldr > .profile-note,
+    #tldr > .profile-note:first-of-type {
+      left: calc(100% + var(--mag-offset));
+      margin-top: 0;
+      padding-top: 0;
+      border-top: 0;
+    }
+  }
+}
+
+// With room to spare, mirror the notes rail on the left so the body shares the masthead's axis.
+@container profile-page (min-width: 84rem) {
+  [data-layout='newspaper'] article {
+    --mag-inset: calc(var(--mag-rail) + var(--mag-gap));
+    // profile-notes.inline.ts reads this to hang section notes on both sides.
+    --mag-left-rail: 1;
+    padding-left: var(--mag-inset);
+
+    .profile-note[data-side='left'] {
+      left: max(
+        0px,
+        calc(var(--mag-centre) - var(--mag-measure) / 2 - var(--mag-offset) - var(--mag-rail))
+      );
+      &::before {
+        left: auto;
+        right: 0;
+      }
+    }
+  }
+}

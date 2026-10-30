@@ -34,7 +34,10 @@ function settle() {
     ...document.querySelectorAll<HTMLElement>('article .profile-note:not(.profile-note-boxed)'),
   ]
   if (notes.length === 0) return
-  for (const note of notes) note.style.top = ''
+  for (const note of notes) {
+    note.style.top = ''
+    delete note.dataset.side
+  }
   const hanging = notes.filter(note => getComputedStyle(note).position === 'absolute')
   if (hanging.length === 0) return
 
@@ -51,10 +54,26 @@ function settle() {
     }
   })
   placed.sort((a, b) => a.want - b.want)
-  let floor = -Infinity
+
+  // With a left margin (CSS sets --mag-left-rail on wide pages) a section note takes whichever
+  // side lets it sit nearest its citation, alternating on ties; the opening and tldr notes stay
+  // right, beside the photos and the box.
+  const article = hanging[0].closest('article')
+  const twoSided =
+    article !== null && getComputedStyle(article).getPropertyValue('--mag-left-rail').trim() === '1'
+  const floors = { left: -Infinity, right: -Infinity }
+  let last: 'left' | 'right' = 'left'
   for (const { note, want, height, origin } of placed) {
-    const top = Math.max(want, floor + GAP)
-    floor = top + height
+    let side: 'left' | 'right' = 'right'
+    if (twoSided && note.closest('.collapsible-header-content')) {
+      const right = Math.max(want, floors.right + GAP)
+      const left = Math.max(want, floors.left + GAP)
+      side = left < right ? 'left' : right < left ? 'right' : last === 'left' ? 'right' : 'left'
+      if (side === 'left') note.dataset.side = 'left'
+      last = side
+    }
+    const top = Math.max(want, floors[side] + GAP)
+    floors[side] = top + height
     note.style.top = `${top - origin}px`
   }
 
