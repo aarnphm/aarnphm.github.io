@@ -154,12 +154,23 @@
   }
 }
 
-@mixin font-face($family, $filename, $format, $style: normal, $weight: normal, $path: '/fonts/') {
+@mixin font-face(
+  $family,
+  $filename,
+  $format,
+  $style: normal,
+  $weight: normal,
+  $path: '/fonts/',
+  $unicode-range: null
+) {
   @font-face {
     font-family: $family;
     font-style: $style;
     font-weight: $weight;
     font-display: swap;
+    @if $unicode-range {
+      unicode-range: string.unquote($unicode-range);
+    }
     @if meta.type-of($filename) == 'list' and meta.type-of($format) == 'list' {
       $src: ();
       @for $i from 1 through list.length($filename) {

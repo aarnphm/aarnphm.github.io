@@ -24,6 +24,9 @@ content/embeddings/** linguist-generated
 quartz/util/emojimap/** linguist-generated
 quartz/util/base/bookcase/jackets.json linguist-generated
 quartz/util/base/gazetteer.json linguist-generated linguist-vendored
+quartz/styles/fonts.scss linguist-generated
+quartz/styles/fonts.manifest.json linguist-generated
+quartz/styles/fonts.preload.json linguist-generated
 .agents/skills/garden-design-system/references/** linguist-generated
 quartz/runtime/native/packs/** linguist-vendored
 .gitattributes -agent-authored

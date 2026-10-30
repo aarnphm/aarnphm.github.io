@@ -1,5 +1,6 @@
 import { i18n } from '../i18n'
 import { CustomOgImagesEmitterName } from '../plugins/emitters/ogImage'
+import fontPreloads from '../styles/fonts.preload.json'
 import {
   QuartzComponent,
   QuartzComponentConstructor,
@@ -13,15 +14,11 @@ import { isSlidePage, sectionIconFile } from '../util/section-icon'
 import { googleFontHref, googleFontSubsetHref } from '../util/theme'
 import { PersonStructuredData } from './AgentIdentity'
 
-// The regular faces of the body, header and code typography in fonts.scss. Their
-// requests otherwise start only after the stylesheet is parsed and layout finds text
-// that needs them, so text paints in a fallback face and swaps. The hrefs match the
-// @font-face URLs so the browser reuses the preloaded response.
-const preloadFonts = [
-  { href: '/fonts/PPNeueMontreal-Regular.woff2', type: 'font/woff2' },
-  { href: '/static/SpaceGrotesk-VariableFont_wght.ttf', type: 'font/ttf' },
-  { href: '/fonts/TX-02-Regular.woff2', type: 'font/woff2' },
-]
+// The core files of the regular body, header and code faces, written by harness/fonts/subset.py
+// alongside fonts.scss. Their requests otherwise start only after the stylesheet is parsed and
+// layout finds text that needs them, so text paints in a fallback face and swaps. The hrefs match
+// the @font-face URLs so the browser reuses the preloaded response.
+const preloadFonts: { href: string; type: string }[] = fontPreloads
 export default (() => {
   const Head: QuartzComponent = ({
     cfg,
