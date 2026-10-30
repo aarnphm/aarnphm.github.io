@@ -137,6 +137,25 @@ The prairie vole story has also become more interesting. Older work linked pair 
 
 The biology constrains the account. A scan can tell me that two groups differ under a protocol. Promises, agency, and repair need behavioral and first-person evidence.
 
+## sex and attention
+
+Sex gives attention an immediate task: learn what this person enjoys, let them guide the contact, and revise when their response changes.
+
+Saved source: [70s90s's post](https://x.com/70s90s/status/2115552071755981011), quoting a [thread about sexual positions and women's orgasm](https://x.com/Madmoviez_/status/2114943687490973908). Only the quote and thread opener were retrievable on 2026-10-29; the positions in its replies remain unverified.
+
+In a U.S. probability survey of 1,055 women, 18.4% reported intercourse alone was sufficient for orgasm, 36.6% needed clitoral stimulation during intercourse, and another 36% said it improved their orgasms. Preferences for location, pressure, and movement varied. [Herbenick et al.](https://pubmed.ncbi.nlm.nih.gov/28678639/)
+
+A second U.S. survey of 3,017 women described four ways participants made penetration more pleasurable:
+
+- **Angling**: adjusting pelvic position to change contact.
+- **Rocking**: maintaining clitoral contact through rocking movement.
+- **Shallowing**: stimulation near the vaginal entrance.
+- **Pairing**: adding clitoral stimulation during penetration.
+
+These are names for reported preferences. The cross-sectional study cannot establish that a technique causes orgasm or rank positions by effectiveness. Its funder, For Goodness Sake LLC, participated in the research and publication. [Hensel et al., 2021](https://doi.org/10.1371/journal.pone.0249242)
+
+The practical inference is to ask about contact, pressure, pace, and comfort, then keep responding to the answer. A partner's feedback determines which adjustments are worth keeping. Orgasm can be welcome without becoming an obligation.
+
 ## questionnaire
 
 Aron et al. designed a 45-minute procedure with escalating reciprocal disclosure to create temporary interpersonal closeness. [@aron1997closeness] The study found greater closeness than a small-talk condition. It did not test a recipe for falling in love.

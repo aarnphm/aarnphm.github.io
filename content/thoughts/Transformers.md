@@ -183,13 +183,15 @@ Mooncake organizes serving around this cache and [[thoughts/PD disaggregated ser
 </Zoomable>
 ```
 
-Prefill streams KV one layer at a time. Before layer $\ell$ runs attention, the node waits for that layer's cached prefix to arrive and starts loading layer $\ell+1$; after attention, the messenger ships layer $\ell$ to the decode node. Prefill time is then about the longer of KV loading and compute, so the network shows up only when nearly the whole prompt is cached or the link is slow.
+Prefill streams KV one layer at a time. Before layer $\ell$ runs attention, the node waits for that layer's cached prefix to arrive and starts loading layer $\ell+1$; after attention, the messenger ships layer $\ell$ to the decode node. Overlap hides much of the transfer time while each layer has enough computation to cover it. The first load and final transfer still add latency. A large cached prefix leaves less compute to hide communication; congestion or a slower link can make transfers dominate. [Layer-wise prefill, §5.2](https://arxiv.org/html/2407.00079v5#S5.SS2).
 
 ```jsx imports={Zoomable,MooncakeLayerStream}
 <Zoomable label="Mooncake layer-wise KV streaming">
-  <MooncakeLayerStream caption="One prefill of LLaMA3-70B (80 layers, 8 KV heads of dimension 128 in bf16, so 4 KiB of KV per token per layer) on an 8×A800 node. Sage bars load the cached prefix from the pool, gray bars compute a layer, salmon bars stream that layer's KV to the decode node; the bottom lane runs the same work without overlap. KV sizes are exact: 128k tokens give 40 GiB, the payload Mooncake benchmarks its Transfer Engine on. RoCE rates are those measured rates (87 and 190 GB/s); the TCP rate comes from the reported 4.6× gap. Compute assumes 50% MFU and is an estimate. Bars shorter than one unit are drawn at one unit. After Qin et al. (2024), §5.2." />
+  <MooncakeLayerStream caption="One prefill of LLaMA3-70B (80 layers, 8 KV heads of dimension 128 in bf16, so 4 KiB of KV per token per layer) on an 8×A800 node. Sage bars load the cached prefix from the pool, gray bars compute a layer, salmon bars stream that layer's KV to the decode node; the bottom lane runs the same work without overlap. At 131,072 tokens, the KV cache is exactly 40 GiB. The RoCE rates (87 and 190 GB/s) come from Mooncake's Transfer Engine benchmark; the TCP rate is derived from its reported 4.6× ratio. Compute assumes 50% MFU and is an estimate. Bars shorter than one unit are drawn at one unit. Transfer rates are benchmark measurements; this timeline combines them with the estimated compute time." />
 </Zoomable>
 ```
+
+Rate source: [Mooncake Transfer Engine](https://github.com/kvcache-ai/Mooncake#mooncake-transfer-engine). The benchmark reports its payload as 40 GB.
 
 ### next-token prediction.
 
