@@ -9,13 +9,11 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-from .faces import KV_NAMESPACE, ROOT
+from .faces import FETCH_HEADERS, KV_NAMESPACE, ROOT
 
 
 def live_sha(url: str) -> str | None:
-  req = urllib.request.Request(
-    url, headers={'Referer': 'https://aarnphm.xyz/'}
-  )
+  req = urllib.request.Request(url, headers=FETCH_HEADERS)
   try:
     with urllib.request.urlopen(req, timeout=60) as r:
       return hashlib.sha256(r.read()).hexdigest()

@@ -14,6 +14,12 @@ SRC_CACHE = CACHE / 'src'
 OUT_KV = CACHE / 'out'
 STYLES = ROOT / 'quartz' / 'styles'
 KV_NAMESPACE = 'aec7fd95ca404e8c9941993b0e65821d'
+# The worker 403s font requests from other referers, and the Cloudflare edge 403s the default
+# python-urllib user agent, so every fetch of the live site sends both.
+FETCH_HEADERS = {
+  'Referer': 'https://aarnphm.xyz/',
+  'User-Agent': 'garden-fonts-subset (+https://aarnphm.xyz)',
+}
 
 # Features browsers apply by default plus the ones the stylesheets request: tnum/lnum/onum via
 # font-variant-numeric and font-feature-settings, zero via slashed-zero (content/park.html).
