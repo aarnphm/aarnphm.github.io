@@ -1,0 +1,730 @@
+// callouts.scss pins margin-left with !important inside the base layer, and an unlayered
+// !important cannot beat a layered one, so the centring override has to live in that layer.
+@layer quartz-base {
+  [data-layout='newspaper'] article > blockquote.callout {
+    margin-inline: auto !important;
+  }
+}
+
+// Magazine feature: a masthead instead of the byline, an opening spread, then one justified
+// serif column with notes hung in the margin. Photo and note markup comes from the Profile
+// transformer (quartz/plugins/transformers/profile.ts); a page opts in with `layout: newspaper`.
+[data-layout='newspaper'] {
+  --mag-serif: 'Parclo Serif', 'ITCGaramondStdLtCond', Georgia, 'Times New Roman', serif;
+  --mag-rule: var(--dark);
+  --mag-hair: var(--lightgray);
+
+  .page-header {
+    .byline {
+      display: none;
+    }
+
+    hgroup {
+      grid-column: 1 / -1;
+      text-align: center;
+      margin-block: 3rem 2.5rem;
+      padding: 1.25rem 0 1.5rem;
+      border-top: 4px double var(--mag-rule);
+      border-bottom: 1px solid var(--mag-rule);
+    }
+
+    .article-title {
+      margin: 0;
+      font-family: var(--mag-serif);
+      font-style: italic;
+      font-weight: 900;
+      font-size: clamp(3.25rem, 11vw, 8.5rem);
+      line-height: 0.9;
+      letter-spacing: -0.03em;
+    }
+
+    .description {
+      margin: 1rem auto 0;
+      max-width: 34rem;
+      font-family: var(--mag-serif);
+      font-style: italic;
+      font-size: 1.3rem;
+      line-height: 1.35;
+      color: var(--darkgray);
+    }
+  }
+
+  article {
+    --mag-measure: 35rem;
+    container: profile / inline-size;
+    font-family: var(--mag-serif);
+    font-size: 18px;
+    line-height: 1.55;
+    font-variant-numeric: oldstyle-nums;
+
+    p,
+    li {
+      hyphens: auto;
+      hyphenate-limit-chars: 7 3 3;
+      hyphenate-limit-lines: 2;
+      text-wrap: pretty;
+    }
+
+    // Editor's note, then the lede: one narrow centred column under the masthead.
+    & > blockquote.callout.callout a {
+      white-space: nowrap;
+    }
+
+    & > blockquote.callout.callout {
+      max-width: var(--mag-measure);
+      margin-block: 2.5rem 2rem;
+      border: 0;
+      border-block: 1px solid var(--mag-rule);
+      padding: 0.75rem 0;
+      background: none;
+      font-style: italic;
+      text-align: start;
+      font-size: 15px;
+
+      .callout-content,
+      p {
+        text-align: start;
+      }
+
+      p {
+        margin-bottom: 0.5rem;
+      }
+    }
+
+    & > p {
+      max-width: var(--mag-measure);
+      margin-inline: auto;
+      text-align: justify;
+    }
+
+    // One centred column at the measure. Zero specificity, so any block that sets its own width
+    // (the opening photos, the testimonial band, a float) still wins.
+    & > :where(:not(.profile-hero, .profile-pulls, .profile-note, section.collapsible-header)) {
+      max-width: var(--mag-measure);
+      margin-inline: auto;
+    }
+
+    // Section bodies are the column itself, so floats inside them stay within the text.
+    .collapsible-header-content {
+      max-width: var(--mag-measure);
+      margin-inline: auto;
+      text-align: justify;
+
+      & > :first-child {
+        margin-top: 0;
+      }
+    }
+
+    // The testimonial band breaks out of the column, centred on it.
+    .collapsible-header-content > .profile-pulls {
+      --band: min(100cqi, 60rem);
+      width: var(--band);
+      margin-inline: calc((100% - var(--band)) / 2);
+    }
+
+    // Our initial: the masthead's black italic cut, set on a halftone plate inside the masthead's
+    // double rule, four lines deep on the opening paragraph. The plate is two gradients, so it
+    // costs no request, and it takes the theme's ink in both light and dark.
+    & > .callout + p::first-letter {
+      float: left;
+      margin: 0.1em 0.14em 0 0;
+      padding: 0.08em 0.16em 0.02em 0.1em;
+      border: 4px double var(--mag-rule);
+      background-color: var(--light);
+      background-image: radial-gradient(
+        circle at center,
+        color-mix(in srgb, var(--tertiary) 45%, transparent) 0.9px,
+        transparent 1.2px
+      );
+      background-size: 5px 5px;
+      font-family: var(--mag-serif);
+      font-style: italic;
+      font-weight: 900;
+      font-size: 4.4em;
+      line-height: 0.86;
+      color: var(--dark);
+      text-transform: uppercase;
+
+      @supports (initial-letter: 4) {
+        float: none;
+        margin: 0 0.16em 0 0;
+        font-size: unset;
+        line-height: unset;
+        initial-letter: 4;
+      }
+    }
+
+    // Each section opens on the same italic cut without the plate, three lines deep.
+    .collapsible-header-content > p:first-child:not(:has(+ .profile-pulls))::first-letter {
+      float: left;
+      margin: 0.06em 0.1em 0 0;
+      font-style: italic;
+      font-weight: 900;
+      font-size: 3.35em;
+      line-height: 0.8;
+      text-transform: uppercase;
+
+      @supports (initial-letter: 3) {
+        float: none;
+        margin: 0 0.12em 0 0;
+        font-size: unset;
+        line-height: unset;
+        initial-letter: 3;
+      }
+    }
+
+    // Body paragraphs run on with an indent instead of a gap, as set in print: one signal, never
+    // both. Anything that is not a paragraph still gets air before the text resumes.
+    p {
+      margin-block: 0;
+    }
+
+    p + p {
+      text-indent: 1.4em;
+    }
+
+    :is(ul, ol, blockquote, figure, aside, div, section, h2, h3) + p {
+      margin-top: 0.9rem;
+    }
+
+    p + :is(ul, ol, figure, div) {
+      margin-top: 0.9rem;
+    }
+
+    // Every rule before a section already has the section head's rule and numeral.
+    & > hr {
+      display: none;
+    }
+
+    #tldr p,
+    blockquote p,
+    li p {
+      text-indent: 0;
+    }
+
+    // At a glance: the tldr as a boxed sidebar at the body's measure.
+    #tldr {
+      max-width: var(--mag-measure);
+      margin: 3rem auto;
+      padding: 1.5rem 0 1rem;
+      border: 0;
+      border-block: 4px double var(--mag-rule);
+      background: none;
+      font-size: 15px;
+      line-height: 1.5;
+
+      &::before,
+      &::after {
+        content: none;
+      }
+
+      & > * {
+        padding: 0;
+        margin-top: 0;
+        break-inside: avoid;
+      }
+
+      & > p {
+        margin-bottom: 0.8rem;
+      }
+
+      & > p:first-child {
+        column-span: all;
+        text-align: center;
+        font-style: italic;
+        margin-bottom: 1rem;
+      }
+    }
+
+    // Section openers: a roman numeral over an italic display head, between rules.
+    counter-reset: mag-section;
+
+    section.collapsible-header {
+      counter-increment: mag-section;
+      margin-top: 3.5rem;
+    }
+
+    .collapse-rail,
+    .collapsible-header-hr,
+    .collapsible-header-spacer {
+      display: none;
+    }
+
+    h2 {
+      margin: 0 0 1.75rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--mag-rule);
+      text-align: center;
+
+      &::before {
+        content: counter(mag-section, upper-roman);
+        display: block;
+        font-family: var(--codeFont);
+        font-size: 11px;
+        letter-spacing: 0.3em;
+        color: var(--darkgray);
+      }
+
+      .collapse-toggle {
+        display: flex;
+        justify-content: center;
+        cursor: default;
+      }
+
+      .collapse-title {
+        font-family: var(--mag-serif);
+        font-style: italic;
+        font-weight: 700;
+        font-size: clamp(2rem, 5vw, 3rem);
+        letter-spacing: -0.015em;
+      }
+
+      svg {
+        display: none;
+      }
+    }
+
+    .collapse-body,
+    .collapse-body-content {
+      display: block;
+      padding: 0;
+      margin: 0;
+    }
+
+    // Departments: each activity and compatibility list under a small-caps kicker.
+    section[data-activities],
+    section[data-compat] {
+      break-inside: avoid;
+      margin: 0 0 1.5rem;
+
+      & > p:first-of-type:not(.popover *) {
+        margin: 0 0 0.6rem !important;
+        padding-bottom: 0.3rem;
+        border-bottom: 1px solid var(--mag-rule);
+        font-family: var(--codeFont);
+        font-size: 11px;
+        font-weight: 400;
+        letter-spacing: 0.24em;
+        text-indent: 0;
+      }
+
+      ul,
+      ol {
+        margin-top: 0;
+        padding-inline-start: 1.2rem;
+      }
+
+      ol li::marker {
+        font-family: var(--codeFont);
+        font-size: 11px;
+      }
+    }
+
+    // Pull quotes span every column; testimonials sit side by side.
+    blockquote.quotes {
+      column-span: all;
+      break-inside: avoid;
+      max-width: 44rem;
+      margin: 2rem auto;
+      padding: 1rem 0;
+      border: 0;
+      border-block: 1px solid var(--mag-rule);
+      text-align: center;
+      font-style: italic;
+      font-size: 1.35rem;
+      line-height: 1.35;
+
+      p:last-child {
+        margin-top: 0.75rem;
+        font-family: var(--codeFont);
+        font-style: normal;
+        font-size: 11px;
+        letter-spacing: 0.2em;
+      }
+    }
+
+    .profile-pulls {
+      column-span: all;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+      gap: 0 2rem;
+      margin: 0.5rem 0 2.5rem;
+      border-block: 4px double var(--mag-rule);
+
+      blockquote.quotes {
+        margin: 0;
+        max-width: none;
+        border: 0;
+        padding: 1.25rem 0;
+        font-size: 1.05rem;
+        text-align: start;
+
+        & + blockquote.quotes {
+          border-top: 1px solid var(--mag-hair);
+        }
+      }
+    }
+
+    hr {
+      border: 0;
+      margin: 2rem auto;
+
+      &::after {
+        content: '\2042';
+        display: block;
+        text-align: center;
+        font-size: 1.1rem;
+      }
+    }
+
+    // The tombstone that closes a feature.
+    section[data-compat]:last-of-type > p:last-of-type::after {
+      content: '\2009\25A0';
+    }
+  }
+}
+
+.profile-frame {
+  --frame-w: min(20rem, 100%);
+  width: var(--frame-w);
+  margin: 1.5rem auto;
+  break-inside: avoid;
+  text-indent: 0;
+
+  & > img {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0;
+    // The global img rule sets content-visibility: auto, which drops the intrinsic ratio offscreen.
+    content-visibility: visible;
+    background-color: var(--lightgray);
+  }
+
+  & > figcaption {
+    display: flex;
+    justify-content: flex-start;
+    align-items: baseline;
+    gap: 1ch;
+    margin-top: 0.4rem;
+    padding-top: 0.3rem;
+    border-top: 1px solid var(--lightgray);
+    font-family: var(--codeFont);
+    font-style: normal;
+    font-size: 11px;
+    line-height: 1.45;
+    color: var(--darkgray);
+    text-align: start;
+
+    .figure-caption {
+      text-align: start;
+      color: inherit;
+    }
+  }
+
+  .profile-frame-no {
+    flex: none;
+    color: var(--dark);
+    letter-spacing: 0.06em;
+
+    &::before {
+      content: 'pl. ';
+      color: var(--darkgray);
+    }
+  }
+
+  &[data-kind='ref'] {
+    --frame-w: min(14rem, 70%);
+
+    .profile-frame-no::before {
+      content: none;
+    }
+  }
+
+  &[data-kind='ref'][data-captioned] {
+    --frame-w: min(18rem, 90%);
+  }
+}
+
+// A gallery stays a gallery: equal cells side by side, each photo cropped to fill its cell, as
+// the plain .image-grid does.
+.image-grid.profile-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+  align-items: stretch;
+  gap: 1rem;
+  max-width: 44rem;
+  margin: 2rem auto;
+  column-span: all;
+
+  & > .profile-frame {
+    --frame-w: 100%;
+    margin: 0;
+
+    & > img {
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+    }
+  }
+
+  .collapsible-header-content & {
+    max-width: var(--mag-measure);
+  }
+
+  &.profile-hero {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+    max-width: 52rem;
+    margin: 2.5rem auto 1rem;
+
+    & > .profile-frame > img {
+      aspect-ratio: 3 / 4;
+    }
+  }
+}
+
+@container profile (min-width: 48rem) {
+  [data-layout='newspaper'] .profile-pulls blockquote.quotes + blockquote.quotes {
+    border-top: 0;
+    border-left: 1px solid var(--lightgray);
+    padding-left: 2rem;
+  }
+
+  [data-layout='newspaper'] .profile-frame[data-kind='me']:not(.profile-strip *) {
+    --frame-w: min(24rem, 100%);
+  }
+}
+
+// No backlinks or footer chrome under a feature. The extra element beats the per-page mobile
+// rules in custom.scss that force the footer back on as a grid.
+body[data-layout='newspaper'] .page-footer {
+  display: none !important;
+}
+
+// Marginalia: sidenotes and footnotes arrive as aside.profile-note right after the block that
+// cites them (Profile transformer). Inline they read as a hairline-ruled note; when the page is
+// wide they hang in a rail at their static position, and profile-notes.inline.ts only nudges
+// neighbours apart.
+[data-layout='newspaper'] {
+  .breadcrumb-container,
+  .page-content > .aside-container.left-col {
+    display: none;
+  }
+
+  // The masthead's double rule opens the page; the sticky header keeps no rule of its own.
+  section.header {
+    border-bottom: 0;
+  }
+
+  .page-content {
+    container: profile-page / inline-size;
+  }
+
+  .profile-note {
+    display: block;
+    margin: 0.4rem 0 1rem;
+    padding-left: 0.75rem;
+    border-left: 1px solid var(--gray);
+    font-family: var(--mag-serif);
+    font-style: normal;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--dark);
+    text-align: start;
+    text-indent: 0;
+    hyphens: manual;
+    break-inside: avoid;
+
+    p {
+      margin: 0 0 0.35rem;
+      text-indent: 0;
+      text-align: start;
+    }
+
+    ul,
+    ol {
+      margin: 0.2rem 0;
+      padding-inline-start: 1rem;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    // The mark runs in on the first line.
+    .profile-note-mark {
+      float: left;
+      margin-right: 0.6ch;
+      line-height: inherit;
+    }
+
+    .profile-note-mark + * {
+      margin-top: 0;
+    }
+
+    &[data-kind='footnote'] .profile-note-mark {
+      font-family: var(--codeFont);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      color: var(--tertiary);
+    }
+
+    &[data-kind='sidenote'] .profile-note-mark {
+      font-style: italic;
+    }
+  }
+
+  // Long notes (a recipe, a list) are a boxed aside in the body, never in the rail.
+  .profile-note.profile-note-boxed {
+    margin: 1rem 0;
+    padding: 0.6rem 0;
+    border-left: 0;
+    border-block: 1px solid var(--mag-rule);
+  }
+
+  // Inside the tldr box the notes collect at the bottom as the box's own footnotes.
+  #tldr > .profile-note {
+    column-span: all;
+    margin: 0.5rem 0 0;
+    padding: 0;
+    border: 0;
+  }
+
+  #tldr > .profile-note:first-of-type {
+    margin-top: 1rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--mag-hair);
+  }
+
+  // A sidenote's label already reads as a link; the note carries the word, not an arrow.
+  .sidenote[data-note] .sidenote-label svg {
+    display: none;
+  }
+
+  .sidenote[data-note] .sidenote-label {
+    border-bottom: 1px dotted var(--gray);
+  }
+
+  // In the text a footnote is a small square; the number lives on the note itself. The digits stay
+  // in the DOM at zero size, so screen readers and find-in-page still get them.
+  sup:has(> a[data-footnote-ref]) {
+    vertical-align: 0.3em;
+    line-height: 0;
+  }
+
+  a[data-footnote-ref] {
+    display: inline-block;
+    width: 0.42rem;
+    height: 0.42rem;
+    margin-inline: 0.15rem 0.05rem;
+    border: 1px solid currentColor;
+    font-size: 0;
+    text-decoration: none;
+    vertical-align: baseline;
+  }
+
+  a[data-footnote-ref]:is(:hover, :focus-visible) {
+    background: currentColor;
+  }
+
+  // Hand-placed floats keep their side inside the column, boxed as before.
+  .profile-frame.float-right,
+  .profile-frame.float-left {
+    --frame-w: min(46%, 14rem);
+    max-width: none;
+    margin-block: 0.4rem 1rem;
+    padding: 0.6rem;
+    border: 1px solid var(--gray);
+  }
+
+  // A float sits at the column's edge, not the article's: the inset is zero inside a section
+  // body (already the column) and half the spare width when the parent is the whole article.
+  .profile-frame.float-right {
+    float: right;
+    margin-inline: 1.25rem max(0px, calc(50% - var(--mag-measure) / 2));
+  }
+
+  .profile-frame.float-left {
+    float: left;
+    margin-inline: max(0px, calc(50% - var(--mag-measure) / 2)) 1.25rem;
+  }
+
+  // Justified text beside a float opens rivers; the wrapping paragraph sets ragged.
+  .profile-frame:is(.float-right, .float-left) + p {
+    text-align: start;
+  }
+}
+
+@media all and (min-width: 1400px) {
+  // The desktop grid keeps the article to four tracks; a feature takes every content track.
+  [data-layout='newspaper'] .page-content > article.main-col {
+    grid-column: 3 / -3;
+  }
+}
+
+@container profile-page (min-width: 62rem) {
+  [data-layout='newspaper'] article {
+    --mag-rail: 13rem;
+    --mag-gap: 3rem;
+    --mag-offset: 3rem;
+    --mag-inset: 0px;
+    // The body's axis: the middle of the article between the left inset and the notes rail.
+    --mag-centre: calc(
+      var(--mag-inset) + (100% - var(--mag-inset) - var(--mag-rail) - var(--mag-gap)) / 2
+    );
+    position: relative;
+    padding-right: calc(var(--mag-rail) + var(--mag-gap));
+
+    section.collapsible-header {
+      position: static;
+    }
+
+    // profile-notes.inline.ts sets each note's top level with the word that cites it.
+    .profile-note:not(.profile-note-boxed) {
+      position: absolute;
+      left: min(
+        calc(var(--mag-centre) + var(--mag-measure) / 2 + var(--mag-offset)),
+        calc(100% - var(--mag-rail))
+      );
+      width: var(--mag-rail);
+      margin: 0;
+      padding: 0;
+      border: 0;
+
+      // The short rule hangs above the note so its first line sits level with the citation.
+      &::before {
+        content: '';
+        position: absolute;
+        top: -0.4rem;
+        left: 0;
+        width: 2rem;
+        border-top: 1px solid var(--mag-rule);
+      }
+
+      & + p {
+        margin-top: 0;
+      }
+    }
+
+    // Lede notes clear the opening spread (52rem photos and tldr) by a gap, not the page edge.
+    & > .profile-note:not(.profile-note-boxed) {
+      left: min(calc(var(--mag-centre) + 26rem + var(--mag-offset)), calc(100% - var(--mag-rail)));
+    }
+
+    #tldr > .profile-note,
+    #tldr > .profile-note:first-of-type {
+      left: calc(100% + var(--mag-offset));
+      margin-top: 0;
+      padding-top: 0;
+      border-top: 0;
+    }
+  }
+}
+
+// With room to spare, mirror the notes rail on the left so the body shares the masthead's axis.
+@container profile-page (min-width: 84rem) {
+  [data-layout='newspaper'] article {
+    --mag-inset: calc(var(--mag-rail) + var(--mag-gap));
+    padding-left: var(--mag-inset);
+  }
+}

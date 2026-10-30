@@ -172,6 +172,7 @@ const config: QuartzConfig = {
         { plugin: Plugin.Slides(), dev: slides },
         { plugin: Plugin.Arena(), dev: arena },
         Plugin.Stream(),
+        Plugin.Profile(),
         Plugin.Protected(),
       ],
     }),
@@ -194,6 +195,7 @@ const config: QuartzConfig = {
         }),
         Plugin.Bibliography({ bibliography: './content/References.bib' }),
         Plugin.ContentPage(),
+        Plugin.ProfileFrames(),
         { plugin: Plugin.EmailEmitter(), dev: false },
         Plugin.LLMText(),
         Plugin.FolderPage({
