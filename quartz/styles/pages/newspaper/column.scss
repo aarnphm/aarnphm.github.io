@@ -1,0 +1,399 @@
+@use '../../mixin.scss' as *;
+
+// The text face is Source Serif 4 (Adobe, OFL), the face gwern.net sets its prose in. Subset to
+// Latin with old-style figures and true small capitals kept; a page downloads only the styles it
+// uses (~45kb for the roman). The files are served from the FONTS KV at /fonts/, like Parclo and
+// Berkeley Mono.
+@include font-face('Source Serif 4', 'source-serif-4-Regular.woff2', 'woff2', normal, 400);
+@include font-face('Source Serif 4', 'source-serif-4-It.woff2', 'woff2', italic, 400);
+@include font-face('Source Serif 4', 'source-serif-4-Semibold.woff2', 'woff2', normal, 600);
+@include font-face('Source Serif 4', 'source-serif-4-SemiboldIt.woff2', 'woff2', italic, 600);
+
+// callouts.scss pins margin-left with !important inside the base layer, and an unlayered
+// !important cannot beat a layered one, so the centring override has to live in that layer.
+@layer quartz-base {
+  [data-layout='newspaper'] article > blockquote.callout {
+    margin-inline: auto !important;
+  }
+}
+
+// Magazine feature: a masthead instead of the byline, an opening spread, then one justified
+// serif column with notes hung in the margin. Photo and note markup comes from the Profile
+// transformer (quartz/plugins/transformers/profile.ts); a page opts in with `layout: newspaper`.
+[data-layout='newspaper'] {
+  // Display (masthead, section heads, initials) stays Parclo; running text is Source Serif 4.
+  --mag-serif: 'Parclo Serif', 'ITCGaramondStdLtCond', Georgia, 'Times New Roman', serif;
+  --mag-text: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --mag-rule: var(--dark);
+  --mag-hair: var(--lightgray);
+
+  .page-header {
+    .byline {
+      display: none;
+    }
+
+    hgroup {
+      grid-column: 1 / -1;
+      text-align: center;
+      margin-block: 3rem 2.5rem;
+      padding: 1.25rem 0 1.5rem;
+      border-top: 4px double var(--mag-rule);
+      border-bottom: 1px solid var(--mag-rule);
+    }
+
+    .article-title {
+      margin: 0;
+      font-family: var(--mag-serif);
+      font-style: italic;
+      font-weight: 900;
+      font-size: clamp(3.25rem, 11vw, 8.5rem);
+      line-height: 0.9;
+      letter-spacing: -0.03em;
+    }
+
+    .description {
+      margin: 1rem auto 0;
+      max-width: 34rem;
+      font-family: var(--mag-text);
+      font-style: italic;
+      font-size: 1.3rem;
+      line-height: 1.35;
+      color: var(--darkgray);
+    }
+  }
+
+  article {
+    --mag-measure: 35rem;
+    container: profile / inline-size;
+    font-family: var(--mag-text);
+    font-size: 18px;
+    line-height: 1.55;
+    font-variant-numeric: oldstyle-nums;
+
+    p,
+    li {
+      hyphens: auto;
+      hyphenate-limit-chars: 7 3 3;
+      hyphenate-limit-lines: 2;
+      text-wrap: pretty;
+    }
+
+    // Editor's note, then the lede: one narrow centred column under the masthead.
+    & > blockquote.callout.callout a {
+      white-space: nowrap;
+    }
+
+    & > blockquote.callout.callout {
+      max-width: var(--mag-measure);
+      margin-block: 2.5rem 2rem;
+      border: 0;
+      border-block: 1px solid var(--mag-rule);
+      padding: 0.75rem 0;
+      background: none;
+      font-style: italic;
+      text-align: start;
+      font-size: 15px;
+
+      .callout-content,
+      p {
+        text-align: start;
+      }
+
+      p {
+        margin-bottom: 0.5rem;
+      }
+    }
+
+    & > p {
+      max-width: var(--mag-measure);
+      margin-inline: auto;
+      text-align: justify;
+    }
+
+    // One centred column at the measure. Zero specificity, so any block that sets its own width
+    // (the opening photos, the testimonial band, a float) still wins.
+    & > :where(:not(.profile-hero, .profile-pulls, .profile-note, section.collapsible-header)) {
+      max-width: var(--mag-measure);
+      margin-inline: auto;
+    }
+
+    // Section bodies are the column itself, so floats inside them stay within the text.
+    .collapsible-header-content {
+      max-width: var(--mag-measure);
+      margin-inline: auto;
+      text-align: justify;
+
+      & > :first-child {
+        margin-top: 0;
+      }
+    }
+
+    // The testimonial band breaks out of the column, centred on it.
+    .collapsible-header-content > .profile-pulls {
+      --band: min(100cqi, 60rem);
+      width: var(--band);
+      margin-inline: calc((100% - var(--band)) / 2);
+    }
+
+    // Our initial: the masthead's black italic cut, set on a halftone plate inside the masthead's
+    // double rule, four lines deep on the opening paragraph. The plate is two gradients, so it
+    // costs no request, and it takes the theme's ink in both light and dark.
+    & > .callout + p::first-letter {
+      float: left;
+      margin: 0.1em 0.14em 0 0;
+      padding: 0.08em 0.16em 0.02em 0.1em;
+      border: 4px double var(--mag-rule);
+      background-color: var(--light);
+      background-image: radial-gradient(
+        circle at center,
+        color-mix(in srgb, var(--tertiary) 45%, transparent) 0.9px,
+        transparent 1.2px
+      );
+      background-size: 5px 5px;
+      font-family: var(--mag-serif);
+      font-style: italic;
+      font-weight: 900;
+      font-size: 4.4em;
+      line-height: 0.86;
+      color: var(--dark);
+      text-transform: uppercase;
+
+      @supports (initial-letter: 4) {
+        float: none;
+        margin: 0 0.16em 0 0;
+        font-size: unset;
+        line-height: unset;
+        initial-letter: 4;
+      }
+    }
+
+    // Each section opens on the same italic cut without the plate, three lines deep.
+    .collapsible-header-content > p:first-child:not(:has(+ .profile-pulls))::first-letter {
+      float: left;
+      font-family: var(--mag-serif);
+      margin: 0.06em 0.1em 0 0;
+      font-style: italic;
+      font-weight: 900;
+      font-size: 3.35em;
+      line-height: 0.8;
+      text-transform: uppercase;
+
+      @supports (initial-letter: 3) {
+        float: none;
+        margin: 0 0.12em 0 0;
+        font-size: unset;
+        line-height: unset;
+        initial-letter: 3;
+      }
+    }
+
+    // Body paragraphs run on with an indent instead of a gap, as set in print: one signal, never
+    // both. Anything that is not a paragraph still gets air before the text resumes.
+    p {
+      margin-block: 0;
+    }
+
+    p + p {
+      text-indent: 1.4em;
+    }
+
+    :is(ul, ol, blockquote, figure, aside, div, section, h2, h3) + p {
+      margin-top: 0.9rem;
+    }
+
+    p + :is(ul, ol, figure, div) {
+      margin-top: 0.9rem;
+    }
+
+    // Every rule before a section already has the section head's rule and numeral.
+    & > hr {
+      display: none;
+    }
+
+    #tldr p,
+    blockquote p,
+    li p {
+      text-indent: 0;
+    }
+
+    // At a glance: the tldr as a boxed sidebar at the body's measure.
+    #tldr {
+      max-width: var(--mag-measure);
+      margin: 3rem auto;
+      padding: 1.5rem 0 1rem;
+      border: 0;
+      border-block: 4px double var(--mag-rule);
+      background: none;
+      font-size: 15px;
+      line-height: 1.5;
+
+      &::before,
+      &::after {
+        content: none;
+      }
+
+      & > * {
+        padding: 0;
+        margin-top: 0;
+        break-inside: avoid;
+      }
+
+      & > p {
+        margin-bottom: 0.8rem;
+      }
+
+      & > p:first-child {
+        column-span: all;
+        text-align: center;
+        font-style: italic;
+        margin-bottom: 1rem;
+      }
+    }
+
+    // Section openers: a roman numeral over an italic display head, between rules.
+    counter-reset: mag-section;
+
+    section.collapsible-header {
+      counter-increment: mag-section;
+      margin-top: 3.5rem;
+    }
+
+    .collapse-rail,
+    .collapsible-header-hr,
+    .collapsible-header-spacer {
+      display: none;
+    }
+
+    h2 {
+      margin: 0 0 1.75rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--mag-rule);
+      text-align: center;
+
+      &::before {
+        content: counter(mag-section, upper-roman);
+        display: block;
+        font-family: var(--codeFont);
+        font-size: 11px;
+        letter-spacing: 0.3em;
+        color: var(--darkgray);
+      }
+
+      .collapse-toggle {
+        display: flex;
+        justify-content: center;
+        cursor: default;
+      }
+
+      .collapse-title {
+        font-family: var(--mag-serif);
+        font-style: italic;
+        font-weight: 700;
+        font-size: clamp(2rem, 5vw, 3rem);
+        letter-spacing: -0.015em;
+      }
+
+      svg {
+        display: none;
+      }
+    }
+
+    .collapse-body,
+    .collapse-body-content {
+      display: block;
+      padding: 0;
+      margin: 0;
+    }
+
+    // Departments: each activity and compatibility list under a small-caps kicker.
+    section[data-activities],
+    section[data-compat] {
+      break-inside: avoid;
+      margin: 0 0 1.5rem;
+
+      & > p:first-of-type:not(.popover *) {
+        margin: 0 0 0.6rem !important;
+        padding-bottom: 0.3rem;
+        border-bottom: 1px solid var(--mag-rule);
+        font-family: var(--codeFont);
+        font-size: 11px;
+        font-weight: 400;
+        letter-spacing: 0.24em;
+        text-indent: 0;
+      }
+
+      ul,
+      ol {
+        margin-top: 0;
+        padding-inline-start: 1.2rem;
+      }
+
+      ol li::marker {
+        font-family: var(--codeFont);
+        font-size: 11px;
+      }
+    }
+
+    // Pull quotes span every column; testimonials sit side by side.
+    blockquote.quotes {
+      column-span: all;
+      break-inside: avoid;
+      max-width: 44rem;
+      margin: 2rem auto;
+      padding: 1rem 0;
+      border: 0;
+      border-block: 1px solid var(--mag-rule);
+      text-align: center;
+      font-style: italic;
+      font-size: 1.35rem;
+      line-height: 1.35;
+
+      p:last-child {
+        margin-top: 0.75rem;
+        font-family: var(--codeFont);
+        font-style: normal;
+        font-size: 11px;
+        letter-spacing: 0.2em;
+      }
+    }
+
+    .profile-pulls {
+      column-span: all;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+      gap: 0 2rem;
+      margin: 0.5rem 0 2.5rem;
+      border-block: 4px double var(--mag-rule);
+
+      blockquote.quotes {
+        margin: 0;
+        max-width: none;
+        border: 0;
+        padding: 1.25rem 0;
+        font-size: 1.05rem;
+        text-align: start;
+
+        & + blockquote.quotes {
+          border-top: 1px solid var(--mag-hair);
+        }
+      }
+    }
+
+    hr {
+      border: 0;
+      margin: 2rem auto;
+
+      &::after {
+        content: '\2042';
+        display: block;
+        text-align: center;
+        font-size: 1.1rem;
+      }
+    }
+
+    // The tombstone that closes a feature.
+    section[data-compat]:last-of-type > p:last-of-type::after {
+      content: '\2009\25A0';
+    }
+  }
+}

@@ -1,0 +1,116 @@
+.profile-frame {
+  --frame-w: min(20rem, 100%);
+  width: var(--frame-w);
+  margin: 1.5rem auto;
+  break-inside: avoid;
+  text-indent: 0;
+
+  & > img {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0;
+    // The global img rule sets content-visibility: auto, which drops the intrinsic ratio offscreen.
+    content-visibility: visible;
+    background-color: var(--lightgray);
+  }
+
+  & > figcaption {
+    display: flex;
+    justify-content: flex-start;
+    align-items: baseline;
+    gap: 1ch;
+    margin-top: 0.4rem;
+    padding-top: 0.3rem;
+    border-top: 1px solid var(--lightgray);
+    font-family: var(--codeFont);
+    font-style: normal;
+    font-size: 11px;
+    line-height: 1.45;
+    color: var(--darkgray);
+    text-align: start;
+
+    .figure-caption {
+      text-align: start;
+      color: inherit;
+    }
+  }
+
+  .profile-frame-no {
+    flex: none;
+    color: var(--dark);
+    letter-spacing: 0.06em;
+
+    &::before {
+      content: 'pl. ';
+      color: var(--darkgray);
+    }
+  }
+
+  &[data-kind='ref'] {
+    --frame-w: min(14rem, 70%);
+
+    .profile-frame-no::before {
+      content: none;
+    }
+  }
+
+  &[data-kind='ref'][data-captioned] {
+    --frame-w: min(18rem, 90%);
+  }
+}
+
+// A gallery stays a gallery: equal cells side by side, each photo cropped to fill its cell, as
+// the plain .image-grid does.
+.image-grid.profile-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+  align-items: stretch;
+  gap: 1rem;
+  max-width: 44rem;
+  margin: 2rem auto;
+  column-span: all;
+
+  & > .profile-frame {
+    --frame-w: 100%;
+    margin: 0;
+
+    & > img {
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+    }
+  }
+
+  .collapsible-header-content & {
+    max-width: var(--mag-measure);
+  }
+
+  &.profile-hero {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+    max-width: 52rem;
+    margin: 2.5rem auto 1rem;
+
+    & > .profile-frame > img {
+      aspect-ratio: 3 / 4;
+    }
+  }
+}
+
+@container profile (min-width: 48rem) {
+  [data-layout='newspaper'] .profile-pulls blockquote.quotes + blockquote.quotes {
+    border-top: 0;
+    border-left: 1px solid var(--lightgray);
+    padding-left: 2rem;
+  }
+
+  [data-layout='newspaper'] .profile-frame[data-kind='me']:not(.profile-strip *) {
+    --frame-w: min(24rem, 100%);
+  }
+}
+
+// No backlinks or footer chrome under a feature. The extra element beats the per-page mobile
+// rules in custom.scss that force the footer back on as a grid.
+body[data-layout='newspaper'] .page-footer {
+  display: none !important;
+}
