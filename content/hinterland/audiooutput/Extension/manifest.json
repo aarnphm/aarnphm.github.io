@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Audio Output",
+  "version": "0.1.0",
+  "description": "Route audio from selected sites through the Audio Output menu-bar app.",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApYaJz9JRlcXrR9EXUHQm1m2F06oHlU5dEs1OSeVimSufNHeyNpyNypRoOUarVQ1PVuOvsM75owYw0arGUqTHHqrAz+10o4TWVcHeAObzNumUFXB8X/oqylHOqZxgNLt2ul+Q1Z9cK+AuluBh7veWwTGjG+rbSJp1z8tcanPB05KyrCrZxMMFYc/cseWSMym5tIVyeivYpAbKLS6BydN4rqY8yRexHJZtuzJX6+Lwj8BlA0THr3DJxgzXbvTclLqywbIZdi4PgqyBluTJ6fzgnmXsKjM65K6gn3JcrjD5L9/caRKL9mFe+W8wf2nY/atc6VhqPDNYPqAuQaStgFIbKQIDAQAB",
+  "permissions": ["nativeMessaging", "storage", "activeTab", "scripting"],
+  "host_permissions": ["https://music.youtube.com/*"],
+  "optional_host_permissions": ["https://*/*"],
+  "background": { "service_worker": "background.js" },
+  "action": { "default_popup": "popup.html" },
+  "content_scripts": [
+    { "matches": ["https://music.youtube.com/*"], "js": ["content.js"], "run_at": "document_idle" }
+  ]
+}
