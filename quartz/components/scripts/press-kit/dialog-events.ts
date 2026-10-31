@@ -349,6 +349,14 @@ export function bindDialog(signal: AbortSignal) {
         session.powerCurveScale = input.value
         schedule()
         return
+      } else if (
+        input.name === 'press-kit-power-unit' &&
+        (input.value === 'watts' || input.value === 'relative')
+      ) {
+        session.powerCurveUnit = input.value
+        syncControls()
+        schedule()
+        return
       } else if (input.name === 'press-kit-theme') session.theme = input.value as ThemeKey
       else if (input.name === 'press-kit-day-layout' && isDayLayout(input.value))
         session.dayLayout = input.value

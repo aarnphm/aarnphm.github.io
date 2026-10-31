@@ -1,4 +1,9 @@
-import type { ActivityCardData, OverlayKey, PowerWindow } from '../../../util/press-kit-activity'
+import type {
+  ActivityCardData,
+  OverlayKey,
+  PowerWindow,
+  PowerCurveUnit,
+} from '../../../util/press-kit-activity'
 import type { Locale } from '../../../util/triathlon-presentation'
 import type { Select } from '../../controls/select'
 import type { PressKitPage } from '../../PressKit'
@@ -72,6 +77,7 @@ export const session: {
   language: Locale | null
   powerWindow: PowerWindow
   powerCurveScale: 'linear' | 'log'
+  powerCurveUnit: PowerCurveUnit
   noteEdited: boolean
   anchorSelect: Select<string> | null
   unmountAnchor: (() => void) | null
@@ -102,6 +108,7 @@ export const session: {
   language: null,
   powerWindow: 30,
   powerCurveScale: 'log',
+  powerCurveUnit: 'watts',
   noteEdited: false,
   anchorSelect: null,
   unmountAnchor: null,
