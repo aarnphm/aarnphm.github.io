@@ -67,7 +67,7 @@ def subset_font(src: Path, keep: set[int], face: Face) -> TTFont:
       font, face.pin, inplace=True, optimize=True, updateFontNames=False
     )
   opts = subset.Options()
-  opts.layout_features = list(KEEP_FEATURES)
+  opts.layout_features = list(KEEP_FEATURES) + list(face.features)
   opts.layout_scripts = ['*']
   # TrueType instructions do not change CoreText output (measured), so they go. CFF hints
   # (BlueValues, stems) do: Source Serif 4 moved by ~14k px per test page without them.
@@ -135,8 +135,9 @@ def verify(path: Path, expected: set[int], face: Face) -> dict:
       feats.update(
         fr.FeatureTag for fr in f[tbl].table.FeatureList.FeatureRecord
       )
-  assert feats <= set(KEEP_FEATURES), (
-    f'{path.name}: unexpected features {feats - set(KEEP_FEATURES)}'
+  allowed = set(KEEP_FEATURES) | set(face.features)
+  assert feats <= allowed, (
+    f'{path.name}: unexpected features {feats - allowed}'
   )
   fam = f['name'].getDebugName(1)
   if face.rename:
