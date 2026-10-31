@@ -217,10 +217,28 @@ export function syncControls() {
   const powerControls = $('.press-kit-power-window')
   if (powerControls) powerControls.hidden = !show.cyclingPower || !powerCharts.length
   const powerScale = $('.press-kit-power-scale')
-  if (powerScale)
-    powerScale.hidden =
-      !show.powerCurve ||
-      !activities.some(activity => activity.charts.some(chart => chart.key === 'powerCurve'))
+  const curves = activities.flatMap(activity =>
+    activity.charts.filter(chart => chart.key === 'powerCurve'),
+  )
+  const curveHidden = !show.powerCurve || !curves.length
+  if (powerScale) powerScale.hidden = curveHidden
+  const powerUnit = $('.press-kit-power-unit')
+  if (powerUnit) powerUnit.hidden = curveHidden
+  const relativeAvailable = curves.length > 0 && curves.every(chart => chart.weight != null)
+  if (!relativeAvailable) session.powerCurveUnit = 'watts'
+  session.dialog
+    .querySelectorAll<HTMLInputElement>('input[name="press-kit-power-unit"]')
+    .forEach(input => {
+      input.checked = input.value === session.powerCurveUnit
+      input.disabled = input.value === 'relative' && !relativeAvailable
+    })
+  const weightNote = $('[data-power-weight]')
+  if (weightNote) {
+    weightNote.hidden = relativeAvailable
+    weightNote.textContent = relativeAvailable
+      ? ''
+      : 'W/kg indisponible : poids manquant pour une activité.'
+  }
   session.dialog
     .querySelectorAll<HTMLInputElement>('input[name="press-kit-power-scale"]')
     .forEach(input => {

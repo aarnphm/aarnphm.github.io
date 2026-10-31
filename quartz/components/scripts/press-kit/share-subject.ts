@@ -346,6 +346,7 @@ export function model(): CardModel {
     railTextScale: session.editor?.railTextScale ?? 1,
     powerWindow: session.powerWindow,
     powerCurveScale: session.powerCurveScale,
+    powerCurveUnit: session.powerCurveUnit,
     metricKeys: Object.fromEntries(Array.from(selectedMetrics, ([url, keys]) => [url, [...keys]])),
     show: {
       ...show,

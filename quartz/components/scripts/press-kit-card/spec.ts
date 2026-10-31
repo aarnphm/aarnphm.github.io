@@ -11,6 +11,7 @@ import {
   type ActivityCardStat,
   type OverlayKey,
   type PowerWindow,
+  type PowerCurveUnit,
 } from '../../../util/press-kit-activity'
 
 export type CardRun = Run & { math?: MathImage }
@@ -200,6 +201,7 @@ export interface CardModel {
   railTextScale?: number
   powerWindow?: PowerWindow
   powerCurveScale?: 'linear' | 'log'
+  powerCurveUnit?: PowerCurveUnit
   metricKeys?: Record<string, string[]>
   locale?: Locale
   show: {

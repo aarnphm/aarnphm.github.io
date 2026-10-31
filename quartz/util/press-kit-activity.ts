@@ -38,6 +38,7 @@ export type ActivityCardChartKey =
   | 'runHeartRate'
   | 'runLaps'
 export type PowerWindow = 30 | 300
+export type PowerCurveUnit = 'watts' | 'relative'
 export interface ActivityCardChartPoint {
   x: number
   y: number | null
@@ -62,6 +63,7 @@ export interface ActivityCardChart {
   points: ActivityCardChartPoint[]
   series?: { seconds: PowerWindow; points: ActivityCardChartPoint[] }[]
   window?: PowerWindow
+  weight?: { kg: number; date: string; source: 'garmin' }
 }
 
 export interface ActivityCardPoint {
@@ -159,6 +161,14 @@ const isChart = (value: unknown): value is ActivityCardChart =>
   typeof value.note === 'string' &&
   Array.isArray(value.points) &&
   value.points.every(isChartPoint) &&
+  (value.weight === undefined ||
+    (isRecord(value.weight) &&
+      typeof value.weight.kg === 'number' &&
+      Number.isFinite(value.weight.kg) &&
+      value.weight.kg > 0 &&
+      typeof value.weight.date === 'string' &&
+      /^\d{4}-\d{2}-\d{2}$/.test(value.weight.date) &&
+      value.weight.source === 'garmin')) &&
   (value.window === undefined || isPowerWindow(value.window)) &&
   (value.series === undefined ||
     (Array.isArray(value.series) &&

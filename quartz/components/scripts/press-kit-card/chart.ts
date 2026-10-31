@@ -1,23 +1,11 @@
 import { scaleLinear, scaleLog } from 'd3'
-import type { ActivityCardChart, ActivityCardData } from '../../../util/press-kit-activity'
+import type { ActivityCardChart } from '../../../util/press-kit-activity'
 import type { Locale } from '../../../util/triathlon-presentation'
-import type { CardModel, Fonts } from '../press-kit-card'
+import type { Fonts } from '../press-kit-card'
 import type { LayerRenderer } from '../press-kit-layers'
 import { triLabel, triText } from '../../../util/triathlon-i18n'
 import { cardLocale } from '../press-kit-i18n'
 import { createSvgText, node, svgImage } from './svg'
-
-export function trainingCharts(
-  activity: ActivityCardData | undefined,
-  model: CardModel,
-): ActivityCardChart[] {
-  return (activity?.charts ?? []).flatMap(chart => {
-    if (!model.show[chart.key]) return []
-    if (chart.key !== 'cyclingPower' || !chart.series) return [chart]
-    const series = chart.series.find(series => series.seconds === (model.powerWindow ?? 30))
-    return series ? [{ ...chart, points: series.points, window: series.seconds }] : []
-  })
-}
 
 export function trainingChartWeight(chart: ActivityCardChart): number {
   return chart.kind === 'intervals' || chart.key === 'runLaps' ? 1.3 : 1

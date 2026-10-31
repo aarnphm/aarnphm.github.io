@@ -13,7 +13,8 @@ import { cardBlockDisplay, type BlockDisplay, type TrainingCardBlock } from '../
 import { cardLocale } from '../press-kit-i18n'
 import { svgLayer, type LayerRenderer } from '../press-kit-layers'
 import { cardDate, runsToPlain } from '../press-kit-text'
-import { paintTrainingChart, trainingCharts, trainingChartWeight } from './chart'
+import { paintTrainingChart, trainingChartWeight } from './chart'
+import { trainingCharts } from './chart-data'
 import { cardRoute, routeSvg } from './route'
 import { node, createSvgText, graphic, sportIcon } from './svg'
 

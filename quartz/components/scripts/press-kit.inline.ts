@@ -53,6 +53,7 @@ document.addEventListener('nav', () => {
   show.cyclingLaps = false
   session.powerWindow = 30
   session.powerCurveScale = 'log'
+  session.powerCurveUnit = 'watts'
   show.runPace = false
   show.runHeartRate = false
   show.runLaps = false
