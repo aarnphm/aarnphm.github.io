@@ -8,7 +8,7 @@ import { renderDataFor } from '../../util/ctx'
 import { collectHeadingIndex, resolveNestedAnchor } from '../../util/nested-anchor'
 import { FullSlug, isFullSlug } from '../../util/path'
 import { hasHastClass } from '../../util/transclude-props'
-import { processHeaders, shouldProcessHeaders } from './collapsible-headers'
+import { addRunningHeads, processHeaders, shouldProcessHeaders } from './collapsible-headers'
 import { mergeFootnotes, mergeReferences } from './footnotes-citations'
 import { transcludeBlockquote } from './transclude-blockquote'
 
@@ -198,6 +198,7 @@ export function resolveTransclusions(
   // NOTE: handling collapsible nodes
   if (shouldProcessHeaders(fileData, dynalist, slug)) {
     root.children = processHeaders(root.children as ElementContent[])
+    if (fileData.profile) addRunningHeads(root, fileData.vine)
   }
 
   // NOTE: We then merge all references and footnotes to final items

@@ -1,16 +1,29 @@
 // Marginalia: sidenotes and footnotes arrive as aside.profile-note right after the block that
 // cites them (Profile transformer). Inline they read as a hairline-ruled note; when the page is
-// wide they hang in a rail at their static position, and profile-notes.inline.ts only nudges
-// neighbours apart.
-[data-layout='newspaper'] {
+// wide they hang in a rail, set by anchor positioning level with the citation and below the note
+// above, so the first paint is final. Without anchor positioning they stay inline.
+
+// The masthead's double rule opens the page; the sticky header keeps no rule of its own and
+// takes no height, so the masthead sits at the top. Its controls overflow on a clear ground.
+// Full specificity on purpose: it has to beat #quartz-root > section[class~='header'].
+body[data-layout='newspaper'] #quartz-root > section.header {
+  height: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border-bottom: 0;
+  background: transparent;
+
+  > .header-content {
+    height: 0;
+    padding: 0;
+  }
+}
+
+[data-layout='newspaper'] :where(#quartz-root) {
   .breadcrumb-container,
   .page-content > .aside-container.left-col {
     display: none;
-  }
-
-  // The masthead's double rule opens the page; the sticky header keeps no rule of its own.
-  section.header {
-    border-bottom: 0;
   }
 
   .page-content {
@@ -24,7 +37,7 @@
     border-left: 1px solid var(--gray);
     font-family: var(--mag-text);
     font-style: normal;
-    font-size: 13px;
+    font-size: 14px;
     line-height: 1.4;
     color: var(--dark);
     text-align: start;
@@ -105,7 +118,9 @@
   // In the text a footnote is a small square; the number lives on the note itself. The digits stay
   // in the DOM at zero size, so screen readers and find-in-page still get them.
   sup:has(> a[data-footnote-ref]) {
-    vertical-align: 0.3em;
+    margin-inline: 0;
+    font-size: inherit;
+    vertical-align: 0.35em;
     line-height: 0;
   }
 
@@ -113,7 +128,7 @@
     display: inline-block;
     width: 0.42rem;
     height: 0.42rem;
-    margin-inline: 0.15rem 0.05rem;
+    margin-inline: 0.1rem 0;
     border: 1px solid currentColor;
     font-size: 0;
     text-decoration: none;
@@ -154,13 +169,13 @@
 
 @media all and (min-width: 1400px) {
   // The desktop grid keeps the article to four tracks; a feature takes every content track.
-  [data-layout='newspaper'] .page-content > article.main-col {
+  [data-layout='newspaper'] :where(#quartz-root) .page-content > article.main-col {
     grid-column: 3 / -3;
   }
 }
 
-@container profile-page (min-width: 62rem) {
-  [data-layout='newspaper'] article {
+@container profile-page (min-width: 70rem) {
+  [data-layout='newspaper'] :where(#quartz-root) article {
     --mag-rail: 13rem;
     --mag-gap: 3rem;
     --mag-offset: 3rem;
@@ -176,55 +191,85 @@
       position: static;
     }
 
-    // profile-notes.inline.ts sets each note's top level with the word that cites it.
-    .profile-note:not(.profile-note-boxed) {
-      position: absolute;
-      left: min(
-        calc(var(--mag-centre) + var(--mag-measure) / 2 + var(--mag-offset)),
-        calc(100% - var(--mag-rail))
-      );
-      width: var(--mag-rail);
-      margin: 0;
-      padding: 0;
-      border: 0;
-
-      // The rule spans the note and hangs above it, so its first line sits level with the citation.
-      &::before {
-        content: '';
+    // Profile emits the anchors: --cite on a word joiner at the citation, --prev on the note
+    // above on the same rail. A missing --prev falls back so the citation alone decides.
+    @supports (anchor-name: --a) {
+      .profile-note:not(.profile-note-boxed) {
+        --prev: --none;
+        --prev-side: --none;
         position: absolute;
-        top: -0.4rem;
-        left: 0;
-        width: 100%;
-        border-top: 1px solid var(--mag-rule);
+        top: max(anchor(var(--cite) top), anchor(var(--prev) bottom, -16px) + 16px);
+        // Above the chapter bar that sticks at the top of the viewport.
+        z-index: 2;
+        left: min(
+          calc(var(--mag-centre) + var(--mag-measure) / 2 + var(--mag-offset)),
+          calc(100% - var(--mag-rail))
+        );
+        width: var(--mag-rail);
+        margin: 0;
+        padding: 0;
+        border: 0;
+
+        // The rule spans the note and hangs above it, so its first line sits level with the citation.
+        &::before {
+          content: '';
+          position: absolute;
+          top: -0.4rem;
+          left: 0;
+          width: 100%;
+          border-top: 1px solid var(--mag-rule);
+        }
+
+        & + p {
+          margin-top: 0;
+        }
       }
 
-      & + p {
+      // Keep department notes beside the centered band as the article grows wider.
+      .collapsible-header-content[data-level='2']:has(> section.collapsible-header[data-level='3'])
+        .profile-note:not(.profile-note-boxed) {
+        left: min(calc(var(--mag-centre) + var(--band) / 2 + 2rem), calc(100% - var(--mag-rail)));
+      }
+
+      // Lede notes clear the opening spread (52rem photos and tldr) by a gap, not the page edge.
+      & > .profile-note:not(.profile-note-boxed) {
+        left: min(
+          calc(var(--mag-centre) + 26rem + var(--mag-offset)),
+          calc(100% - var(--mag-rail))
+        );
+      }
+
+      #tldr > .profile-note,
+      #tldr > .profile-note:first-of-type {
+        left: calc(100% + var(--mag-offset));
         margin-top: 0;
+        padding-top: 0;
+        border-top: 0;
       }
-    }
-
-    // Lede notes clear the opening spread (52rem photos and tldr) by a gap, not the page edge.
-    & > .profile-note:not(.profile-note-boxed) {
-      left: min(calc(var(--mag-centre) + 26rem + var(--mag-offset)), calc(100% - var(--mag-rail)));
-    }
-
-    #tldr > .profile-note,
-    #tldr > .profile-note:first-of-type {
-      left: calc(100% + var(--mag-offset));
-      margin-top: 0;
-      padding-top: 0;
-      border-top: 0;
     }
   }
 }
 
 // With room to spare, mirror the notes rail on the left so the body shares the masthead's axis.
 @container profile-page (min-width: 84rem) {
-  [data-layout='newspaper'] article {
+  [data-layout='newspaper'] :where(#quartz-root) article {
     --mag-inset: calc(var(--mag-rail) + var(--mag-gap));
-    // profile-notes.inline.ts reads this to hang section notes on both sides.
-    --mag-left-rail: 1;
     padding-left: var(--mag-inset);
+
+    section.collapsible-header[data-level='2']:has(
+        .collapsible-header-content[data-level='2'] > section.collapsible-header[data-level='3']
+      )
+      > .mag-running-head {
+      margin-left: max(0px, calc((100% - 68rem) / 2 - var(--mag-rail) - 2rem));
+    }
+
+    // Section notes alternate sides (data-side from Profile), so each clears the note above on
+    // its own rail.
+    @supports (anchor-name: --a) {
+      .profile-note:not(.profile-note-boxed) {
+        top: max(anchor(var(--cite) top), anchor(var(--prev-side) bottom, -16px) + 16px);
+      }
+    }
 
     .profile-note[data-side='left'] {
       left: max(
@@ -235,6 +280,11 @@
         left: auto;
         right: 0;
       }
+    }
+
+    .collapsible-header-content[data-level='2']:has(> section.collapsible-header[data-level='3'])
+      .profile-note[data-side='left'] {
+      left: max(0px, calc(var(--mag-centre) - var(--band) / 2 - 2rem - var(--mag-rail)));
     }
   }
 }

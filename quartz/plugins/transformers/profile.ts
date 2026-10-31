@@ -10,18 +10,17 @@ import { SKIP, visit } from 'unist-util-visit'
 // @ts-ignore
 import script from '../../components/scripts/profile-notes.inline'
 import { QuartzTransformerPlugin } from '../../types/plugin'
+import { vineInitial } from '../../util/grapevine'
 
-/** A page opts in with `layout: newspaper` in its frontmatter. */
 export const NEWSPAPER = 'newspaper' as const
 
-/** Widths emitted by the ProfileFrames emitter; the original stays the largest candidate. */
+/** ProfileFrames candidates, with the original largest. */
 export const PROFILE_WIDTHS = [480, 800, 1200] as const
 export const PROFILE_DIR = 'static/profile'
 
-// A photo of the author, by filename. Everything else (stills, art, memes) is a reference.
+// Portrait filename patterns; other images are references.
 const portrait = /^(me-|selfie)/
 
-// Column frames cap at 24rem, the opening pair splits a 52rem spread, references stay small.
 const SIZES = {
   hero: '(min-width: 60rem) 26rem, 46vw',
   me: '(min-width: 48rem) 24rem, min(20rem, 92vw)',
@@ -78,7 +77,7 @@ function frame(
   index: number | null,
   caption?: ElementContent[],
 ): Element {
-  // Portraits are numbered plates; references carry only their caption, if any.
+  // Number portraits; references may have captions.
   const label = index === null ? [] : [h('span.profile-frame-no', String(index).padStart(2, '0'))]
   const content = [...label, ...(caption ?? [])]
   return h('figure.profile-frame', { dataKind: kind, dataCaptioned: caption ? '' : undefined }, [
@@ -87,10 +86,7 @@ function frame(
   ])
 }
 
-/**
- * Lays a profile page out as a proof sheet: every local photo gets its intrinsic size, a resized
- * srcset, and a numbered frame. Portraits of the author are numbered; references are not.
- */
+/** Build responsive srcsets and numbered local-photo frames. */
 export const Profile: QuartzTransformerPlugin = () => {
   return {
     name: 'Profile',
@@ -143,7 +139,7 @@ export const Profile: QuartzTransformerPlugin = () => {
           visit(tree, 'element', (node, index, parent) => {
             if (!parent || index === undefined) return
 
-            // Consecutive attestations read as one band of testimonials.
+            // Group consecutive attestations as testimonials.
             if (node.tagName === 'blockquote' && isQuote(node)) {
               const run: Element[] = [node]
               let end = index + 1
@@ -160,18 +156,18 @@ export const Profile: QuartzTransformerPlugin = () => {
               return
             }
 
-            // The first run of photos, before any heading, is the hero strip.
+            // Photos before the first heading form the hero strip.
             if (node.tagName === 'h2' || node.tagName === 'section') hero = false
 
             if (
               node.tagName === 'div' &&
               (node.properties.className as string[] | undefined)?.includes('image-grid')
             ) {
-              // Cells are bare embeds or captioned ones (figure > img + figcaption).
+              // Cells are embeds or figures.
               const cells = node.children.flatMap(c => {
                 if (c.type !== 'element') return []
                 if (isPhoto(c)) return [{ img: c, caption: undefined }]
-                // isPhoto's guard narrows c to never here; it is still an element.
+                // isPhoto narrows this element's type.
                 const fig = c as Element
                 if (fig.tagName !== 'figure') return []
                 const img = fig.children.find(isPhoto)
@@ -194,7 +190,6 @@ export const Profile: QuartzTransformerPlugin = () => {
               return SKIP
             }
 
-            // Captioned embeds already arrive as figure > img + figcaption.
             if (node.tagName === 'figure' && node.properties.dataImgWCaption !== undefined) {
               const img = node.children.find(isPhoto)
               if (!img) return SKIP
@@ -205,7 +200,7 @@ export const Profile: QuartzTransformerPlugin = () => {
                 (c): c is Element => c.type === 'element' && c.tagName === 'figcaption',
               )
               const framed = frame(img, kind, n, caption?.children)
-              // A hand-placed float wrapper keeps its side; the frame takes its place.
+              // Preserve the side of a hand-placed float.
               if (
                 parent.type === 'element' &&
                 parent.tagName === 'figure' &&
@@ -227,7 +222,7 @@ export const Profile: QuartzTransformerPlugin = () => {
               const n = kind === 'me' ? ++count : null
               dress(node, kind, false)
               const framed = frame({ ...node }, kind, n)
-              // A lone photo inside a paragraph lifts the paragraph to a frame.
+              // Lift a lone paragraph photo into a frame.
               if (
                 parent.type === 'element' &&
                 parent.tagName === 'p' &&
@@ -241,7 +236,7 @@ export const Profile: QuartzTransformerPlugin = () => {
             }
           })
 
-          // A float wrapper around a bare embed: the frame takes the wrapper's place and side.
+          // Replace a bare embed's wrapper with its frame, preserving the side.
           visit(tree, 'element', node => {
             if (node.tagName !== 'figure') return
             const side = classes(node).filter(c => c.startsWith('float-'))
@@ -253,6 +248,9 @@ export const Profile: QuartzTransformerPlugin = () => {
             Object.assign(node, only)
           })
 
+          const face = dropcapOf(frontmatter.dropcap)
+          if (face === 'procedural') file.data.vine = slug
+          initials(tree, face, slug)
           marginalia(tree)
         },
       ]
@@ -266,8 +264,7 @@ export const Profile: QuartzTransformerPlugin = () => {
 const BLOCKS = new Set(['p', 'li', 'blockquote', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'dd', 'dt'])
 const classes = (node: Element) => (node.properties.className as string[] | undefined) ?? []
 
-// A rail is 13rem: anything longer than a short paragraph, or with a list or maths, reads as a
-// boxed note in the body instead.
+// Long notes, lists and maths are boxed instead of using the 13rem rail.
 const BOXED_WORDS = 70
 
 function note(id: string, kind: 'footnote' | 'sidenote', mark: string, body: ElementContent[]) {
@@ -287,11 +284,7 @@ function note(id: string, kind: 'footnote' | 'sidenote', mark: string, body: Ele
   )
 }
 
-/**
- * Lifts sidenotes and footnotes out of the running text into `aside.profile-note`, placed right
- * after the block that cites them. CSS hangs them in the margin; on narrow screens they stay
- * inline. The sidenote script skips them because their content no longer follows the label.
- */
+/** Move notes after their citing block for CSS placement; keep them inline on narrow screens. */
 function marginalia(tree: Root) {
   const footnotes = new Map<string, Element>()
   let section: { node: Element; parent: Root | Element; index: number } | undefined
@@ -305,7 +298,7 @@ function marginalia(tree: Root) {
     return SKIP
   })
 
-  // Asides cannot live inside a paragraph, so each one waits for its block to close.
+  // Wait for each block to close; asides cannot sit inside paragraphs.
   const pending = new Map<Element, Element[]>()
   const moved = new Set<string>()
   const walk = (node: Element | Root, block: Element | null) => {
@@ -322,11 +315,17 @@ function marginalia(tree: Root) {
             ? toString(label).trim()
             : ''
         const id = `${String(child.properties.id ?? 'note')}-margin`
-        if (label?.type === 'element') label.properties.dataNote = id
         const aside = note(id, 'sidenote', word, child.children)
         pending.set(here, [...(pending.get(here) ?? []), aside])
-        node.children.splice(i, 1)
-        i--
+        if (label?.type === 'element') {
+          label.properties.dataNote = id
+          // Insert the cite before the label; the moved content then sits at i + 1.
+          node.children.splice(i - 1, 0, cite(aside))
+          node.children.splice(i + 1, 1)
+        } else {
+          node.children.splice(i, 1)
+          i--
+        }
         continue
       }
 
@@ -352,6 +351,8 @@ function marginalia(tree: Root) {
           })
           const aside = note(id, 'footnote', toString(ref).trim(), body)
           pending.set(here, [...(pending.get(here) ?? []), aside])
+          node.children.splice(i, 0, cite(aside))
+          i++
           continue
         }
       }
@@ -369,8 +370,7 @@ function marginalia(tree: Root) {
   }
   walk(tree, null)
 
-  // The tldr is a boxed sidebar in two columns: its notes collect at the end of the box, where
-  // they hang beside it when there is a margin and read as the box's own footnotes when not.
+  // Collect TLDR notes at the box end, as margin or inline footnotes.
   visit(tree, 'element', box => {
     if (box.properties.id !== 'tldr') return
     const collected: Element[] = []
@@ -386,10 +386,142 @@ function marginalia(tree: Root) {
   })
 
   if (section && moved.size === footnotes.size) section.parent.children.splice(section.index, 1)
+
+  chain(tree)
+}
+
+const anchorId = (id: unknown) => String(id).replace(/[^\w-]/g, '-')
+
+/** Zero-width citation anchor; the word joiner shares its line and prevents a break. */
+function cite(aside: Element): Element {
+  return h(
+    'span.profile-note-cite',
+    { ariaHidden: 'true', style: `anchor-name:--${anchorId(aside.properties.id)}-cite` },
+    '\u2060',
+  )
+}
+
+/** Link citation and prior-note anchors. Anchors target earlier notes in this or an enclosing
+ * block, so TLDR notes chain within their box.
+ */
+function chain(tree: Root) {
+  const last = { any: '', left: '', right: '', box: '' }
+  let sections = false
+  let alternate = 0
+  const link = (box: Element | null) => (el: Element) => {
+    if (el.tagName === 'h2') sections = true
+    if (el.properties.id === 'tldr' && el !== box) {
+      visit(el, 'element', link(el))
+      return SKIP
+    }
+    if (!classes(el).includes('profile-note') || classes(el).includes('profile-note-boxed')) return
+    const name = `--${anchorId(el.properties.id)}`
+    const vars = [`anchor-name:${name}`, `--cite:${name}-cite`]
+    if (box) {
+      if (last.box) vars.push(`--prev:${last.box}`, `--prev-side:${last.box}`)
+      // Right-rail notes after the box must still clear its notes.
+      last.box = last.any = last.right = name
+    } else {
+      const side = sections && alternate++ % 2 === 1 ? 'left' : 'right'
+      if (side === 'left') el.properties.dataSide = 'left'
+      if (last.any) vars.push(`--prev:${last.any}`)
+      if (last[side]) vars.push(`--prev-side:${last[side]}`)
+      last.any = name
+      last[side] = name
+    }
+    el.properties.style = vars.join(';')
+    return SKIP
+  }
+  visit(tree, 'element', link(null))
 }
 
 declare module 'vfile' {
   interface DataMap {
     profile: boolean
+    /** Seed for the grapevine chapter rules, set when the page's drop cap is `procedural`. */
+    vine?: string
   }
+}
+
+const INITIAL = /^(["'\u201C\u2018]?)([A-Za-z])/
+// Small caps: whole words, max 28 chars.
+const LEADIN = /^[^\s]*(?:\s+[^\s]+){0,3}/
+const LEADIN_MAX = 28
+
+/** Accepted `dropcap:` faces; other faces must appear in dropcap.scss. `none` disables them. */
+const DROPCAPS = ['garamond', 'ebgaramond', 'goudy', 'yinit', 'dezs', 'procedural'] as const
+type Dropcap = (typeof DROPCAPS)[number] | 'none'
+
+function dropcapOf(value: unknown): Dropcap {
+  if (value === 'none' || value === false) return 'none'
+  const name = typeof value === 'string' ? value.toLowerCase() : 'garamond'
+  return (DROPCAPS as readonly string[]).includes(name) ? (name as Dropcap) : 'garamond'
+}
+
+/** Wrap the lede and chapter openers in `span.mag-initial`; `::first-letter` cannot carry an
+ * ornament. Chapters opening a testimonial band stay plain.
+ */
+function initials(tree: Root, face: Dropcap, seed: string) {
+  if (face === 'none') return
+  let n = 0
+  const els = tree.children.filter((c): c is Element => c.type === 'element')
+  let seenHeading = false
+  els.forEach((el, i) => {
+    // A float between head and text leaves that paragraph the opener.
+    const skip = classes(els[i + 1] ?? el).some(c => c.startsWith('float-')) ? 1 : 0
+    const next = els[i + 1 + skip]
+    const after = els[i + 2 + skip]
+    const lede = !seenHeading && el.tagName === 'blockquote' && classes(el).includes('callout')
+    const opener =
+      el.tagName === 'h2' && !(after !== undefined && classes(after).includes('profile-pulls'))
+    if (el.tagName === 'h2') seenHeading = true
+    if (next?.tagName !== 'p' || !(lede || opener)) return
+    wrapInitial(next, lede ? 'lede' : 'section', face, `${seed}:${n++}`)
+  })
+}
+
+function wrapInitial(
+  block: Element,
+  kind: 'lede' | 'section',
+  face: Dropcap,
+  seed: string,
+): boolean {
+  const first = block.children[0]
+  if (!first) return false
+  if (first.type === 'element') {
+    return (
+      ['em', 'strong', 'a', 'span'].includes(first.tagName) && wrapInitial(first, kind, face, seed)
+    )
+  }
+  if (first.type !== 'text') return false
+  const match = INITIAL.exec(first.value)
+  if (!match) return false
+  const [, quote, letter] = match
+  const rest = first.value.slice(match[0].length)
+  // End on a whole word within budget; skip if the first word exceeds it. CSS sets small caps.
+  let leadin = LEADIN.exec(rest)?.[0] ?? ''
+  while (leadin.length > LEADIN_MAX && /\s/.test(leadin))
+    leadin = leadin.slice(0, leadin.search(/\s+\S+$/))
+  const wrapped: ElementContent[] = [
+    h(
+      'span.mag-initial',
+      {
+        dataLetter: letter.toUpperCase(),
+        dataKind: kind,
+        dataFace: face === 'garamond' ? undefined : face,
+      },
+      // The procedural face draws its tile here, seeded by page and position, so it is final at
+      // first paint and the same on every build.
+      [letter, ...(face === 'procedural' ? [vineInitial(letter, seed)] : [])].filter(
+        c => c !== null,
+      ),
+    ),
+  ]
+  if (quote) wrapped.unshift(h('span.mag-initial-punct', quote))
+  if (leadin.length > 0 && leadin.length <= LEADIN_MAX) {
+    wrapped.push(h('span.mag-leadin', leadin))
+    first.value = rest.slice(leadin.length)
+  } else first.value = rest
+  block.children.splice(0, 1, ...wrapped, first)
+  return true
 }

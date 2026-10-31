@@ -1,0 +1,145 @@
+@use 'sass:list';
+@use 'sass:map';
+@use '../../fonts.initials';
+
+// Drop-cap faces a newspaper page can pick in its frontmatter (`dropcap: goudy`), after
+// gwern.net's dropcaps (https://gwern.net/dropcap): the default is the two-layer EB Garamond
+// Initials set in column.scss; the rest are monochrome faces served one letter per file from
+// /fonts/ (harness/fonts/subset/initials.py). Each letter has its own family so the line strut
+// uses its metrics without a unicode-range fallback. The Profile transformer stamps the face on
+// each span.mag-initial as data-face, so nothing here needs the page root.
+//
+// Sizing is column.scss's: the letter's ink, not its em, spans (n - 1) lines plus a cap height
+// from the first line's cap top to the last line's baseline. Each letter's ink top and bottom
+// (em above the baseline; tails below it are negative and fit inside the block) are measured
+// with fontTools by initials.py and emitted as fonts.$initials-ink, which the build can rely on
+// because it also normalises every face's vertical metrics so a `line-height: 1` box ends at the
+// baseline. That holds only for the /fonts/ files: the originals in harness/fonts/initials keep
+// their own ascent/descent (Goudy's is 800/0, which drops the box 0.1em below the baseline), so
+// never test the sizing against them. The Garamond default is tabled per letter in column.scss.
+$faces: (
+  // EB Garamond Initials in one layer (Duffner and Greinert, OFL; renamed in the files): the
+  // default's letter and ornament merged into a single ink-coloured square, ink 0 to 1em.
+  ebgaramond: (
+      family: 'Garden Initials Mono',
+      gap: 0.07em,
+    ),
+  // Goudy Initialen: a floriated tile exactly 0.8em square, flush left, nothing below the line.
+  goudy: (
+      family: 'Goudy Initialen',
+      gap: 0.07em,
+    ),
+  // Yinit: Lombardic capitals on a hatched ground, near a full em and heavy, so one line less.
+  yinit: (
+      family: 'Yinit',
+      gap: 0.08em,
+      lede: 4,
+    ),
+  // Deutsche Zierschrift: Koch's hatched caps; F H J P Q Y Z carry tails about 0.15em deep.
+  dezs: (
+      family: 'Deutsche Zierschrift',
+      gap: 0.09em,
+    )
+);
+
+[data-layout='newspaper'] :where(#quartz-root) article {
+  .mag-initial[data-face] {
+    // column.scss does the sizing from --dc-top/--dc-bottom/--dc-gap; a face only sets those.
+    // One layer: the ornament ::before is the Garamond set's and would print the same letter.
+    &::before {
+      content: none;
+    }
+  }
+
+  @each $name, $face in $faces {
+    .mag-initial[data-face='#{$name}'] {
+      --mag-initial-letter: #{map.get($face, family)}, var(--mag-display);
+      --dc-gap: #{map.get($face, gap)};
+
+      @each $letter, $ink in map.get(fonts.$initials-ink, map.get($face, family)) {
+        &[data-letter='#{$letter}'] {
+          --mag-initial-letter: '#{map.get($face, family)} #{$letter}';
+          --dc-top: #{list.nth($ink, 1)};
+          --dc-bottom: #{list.nth($ink, 2)};
+        }
+      }
+
+      @if map.has-key($face, lede) {
+        &[data-kind='lede'] {
+          --mag-initial-lines: #{map.get($face, lede)};
+        }
+      }
+    }
+  }
+
+  // The words after the initial run in small capitals, as the first line of a chapter is set
+  // in print; the transformer wraps them so the run ends on a word. Source Serif 4 cuts true
+  // small caps (smcp/c2sc kept in the subset) and the browser fakes them until those land.
+  .mag-leadin {
+    font-variant-caps: small-caps;
+    letter-spacing: 0.04em;
+  }
+
+  // A paragraph that opens on a quotation mark hangs it in the margin, so the initial itself
+  // sits flush with the column (gwern.net's .initial-preceding-punctuation).
+  .mag-initial-punct {
+    float: left;
+    margin-left: -0.55em;
+    font-family: var(--mag-display);
+    font-size: 1.6em;
+    line-height: 1;
+  }
+}
+
+// `procedural`: a grapevine grown around the capital at build time (quartz/util/grapevine, after
+// azlen/initialis), and the same vine as each chapter's rule. The tile is a 1em square the SVG
+// draws whole: the span's own letter stays in the flow for selection and readers but prints
+// transparent, and the SVG's letter is the default face's EB Garamond capital as a path, so no
+// font has to arrive before the page is final.
+[data-layout='newspaper'] :where(#quartz-root) {
+  --mag-vine: color-mix(in srgb, var(--dark) 60%, var(--secondary));
+  --mag-leaf: color-mix(in srgb, var(--secondary) 72%, var(--light));
+  --mag-grape: color-mix(in srgb, var(--tertiary) 78%, var(--dark));
+
+  article .mag-initial[data-face='procedural'] {
+    --dc-top: 1;
+    --dc-bottom: 0;
+    --dc-gap: 0.1em;
+    width: 1em;
+    color: transparent;
+
+    svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+  }
+
+  // Leaves and berries carry their inks as attributes (parts.ts): they are <use>d from <defs>.
+  .gv-frame {
+    fill: none;
+    stroke: var(--mag-vine);
+    stroke-width: 8;
+  }
+
+  .gv-stem {
+    fill: var(--mag-vine);
+  }
+
+  .gv-stalk {
+    fill: none;
+    stroke: var(--mag-vine);
+    stroke-width: 4;
+    stroke-linecap: round;
+  }
+
+  .gv-letter {
+    fill: var(--dark);
+    stroke: var(--light);
+    stroke-width: 26;
+    stroke-linejoin: round;
+    paint-order: stroke;
+  }
+}
