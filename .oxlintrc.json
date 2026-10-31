@@ -12,6 +12,7 @@
   ],
   "ignorePatterns": [
     "public",
+    "quartz/util/grapevine/vendor",
     "node_modules",
     ".quartz-cache",
     ".mypy_cache",
