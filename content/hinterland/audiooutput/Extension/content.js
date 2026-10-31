@@ -99,7 +99,9 @@
         const sourceURL = new URL(element.currentSrc, location.href)
         const localBlob = sourceURL.protocol === 'blob:' && sourceURL.origin === location.origin
         if (!localBlob && element.crossOrigin === null)
-          throw new Error('Volume needs CORS-enabled or local blob media. Normal playback retained.')
+          throw new Error(
+            'Volume needs CORS-enabled or local blob media. Normal playback retained.',
+          )
         if (element.mediaKeys)
           throw new Error('Volume is unavailable for protected media. Normal playback retained.')
         const context = new AudioContext()
@@ -153,8 +155,10 @@
     if (!rule.outputUID) {
       const count = await setOutput('', gain)
       removeNotice()
-      report(gain === 1 ? 'normal' : count ? 'routing' : 'waiting',
-        count ? `Normal output · ${Math.round(gain * 100)}%` : 'Waiting for a media element')
+      report(
+        gain === 1 ? 'normal' : count ? 'routing' : 'waiting',
+        count ? `Normal output · ${Math.round(gain * 100)}%` : 'Waiting for a media element',
+      )
       return
     }
     const devices = (await navigator.mediaDevices.enumerateDevices()).filter(
@@ -198,7 +202,9 @@
     removeNotice()
     report(
       count ? 'routing' : 'waiting',
-      count ? `Routing to ${rule.outputName} · ${Math.round(gain * 100)}%` : 'Waiting for a media element',
+      count
+        ? `Routing to ${rule.outputName} · ${Math.round(gain * 100)}%`
+        : 'Waiting for a media element',
     )
   }
 
@@ -252,10 +258,14 @@
   }).observe(document.documentElement, { childList: true, subtree: true })
   document.addEventListener('play', schedule, true)
   document.addEventListener('loadedmetadata', schedule, true)
-  document.addEventListener('click', () => {
-    for (const graph of audioGraphs.values()) void graph.context.resume().catch(() => {})
-    schedule()
-  }, true)
+  document.addEventListener(
+    'click',
+    () => {
+      for (const graph of audioGraphs.values()) void graph.context.resume().catch(() => {})
+      schedule()
+    },
+    true,
+  )
   navigator.mediaDevices.addEventListener('devicechange', schedule)
   connect()
 })()
