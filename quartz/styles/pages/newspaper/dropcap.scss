@@ -91,8 +91,8 @@ $faces: (
   }
 }
 
-// `procedural`: a grapevine grown around the capital at build time (quartz/util/grapevine, after
-// azlen/initialis), and the same vine as each chapter's rule. The tile is a 1em square the SVG
+// `procedural`: a grapevine grown around the capital at build time (quartz/util/grapevine, the
+// initialis engine). Chapter vines are styled independently in column.scss. The tile is a 1em square the SVG
 // draws whole: the span's own letter stays in the flow for selection and readers but prints
 // transparent, and the SVG's letter is the default face's EB Garamond capital as a path, so no
 // font has to arrive before the page is final.
@@ -117,7 +117,8 @@ $faces: (
     }
   }
 
-  // Leaves and berries carry their inks as attributes (parts.ts): they are <use>d from <defs>.
+  // Groups from quartz/util/grapevine/svg.ts: stems and buds, leaf blades with their veins,
+  // bunches of grapes edged in paper so the berries stay apart.
   .gv-frame {
     fill: none;
     stroke: var(--mag-vine);
@@ -128,11 +129,22 @@ $faces: (
     fill: var(--mag-vine);
   }
 
-  .gv-stalk {
-    fill: none;
+  .gv-leaf path {
+    fill: var(--mag-leaf);
     stroke: var(--mag-vine);
-    stroke-width: 4;
+    stroke-width: 2;
+    stroke-linejoin: round;
+  }
+
+  .gv-leaf .gv-vein {
+    fill: none;
     stroke-linecap: round;
+  }
+
+  .gv-grapes path {
+    fill: var(--mag-grape);
+    stroke: var(--light);
+    stroke-width: 2;
   }
 
   .gv-letter {

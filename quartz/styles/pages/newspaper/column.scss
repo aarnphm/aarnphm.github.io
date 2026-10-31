@@ -379,17 +379,60 @@
       margin-top: 4rem;
     }
 
-    // The chapter rule is a grapevine drawn with the page (dropcap.scss sets its inks); the
-    // SVG's own ratio sets its height, so the chapter opens where it was laid out.
+    // The chapter separator (`separator:` frontmatter; quartz/util/grapevine), full bleed: it runs
+    // the page's width and the root's overflow-x clips it. `alembic` is a running band that keeps
+    // its own scale (xMidYMid slice) and loses its ends on narrow screens instead of shrinking;
+    // its ink is faded at both ends and greyed so it sits behind the text. `grapevine` is one
+    // vine in the vine inks, sized by its own ratio: three lengths are in the page and the one
+    // grown for this width shows, so a wide page gets a longer vine, never a stretched one.
     .mag-chapter-vine {
-      margin: 0 auto 1rem;
-      max-width: calc(var(--mag-measure) + 2 * (var(--mag-rail) + var(--mag-gap)));
+      container-type: inline-size;
+      width: 100vw;
+      margin: 0 calc(50% - 50vw) 1rem;
+      color: color-mix(in srgb, var(--darkgray) 65%, var(--light));
+      opacity: 0.7;
+      mask-image: linear-gradient(transparent, black 24%, black 76%, transparent);
       pointer-events: none;
 
       svg {
         display: block;
         width: 100%;
-        height: auto;
+        height: 44px;
+      }
+
+      &[data-kind='grapevine'] {
+        opacity: 1;
+        mask-image: none;
+
+        svg {
+          display: none;
+          height: auto;
+        }
+
+        // The middle length is the fallback where container queries are not supported.
+        svg[data-size='m'] {
+          display: block;
+        }
+
+        @container (width < 1150px) {
+          svg[data-size='m'] {
+            display: none;
+          }
+
+          svg[data-size='s'] {
+            display: block;
+          }
+        }
+
+        @container (width >= 1800px) {
+          svg[data-size='m'] {
+            display: none;
+          }
+
+          svg[data-size='l'] {
+            display: block;
+          }
+        }
       }
     }
 
@@ -419,10 +462,6 @@
         white-space: nowrap;
         font-style: italic;
       }
-
-      &[data-obscured] {
-        visibility: hidden;
-      }
     }
 
     @container profile-page (min-width: 70rem) {
@@ -430,7 +469,17 @@
         position: sticky;
         top: 3px;
         margin-left: calc((100% - var(--mag-measure)) / 2 - 2.5rem);
-        z-index: 1;
+        z-index: var(--z-sticky);
+        background: var(--light);
+
+        // Seal the top inset and give passing notes clearance around the running head.
+        &::after {
+          content: '';
+          position: absolute;
+          inset: -3px -0.5rem 0;
+          z-index: -1;
+          background: var(--light);
+        }
       }
     }
 
@@ -441,11 +490,23 @@
 
         > span {
           display: block;
-          visibility: hidden;
+          opacity: 0;
+          transform: translateY(0.2rem);
+          transition:
+            opacity var(--transition-normal),
+            transform var(--transition-normal);
         }
 
         &[data-running] > span {
-          visibility: inherit;
+          opacity: 1;
+          transform: none;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          > span {
+            transform: none;
+            transition: none;
+          }
         }
       }
     }

@@ -4,7 +4,7 @@ import { toString } from 'hast-util-to-string'
 import { h, s } from 'hastscript'
 import { visit } from 'unist-util-visit'
 import { QuartzPluginData } from '../../plugins/vfile'
-import { vineRule } from '../../util/grapevine'
+import { vineRule, type RuleKind } from '../../util/grapevine'
 import { FullSlug } from '../../util/path'
 import { svgOptions } from '../svg'
 
@@ -298,15 +298,19 @@ export function shouldProcessHeaders(
  * The newspaper chapter bar: a numeral (CSS counter) and the chapter title, rendered with the page
  * so it takes its room before first paint. profile-notes.inline.ts only toggles its visibility.
  */
-export function addRunningHeads(root: Root, vine?: string) {
+export function addRunningHeads(root: Root, separator?: { kind: RuleKind; seed: string }) {
   let n = 0
   visit(root, 'element', node => {
     if (node.tagName !== 'section' || node.properties.dataLevel !== 2) return
     if (!(node.properties.className as string[] | undefined)?.includes('collapsible-header')) return
     node.children.unshift(
-      // The chapter rule: a grapevine grown with the page when its drop cap is procedural.
-      ...(vine
-        ? [h('div.mag-chapter-vine', { ariaHidden: 'true' }, [vineRule(`${vine}:${n++}`)])]
+      // Chapter ornaments are seeded by the page, independent of its initial face.
+      ...(separator
+        ? [
+            h('div.mag-chapter-vine', { ariaHidden: 'true', dataKind: separator.kind }, [
+              ...vineRule(`${separator.seed}:${n++}`, separator.kind),
+            ]),
+          ]
         : []),
       h('div.mag-running-head', { ariaHidden: 'true' }, [
         h('span', String(node.properties.dataTitle ?? '')),

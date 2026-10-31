@@ -198,7 +198,7 @@ export function resolveTransclusions(
   // NOTE: handling collapsible nodes
   if (shouldProcessHeaders(fileData, dynalist, slug)) {
     root.children = processHeaders(root.children as ElementContent[])
-    if (fileData.profile) addRunningHeads(root, fileData.vine)
+    if (fileData.profile) addRunningHeads(root, fileData.separator)
   }
 
   // NOTE: We then merge all references and footnotes to final items

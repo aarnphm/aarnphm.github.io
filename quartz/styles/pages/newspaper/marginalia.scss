@@ -178,7 +178,7 @@ body[data-layout='newspaper'] #quartz-root > section.header {
   [data-layout='newspaper'] :where(#quartz-root) article {
     --mag-rail: 13rem;
     --mag-gap: 3rem;
-    --mag-offset: 3rem;
+    --mag-offset: 2.5rem;
     --mag-inset: 0px;
     // The body's axis: the middle of the article between the left inset and the notes rail.
     --mag-centre: calc(
@@ -199,8 +199,7 @@ body[data-layout='newspaper'] #quartz-root > section.header {
         --prev-side: --none;
         position: absolute;
         top: max(anchor(var(--cite) top), anchor(var(--prev) bottom, -16px) + 16px);
-        // Above the chapter bar that sticks at the top of the viewport.
-        z-index: 2;
+        z-index: var(--z-sidenote);
         left: min(
           calc(var(--mag-centre) + var(--mag-measure) / 2 + var(--mag-offset)),
           calc(100% - var(--mag-rail))
@@ -229,14 +228,6 @@ body[data-layout='newspaper'] #quartz-root > section.header {
       .collapsible-header-content[data-level='2']:has(> section.collapsible-header[data-level='3'])
         .profile-note:not(.profile-note-boxed) {
         left: min(calc(var(--mag-centre) + var(--band) / 2 + 2rem), calc(100% - var(--mag-rail)));
-      }
-
-      // Lede notes clear the opening spread (52rem photos and tldr) by a gap, not the page edge.
-      & > .profile-note:not(.profile-note-boxed) {
-        left: min(
-          calc(var(--mag-centre) + 26rem + var(--mag-offset)),
-          calc(100% - var(--mag-rail))
-        );
       }
 
       #tldr > .profile-note,
