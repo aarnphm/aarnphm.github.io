@@ -6,7 +6,7 @@ date: '2026-01-17'
 description: my name is Aaron, and on the virtue of friendship
 id: friends
 layout: technical
-modified: 2026-10-26 01:36:27 GMT-04:00
+modified: 2026-10-30 13:56:30 GMT-04:00
 tags:
   - evergreen
   - friend
@@ -84,7 +84,7 @@ quick tl/dr: i used to live in sf for a bit for work, and moved abroad to vancou
 >
 > i collect [[watch|watches]] as well!
 >
-> i also don't drink anymore 😸
+> i also don't enjoy the taste of alcohol anymore 😸
 >
 > <div data-triathlon-latest />
 
@@ -94,7 +94,8 @@ friends are still our first and sometimes best model of someone who chooses to b
 Ava, [bookbear express](https://www.avabear.xyz/p/always-on-your-side)
 ```
 
-i like this framing. before romantic love, before family obligation, there's friendship, i.e. the relationship you choose without biological accident or legal contract. someone looks at you and decides to keep showing up. yes, i will allocate a portion of my waking hours to be with this person. yes, i will be there to pick you up from the airport. c.s. lewis wrote that _lovers face each other absorbed in one another while friends stand side by side absorbed in something external_. you become friends by caring about the same problems. this is also why I found work-friends feel {{sidenotes[so intense]: you're literally shoulder-to-shoulder looking at the same thing for 40+ hours a week}}.
+i like this framing from Ava. friendship exists way before we form romantic love and family obligation i.e. the relationship you choose without biological reasoning or a legal contract. it is someone that looks at you and decides that _yes, i will allocate a portion of my waking hours to be with this person_. yes, i will be there to pick you up from the airport.
+C.S. Lewis wrote that _lovers face each other absorbed in one another while friends stand side by side absorbed in something external_. you become friends by caring about the same problems. this is also why I found work-friends feel {{sidenotes[so intense]: you're literally shoulder-to-shoulder looking at the same thing for 40+ hours a week}}.
 
 ```quotes
 friendship was what taught me that love is an endurance sport with no finish line.
@@ -102,11 +103,10 @@ friendship was what taught me that love is an endurance sport with no finish lin
 Ava
 ```
 
-Aristotle distinguished three kinds of philia: (1) utility (we exchange value), (2) pleasure (we enjoy each other's company), and (3) virtue (we love each other as we actually are). the first two dissolve when circumstances change. the third endures, because the foundation is who you are rather than what you provide. [^1]
+Aristotle distinguished three kinds of philia: (1) utility (we exchange value), (2) pleasure (we enjoy each other's company), and (3) virtue (we love each other as we actually are). Now from this framing, we notice that the first two categories of frienship dissolve as soon as circumstances change (as they no longer satisfy the [Nash equilibrium](https://en.wikipedia.org/wiki/Nash_equilibrium)).
+Hencewhile one must agree with Aristotle about virtuous friendship, as the foundation of the relationship is based on who you are rather than what you provide. [^1]
 
-[^1]: this maps onto something karlsson observes: "love is friendship on hard mode." romantic relationships aren't a different category from friendship, they're friendship plus difficulty, plus stakes, plus everything that makes it easier to fuck up.
-
-<div class="float-right">
+[^1]: iirc Karlsson also wrote that "love is friendship on hard mode.", which is true. [[thoughts/love|Romantic]] relationships aren't a different category from friendship, but a superset of [[thoughts/friendship|friendship]]. they're friendship plus difficulty, plus stakes, plus everything that makes it easier to fuck up.
 
 ```quotes
 friendships are, by their very nature, made of friction, knowing what's going on in someone's day-to-day life, making plans, rescheduling when someone gets sick, bringing over soup.
@@ -114,19 +114,22 @@ friendships are, by their very nature, made of friction, knowing what's going on
 Rosie Spinks, [the friendship problem](https://rojospinks.substack.com/p/the-friendship-problem)
 ```
 
-we've optimized away the very friction that creates connection. everything about predictive technologies gives us assisted living, esther perel notes, "people have easily 1000 virtual friends, but no one they can ask to feed their cat."
+<div class="float-right">
 
-sheila liming wrote an entire book on this: "hanging out is productive, and the thing that it produces is our relationships with each other." the unstructured time, the plans that get rescheduled, the showing up when it's inconvenient, these are features, not bugs.
+we've optimized away the very friction that makes us, _better friend_, and to an extend _better human_. everything about predictive technologies gives us assisted living, esther perel notes, "people have easily 1000 virtual friends, but no one they can ask to feed their cat." sheila liming also wrote an entire book on this: "hanging out is productive, and the thing that it produces is our relationships with each other."
 
 </div>
 
-Karlsson puts it better than I ever could, where we "show the inside of your head in public, so people can see if they would like to live in there." this site is my version of that, a search query for people who might want to be friends.
+Karlsson frames this better than I ever could, where we "show the inside of your head in public, so people can see if they would like to live in there." I want my [[thoughts/Digital garden|site]] to be, a [[arena/essay/#entry-v1-8665414be95515ab536153a43c569052afcc6fd70974b4a006ca56963bcbc47d|search query]] for people who might want to be friends.
 
-what i look for is presence over performance: people who can sit in a room without filling it with noise, who can be bored together without reaching for phones. the [[thoughts/hermeneutics|hermeneutics]] commitment, choosing to interpret someone charitably, staying in the circle when understanding breaks down instead of exiting to win. honesty without cruelty, the friends who tell you when you're being stupid but frame it as observation rather than judgment. and showing up, repeatedly, over time, which is the only way any of this compounds into something real.
+i care a lot about my friends. i want people who can sit in a room without filling it with noise, who can be bored together without reaching for phones.
+i want people to go to a beach with and watch people enjoying a day-out with their family, while acting out their conversations among ourselves.
+i want people who choose to interpret someone charitably, staying inside the _magic circle_ and participate in the game of understanding.
+i want people who spontaneously decide that "ok we are going to book a trip to Dolomites and we are just going to pet cows", while debating about the ever-lasting [[thoughts/Existentialism|existential]] dread of cognitive deficiency.
+i want people who are honest and blunt, but still be kind and be silly with.
+finally, i want people who can, and will always show up, repeatedly, over time, even if it is only 8 minutes while being busy at work.
 
-i think about my life as being RLHF'd by the people i surround myself with. we populate our concept of the world with them.
-
-i'm not there yet with everyone, but with the people closest to me, i'm trying.
+i often think about my life as being RLHF'd by the people i surround myself with, as we populate our concept of the world with them. i'm not there yet with everyone, but with the people closest to me, i'm trying.
 
 ```quotes
 a long friendship really is like a marriage. it takes on a shape all its own over many years, and it is an education in intimacy. like marriage, it's nearly impossible to know in the beginning what it will be at the end.
@@ -134,6 +137,6 @@ a long friendship really is like a marriage. it takes on a shape all its own ove
 Ava, [some thoughts on friendship](https://www.avabear.xyz/p/some-thoughts-on-friendship)
 ```
 
-if any of this resonates, [reach out](https://f.aarnphm.xyz).
+if any of this resonates, I have a [form](https://f.aarnphm.xyz) for you to fill LOL, but otherwise I'm reachable via `contact@aarnphm.xyz`
 
 [^sign]

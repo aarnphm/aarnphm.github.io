@@ -3,7 +3,9 @@ comments: true
 date: '2024-06-22'
 description: reflections on vulnerability, trust, and authentic connection in friendships, questioning whether love alloyed with utility counts as friendship at all.
 id: friendship
-modified: 2026-06-05 15:08:22 GMT-04:00
+modified: 2026-10-30 13:23:52 GMT-04:00
+seealso:
+  - '[[friends|friends]]'
 tags:
   - love
   - pattern
