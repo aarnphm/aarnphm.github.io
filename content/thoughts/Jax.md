@@ -58,10 +58,7 @@ Use [`lax.cond`](https://docs.jax.dev/en/latest/_autosummary/jax.lax.cond.html) 
 @jax.jit
 def piecewise(x):
   return jax.lax.cond(
-    x < 3,
-    lambda value: 3.0 * value**2,
-    lambda value: -4.0 * value,
-    x,
+    x < 3, lambda value: 3.0 * value**2, lambda value: -4.0 * value, x
   )
 
 
