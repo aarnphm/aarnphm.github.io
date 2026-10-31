@@ -5390,6 +5390,245 @@ title: are.na
 
 ## places
 
+- https://ahzimae-zipbap.square.site/ -- Ahzimae Zipbap
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant]
+    - coord: [43.790475, -79.4186062]
+    - address: 6068 Yonge Street, North York, ON M2M 3W6, Canada
+    - later: true
+- https://maps.app.goo.gl/yMFUW5CCehJEi1Cn6 -- Alpha's Shawarma Queen & Bathurst
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant]
+    - coord: [43.6472867, -79.4045702]
+    - address: 598 Queen Street West, Toronto, ON M6J 1E3, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfGE9jAqXu6/
+- https://www.gyopobrewery.com/ -- Gyopo Brewery
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant, bar]
+    - coord: [43.6497165, -79.43064489999999]
+    - address: 1456 Dundas Street West, Toronto, ON M6J 1Y6, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/Dc1vJkCp-Je/
+- https://mickeylimbos.com/ -- Mickey Limbos
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [bar, restaurant]
+    - coord: [43.6497549, -79.42065239999999]
+    - address: 249 Ossington Avenue, Toronto, ON M6J 3A1, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/Dc1vJkCp-Je/
+- https://barbokeh.com/ -- Bar Bokeh
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [bar, restaurant]
+    - coord: [43.6605392, -79.34325079999999]
+    - address: 890 Queen Street East, Toronto, ON M4M 1J3, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/Dc1vJkCp-Je/
+- https://theelmwoodbar.com/ -- The Elmwood
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [bar, restaurant]
+    - coord: [43.6259194, -79.5035489]
+    - address: 753 The Queensway, Etobicoke, ON M8Z 1M8, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/Dc1vJkCp-Je/
+- https://castleandcoal.ca/contact -- Castle & Coal
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [bakery, coffee shop]
+    - coord: [43.6437648, -79.4226370]
+    - address: 108 Dovercourt Road, Toronto, ON M6J 1H8, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfGE9jAqXu6/
+- https://goodfork.ca/ -- Good Fork
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant]
+    - coord: [43.6499162, -79.4335594]
+    - address: 1550 Dundas Street West, Toronto, ON M6K 1T5, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfGE9jAqXu6/
+- https://ba-noi.myshopify.com/ -- Bà Nội
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [bakery, coffee shop]
+    - coord: [43.6627731, -79.4225172]
+    - address: 806 Bloor Street West, Toronto, ON M6G 1L9, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfGE9jAqXu6/
+- https://pomegranatetoronto.com/anar/ -- Pomegranate
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant]
+    - coord: [43.6568089, -79.40694789999999]
+    - address: 420 College Street, Toronto, ON M5T 1T3, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfGE9jAqXu6/
+- https://codatoronto.com/ -- CODA
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [nightclub]
+    - coord: [43.665399, -79.4114716]
+    - address: 794 Bathurst Street, Toronto, ON M5R 3G1, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfGE9jAqXu6/
+- https://www.instagram.com/vertigotoronto/ -- Vertigo Toronto
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [nightclub]
+    - coord: [43.6600471, -79.37880229999999]
+    - address: 66 Gerrard Street East, Toronto, ON M5B 2M2, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfGE9jAqXu6/
+- https://www.edulisrestaurant.com/ -- Edulis
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant]
+    - coord: [43.64197, -79.40655]
+    - address: 169 Niagara Street, Toronto, ON M5V 1C9, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DdaGREXJ5Pb/
+- https://linktr.ee/mhelisanchovy -- Mhel
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant, bar]
+    - coord: [43.6601852, -79.4324349]
+    - address: 276 Havelock Street, Toronto, ON M6H 3B9, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DdaGREXJ5Pb/
+- https://www.instagram.com/sakaibarto/ -- Sakai Bar
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant, bar]
+    - coord: [43.6499785, -79.434471]
+    - address: 1576 Dundas Street West, Toronto, ON M6K 1T8, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DdaGREXJ5Pb/
+- https://www.instagram.com/blackdicecafe/ -- Black Dice Cafe
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [bar]
+    - coord: [43.6499561, -79.4344052]
+    - address: 1574 Dundas Street West, Toronto, ON M6K 1T8, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DdaGREXJ5Pb/
+- https://www.instagram.com/intersteer/ -- Inter Steer Tavern
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [bar, restaurant]
+    - coord: [43.64986, -79.45017]
+    - address: 357 Roncesvalles Avenue, Toronto, ON M6R 2M8, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DdaGREXJ5Pb/
+- https://www.instagram.com/virginiacocktailbar/ -- The Virginia
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [bar]
+    - coord: [43.6414742, -79.4331826]
+    - address: 1374 Queen Street West, Toronto, ON M6K 1L7, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DdaGREXJ5Pb/
+- https://batifole.ca/ -- Batifole
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant]
+    - coord: [43.6667405, -79.3473494]
+    - address: 744 Gerrard Street East, Toronto, ON M4M 1Y3, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DdaGREXJ5Pb/
+- https://maps.app.goo.gl/jhj57bmWipEEnfwe9 -- Canary Counter
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [shop, bar]
+    - coord: [43.6601329, -79.4172023]
+    - address: 322 Harbord Street, Toronto, ON M6G 1H1, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DdaGREXJ5Pb/
+- https://www.docslounge.ca/ -- Doc's Green Door Lounge
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [bar, coffee shop]
+    - coord: [43.6656428, -79.4734287]
+    - address: 3106 Dundas Street West, Toronto, ON, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DdaGREXJ5Pb/
+- https://www.exploretock.com/restaurant20victoria -- Restaurant 20 Victoria
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant]
+    - coord: [43.6498653, -79.3769956]
+    - address: 20 Victoria Street, Unit 100, Toronto, ON M5C 2N8, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DdaGREXJ5Pb/
+- https://restaurantstop.ca/ -- Restaurant Stop
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant, bar]
+    - coord: [43.6508469, -79.4505688]
+    - address: 397 Roncesvalles Avenue, Toronto, ON M6R 2N1, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DdaGREXJ5Pb/
+- https://www.archive909.com/ -- Archive Wine Bar
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [bar]
+    - coord: [43.6508867, -79.4124614]
+    - address: 909 Dundas Street West, Toronto, ON M6J 1V9, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DeecXR8mFf7/
+- https://www.actinoliterestaurant.com/ -- Actinolite
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant]
+    - coord: [43.66785, -79.4278]
+    - address: 971 Ossington Avenue, Toronto, ON, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DeecXR8mFf7/
+- https://goo.gl/maps/MYwu2qGkyZhXgQdr8 -- Union
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant]
+    - coord: [43.6458006, -79.4196276]
+    - address: 72 Ossington Avenue, Toronto, ON M6J 2Y7, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DeecXR8mFf7/
+- https://www.henrystoronto.ca/ -- Henry's
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant, bar]
+    - coord: [43.645, -79.4158]
+    - address: 920–922 Queen Street West, Toronto, ON, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DeecXR8mFf7/
+- https://www.sara.restaurant/contact -- SARA
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant]
+    - coord: [43.6452005, -79.4006612]
+    - address: 98 Portland Street, Toronto, ON M5V 2N2, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DeecXR8mFf7/
+- https://www.rasabar.ca/ -- RASA
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [restaurant]
+    - coord: [43.6627782, -79.4040509]
+    - address: 196 Robert Street, Toronto, ON, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DeecXR8mFf7/
+- https://www.instagram.com/yellowflower.to/ -- Yellow Flower
+  - [meta]:
+    - date: 10/30/2026
+    - tags: [coffee shop, shop]
+    - coord: [43.667533, -79.4145129]
+    - address: 721 Palmerston Avenue, Toronto, ON M6G 2R2, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DeW_X7KRpR0/
 - https://sangsgreat.nextcard.ai/ -- Sang's Great Seafood Restaurant
   - [meta]:
     - date: 10/30/2026
