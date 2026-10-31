@@ -10,11 +10,10 @@ import { SKIP, visit } from 'unist-util-visit'
 // @ts-ignore
 import script from '../../components/scripts/profile-notes.inline'
 import { QuartzTransformerPlugin } from '../../types/plugin'
-import { vineInitial } from '../../util/grapevine'
+import { RULE_KINDS, vineInitial, type RuleKind } from '../../util/grapevine'
 
 export const NEWSPAPER = 'newspaper' as const
 
-/** ProfileFrames candidates, with the original largest. */
 export const PROFILE_WIDTHS = [480, 800, 1200] as const
 export const PROFILE_DIR = 'static/profile'
 
@@ -77,7 +76,6 @@ function frame(
   index: number | null,
   caption?: ElementContent[],
 ): Element {
-  // Number portraits; references may have captions.
   const label = index === null ? [] : [h('span.profile-frame-no', String(index).padStart(2, '0'))]
   const content = [...label, ...(caption ?? [])]
   return h('figure.profile-frame', { dataKind: kind, dataCaptioned: caption ? '' : undefined }, [
@@ -86,7 +84,6 @@ function frame(
   ])
 }
 
-/** Build responsive srcsets and numbered local-photo frames. */
 export const Profile: QuartzTransformerPlugin = () => {
   return {
     name: 'Profile',
@@ -139,7 +136,6 @@ export const Profile: QuartzTransformerPlugin = () => {
           visit(tree, 'element', (node, index, parent) => {
             if (!parent || index === undefined) return
 
-            // Group consecutive attestations as testimonials.
             if (node.tagName === 'blockquote' && isQuote(node)) {
               const run: Element[] = [node]
               let end = index + 1
@@ -156,18 +152,15 @@ export const Profile: QuartzTransformerPlugin = () => {
               return
             }
 
-            // Photos before the first heading form the hero strip.
             if (node.tagName === 'h2' || node.tagName === 'section') hero = false
 
             if (
               node.tagName === 'div' &&
               (node.properties.className as string[] | undefined)?.includes('image-grid')
             ) {
-              // Cells are embeds or figures.
               const cells = node.children.flatMap(c => {
                 if (c.type !== 'element') return []
                 if (isPhoto(c)) return [{ img: c, caption: undefined }]
-                // isPhoto narrows this element's type.
                 const fig = c as Element
                 if (fig.tagName !== 'figure') return []
                 const img = fig.children.find(isPhoto)
@@ -222,7 +215,6 @@ export const Profile: QuartzTransformerPlugin = () => {
               const n = kind === 'me' ? ++count : null
               dress(node, kind, false)
               const framed = frame({ ...node }, kind, n)
-              // Lift a lone paragraph photo into a frame.
               if (
                 parent.type === 'element' &&
                 parent.tagName === 'p' &&
@@ -236,7 +228,6 @@ export const Profile: QuartzTransformerPlugin = () => {
             }
           })
 
-          // Replace a bare embed's wrapper with its frame, preserving the side.
           visit(tree, 'element', node => {
             if (node.tagName !== 'figure') return
             const side = classes(node).filter(c => c.startsWith('float-'))
@@ -249,7 +240,7 @@ export const Profile: QuartzTransformerPlugin = () => {
           })
 
           const face = dropcapOf(frontmatter.dropcap)
-          if (face === 'procedural') file.data.vine = slug
+          file.data.separator = separatorOf(frontmatter.separator, slug)
           initials(tree, face, slug)
           marginalia(tree)
         },
@@ -438,8 +429,8 @@ function chain(tree: Root) {
 declare module 'vfile' {
   interface DataMap {
     profile: boolean
-    /** Seed for the grapevine chapter rules, set when the page's drop cap is `procedural`. */
-    vine?: string
+    /** `separator:` chapter ornament and the page seed it is grown from; unset means none. */
+    separator?: { kind: RuleKind; seed: string }
   }
 }
 
@@ -447,6 +438,14 @@ const INITIAL = /^(["'\u201C\u2018]?)([A-Za-z])/
 // Small caps: whole words, max 28 chars.
 const LEADIN = /^[^\s]*(?:\s+[^\s]+){0,3}/
 const LEADIN_MAX = 28
+
+/** `separator: grapevine | alembic` sets the ornament above each chapter; anything else, none. */
+function separatorOf(value: unknown, seed: string) {
+  const name = typeof value === 'string' ? value.toLowerCase() : ''
+  return (RULE_KINDS as readonly string[]).includes(name)
+    ? { kind: name as RuleKind, seed }
+    : undefined
+}
 
 /** Accepted `dropcap:` faces; other faces must appear in dropcap.scss. `none` disables them. */
 const DROPCAPS = ['garamond', 'ebgaramond', 'goudy', 'yinit', 'dezs', 'procedural'] as const
