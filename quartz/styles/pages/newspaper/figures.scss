@@ -98,19 +98,25 @@
 }
 
 @container profile (min-width: 48rem) {
-  [data-layout='newspaper'] .profile-pulls blockquote.quotes + blockquote.quotes {
+  [data-layout='newspaper']
+    :where(#quartz-root)
+    .profile-pulls
+    blockquote.quotes
+    + blockquote.quotes {
     border-top: 0;
     border-left: 1px solid var(--lightgray);
     padding-left: 2rem;
   }
 
-  [data-layout='newspaper'] .profile-frame[data-kind='me']:not(.profile-strip *) {
+  [data-layout='newspaper']
+    :where(#quartz-root)
+    .profile-frame[data-kind='me']:not(.profile-strip *) {
     --frame-w: min(24rem, 100%);
   }
 }
 
 // No backlinks or footer chrome under a feature. The extra element beats the per-page mobile
 // rules in custom.scss that force the footer back on as a grid.
-body[data-layout='newspaper'] .page-footer {
+body[data-layout='newspaper'] :where(#quartz-root) .page-footer {
   display: none !important;
 }

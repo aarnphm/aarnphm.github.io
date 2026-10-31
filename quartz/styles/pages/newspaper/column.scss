@@ -1,25 +1,34 @@
 @use '../../mixin.scss' as *;
+@use 'sass:list';
 
-// The text face is Source Serif 4 (Adobe, OFL), the face gwern.net sets its prose in. Its
-// @font-face rules live in styles/fonts.scss with every other face (core + extended subsets).
+// Source Serif 4 and EB Garamond Initials are OFL; fonts live in styles/fonts*.scss.
 
-// callouts.scss pins margin-left with !important inside the base layer, and an unlayered
-// !important cannot beat a layered one, so the centring override has to live in that layer.
+// callouts.scss pins margin-left and padding with !important inside the base layer.
+// Keep these overrides in that layer so they win over the base declarations.
 @layer quartz-base {
-  [data-layout='newspaper'] article > blockquote.callout {
+  [data-layout='newspaper'] :where(#quartz-root) article > blockquote.callout {
     margin-inline: auto !important;
+    padding: 0 !important;
   }
 }
 
-// Magazine feature: a masthead instead of the byline, an opening spread, then one justified
-// serif column with notes hung in the margin. Photo and note markup comes from the Profile
-// transformer (quartz/plugins/transformers/profile.ts); a page opts in with `layout: newspaper`.
-[data-layout='newspaper'] {
-  // Display (masthead, section heads, initials) stays Parclo; running text is Source Serif 4.
+// Newspaper layout uses Profile markup (quartz/plugins/transformers/profile.ts); opt in with
+// layout: newspaper. Popovers mount on <body>, so rules use the page root via :where.
+[data-layout='newspaper'] :where(#quartz-root) {
+  // Masthead and section titles stay Parclo; running text is Source Serif 4; initials, chapter
+  // numerals and department heads take the ITC Garamond cut the menu already serves.
   --mag-serif: 'Parclo Serif', 'ITCGaramondStdLtCond', Georgia, 'Times New Roman', serif;
   --mag-text: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --mag-display: 'EB Garamond', Garamond, 'Times New Roman', serif;
+  --mag-initial-letter: 'Garden Initials Letter', var(--mag-display);
+  --mag-initial-ornament: 'Garden Initials Ornament', var(--mag-display);
   --mag-rule: var(--dark);
   --mag-hair: var(--lightgray);
+  // The ornament layer prints in a tint of the theme's accent under the black letter.
+  --mag-ornament: color-mix(in srgb, var(--tertiary) 70%, var(--light));
+
+  // Chapter rules run past the viewport on purpose; clip the overhang here, not on the scroller.
+  overflow-x: clip;
 
   .page-header {
     .byline {
@@ -57,11 +66,15 @@
   }
 
   article {
-    --mag-measure: 35rem;
+    --mag-measure: 50rem;
     container: profile / inline-size;
     font-family: var(--mag-text);
-    font-size: 18px;
-    line-height: 1.55;
+    font-size: 20px;
+    line-height: 1.5;
+    // Keep initials in px: they are measured against Source Serif 4's 13.4px cap on a 30px line.
+    --mag-line: 30px;
+    --mag-cap: 13.4px;
+    --mag-cap-top: 8.6px;
     font-variant-numeric: oldstyle-nums;
 
     p,
@@ -82,11 +95,10 @@
       margin-block: 2.5rem 2rem;
       border: 0;
       border-block: 1px solid var(--mag-rule);
-      padding: 0.75rem 0;
       background: none;
       font-style: italic;
       text-align: start;
-      font-size: 15px;
+      font-size: 16px;
 
       .callout-content,
       p {
@@ -129,62 +141,177 @@
       margin-inline: calc((100% - var(--band)) / 2);
     }
 
-    // Our initial: the masthead's black italic cut, set on a halftone plate inside the masthead's
-    // double rule, four lines deep on the opening paragraph. The plate is two gradients, so it
-    // costs no request, and it takes the theme's ink in both light and dark.
-    & > .callout + p::first-letter {
+    // Profile wraps each opening letter in span.mag-initial: the span paints the letter and
+    // ::before paints its ornament. Ink bounds (measured with fontTools, table below) set the
+    // float size and lift; the margin box is cut to n lines so line n + 1 returns to the margin.
+    // Use px because em and lh resolve against the initial's size, with inconsistent registered-
+    // property math across engines. Other faces override these ink values in dropcap.scss.
+    $garamond-ink: (
+      A: (
+        0.927,
+        0.095,
+      ),
+      B: (
+        0.93,
+        0.072,
+      ),
+      C: (
+        0.916,
+        0.076,
+      ),
+      D: (
+        0.867,
+        0.134,
+      ),
+      E: (
+        0.916,
+        0.097,
+      ),
+      F: (
+        0.91,
+        0.109,
+      ),
+      G: (
+        0.903,
+        0.091,
+      ),
+      H: (
+        0.911,
+        0.099,
+      ),
+      I: (
+        0.912,
+        0.098,
+      ),
+      J: (
+        0.899,
+        0.076,
+      ),
+      K: (
+        0.893,
+        0.096,
+      ),
+      L: (
+        0.893,
+        0.087,
+      ),
+      M: (
+        0.904,
+        0.099,
+      ),
+      N: (
+        0.897,
+        0.087,
+      ),
+      O: (
+        0.9,
+        0.086,
+      ),
+      P: (
+        0.917,
+        0.095,
+      ),
+      Q: (
+        0.937,
+        0.035,
+      ),
+      R: (
+        0.891,
+        0.095,
+      ),
+      S: (
+        0.924,
+        0.061,
+      ),
+      T: (
+        0.895,
+        0.08,
+      ),
+      U: (
+        0.896,
+        0.078,
+      ),
+      V: (
+        0.868,
+        0.133,
+      ),
+      W: (
+        0.866,
+        0.061,
+      ),
+      X: (
+        0.89,
+        0.102,
+      ),
+      Y: (
+        0.887,
+        0.099,
+      ),
+      Z: (
+        0.91,
+        0.095,
+      ),
+    );
+
+    .mag-initial {
+      --mag-initial-lines: 3;
+      --dc-top: 0.9;
+      --dc-bottom: 0.09;
+      --dc-gap: 0.14em;
+      --dc-block: calc((var(--mag-initial-lines) - 1) * var(--mag-line) + var(--mag-cap));
+      --dc-size: calc(var(--dc-block) / (var(--dc-top) - var(--dc-bottom)));
+      --dc-lift: calc(var(--mag-cap-top) - (1 - var(--dc-top)) * var(--dc-size));
+      position: relative;
       float: left;
-      margin: 0.1em 0.14em 0 0;
-      padding: 0.08em 0.16em 0.02em 0.1em;
-      border: 4px double var(--mag-rule);
-      background-color: var(--light);
-      background-image: radial-gradient(
-        circle at center,
-        color-mix(in srgb, var(--tertiary) 45%, transparent) 0.9px,
-        transparent 1.2px
-      );
-      background-size: 5px 5px;
-      font-family: var(--mag-serif);
-      font-style: italic;
-      font-weight: 900;
-      font-size: 4.4em;
-      line-height: 0.86;
+      margin: var(--dc-lift) var(--dc-gap)
+        calc(var(--mag-initial-lines) * var(--mag-line) - var(--dc-size) - var(--dc-lift)) 0;
+      font-family: var(--mag-initial-letter);
+      font-style: normal;
+      font-weight: 400;
+      font-size: var(--dc-size);
+      line-height: 1;
       color: var(--dark);
       text-transform: uppercase;
+      hyphens: manual;
 
-      @supports (initial-letter: 4) {
-        float: none;
-        margin: 0 0.16em 0 0;
-        font-size: unset;
-        line-height: unset;
-        initial-letter: 4;
+      &::before {
+        content: attr(data-letter);
+        position: absolute;
+        inset: 0;
+        font-family: var(--mag-initial-ornament);
+        color: var(--mag-ornament);
+        pointer-events: none;
+      }
+
+      &[data-kind='lede'] {
+        --mag-initial-lines: 5;
+      }
+
+      @each $letter, $ink in $garamond-ink {
+        &[data-letter='#{$letter}']:not([data-face]) {
+          --dc-top: #{list.nth($ink, 1)};
+          --dc-bottom: #{list.nth($ink, 2)};
+        }
       }
     }
 
-    // Each section opens on the same italic cut without the plate, three lines deep.
-    .collapsible-header-content > p:first-child:not(:has(+ .profile-pulls))::first-letter {
-      float: left;
-      font-family: var(--mag-serif);
-      margin: 0.06em 0.1em 0 0;
-      font-style: italic;
-      font-weight: 900;
-      font-size: 3.35em;
-      line-height: 0.8;
-      text-transform: uppercase;
-
-      @supports (initial-letter: 3) {
-        float: none;
-        margin: 0 0.12em 0 0;
-        font-size: unset;
-        line-height: unset;
-        initial-letter: 3;
-      }
+    // The lede's ornament rises above its paragraph by up to a rem; the paragraph makes room
+    // so it never touches the rule above.
+    p:has(> .mag-initial[data-kind='lede']) {
+      padding-top: 1rem;
     }
 
     // Body paragraphs run on with an indent instead of a gap, as set in print: one signal, never
-    // both. Anything that is not a paragraph still gets air before the text resumes.
+    // both. Anything that is not a paragraph still gets air before the text resumes. The line is
+    // the grid the initials are cut to, so it is stated here in px: document-defaults.scss gives
+    // every p and li 1.6, which would be 32px and put the fifth baseline 8px below the initial.
     p {
       margin-block: 0;
+      line-height: var(--mag-line);
+    }
+
+    li {
+      line-height: inherit;
     }
 
     p + p {
@@ -218,7 +345,7 @@
       border: 0;
       border-block: 4px double var(--mag-rule);
       background: none;
-      font-size: 15px;
+      font-size: 16px;
       line-height: 1.5;
 
       &::before,
@@ -238,18 +365,89 @@
 
       & > p:first-child {
         column-span: all;
-        text-align: center;
+        text-align: left;
         font-style: italic;
-        margin-bottom: 1rem;
+        margin-bottom: 3rem;
       }
     }
 
-    // Section openers: a roman numeral over an italic display head, between rules.
     counter-reset: mag-section;
 
-    section.collapsible-header {
+    section.collapsible-header[data-level='2'] {
       counter-increment: mag-section;
-      margin-top: 3.5rem;
+      display: block;
+      margin-top: 4rem;
+    }
+
+    // The chapter rule is a grapevine drawn with the page (dropcap.scss sets its inks); the
+    // SVG's own ratio sets its height, so the chapter opens where it was laid out.
+    .mag-chapter-vine {
+      margin: 0 auto 1rem;
+      max-width: calc(var(--mag-measure) + 2 * (var(--mag-rail) + var(--mag-gap)));
+      pointer-events: none;
+
+      svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+    }
+
+    .mag-running-head {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      width: fit-content;
+      margin-left: max(0px, calc((100% - var(--mag-measure)) / 2));
+      padding-block: 0.5rem;
+      font-family: var(--mag-display);
+      font-size: 1.15rem;
+      line-height: 1.2;
+      color: var(--dark);
+      text-indent: 0;
+      pointer-events: none;
+
+      &::before {
+        content: counter(mag-section, upper-roman);
+        flex-shrink: 0;
+      }
+
+      > span {
+        display: none;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-style: italic;
+      }
+
+      &[data-obscured] {
+        visibility: hidden;
+      }
+    }
+
+    @container profile-page (min-width: 70rem) {
+      .mag-running-head {
+        position: sticky;
+        top: 3px;
+        margin-left: calc((100% - var(--mag-measure)) / 2 - 2.5rem);
+        z-index: 1;
+      }
+    }
+
+    @container profile-page (min-width: 84rem) {
+      .mag-running-head {
+        width: var(--mag-rail);
+        margin-left: calc((100% - var(--mag-measure)) / 2 - var(--mag-rail) - var(--mag-gap));
+
+        > span {
+          display: block;
+          visibility: hidden;
+        }
+
+        &[data-running] > span {
+          visibility: inherit;
+        }
+      }
     }
 
     .collapse-rail,
@@ -259,19 +457,8 @@
     }
 
     h2 {
-      margin: 0 0 1.75rem;
-      padding-top: 1rem;
-      border-top: 1px solid var(--mag-rule);
+      margin: 0.5rem 0 1.75rem;
       text-align: center;
-
-      &::before {
-        content: counter(mag-section, upper-roman);
-        display: block;
-        font-family: var(--codeFont);
-        font-size: 11px;
-        letter-spacing: 0.3em;
-        color: var(--darkgray);
-      }
 
       .collapse-toggle {
         display: flex;
@@ -299,33 +486,110 @@
       margin: 0;
     }
 
-    // Departments: each activity and compatibility list under a small-caps kicker.
-    section[data-activities],
-    section[data-compat] {
-      break-inside: avoid;
-      margin: 0 0 1.5rem;
+    // Departments: a chapter whose body is cut into h3 sections (the activities, the
+    // compatibility lists). The chapter's opening paragraph keeps the measure; the departments
+    // below it run in two newspaper columns across the band, each under its own small head.
+    .collapsible-header-content[data-level='2']:has(> section.collapsible-header[data-level='3']) {
+      --band: min(100cqi, 68rem);
+      max-width: var(--band);
 
-      & > p:first-of-type:not(.popover *) {
-        margin: 0 0 0.6rem !important;
-        padding-bottom: 0.3rem;
-        border-bottom: 1px solid var(--mag-rule);
-        font-family: var(--codeFont);
-        font-size: 11px;
-        font-weight: 400;
-        letter-spacing: 0.24em;
-        text-indent: 0;
+      & > p {
+        max-width: var(--mag-measure);
+        margin-inline: auto;
+        column-span: all;
       }
 
+      & > p:last-of-type {
+        margin-bottom: 1.5rem;
+      }
+
+      @container profile (min-width: 42rem) {
+        columns: 2;
+        column-gap: 2.5rem;
+        column-rule: 1px solid var(--mag-hair);
+      }
+    }
+
+    section.collapsible-header[data-level='3'] {
+      break-inside: avoid;
+      margin: 0 0 1.6rem;
+      font-size: 17px;
+      line-height: 1.45;
+
+      li {
+        break-inside: avoid;
+      }
+
+      // The department head: a Garamond small-cap line under its own rule. Still a toggle.
+      h3 {
+        break-inside: avoid;
+        break-after: avoid;
+        margin: 0 0 0.5rem;
+        padding-top: 0.4rem;
+        border-top: 1px solid var(--mag-rule);
+        font-family: var(--mag-display);
+        font-weight: 400;
+        font-size: 1.05rem;
+        line-height: 1.2;
+        text-transform: uppercase;
+        text-align: start;
+
+        .collapse-toggle {
+          display: block;
+        }
+
+        .collapse-title {
+          font: inherit;
+          letter-spacing: inherit;
+        }
+
+        a {
+          text-decoration: none;
+          color: inherit;
+        }
+
+        svg {
+          display: none;
+        }
+      }
+
+      // Items read as short paragraphs, not bullets; nested points indent once.
       ul,
       ol {
-        margin-top: 0;
-        padding-inline-start: 1.2rem;
+        margin: 0;
+        padding-inline-start: 0;
+        list-style: none;
+      }
+
+      li + li {
+        margin-top: 0.3rem;
+      }
+
+      li > ul,
+      li > ol {
+        margin-top: 0.3rem;
+        padding-inline-start: 1.2em;
+      }
+
+      ol {
+        list-style: decimal;
+        padding-inline-start: 1.2em;
       }
 
       ol li::marker {
-        font-family: var(--codeFont);
-        font-size: 11px;
+        font-family: var(--mag-display);
+        font-size: 0.9em;
       }
+    }
+
+    // The activity widget wants the whole band; its department spans both columns.
+    section.collapsible-header[data-level='3']:has([data-triathlon-latest], .strava-activities) {
+      column-span: all;
+    }
+
+    // The compatibility lists run long; they may continue into the next column item by item.
+    #compatibility section.collapsible-header[data-level='3'] {
+      break-inside: auto;
     }
 
     // Pull quotes span every column; testimonials sit side by side.
@@ -347,7 +611,6 @@
         font-family: var(--codeFont);
         font-style: normal;
         font-size: 11px;
-        letter-spacing: 0.2em;
       }
     }
 
@@ -386,7 +649,15 @@
     }
 
     // The tombstone that closes a feature.
-    section[data-compat]:last-of-type > p:last-of-type::after {
+    #compatibility
+      section.collapsible-header[data-level='3']:last-of-type
+      .collapsible-header-content[data-level='3']
+      > :is(p, li):last-child::after,
+    #compatibility
+      section.collapsible-header[data-level='3']:last-of-type
+      .collapsible-header-content[data-level='3']
+      > :is(ul, ol):last-child
+      > li:last-child::after {
       content: '\2009\25A0';
     }
   }

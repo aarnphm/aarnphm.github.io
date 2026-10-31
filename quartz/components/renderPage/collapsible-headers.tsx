@@ -1,7 +1,10 @@
-import { Element, ElementContent } from 'hast'
+import { Element, ElementContent, Root } from 'hast'
 import { headingRank } from 'hast-util-heading-rank'
+import { toString } from 'hast-util-to-string'
 import { h, s } from 'hastscript'
+import { visit } from 'unist-util-visit'
 import { QuartzPluginData } from '../../plugins/vfile'
+import { vineRule } from '../../util/grapevine'
 import { FullSlug } from '../../util/path'
 import { svgOptions } from '../svg'
 
@@ -82,7 +85,10 @@ function headerElement(
     className.push('end-hr')
   }
 
-  return h(`section.${className.join('.')}#${id}`, { 'data-level': rank }, [
+  // The heading's plain text, for stylesheets that repeat it (the newspaper chapter bar).
+  const title = toString({ type: 'root', children: headingContent } as Root)
+
+  return h(`section.${className.join('.')}#${id}`, { 'data-level': rank, 'data-title': title }, [
     h(
       'div.collapse-shell.is-open',
       { ['data-collapse-shell']: '', ['data-initial-open']: 'true' },
@@ -286,4 +292,25 @@ export function shouldProcessHeaders(
   if (!dynalist || slug.includes('posts')) return false
   if (fileData.frontmatter?.collapseHeadings === false) return false
   return !hasCssClass(fileData, 'notebook-page')
+}
+
+/**
+ * The newspaper chapter bar: a numeral (CSS counter) and the chapter title, rendered with the page
+ * so it takes its room before first paint. profile-notes.inline.ts only toggles its visibility.
+ */
+export function addRunningHeads(root: Root, vine?: string) {
+  let n = 0
+  visit(root, 'element', node => {
+    if (node.tagName !== 'section' || node.properties.dataLevel !== 2) return
+    if (!(node.properties.className as string[] | undefined)?.includes('collapsible-header')) return
+    node.children.unshift(
+      // The chapter rule: a grapevine grown with the page when its drop cap is procedural.
+      ...(vine
+        ? [h('div.mag-chapter-vine', { ariaHidden: 'true' }, [vineRule(`${vine}:${n++}`)])]
+        : []),
+      h('div.mag-running-head', { ariaHidden: 'true' }, [
+        h('span', String(node.properties.dataTitle ?? '')),
+      ]),
+    )
+  })
 }
