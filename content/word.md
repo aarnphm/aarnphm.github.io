@@ -7,7 +7,7 @@ flashcards:
   default: true
 id: word
 layout: technical
-modified: 2026-10-13 13:38:45 GMT-04:00
+modified: 2026-10-31 14:54:17 GMT-04:00
 tags:
   - evergreen
 title: lists
@@ -373,3 +373,6 @@ title: lists
 - dowdy
 - austere
 - mercantilism
+- bellibone
+- alembic
+- storge
