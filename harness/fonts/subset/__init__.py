@@ -5,11 +5,13 @@ Run by hand after a build (the character census reads the rendered HTML in publi
     pnpm fonts:subset                 # subset everything, write SCSS + manifest, push changed
                                       # files to the FONTS KV (the site reads them there)
     pnpm fonts:subset -- --no-upload  # local only; the generated CSS then points at missing keys
+    pnpm fonts:subset --initials-only  # only the per-letter drop-cap faces (no census needed)
 
 Outputs
   quartz/.quartz-cache/fonts/out/<stem>.{core,ext}.woff2   every face; pushed to the FONTS KV when
                                                             its content changed, never committed
   quartz/styles/fonts.scss                        generated @font-face rules with unicode-range
+  quartz/styles/fonts.initials.scss               drop-cap faces, one rule per letter (initials.py)
   quartz/styles/fonts.preload.json                core files Head.tsx preloads
   quartz/styles/fonts.manifest.json               per-file bytes, glyphs, ranges (committed)
 

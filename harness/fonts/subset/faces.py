@@ -42,6 +42,8 @@ KEEP_FEATURES = [
   'zero',
 ]
 
+SMALL_CAPS = ('smcp', 'c2sc')
+
 # Share of pages a character must appear on to sit in the preloaded core file. An ext file
 # costs about 20 KB whenever one of its characters shows up, a core glyph about 60 B on every
 # page, so the break-even is roughly 0.3% of pages (10 of 3370); below that the ext fetch is
@@ -71,6 +73,8 @@ class Face:
   rename: str | None = None
   enabled: bool = True
   note: str = ''
+  # Features kept for this face on top of KEEP_FEATURES.
+  features: tuple[str, ...] = ()
 
   @property
   def stem(self) -> str:
@@ -320,12 +324,15 @@ FACES: list[Face] = [
     'italic',
     enabled=False,
   ),
+  # The newspaper layout sets the words after a drop cap in small caps (font-variant-caps in
+  # pages/newspaper/dropcap.scss); without smcp/c2sc the browser fakes them from scaled capitals.
   Face(
     'Source Serif 4',
     'source-serif-4-Regular.woff2',
     'kv',
     '400',
     rename=RENAMES['Source Serif 4'],
+    features=SMALL_CAPS,
   ),
   Face(
     'Source Serif 4',
@@ -334,6 +341,7 @@ FACES: list[Face] = [
     '400',
     'italic',
     rename=RENAMES['Source Serif 4'],
+    features=SMALL_CAPS,
   ),
   Face(
     'Source Serif 4',
@@ -341,6 +349,7 @@ FACES: list[Face] = [
     'kv',
     '600',
     rename=RENAMES['Source Serif 4'],
+    features=SMALL_CAPS,
   ),
   Face(
     'Source Serif 4',
@@ -349,6 +358,7 @@ FACES: list[Face] = [
     '600',
     'italic',
     rename=RENAMES['Source Serif 4'],
+    features=SMALL_CAPS,
   ),
   # Declared at a single weight, so the browser clamps every heading to wght 400. The default
   # master is 300, so a static 400 instance rounds every interpolated coordinate and moves

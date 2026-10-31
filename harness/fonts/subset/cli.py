@@ -21,6 +21,7 @@ from .build import (
   verify,
 )
 from .census import census, gpos_partners, source_chars
+from .initials import build_initials
 from .publish import publish
 from .faces import (
   CACHE,
@@ -58,10 +59,24 @@ def main() -> int:
     '--census-json',
     help='reuse a census written by a previous run instead of rescanning',
   )
+  ap.add_argument(
+    '--initials-only',
+    action='store_true',
+    help='regenerate only the per-letter drop-cap files (no census, no text faces)',
+  )
   args = ap.parse_args()
 
   OUT_KV.mkdir(parents=True, exist_ok=True)
   CACHE.mkdir(parents=True, exist_ok=True)
+
+  if args.initials_only:
+    uploads = build_initials()
+    if args.no_upload:
+      print(
+        f'{len(uploads)} files written under {OUT_KV}, not uploaded (--no-upload)'
+      )
+      return 0
+    return 1 if publish(uploads, args.source_url) else 0
 
   if args.census_json:
     c = json.loads(Path(args.census_json).read_text())
@@ -172,6 +187,7 @@ def main() -> int:
       'sourceChars': len(cmap),
       'pin': face.pin or None,
       'rename': face.rename,
+      'features': list(face.features),
       'corePulledByGpos': sorted(pulled),
       'files': {},
     }
@@ -255,6 +271,7 @@ def main() -> int:
   print(
     f'wrote {STYLES / "fonts.scss"}, fonts.preload.json, fonts.manifest.json'
   )
+  uploads += build_initials()
 
   if args.no_upload:
     print(
