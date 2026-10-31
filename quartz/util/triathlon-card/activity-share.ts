@@ -23,7 +23,11 @@ import {
   type CyclingDynamicsSeriesKey,
 } from './cycling-dynamics-data'
 import { clock, dur, formatAltitude, isImperial, zoneClock, zoneRange } from './metric-text'
-import { normalizePowerCurvePoints, powerCurvePathPoints } from './power-curve-data'
+import {
+  normalizePowerCurvePoints,
+  powerCurvePathPoints,
+  powerCurveWeight,
+} from './power-curve-data'
 import {
   cyclingWorkoutLaps,
   runLapSplits,
@@ -221,6 +225,7 @@ export const activityShareData = (
       title: triText(presentation.locale, 'power curve'),
       axis: 'W',
       note: '',
+      weight: powerCurveWeight(d),
       points: powerCurvePathPoints(curve).map(point => ({
         x: point.s,
         y: point.w,

@@ -33,6 +33,7 @@ export const en: Record<string, string> = {
   'power curve units': 'power curve units',
   'W/kg unavailable: no weight recorded on or before this activity':
     'W/kg unavailable: no weight recorded on or before this activity',
+  'W/kg unavailable: no body weight recorded': 'W/kg unavailable: no body weight recorded',
   selection: 'selection',
   'compare activities': 'compare activities',
   'analytics chapters': 'analytics chapters',
@@ -138,6 +139,8 @@ export const fr: Record<string, string> = {
   'power curve units': 'unités de la courbe de puissance',
   'W/kg unavailable: no weight recorded on or before this activity':
     'W/kg indisponible : aucun poids enregistré au plus tard le jour de cette activité',
+  'W/kg unavailable: no body weight recorded':
+    'W/kg indisponible : aucun poids corporel enregistré',
   selection: 'sélection',
   'compare activities': 'comparer les activités',
   'analytics chapters': 'chapitres d’analyse',
