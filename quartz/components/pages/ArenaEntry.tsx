@@ -45,6 +45,62 @@ export default (() => {
       <article class="arena-entry-page main-col" id={block.entryId} data-entry-id={block.entryId}>
         <div class="arena-entry-shell">
           <nav class="arena-modal-nav" aria-label="Entry controls">
+            <a
+              class="arena-modal-nav-btn arena-entry-home internal"
+              href={resolveRelative(slug, joinSegments('arena', channel.slug) as FullSlug)}
+              aria-label="Back to channel"
+              title="Back to channel"
+              data-no-popover
+            >
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="m3 10 9-7 9 7v10H3Z M9 20v-8h6v8" />
+              </svg>
+            </a>
+            <button
+              type="button"
+              class="arena-modal-nav-btn arena-entry-copy"
+              data-wikilink={`[[${joinSegments('arena', channel.slug, block.entryId)}]]`}
+              aria-label="Copy wikilink"
+              title="Copy wikilink"
+            >
+              <svg
+                class="copy-icon"
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <rect x="8" y="8" width="13" height="13" rx="1" />
+                <path d="M16 8V3H3v13h5" />
+              </svg>
+              <svg
+                class="check-icon"
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                aria-hidden="true"
+              >
+                <path d="m5 12 4 4L19 6" />
+              </svg>
+            </button>
             <button
               type="button"
               class="arena-modal-nav-btn arena-modal-collapse"

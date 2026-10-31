@@ -1,3 +1,57 @@
+.arena-entry-home,
+.arena-entry-copy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: var(--arena-control-height);
+  height: var(--arena-control-height);
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: var(--darkgray);
+  background: transparent;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    color 100ms ease,
+    background-color 100ms ease;
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: var(--dark);
+      background: var(--arena-selected);
+    }
+  }
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.arena-entry-copy {
+  .check-icon {
+    display: none;
+  }
+
+  &.check {
+    .copy-icon {
+      display: none;
+    }
+
+    .check-icon {
+      display: block;
+    }
+  }
+}
+
 // Arena blocks and the feed shrink the PDF embed toolbar to their own control height and label
 // size; the instruments keep the frame and cells from quartz/styles/pdf-instrument.scss.
 @mixin compact-pdf-controls {
