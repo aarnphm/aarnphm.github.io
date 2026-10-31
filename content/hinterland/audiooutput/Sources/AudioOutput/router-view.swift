@@ -91,13 +91,13 @@ struct RouterView: View {
     private func volumeControl(name: String, value: Binding<Double>) -> some View {
         HStack(spacing: 8) {
             Slider(value: value, in: 0...300, step: 5) { Text("Volume for \(name)") }
+                .labelsHidden()
                 .accessibilityValue("\(Int(value.wrappedValue)) percent")
             Text("\(Int(value.wrappedValue))%")
                 .monospacedDigit().frame(width: 44, alignment: .trailing)
             Button("100%") { value.wrappedValue = 100 }
                 .help("Reset volume for \(name)")
         }.frame(width: 210)
-         .help("0% mutes; 100% is unchanged. Boosting can distort peaks.")
     }
 
     private func siteRow(_ site: SiteRule) -> some View {
