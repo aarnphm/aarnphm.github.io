@@ -14,6 +14,7 @@ import {
 } from './press-kit/dialog-events'
 import { linkCards } from './press-kit/link-sharing'
 import { schedule } from './press-kit/picture-sharing'
+import { mountPreview } from './press-kit/preview'
 import {
   $,
   blockDisplays,
@@ -67,6 +68,7 @@ document.addEventListener('nav', () => {
   if (!session.dialog || !session.page) return
 
   bindDialog(signal)
+  mountPreview(session.dialog, signal)
   mountOverlay(signal)
   session.dialog.addEventListener('toggle', layoutMetricControls, { capture: true, signal })
   const controls = $('.press-kit-controls')
