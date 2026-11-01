@@ -204,7 +204,8 @@
   margin-left: auto;
 }
 
-.tri-best-power-toggle {
+.tri-best-power-toggle,
+.tri-best-power-unit {
   display: inline-flex;
   align-items: center;
   gap: 0.34rem;
@@ -234,7 +235,8 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .tri-best-power-toggle:not(:disabled):hover {
+  .tri-best-power-toggle:not(:disabled):hover,
+  .tri-best-power-unit:not(:disabled):hover {
     color: var(--dark);
   }
 }

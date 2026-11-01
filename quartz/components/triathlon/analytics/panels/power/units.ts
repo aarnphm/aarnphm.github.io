@@ -131,23 +131,6 @@ export const createPowerUnitView = (
   let weightKg: number | null = null
   const domainMax = Number(graph.dataset.powerDomainMax)
   const height = graph.viewBox.baseVal.height
-  const readout = block.querySelector<HTMLElement>('.tri-best-power-readout')
-  const width = Math.max(
-    ...[null, mass].map(
-      kg => powerCurveValueText(domainMax, kg, context.presentation.locale).length,
-    ),
-  )
-  readout?.style.setProperty('--tri-power-value-ch', String(width))
-  const axisWidth = Math.max(
-    ...[null, mass].flatMap(kg =>
-      powerCurveAxisTicks(domainMax, kg, context.presentation.locale).map(
-        tick => tick.label.length,
-      ),
-    ),
-  )
-  block
-    .querySelector<HTMLElement>('.tri-best-power-curve-pane')
-    ?.style.setProperty('--tri-power-axis-ch', String(axisWidth))
   return {
     text: watts => powerCurveValueText(watts, weightKg, context.presentation.locale),
     select: unit => {
