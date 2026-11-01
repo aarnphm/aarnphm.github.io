@@ -5390,6 +5390,532 @@ title: are.na
 
 ## places
 
+- https://birdcph.dk/ -- Bird Frederiksberg
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [bar]
+    - coord: [55.6757905, 12.5448136]
+    - address: Gammel Kongevej 102, 1850 Frederiksberg C, Denmark
+    - later: true
+    - source: https://www.instagram.com/p/DeHJKzan8S2/
+- https://duckandcoverbar.dk/ -- Duck and Cover
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [bar]
+    - coord: [55.67189279999999, 12.5523115]
+    - address: Dannebrogsgade 6, 1660 København V, Denmark
+    - later: true
+    - source: https://www.instagram.com/p/DeHJKzan8S2/
+- https://www.facebook.com/gensynbar/ -- Gensyn Frederiksberg
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [bar]
+    - coord: [55.6841885, 12.5430929]
+    - address: Rolighedsvej 20, 1958 Frederiksberg C, Denmark
+    - later: true
+    - source: https://www.instagram.com/p/DeHJKzan8S2/
+- https://fiasco.dk/ -- Fiasco Copenhagen
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [bar]
+    - coord: [55.68680149999999, 12.5879735]
+    - address: Borgergade 134, 1300 København K, Denmark
+    - later: true
+    - source: https://www.instagram.com/p/DeHJKzan8S2/
+- https://www.josephine.dk/ -- Josephine Amager
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [bar, shop]
+    - coord: [55.6616332, 12.6074635]
+    - address: Frankrigsgade 15, 2300 København S, Denmark
+    - later: true
+    - source: https://www.instagram.com/p/DeHJKzan8S2/
+- https://barvitrine.dk/ -- Bar Vitrine
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [bar, restaurant]
+    - coord: [55.6819583, 12.5794641]
+    - address: Møntergade 5, 1116 København K, Denmark
+    - later: true
+    - source: https://www.instagram.com/p/DeHJKzan8S2/
+- https://rby.dk/ -- Ruby Copenhagen
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [bar]
+    - coord: [55.6767538, 12.5766669]
+    - address: Nybrogade 10, 1203 København K, Denmark
+    - later: true
+    - source: https://www.instagram.com/p/DeHJKzan8S2/
+- https://warpigs.dk/ -- Warpigs Copenhagen
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [bar, restaurant]
+    - coord: [55.66857299999999, 12.5598471]
+    - address: Flæsketorvet 25–37, 1711 København V, Denmark
+    - later: true
+    - source: https://www.instagram.com/p/DeHJKzan8S2/
+- https://www.dagmarsbodega.dk/ -- Dagmars Bodega
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [bar]
+    - coord: [55.6977692, 12.5468834]
+    - address: Gormsgade 25, kl., 2200 København N, Denmark
+    - later: true
+    - source: https://www.instagram.com/p/DeHJKzan8S2/
+- https://www.vedstranden10.dk/ -- Ved Stranden 10
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [bar, shop]
+    - coord: [55.6773044, 12.5816159]
+    - address: Ved Stranden 10, 1061 København K, Denmark
+    - later: true
+    - source: https://www.instagram.com/p/DeHJKzan8S2/
+- https://barsolis.dk/ -- Bar Solis
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [bar]
+    - coord: [55.6697387, 12.5453111]
+    - address: Enghavevej 20A, 1674 København V, Denmark
+    - later: true
+    - source: https://www.instagram.com/p/DeHJKzan8S2/
+- https://www.exilevintage.ca/ -- Exile Vintage
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [shop]
+    - coord: [43.6542999, -79.40086889999999]
+    - address: 60 Kensington Ave, Toronto, ON M5T 2K2, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DezjVfhnzJY/
+- https://www.ethicaroasters.com/ -- Ethica Coffee Roasters
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [coffee shop]
+    - coord: [43.6552893, -79.44526809999999]
+    - address: 213 Sterling Rd, Unit 104, Toronto, ON M6R 2B2, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DezjVfhnzJY/
+- https://www.bareugenie.com/ -- Bar Eugenie
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant, bar]
+    - coord: [43.6625789, -79.4033658]
+    - address: 89 Harbord St, Toronto, ON M5S 1G4, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DezjVfhnzJY/
+- https://www.corkingallery.com/ -- Corkin Gallery
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [art gallery]
+    - coord: [43.6502994, -79.3592326]
+    - address: 7 Tank House Lane, Toronto, ON M5A 3C4, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DezjVfhnzJY/
+- https://mercerunion.org/ -- Mercer Union
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [art gallery]
+    - coord: [43.6587586, -79.4419975]
+    - address: 1286 Bloor St W, Toronto, ON M6H 1N9, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DezjVfhnzJY/
+- https://www.primeseafoodpalace.ca/ -- Prime Seafood Palace
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.644878, -79.41673159999999]
+    - address: 944 Queen St W, Toronto, ON M6J 1G8, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DezjVfhnzJY/
+- https://www.evangelinetoronto.com/ -- Evangeline
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [bar]
+    - coord: [43.6467359, -79.3981335]
+    - address: 51 Camden St, Toronto, ON M5V 1V2, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DezjVfhnzJY/
+- https://www.thegeminitoronto.com/ -- The Gemini
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6492389, -79.422629]
+    - address: 1209A Dundas Street West, 2nd Floor, Toronto, ON M6J 1X3, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/De71BGZNWKS/
+- https://ago.ca/ -- Art Gallery of Ontario
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [museum, art gallery]
+    - coord: [43.6536066, -79.39251229999999]
+    - address: 317 Dundas St W, Toronto, ON M5T 1G4, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfD11iIjhjS/
+- https://www.toronto.ca/explore-enjoy/history-art-culture/museums/spadina-museum/ -- Spadina Museum
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [museum]
+    - coord: [43.6789935, -79.4081472]
+    - address: 285 Spadina Rd, Toronto, ON M5R 2V5, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfD11iIjhjS/
+- https://moca.ca/ -- Museum of Contemporary Art Toronto
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [museum, art gallery]
+    - coord: [43.6546127, -79.44520179999999]
+    - address: 158 Sterling Rd #100, Toronto, ON M6R 2B7, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfD11iIjhjS/
+- https://batashoemuseum.ca/ -- Bata Shoe Museum
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [museum]
+    - coord: [43.6672667, -79.4001806]
+    - address: 327 Bloor St W, Toronto, ON M5S 1W7, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfD11iIjhjS/
+- https://www.thepowerplant.org/ -- The Power Plant
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [art gallery]
+    - coord: [43.6384653, -79.3818612]
+    - address: 231 Queens Quay W, Toronto, ON M5J 2G8, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfD11iIjhjS/
+- https://www.gardinermuseum.on.ca/ -- Gardiner Museum
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [museum]
+    - coord: [43.66821239999999, -79.3930658]
+    - address: 111 Queens Park, Toronto, ON M5S 2C7, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfD11iIjhjS/
+- https://www.rom.on.ca/ -- Royal Ontario Museum
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [museum]
+    - coord: [43.6677097, -79.3947771]
+    - address: 100 Queens Park, Toronto, ON M5S 2C6, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfD11iIjhjS/
+- https://agakhanmuseum.org/ -- Aga Khan Museum
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [museum]
+    - coord: [43.7252521, -79.33222309999999]
+    - address: 77 Wynford Dr, North York, ON M3C 1K1, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfD11iIjhjS/
+- https://mizunara.ca/ -- Mizunara
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [bar, restaurant]
+    - coord: [43.6481362, -79.38822449999999]
+    - address: 235 Adelaide Street West, Toronto, ON M5H 0A7, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DeFqQU1tTcT/
+- https://www.cafetere.ca/ -- Café Tere
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [coffee shop]
+    - coord: [45.51534669999999, -73.5711482]
+    - address: 156 Rue Prince-Arthur Est, Montréal, QC H2X 1B7, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfKdMmDR8gW/
+- https://www.victoria-jungfrau.ch/en/restaurants-bars/radius-by-stefan-beer/ -- Radius by Stefan Beer
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [46.6868984, 7.8578461]
+    - address: Höheweg 41, 3800 Interlaken, Switzerland
+    - later: true
+    - source: https://www.instagram.com/reel/DfKgmebMnRG/
+- https://www.instagram.com/thewoodowlto/ -- The Wood Owl
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant, bar]
+    - coord: [43.68253079999999, -79.3281672]
+    - address: 1380 Danforth Ave, Toronto, ON M4J 1M9, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfDUc1yoNEc/
+- https://www.instagram.com/ladybugwine/ -- Ladybug Wine Bar
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [bar, restaurant]
+    - coord: [43.656593, -79.3571094]
+    - address: 514 King St E, Toronto, ON M5A 1M1, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfDUc1yoNEc/
+- https://comradetoronto.com/ -- The Comrade
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [bar, restaurant]
+    - coord: [43.6594817, -79.34797669999999]
+    - address: 758 Queen St E, Toronto, ON M4M 1H4, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfDUc1yoNEc/
+- https://www.barmini.ca/ -- Bar Mini
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [bar]
+    - coord: [43.6622335, -79.3353151]
+    - address: 1118 Queen St E, Toronto, ON M4M 1K9, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfDUc1yoNEc/
+- https://www.rickyandolivia.com/ -- Ricky + Olivia
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant, bar]
+    - coord: [43.6612954, -79.33954899999999]
+    - address: 996 Queen St E, Toronto, ON M4M 1K1, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfDUc1yoNEc/
+- https://www.marubistro.com/ -- MARU Japanese Bistro
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6647508, -79.32420719999999]
+    - address: 1402 Queen Street East, Unit B, Toronto, ON M4L 1C9, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfDUc1yoNEc/
+- https://eastendvine.ca/ -- East End Vine
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [bar, restaurant]
+    - coord: [43.6670383, -79.34467769999999]
+    - address: 817 Gerrard St E, Toronto, ON M4M 1Y8, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfDUc1yoNEc/
+- https://wynonatoronto.com/ -- Wynona
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6670336, -79.3445763]
+    - address: 819 Gerrard St E, Toronto, ON M4M 1Y8, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfDUc1yoNEc/
+- https://fangio.ca/ -- Fangio Trattoria
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6619103, -79.33537249999999]
+    - address: 1111 Queen St E, Toronto, ON M4M 1K7, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfDUc1yoNEc/
+- https://www.sauvignonbistro.com/ -- Sauvignon Bistro
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6686195, -79.30716339999999]
+    - address: 1862 Queen St E, Toronto, ON M4L 1H1, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfDUc1yoNEc/
+- https://www.rosebudtoronto.com/ -- The Rosebud
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant, bar]
+    - coord: [43.6561548, -79.357731]
+    - address: 498 King St E, Toronto, ON M5A 1M1, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfDUc1yoNEc/
+- https://maps.app.goo.gl/71RKELpW6MiP6bq27 -- Lake Inez
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [restaurant]
+    - coord: [43.6723948, -79.3206899]
+    - address: 1471 Gerrard St E, Toronto, ON M4L 2A1, Canada
+    - source: https://www.instagram.com/p/DfDUc1yoNEc/
+- https://www.ferdisfoods.com/ -- Ferdi's Foods
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.664628, -79.45479019999999]
+    - address: 1617 Dupont Street, access via laneway, Toronto, ON M6P 3S8, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DeuyjzwJ2t_/
+- https://www.karasuyakitori.ca/ -- Karasu Yakitori
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.64543159999999, -79.4010311]
+    - address: 495 Adelaide Street West, 2nd Floor, Toronto, ON M5V 1T4, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/Dezt_U4xoaV/
+- https://normafitzroy.au/ -- Norma Fitzroy
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [-37.8032486, 144.983278]
+    - address: 197 Smith Street, Fitzroy, VIC 3065, Australia
+    - later: true
+    - source: https://www.instagram.com/reel/DcNvDCByhO3/
+- https://greatfountain.ca/ -- Great Fountain Fast Food
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.786839, -79.27724979999999]
+    - address: Dynasty Centre Foodcourt, Units F5-F6, 8 Glen Watford Drive, Scarborough, ON, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/Dbnh1nNOgKR/
+- https://mimichinese.com/ -- Mimi Chinese
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6742015, -79.3982462]
+    - address: 265 Davenport Road, Toronto, ON M5R 1J9, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/Dbnh1nNOgKR/
+- https://shinjijapanese.com/ -- Shinji
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6503406, -79.38052069999999]
+    - address: Unit 0100, Street Level, 333 Bay Street, Toronto, ON M5H 2R2, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/Dbnh1nNOgKR/
+- https://www.vitbeo.com/ -- Vịt Béo
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant, bar]
+    - coord: [43.6623961, -79.42435069999999]
+    - address: 858 Bloor St W, Toronto, ON M6G 1M2, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DeIMQ4jFNoF/
+- https://www.labellamanagua.com/ -- La Bella Managua
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6623049, -79.42501059999999]
+    - address: 872 Bloor St W, Toronto, ON M6G 1M5, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DeIMQ4jFNoF/
+- https://www.1910lamexicana.ca/ -- 1910 La Mexicana Bloor
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6608446, -79.42987189999999]
+    - address: 993 Bloor St W, Toronto, ON M6H 1M1, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DeIMQ4jFNoF/
+- https://www.google.com/maps?cid=15999429229148262829 -- Szechuan Noodle Bowl Bloor
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6608929, -79.4314893]
+    - address: 1030 Bloor St W, Toronto, ON M6H 1M2, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DeIMQ4jFNoF/
+- https://sarangkitchen.ca/ -- Sarang Kitchen Bloor
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6606708, -79.4326267]
+    - address: 1056 Bloor St W, Toronto, ON M6H 1M3, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DeIMQ4jFNoF/
+- https://www.almatoronto.com/ -- Alma
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6595496, -79.4380699]
+    - address: 1194 Bloor St W, Toronto, ON M6H 1N2, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DeIMQ4jFNoF/
+- https://www.islandoysters.ca/ -- Island Oysters Bloor
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant, bar]
+    - coord: [43.6591906, -79.43806239999999]
+    - address: 1165 Bloor St W, Toronto, ON M6H 1M9, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DeIMQ4jFNoF/
+- https://montebianco.ca/ -- Monte Bianco
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6587965, -79.43951179999999]
+    - address: 1201 Bloor St W, Toronto, ON M6H 1N4, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DeIMQ4jFNoF/
+- https://www.instagram.com/seoulshakers.1241/ -- Seoul Shakers
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant, bar]
+    - coord: [43.6585746, -79.4411188]
+    - address: 1241 Bloor St W, Toronto, ON M6H 1N6, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DeIMQ4jFNoF/
+- https://www.instagram.com/shakersclub.1261/ -- Shaker’s Club
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant, bar]
+    - coord: [43.6584486, -79.4416846]
+    - address: 1261 Bloor St W, Toronto, ON M6H 1N7, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DeIMQ4jFNoF/
+- https://www.rurubaked.com/ -- Ruru Baked Lansdowne
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [deserts]
+    - coord: [43.6581, -79.44260299999999]
+    - address: 659 Lansdowne Ave, Toronto, ON M6H 3Y2, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DeIMQ4jFNoF/
+- https://www.instagram.com/solkatt_cafe/ -- Solkatt Cafe
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [coffee shop, restaurant]
+    - coord: [43.6588007, -79.4426685]
+    - address: 679 Lansdowne Ave, Toronto, ON M6H 3Y9, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DeIMQ4jFNoF/
+- https://www.thainyyom.ca/ -- Thai Nyyom
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6571492, -79.44779849999999]
+    - address: 1419 Bloor St W, Toronto, ON M6P 3L4, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DeIMQ4jFNoF/
+- https://nlginzburg.com/ -- N.L. Ginzburg
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6558064, -79.4118327]
+    - address: 548 College Street, Toronto, ON M6G 1B1, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DchKUk8Byux/
+- https://aviarestaurant.com/ -- Avia Darlinghurst
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [-33.8799799, 151.2167646]
+    - address: 371-373 Bourke Street, Darlinghurst, NSW 2010, Australia
+    - later: true
+    - source: https://www.instagram.com/reel/DeGk1JMDuN-/
+- https://www.giuliettanyc.com/location/giulietta/ -- Giulietta New York
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [40.7535455, -73.9767507]
+    - address: 200 Park Avenue, New York, NY 10166, United States
+    - later: true
+    - source: https://www.instagram.com/reel/Decofi1Mk_B/
+- https://www.osteriarenata.com.au/ -- Osteria Renata
+  - [meta]:
+    - date: 10/31/2026
+    - tags: [restaurant]
+    - coord: [-37.8533472, 145.0031289]
+    - address: 436-438 High Street, Prahran, VIC 3181, Australia
+    - later: true
+    - source: https://www.instagram.com/reel/DZjoT0yit7C/
+- https://www.ikkousha.ca/our-story -- Ikkousha Ramen Yonge-Dundas
+  - [meta]:
+    - date: 10/31/2026
+    - tags: [restaurant]
+    - coord: [43.6588663, -79.3821488]
+    - address: 374A Yonge Street, Toronto, ON M5B 1S6, Canada
+    - later: true
 - https://ahzimae-zipbap.square.site/ -- Ahzimae Zipbap
   - [meta]:
     - date: 10/30/2026
@@ -6171,7 +6697,9 @@ title: are.na
   - [meta]:
     - date: 07/30/2026
     - tags: [brunch]
-    - coord: [43.6432589, -79.424651]
+    - coord: [43.6432589, -79.4220707]
+    - address: 1087 Queen Street West, Toronto, ON M6J 1H3, Canada
+    - source: https://www.instagram.com/p/DdHY1guMgR2/
 - https://maps.app.goo.gl/3T93xsip4wVikdKJ9 -- Misha Coffee
   - [meta]:
     - date: 12/18/2025
@@ -6348,6 +6876,7 @@ title: are.na
     - date: 08/05/2025
     - tags: [coffee shop]
     - coord: [43.6700986, -79.4297616]
+    - address: 915 Dupont St, Toronto, ON M6H 1Z1, Canada
 - https://maps.app.goo.gl/xF1CbAPUZy4E2YkV7 -- Rooms Coffee | 17 Baldwin
   - [meta]:
     - date: 08/05/2025
@@ -6429,11 +6958,13 @@ title: are.na
     - coord: [37.7749123, -122.4225186]
     - sidebar: false
   - https://loquatsf.com/
-- https://maps.app.goo.gl/u6y6eV5fz7FvGzXg8 -- Bernhardt
+- https://maps.app.goo.gl/u6y6eV5fz7FvGzXg8 -- Bernhardt's
   - [meta]:
     - date: 10/27/2025
     - tags: [restaurant]
-    - coord: [43.647259, -79.4271727]
+    - coord: [43.6469585, -79.4240098]
+    - address: 202 Dovercourt Rd, Toronto, ON M6J 3C8, Canada
+    - source: https://www.instagram.com/reel/DchKUk8Byux/
     - title: Bernhardt's
     - pinned: true
 - https://maps.app.goo.gl/KNogvcLy3xhJsGgM7 -- Ratelier [**]
