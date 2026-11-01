@@ -305,6 +305,13 @@ function marginalia(tree: Root) {
   // Wait for each block to close; asides cannot sit inside paragraphs.
   const pending = new Map<Element, Element[]>()
   const moved = new Set<string>()
+  // Notes whose mark (label word or footnote square) carries an anchor, so a hovered note can
+  // box it from the rail.
+  const marked = new Set<string>()
+  const mark = (el: Element, id: string) => {
+    el.properties.style = `anchor-name:--${anchorId(id)}-mark`
+    marked.add(id)
+  }
   const walk = (node: Element | Root, block: Element | null) => {
     for (let i = 0; i < node.children.length; i++) {
       const child = node.children[i]
@@ -323,6 +330,7 @@ function marginalia(tree: Root) {
         pending.set(here, [...(pending.get(here) ?? []), aside])
         if (label?.type === 'element') {
           label.properties.dataNote = id
+          mark(label, id)
           // Insert the cite before the label; the moved content then sits at i + 1.
           node.children.splice(i - 1, 0, cite(aside))
           node.children.splice(i + 1, 1)
@@ -344,6 +352,7 @@ function marginalia(tree: Root) {
           const id = `${target}-margin`
           ref.properties.href = `#${id}`
           ref.properties.dataNote = id
+          mark(ref, id)
           const body = item.children.filter(
             c => !(c.type === 'text' && !c.value.trim()),
           ) as ElementContent[]
@@ -391,7 +400,7 @@ function marginalia(tree: Root) {
 
   if (section && moved.size === footnotes.size) section.parent.children.splice(section.index, 1)
 
-  chain(tree)
+  chain(tree, marked)
 }
 
 const anchorId = (id: unknown) => String(id).replace(/[^\w-]/g, '-')
@@ -408,7 +417,7 @@ function cite(aside: Element): Element {
 /** Link citation and prior-note anchors. Anchors target earlier notes in this or an enclosing
  * block, so TLDR notes chain within their box.
  */
-function chain(tree: Root) {
+function chain(tree: Root, marked: Set<string>) {
   const last = { any: '', left: '', right: '', box: '' }
   let sections = false
   let alternate = 0
@@ -421,6 +430,7 @@ function chain(tree: Root) {
     if (!classes(el).includes('profile-note') || classes(el).includes('profile-note-boxed')) return
     const name = `--${anchorId(el.properties.id)}`
     const vars = [`anchor-name:${name}`, `--cite:${name}-cite`]
+    if (marked.has(String(el.properties.id))) vars.push(`--mark:${name}-mark`)
     if (box) {
       if (last.box) vars.push(`--prev:${last.box}`, `--prev-side:${last.box}`)
       // Right-rail notes after the box must still clear its notes.

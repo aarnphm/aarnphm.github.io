@@ -9,7 +9,7 @@ description: or i might be that fish in the sea, for you.
 dropcap: goudy
 id: dating
 layout: newspaper
-modified: 2026-11-01 12:35:52 GMT-05:00
+modified: 2026-11-01 13:29:03 GMT-05:00
 readonly: true
 separator: grapevine
 slides: true
@@ -62,14 +62,6 @@ I listen to quite a bit of <span style="text-decoration: underline;">Rachmaninof
 </div>
 
 ## about me.
-
-<figure class='float-left'>
-
-![[thoughts/images/baloo-leo-shere-khan.webp|Baloo, Leo and Shere Khan, rescued together from an Atlanta basement in 2001 and raised as brothers at Noah's Ark Animal Sanctuary in Georgia.]]
-
-_I want to build an animal sanctuary one day_
-
-</figure>
 
 I'm an _honest_ person, and I'm not afraid to admit to mistakes. I'm sure I'll make _even more mistakes_, but no one is ✨ _perfect_ ✨ and we only have one life to live 🙂
 I'm someone you can rely on[^1] --when I make a commitment to you, I'll be 100% present.
@@ -170,7 +162,7 @@ I have the attention-span of a three-year-old, but an old soul (some said). So I
 - <div data-triathlon-latest />
 - I'm training for IRONMAN Lanzarote 2027. Feel free to check out progress in [daily stream](https://stream.aarnphm.xyz) or the [feed](https://t.aarnphm.xyz/feed)/[calendar](https://t.aarnphm.xyz/calendar)
 - More/less an excuse for me to travel. Here is me at Yosemite Fall in 2022
-  ![[thoughts/images/me-in-yosemite.webp|me and my colleague went on a three-days backpacking trips.]]
+  ![[thoughts/images/me-in-yosemite.webp#{float:left; width:min(40%, 14rem); height:auto; margin:0 0 1rem 1.5rem}|me and my colleague went on a three-days backpacking trips.]]
 
 ### bouldering
 
@@ -252,9 +244,9 @@ I would say that free will is nothing but our conscious experience of deciding w
 Steven Weinberg
 ```
 
-![[thoughts/images/moomin-whittling.webp|_Monday morning mood swings_]]
-
 ### possible deal-breakers
+
+![[thoughts/images/moomin-whittling.webp|_Monday morning mood swings_]]
 
 1. Historically speaking, my past relationships have been {{sidenotes[^polyamorous]}}. I found that my work schedule fits well with that style of romantic attachment, and I'm definitely not the jealous type. Though my previous partner and I ended on a sour note, I'm more than happy with the growth. I've been in one monogamous relationship since then, and found that monogamy suits me a lot better
 2. I don't want kids, _yet_, at least for the next five years.
