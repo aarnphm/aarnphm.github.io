@@ -9,8 +9,9 @@ description: or i might be that fish in the sea, for you.
 dropcap: goudy
 id: dating
 layout: newspaper
-modified: 2026-10-31 13:45:09 GMT-04:00
+modified: 2026-11-01 12:35:52 GMT-05:00
 readonly: true
+separator: grapevine
 slides: true
 tags:
   - evergreen
@@ -62,13 +63,20 @@ I listen to quite a bit of <span style="text-decoration: underline;">Rachmaninof
 
 ## about me.
 
+<figure class='float-left'>
+
+![[thoughts/images/baloo-leo-shere-khan.webp|Baloo, Leo and Shere Khan, rescued together from an Atlanta basement in 2001 and raised as brothers at Noah's Ark Animal Sanctuary in Georgia.]]
+
+_I want to build an animal sanctuary one day_
+
+</figure>
+
 I'm an _honest_ person, and I'm not afraid to admit to mistakes. I'm sure I'll make _even more mistakes_, but no one is ✨ _perfect_ ✨ and we only have one life to live 🙂
 I'm someone you can rely on[^1] --when I make a commitment to you, I'll be 100% present.
 I try to live this life well. I'm pretty goofy around my friends and people I trust. That said, I find myself drawn to more spontaneous people, probably because I tend to be more reserved. _Well_:
 
 ![[thoughts/images/me-laughing.webp|guess what I'm looking at]]
 ![[thoughts/images/me-picnic-table.webp|thinking about a dad joke]]
-![[thoughts/images/me-in-yosemite.webp|this is a campfire near Half Dome on the Yosemite Falls trail]]
 
 Here is my friends' attestation of me:
 
@@ -92,21 +100,17 @@ C
 
 [^1]: reliable in both logistics and emotional capacity, but I'm still human at the end of the day.
 
-I want to build an animal sanctuary one day, and a firm believer in lab-grown meat
-
-![[thoughts/images/baloo-leo-shere-khan.webp|Baloo, Leo and Shere Khan, rescued together from an Atlanta basement in 2001 and raised as brothers at Noah's Ark Animal Sanctuary in Georgia.]]
-
 ---
 
 ## professional life.
 
 <figure class='float-right'>
 
-![[thoughts/images/moomin-whittling.webp]]
+![[thoughts/images/before-sunset.webp|This could be us, "Before Sunset (2004)".]]
 
 </figure>
 
-I was an early [[thoughts/Transformers#inference.|inference]] optimization engineer[^engineer] at [BentoML](https://bentoml.com/) before [Modular](https://www.modular.com/) acquired us. In early May 2026, Qualcomm [acquired](https://www.qualcomm.com/news/releases/2026/06/qualcomm-to-acquire-modular) Modular. I'm now at NVIDIA working on [[thoughts/vllm|vLLM]] and supporting pretraining Nemotron.
+I was an early [[thoughts/Transformers#inference.|inference]] optimization engineer[^engineer] at [BentoML](https://bentoml.com/) before [Modular](https://www.modular.com/) acquired us. In early May 2026, Qualcomm [acquired](https://www.qualcomm.com/news/releases/2026/06/qualcomm-to-acquire-modular) Modular. I'm now at [NVIDIA](https://www.nvidia.com/en-us/) working on [[thoughts/vllm|vLLM]] and supporting pretraining Nemotron.
 
 [^engineer]: which means I'm a software engineer working on optimizing [[thoughts/LLMs|LLMs]]
 
@@ -132,13 +136,10 @@ I have some [[research|research interests]] I'm currently chasing — read them 
 
 ## personal life.
 
-That said, I care deeply about the well-being of the people around me. My [headspace](https://notes.aarnphm.xyz) has been occupied with a lot lately, but I always try to stay present and make time for the people in my life.
-
-This might be connected to something else, though—I moved abroad at 17 to study at a private all-boys boarding school in Vancouver, and I think that left me a bit more anxious than I'd like to admit[^being-human].
+That said, I care deeply about the well-being of the people around me. My [headspace](https://notes.aarnphm.xyz) has been occupied with a lot lately, but I always try to stay present and make time for the people in my life. This might be connected to something else, though—I moved abroad at 17 to study at a private all-boys boarding school in Vancouver, and I think that left me a bit more anxious than I'd like to admit[^being-human].
 
 My mom says I was always shy growing up. These days I'm much more social, though I suppose the right word is _ambivert_: I'm comfortable in social settings, but I also treasure my alone time.
 
-![[thoughts/images/before-sunset.webp|This could be us, "Before Sunset (2004)".]]
 ![[thoughts/images/pooh-moon.webp]]
 ![[thoughts/images/heath-ledger-friends.webp]]
 
@@ -168,26 +169,23 @@ I have the attention-span of a three-year-old, but an old soul (some said). So I
 
 - <div data-triathlon-latest />
 - I'm training for IRONMAN Lanzarote 2027. Feel free to check out progress in [daily stream](https://stream.aarnphm.xyz) or the [feed](https://t.aarnphm.xyz/feed)/[calendar](https://t.aarnphm.xyz/calendar)
-
-![[thoughts/images/bike-trainer.webp]]
+- More/less an excuse for me to travel. Here is me at Yosemite Fall in 2022
+  ![[thoughts/images/me-in-yosemite.webp|me and my colleague went on a three-days backpacking trips.]]
 
 ### bouldering
 
-- I used to climb a lot, V3-V5 most days. I still have a lot to improve, technique and strength-wise. My goal is to comfortably climb {{sidenotes[V7-V8.]: Grading varies from gym-to-gym. I mostly climb at Joe's Rock, which their grading systems somewhat follows [Olympic standard for grades](https://en.wikipedia.org/wiki/Sport_climbing_at_the_Summer_Olympics)}}
-- On pause during IRONMAN training.
+- I used to climb a lot, V3-V5 most days. My goal is to comfortably climb {{sidenotes[V7-V8.]: Grading varies from gym-to-gym. I mostly climb at Joe's Rock, which their grading systems somewhat follows [Olympic standard for grades](https://en.wikipedia.org/wiki/Sport_climbing_at_the_Summer_Olympics)}}
+- On pause current indefintely for IRONMAN training.
 
 ### cooking
 
 - I [[thoughts/love|love]] food. Michelin-starred chefs spend decades on one cuisine—I find that obsession beautiful.
 - Cooking a dish start-to-finish is the closest thing I have to therapy.
 - It's also how I show love to my friends.
-- I [[thoughts/atelier with friends|host]] dinners regularly, mostly centered around French and Italian cuisine.
-  - These are usually four-course meals for 4-6 people, and at the end, you can pay me _whatever you think the meal is worth_.
-  - I try to accommodate allergies and dietary restrictions, though the range of food I cook can make that challenging.
 - Every week I make fresh {{sidenotes[tortellini]:rotation of fillings includes ricotta-based, mushroom, and meat-based. I try to make this at least once a month, depending on how busy life gets.}}, {{sidenotes[Velouté]: Considered one of the "mother sauces" by legendary chef Auguste Escoffier. There are many sauces that use Velouté as bases icymi.}}, and tagliatelle[^shape]—this is my form of therapy.
 - I'm conscious about what I eat and try to substitute for organic ingredients when possible.
 - I do follow a carnivore diet myself, but I'm happy to cook anything.
-- I learned how to [[uses#cookware.|cook]] through books (Alice Waters and Thomas Keller's), {{sidenotes[chef]: I'm looking for opportunity to stage in Toronto. If you know of a gig, please [let me know](mailto:contact@aarnphm.xyz). I'm also extensively applying for these positions, but will need to take my current work schedule into consideration as well.}} friends, and my mom.
+- I learned how to [[uses#cookware.|cook]] through books (Alice Waters and Thomas Keller's), friends, and my mom.
 
 [^shape]:
     The pasta I make varies in shape, but it is always uovo pasta made with eggs and a mix of 00 flour and semolina. I usually use an 80:20 ratio. Both flours contain wheat and gluten, so this recipe is unsafe for a wheat allergy or celiac disease. A gluten-free meal needs different ingredients and protection from cross-contact.
@@ -203,13 +201,13 @@ I have the attention-span of a three-year-old, but an old soul (some said). So I
 
     You can use a food processor to mix the dough (this is the most efficient way to do this, if you are short in time). However, I prefer the traditional way, which is making a well, and develop the gluten by hand.
 
-### [[mixed#vinyl|vinyl]]/[[cinematheque.base|movies]]
+### vinyls/cinema
 
-- I collect vinyl and produce throwaway tunes in my free time.
+- I collect [[mixed#vinyl|vinyl]] and produce throwaway tunes in my free time.
 - Music is a huge part of my life—I honestly wouldn't be able to function without it.
 - I prefer classical orchestra, a mix of blues and jazz, 80s rock, and I have a deep appreciation for house and garage culture.
   - Rach 3, Rhapsody on Paganini
-- A bit of a cinephile
+- A bit of a [[cinematheque.base|cinephile]]
   - La Haine, The Defiant Ones, Dead Poets Society, Good Will Hunting are top-4
 - I use YouTube Music, beyerdynamic DT 1990 Pro
   - This comes with [YouTube](https://www.youtube.com/feed/subscriptions) Premium. [I](https://www.youtube.com/watch?v=z0bSdV8DA4M&ab_channel=EpsilonDelta) [watch](https://www.youtube.com/watch?v=cKS47dq5RtA&ab_channel=essentialsalts) [a](https://www.youtube.com/watch?v=BXwALAkPubc&t=673s&ab_channel=HarvardMathematicsDepartment) [decent](https://www.youtube.com/watch?v=i2acsy7Zzfo&ab_channel=HarvardMathematicsDepartment) [amount](https://www.youtube.com/watch?v=4jQTb6sRGLg&ab_channel=GPUMODE) [of](https://www.youtube.com/watch?v=noC3G9oNxro&ab_channel=JuliandeMedeiros) [YouTube](https://www.youtube.com/watch?v=KniNW8Xe4Us&t=3s&ab_channel=SimonOz), [esp](https://www.youtube.com/watch?v=68UcnUdt6xA&t=4s&ab_channel=Sisyphus55) [when](https://www.youtube.com/watch?v=Mc3tTRkjCvE) [I'm](https://www.youtube.com/watch?v=6QyzGgq64MM&ab_channel=CharStiles) [winding](https://www.youtube.com/watch?v=Tt_hDVN5TZE) [down](https://www.youtube.com/watch?v=30YWsGDr8mA&list=PLcGKfGEEONaBNsY_bOj8IhbCPvj6OAdWo&ab_channel=StrangeLoopConference).
@@ -223,13 +221,13 @@ I have the attention-span of a three-year-old, but an old soul (some said). So I
 - I follow Fashion Week quite extensively, especially NYFW and Milan Fashion Week
   - Collina Strada and Sandy Liang are a few favorites of mine lately.
 - I'm a bit of a horology nerd. I care about the movements, cases, and design history.
-  > [!note]- my collection so far
+  > [!note] my collection so far
   >
   > ![[watch]]
 
-### [[thoughts/writing|writing]]
+### writing
 
-- ![[thoughts/writing#^ava-writing]]
+- ![[thoughts/writing#^ava-writing|thinking as writing]]
 - I mainly write for myself, and this garden is my simulacrum.
   - I use [Curius](https://curius.app/aaron-pham) to save links on the go, but often transfer them back here later.
   - If you're interested in [[colophon|how this website was built]]
@@ -242,7 +240,7 @@ I have the attention-span of a three-year-old, but an old soul (some said). So I
 ### photography
 
 - I used to own a FX3 for film-related projects, but sold it two years ago to buy cookware 😅
-- A7III w/ a bunch of [[thoughts/lenses|lenses]] and {{sidenotes[rigs]: One day I'll clean up and polish my photography portfolio.}}
+- A7III w/ a bunch of [[thoughts/lenses|lenses]] and rigs
 
 ---
 
@@ -253,6 +251,8 @@ I would say that free will is nothing but our conscious experience of deciding w
 
 Steven Weinberg
 ```
+
+![[thoughts/images/moomin-whittling.webp|_Monday morning mood swings_]]
 
 ### possible deal-breakers
 
@@ -278,11 +278,9 @@ Steven Weinberg
 2. My attachment style has always been ["securely attached"](https://en.wikipedia.org/wiki/Attachment_theory#Attachment_styles_in_adults:~:text=%5B116%5D-,Securely%20attached,-%5Bedit%5D), though I found that my previous partner was ["anxious-preoccupied"](https://en.wikipedia.org/wiki/Attachment_theory#Attachment_styles_in_adults:~:text=%5B118%5D-,Anxious%2Dpreoccupied,-%5Bedit%5D), which made it a bit easier to give them "words of affirmation". I'm a caregiver at heart, so I definitely want to look after you.
 3. I will cook for you. You don't have to come into the kitchen, but you're more than welcome to join.
 4. My [love languages](https://en.wikipedia.org/wiki/The_Five_Love_Languages) are physical touch, and quality time. I think of a life _partner_ as someone you're mutually supportive of and committed to—someone you're building something together with.
-5. I will get you flowers.
+5. I will get you flowers and write you letters.
 
    ![[thoughts/images/irving-penn-poppy.webp|Irving Penn, poppy, 1968.]]
-
-6. I will write you letters.
 
 ### what i'm looking for in a partner
 
@@ -311,6 +309,7 @@ I'd love to:
 
 ![[thoughts/images/3DA0F7DF-8F9B-47D8-BAA7-114429E5C359_1_105_c.webp]]
 ![[thoughts/images/0181AD4F-3C0A-4D99-9AF5-9145AFE56E22.webp]]
+
 ![[thoughts/images/blob-cat.webp]]
 ![[thoughts/images/billions-dinner.webp]]
 
