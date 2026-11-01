@@ -139,6 +139,24 @@ body[data-layout='newspaper'] #quartz-root > section.header {
     background: currentColor;
   }
 
+  // A lit note boxes its mark. Hovering the word or the square closes the box here; hovering a
+  // rail note draws the same box from the note (its ::after, below). Outlines take no space.
+  .sidenote[data-note],
+  a[data-footnote-ref] {
+    outline: 1px solid transparent;
+    outline-offset: 2px;
+  }
+
+  .sidenote[data-note]:is(:hover, :focus-within),
+  a[data-footnote-ref]:is(:hover, :focus-visible) {
+    outline-color: var(--dark);
+  }
+
+  // The box replaces the dotted rule rather than doubling its bottom edge.
+  .sidenote[data-note]:is(:hover, :focus-within) .sidenote-label {
+    border-bottom-color: transparent;
+  }
+
   // Hand-placed floats keep their side inside the column, boxed as before.
   .profile-frame.float-right,
   .profile-frame.float-left {
@@ -223,6 +241,27 @@ body[data-layout='newspaper'] #quartz-root > section.header {
         & + p {
           margin-top: 0;
         }
+      }
+
+      // Hovering the note boxes its mark in the text: the label word or footnote square, which
+      // Profile names --mark. Fixed so the label (outside the note) is an acceptable anchor, and
+      // the default anchor so the box follows scroll; 3px = the outline's 2px offset plus its 1px
+      // width, so both hovers draw the same box.
+      .profile-note[style*='--mark']:not(.profile-note-boxed)::after {
+        content: '';
+        position: fixed;
+        position-anchor: var(--mark);
+        top: calc(anchor(top) - 3px);
+        right: calc(anchor(right) - 3px);
+        bottom: calc(anchor(bottom) - 3px);
+        left: calc(anchor(left) - 3px);
+        border: 1px solid var(--dark);
+        pointer-events: none;
+        visibility: hidden;
+      }
+
+      .profile-note[style*='--mark']:not(.profile-note-boxed):is(:hover, :focus-within)::after {
+        visibility: visible;
       }
 
       #tldr > .profile-note,
