@@ -63,6 +63,7 @@ function hydrateCollapsibleHeaders(
 ) {
   const storageSlug = slug ?? window.document.body.dataset.slug ?? ''
   root.querySelectorAll<HTMLElement>('section.collapsible-header').forEach(section => {
+    if (section.dataset.headingToggle === 'false') return
     const shell = section.querySelector<HTMLElement>('[data-collapse-shell]')
     if (!shell) return
 

@@ -6,7 +6,7 @@ import { visit } from 'unist-util-visit'
 import { QuartzPluginData } from '../../plugins/vfile'
 import { vineRule, type RuleKind } from '../../util/grapevine'
 import { FullSlug } from '../../util/path'
-import { svgOptions } from '../svg'
+import { svgOptions } from '../../util/svg-options'
 
 function headerElement(
   node: Element,
@@ -14,6 +14,7 @@ function headerElement(
   idx: number,
   endHr: boolean,
   hasNextLevelChild: boolean = false,
+  headingToggle: boolean = true,
 ): Element {
   const buttonId = `collapsible-header-${node.properties?.id ?? idx}`
 
@@ -40,18 +41,19 @@ function headerElement(
 
   const toggleButton = h(
     `span.toggle-button.collapse-toggle#${buttonId}-toggle`,
-    {
-      role: 'button',
-      ariaExpanded: true,
-      ariaLabel: 'Toggle content visibility',
-      ariaControls: `${buttonId}-content`,
-      type: 'button',
-      ['data-collapse-toggle']: '',
-    },
+    headingToggle
+      ? {
+          role: 'button',
+          ariaExpanded: true,
+          ariaLabel: 'Toggle content visibility',
+          ariaControls: `${buttonId}-content`,
+          ['data-collapse-toggle']: '',
+        }
+      : { 'data-heading-static': '' },
     [
       h('span.collapse-rail', { ariaHidden: true }, [
         h('span.collapse-line.collapse-line--before'),
-        h('button.toggle-icons', [
+        h(headingToggle ? 'button.toggle-icons' : 'span.toggle-icons', [
           s(
             'svg',
             { ...svgOptions, fill: 'var(--dark)', stroke: 'var(--dark)', class: 'circle-icon' },
@@ -78,6 +80,23 @@ function headerElement(
     ],
   )
 
+  if (!headingToggle) {
+    visit(toggleButton, 'element', (element, index, parent) => {
+      const classes = element.properties.className
+      if (
+        Array.isArray(classes) &&
+        classes.some(name =>
+          ['expand-icon', 'collapse-icon', 'collapsed-dots'].includes(String(name)),
+        ) &&
+        parent &&
+        index !== undefined
+      ) {
+        parent.children.splice(index, 1)
+        return index
+      }
+    })
+  }
+
   node.children = [toggleButton]
 
   let className = ['collapsible-header']
@@ -88,39 +107,43 @@ function headerElement(
   // The heading's plain text, for stylesheets that repeat it (the newspaper chapter bar).
   const title = toString({ type: 'root', children: headingContent } as Root)
 
-  return h(`section.${className.join('.')}#${id}`, { 'data-level': rank, 'data-title': title }, [
-    h(
-      'div.collapse-shell.is-open',
-      { ['data-collapse-shell']: '', ['data-initial-open']: 'true' },
-      [
-        node,
-        h(
-          'div.collapse-body',
-          {
-            id: `${buttonId}-content`,
-            role: 'region',
-            ariaLabelledby: `${buttonId}-toggle`,
-            ['data-collapse-body']: '',
-          },
-          [
-            h('span.collapse-rail.collapse-rail--body', { ariaHidden: true }, [
-              h('span.collapse-line.collapse-line--body'),
-            ]),
-            h('div.collapse-body-content', [
-              h(
-                '.collapsible-header-content',
-                {
-                  ['data-level']: `${rank}`,
-                  ['data-heading-id']: node.properties.id, // HACK: This assumes that rehype-slug already runs this target
-                },
-                content,
-              ),
-            ]),
-          ],
-        ),
-      ],
-    ),
-  ])
+  return h(
+    `section.${className.join('.')}#${id}`,
+    { 'data-level': rank, 'data-title': title, 'data-heading-toggle': headingToggle },
+    [
+      h(
+        'div.collapse-shell.is-open',
+        { ['data-collapse-shell']: '', ['data-initial-open']: 'true' },
+        [
+          node,
+          h(
+            'div.collapse-body',
+            {
+              id: `${buttonId}-content`,
+              role: 'region',
+              ariaLabelledby: `${buttonId}-toggle`,
+              ['data-collapse-body']: '',
+            },
+            [
+              h('span.collapse-rail.collapse-rail--body', { ariaHidden: true }, [
+                h('span.collapse-line.collapse-line--body'),
+              ]),
+              h('div.collapse-body-content', [
+                h(
+                  '.collapsible-header-content',
+                  {
+                    ['data-level']: `${rank}`,
+                    ['data-heading-id']: node.properties.id, // HACK: This assumes that rehype-slug already runs this target
+                  },
+                  content,
+                ),
+              ]),
+            ],
+          ),
+        ],
+      ),
+    ],
+  )
 }
 
 function spacerElement(): Element {
@@ -168,7 +191,10 @@ interface StackElement {
   hasNextLevelChild?: boolean
 }
 
-export function processHeaders(nodes: ElementContent[]): ElementContent[] {
+export function processHeaders(
+  nodes: ElementContent[],
+  headingToggle: boolean = true,
+): ElementContent[] {
   let result: ElementContent[] = []
 
   let stack: StackElement[] = []
@@ -183,6 +209,7 @@ export function processHeaders(nodes: ElementContent[]): ElementContent[] {
           0,
           endHr,
           completedSection.hasNextLevelChild ?? false,
+          headingToggle,
         )
         if (stack.length > 0) {
           const parentContent = stack[stack.length - 1].content
@@ -219,6 +246,7 @@ export function processHeaders(nodes: ElementContent[]): ElementContent[] {
           0,
           false,
           completedSection.hasNextLevelChild ?? false,
+          headingToggle,
         )
         if (stack.length > 0) {
           const parentContent = stack[stack.length - 1].content
@@ -259,6 +287,7 @@ export function processHeaders(nodes: ElementContent[]): ElementContent[] {
       0,
       false,
       completedSection.hasNextLevelChild ?? false,
+      headingToggle,
     )
     if (stack.length > 0) {
       const parentContent = stack[stack.length - 1].content
