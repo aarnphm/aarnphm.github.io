@@ -1,5 +1,4 @@
 import { Mutex } from 'async-mutex'
-import chokidar from 'chokidar'
 import { GlobbyFilterFunction, isGitIgnored } from 'globby'
 import { minimatch } from 'minimatch'
 import { once } from 'node:events'
@@ -28,11 +27,13 @@ import {
   commitUnchangedParseBuildCache,
 } from '../util/persistent-build-cache'
 import { randomIdNonSecure } from '../util/random'
+import { watchTree } from '../util/tree-watcher'
 import {
   buildChangeEvents,
   deletedCourseOutputSlugs,
   derivePaths,
   describeBuildError,
+  formatBuildError,
   indexContent,
   isMarkdownPath,
   isTestPath,
@@ -79,12 +80,9 @@ export async function startWatching(
   const dependencies = ctx.cfg.plugins.transformers.flatMap(
     plugin => plugin.fileDependencies?.(ctx) ?? [],
   )
-  const watcher = chokidar.watch(['.', ...dependencies.map(filename => path.resolve(filename))], {
-    awaitWriteFinish: { stabilityThreshold: 250 },
-    persistent: true,
+  const watcher = watchTree(['.', ...dependencies.map(filename => path.resolve(filename))], {
     cwd: argv.directory,
-    ignored: buildData.ignored,
-    ignoreInitial: true,
+    ignored: fp => buildData.ignored(fp),
   })
 
   const queue: RebuildQueue = { running: false, requested: false }
@@ -116,11 +114,7 @@ export async function startWatching(
     .on('change', fp => void enqueue(fp, 'change'))
     .on('unlink', fp => void enqueue(fp, 'delete'))
 
-  const agentSkillsWatcher = chokidar.watch(path.resolve(AGENT_SKILLS_SOURCE_DIRECTORY), {
-    awaitWriteFinish: { stabilityThreshold: 250 },
-    persistent: true,
-    ignoreInitial: true,
-  })
+  const agentSkillsWatcher = watchTree([path.resolve(AGENT_SKILLS_SOURCE_DIRECTORY)])
   const agentSkillsQueue: RebuildQueue = { running: false, requested: false }
   const enqueueAgentSkills = (fp: string, type: ChangeEvent['type']) => {
     if (buildData.disposed) return
@@ -243,7 +237,7 @@ async function rebuildAgentSkills(clientRefresh: () => void, buildData: BuildDat
     shouldRefresh = ctx.buildId === buildId
   } catch (err) {
     emitQuartzDevEvent({ type: 'build:error', epoch: buildId, message: describeBuildError(err) })
-    console.error('Failed to rebuild agent skills', err)
+    console.error('Failed to rebuild agent skills', formatBuildError(err))
   } finally {
     release()
   }
@@ -349,7 +343,7 @@ async function rebuild(clientRefresh: () => void, buildData: BuildData) {
   } catch (err) {
     emitQuartzDevEvent({ type: 'build:error', epoch: buildId, message: describeBuildError(err) })
     ctx.incremental = false
-    console.error('Failed to rebuild Quartz content', err)
+    console.error('Failed to rebuild Quartz content', formatBuildError(err))
   } finally {
     release()
   }

@@ -1,5 +1,4 @@
 import { Mutex } from 'async-mutex'
-import chokidar from 'chokidar'
 import { randomUUID } from 'crypto'
 import esbuild from 'esbuild'
 import { sassPlugin } from 'esbuild-sass-plugin'
@@ -16,6 +15,7 @@ import { emitterSourceInputs, mergeEmitterSourceInputs } from '../util/source-em
 export { emitterSourceInputs } from '../util/source-emission.ts'
 import { bundleInlineScript } from '../util/inline-script-bundler.ts'
 import { handleLocalLeanVerifyNodeRequest } from '../util/lean-local-verify.ts'
+import { watchTree } from '../util/tree-watcher.ts'
 import { version, fp, cacheFile } from './constants.js'
 import { createSourceRebuildQueue } from './source-rebuild-queue.js'
 
@@ -231,12 +231,10 @@ const printBundleInfoHeader = () => {
 }
 
 export function createSourceWatcher(onChange) {
-  return chokidar
-    .watch(sourceWatchRoots, {
-      awaitWriteFinish: { stabilityThreshold: sourceWatchWriteStabilityMs },
-      ignoreInitial: true,
-      ignored: isIgnoredSourceWatchPath,
-    })
+  return watchTree(sourceWatchRoots, {
+    stabilityMs: sourceWatchWriteStabilityMs,
+    ignored: isIgnoredSourceWatchPath,
+  })
     .on('add', fp => onChange('add', fp))
     .on('change', fp => onChange('change', fp))
     .on('unlink', fp => onChange('delete', fp))
