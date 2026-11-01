@@ -1,4 +1,5 @@
 import path from 'path'
+import { inspect } from 'util'
 import { ProcessedContent } from '../plugins/vfile'
 import { ChangeEvent } from '../types/plugin'
 import { courseDirOf } from '../util/course'
@@ -93,12 +94,23 @@ export function deletedCourseOutputSlugs(event: ChangeEvent): string[] | undefin
   return sourceSlug ? [data.slug, flashcardsSlug(sourceSlug)] : [data.slug]
 }
 
+/** One line per leaf failure, so the dev event names the emitter and the error that stopped it. */
 export function describeBuildError(err: unknown): string {
-  if (err instanceof Error) return err.message
+  if (err instanceof AggregateError && err.errors.length > 0)
+    return `${err.message}: ${err.errors.map(describeBuildError).join('; ')}`
+  if (err instanceof Error) {
+    const message = err.message.split('\n', 1)[0]
+    return err.cause === undefined ? message : `${message}: ${describeBuildError(err.cause)}`
+  }
   if (typeof err === 'string') return err
   try {
     return JSON.stringify(err)
   } catch {
     return String(err)
   }
+}
+
+/** Console default depth prints an emitter failure's cause as `[Error]`. */
+export function formatBuildError(err: unknown): string {
+  return inspect(err, { depth: null })
 }

@@ -4,7 +4,13 @@ import { stat } from 'node:fs/promises'
 import sourceMapSupport from 'source-map-support'
 import { styleText } from 'util'
 import type { QuartzConfig } from './cfg'
-import { describeBuildError, indexContent, isMarkdownPath, syncCtxFiles } from './build/context'
+import {
+  describeBuildError,
+  formatBuildError,
+  indexContent,
+  isMarkdownPath,
+  syncCtxFiles,
+} from './build/context'
 import {
   cleanOutputForBuild,
   emitCourses,
@@ -195,7 +201,10 @@ export async function buildQuartz(
       message: describeBuildError(err),
     })
     if (!watching) throw err
-    console.error('Build failed; retaining the last output and watching for changes', err)
+    console.error(
+      'Build failed; retaining the last output and watching for changes',
+      formatBuildError(err),
+    )
   } finally {
     release()
   }
@@ -270,7 +279,7 @@ export async function buildSourceResources(
       epoch: ctx.buildId,
       message: describeBuildError(err),
     })
-    console.error('Failed to rebuild Quartz source resources', err)
+    console.error('Failed to rebuild Quartz source resources', formatBuildError(err))
     return false
   } finally {
     release()
