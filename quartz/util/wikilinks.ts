@@ -229,6 +229,7 @@ function tryParseWikilinkAt(text: string, start: number): WikilinkRange | null {
     if (ch === '}') {
       pos++
       if (pos >= len) return null
+      if (text[pos] === '\\' && text[pos + 1] === '|') pos++
       if (text[pos] === '|') phase = 'aliasMarker'
       else if (text[pos] === ']') phase = 'close'
       else return null
@@ -263,6 +264,7 @@ function tryParseWikilinkAt(text: string, start: number): WikilinkRange | null {
             data.metadataParsed = parseMetadata(metaContent)
             pos++
             if (pos >= len) return null
+            if (text[pos] === '\\' && text[pos + 1] === '|') pos++
             if (text[pos] === '|') phase = 'aliasMarker'
             else if (text[pos] === ']') phase = 'close'
             else return null

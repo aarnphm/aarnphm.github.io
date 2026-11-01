@@ -3,12 +3,15 @@
  * verifies full unified pipeline including mdast-to-hast conversion.
  */
 
+import { fromHtml } from 'hast-util-from-html'
 import assert from 'node:assert'
 import test, { describe } from 'node:test'
 import rehypeStringify from 'rehype-stringify'
 import remarkParse from 'remark-parse'
 import remarkRehype from 'remark-rehype'
 import { unified } from 'unified'
+import { visit } from 'unist-util-visit'
+import { parseWikilink } from '../../util/wikilinks'
 import { remarkWikilink } from './index'
 
 /**
@@ -104,6 +107,78 @@ describe('remarkWikilink integration', () => {
   })
 
   describe('image embeds', () => {
+    test('accepts a table-escaped alias after image settings in both parsers', () => {
+      const source = '![[photo.webp#{width:10rem}\\|Photo\\|160]]'
+      const html = processToHTML(source)
+      assert(html.includes('style="width:10rem"'))
+      assert(html.includes('alt="Photo"'))
+      assert(html.includes('width="160"'))
+      const parsed = parseWikilink(source)
+      assert.equal(parsed?.metadata, '{width:10rem}')
+      assert.equal(parsed?.alias, 'Photo|160')
+    })
+
+    test('applies raw CSS declarations without changing the image source, caption or dimensions', () => {
+      const declarations =
+        'float:right; width: min(40%, 18rem); margin: 0 0 1rem 1rem; object-fit: cover; --ink: #abc; border-color: var(--ink) !important'
+      const html = processToHTML(
+        `![[thoughts/images/bike-trainer.webp#{${declarations}}|Trainer|600x400]]`,
+      )
+      const tree = fromHtml(html, { fragment: true })
+      let images = 0
+      visit(tree, 'element', node => {
+        if (node.tagName !== 'img') return
+        images++
+        assert.equal(node.properties.src, 'thoughts/images/bike-trainer.webp')
+        assert.equal(node.properties.style, declarations)
+        assert.equal(node.properties.alt, 'Trainer')
+        assert.equal(node.properties.width, 600)
+        assert.equal(node.properties.height, 400)
+      })
+      assert.equal(images, 1)
+    })
+
+    test('serializes CSS as an attribute even when it contains HTML and quoted URLs', () => {
+      const declarations =
+        'background-image:url("data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\'></svg>"); --label:"<script>bad()</script>"'
+      const html = processToHTML(`![[photo.webp#{${declarations}}]]`)
+      const tree = fromHtml(html, { fragment: true })
+      visit(tree, 'element', node => {
+        assert.notEqual(node.tagName, 'script')
+        assert.notEqual(node.tagName, 'svg')
+        if (node.tagName === 'img') assert.equal(node.properties.style, declarations)
+      })
+    })
+
+    test('keeps styles scoped to image embeds and retains existing metadata', () => {
+      const html = processToHTML(
+        '![[photo.webp#{float:right}]] ![[plain.webp]] [[page#{popover:false}]] ![[note#{collapsed:true}]]',
+      )
+      const tree = fromHtml(html, { fragment: true })
+      visit(tree, 'element', node => {
+        if (node.properties.src === 'photo.webp') {
+          assert.equal(node.properties.style, 'float:right')
+          assert.equal(node.properties.dataMetadata, '{float:right}')
+        } else {
+          assert.equal(node.properties.style, undefined)
+        }
+        if (node.tagName === 'blockquote') {
+          assert.equal(node.properties.dataMetadata, '{"collapsed":true}')
+        }
+        if (node.properties.href === 'page') {
+          assert.equal(node.properties.dataMetadata, '{"popover":false}')
+        }
+      })
+    })
+
+    test('leaves incomplete image settings literal and omits an empty style', () => {
+      assert.equal(
+        processToHTML('![[photo.webp#{float:right]]'),
+        '<p>![[photo.webp#{float:right]]</p>',
+      )
+      assert(!processToHTML('![[photo.webp#{}]]').includes('style='))
+    })
+
     test('preserves the transcript opt-in through Markdown to HTML', () => {
       const html = processToHTML('![[https://www.youtube.com/watch?v=ebx7itIvobo#transcripts]]')
       assert(html.includes('src="https://www.youtube.com/watch?v=ebx7itIvobo#transcripts"'))

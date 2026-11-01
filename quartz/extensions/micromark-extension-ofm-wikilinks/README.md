@@ -1,5 +1,7 @@
 # ofm-wikilink
 
+For Garden authoring syntax, image CSS, captions, dimensions, PDF options, previews, transclusions, and table escaping, see [Wikilinks and embed settings](authoring.md).
+
 [micromark](https://github.com/micromark/micromark) extensions to support Obsidian-flavored wikilinks with proper tokenization.
 
 ## what is this?

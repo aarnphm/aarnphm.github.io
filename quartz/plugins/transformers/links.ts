@@ -402,6 +402,8 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
                 h(
                   'span',
                   { style: 'white-space: nowrap;' },
+                  // The word joiner keeps the icon on the line of the link's last word.
+                  '\u2060',
                   h('img.inline-icons', {
                     src,
                     alt,
