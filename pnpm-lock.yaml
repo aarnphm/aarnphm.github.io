@@ -136,9 +136,6 @@ importers:
       buffer:
         specifier: 6.0.3
         version: 6.0.3
-      chokidar:
-        specifier: ^5.0.0
-        version: 5.0.0
       codemirror-lang-zig:
         specifier: ^0.1.0
         version: 0.1.0

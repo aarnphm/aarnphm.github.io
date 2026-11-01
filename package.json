@@ -146,7 +146,6 @@
     "basedpyright-source": "https://github.com/DetachHead/basedpyright/archive/refs/tags/v1.39.6.tar.gz",
     "blobatar": "^2.7.0",
     "buffer": "6.0.3",
-    "chokidar": "^5.0.0",
     "codemirror-lang-zig": "^0.1.0",
     "d3": "^7.9.0",
     "defuddle": "0.19.3",
