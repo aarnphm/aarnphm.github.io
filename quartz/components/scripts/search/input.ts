@@ -202,11 +202,16 @@ export function releaseKey(s: SearchSession, e: HTMLElementEventMap['keyup']) {
         'a.result-card[href], button.image-similar-button, button.search-load-more',
       ),
     ]
-    const active = document.activeElement
+    if (controls.length === 0) return
+    const active = document.activeElement === searchBar ? s.currentHover : document.activeElement
     const index = active instanceof HTMLElement ? controls.indexOf(active) : -1
-    const next = index < 0 ? (direction === 1 ? 0 : controls.length - 1) : index + direction
-    if (next < 0) searchBar.focus()
-    else void focusResult(s, controls[next])
+    const next =
+      index < 0
+        ? direction === 1
+          ? 0
+          : controls.length - 1
+        : (index + direction + controls.length) % controls.length
+    void focusResult(s, controls[next])
   }
 }
 
