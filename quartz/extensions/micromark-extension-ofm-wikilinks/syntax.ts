@@ -495,6 +495,12 @@ const tokenize: Tokenizer = function (this, effects, ok, nok) {
 
     // peek at next character
     return (nextCode: Code) => {
+      // GFM tables escape the alias separator, including after settings.
+      if (nextCode === codes.backslash) {
+        effects.consume(nextCode)
+        return (escapedCode: Code) =>
+          escapedCode === codes.verticalBar ? aliasMarker(escapedCode) : nok(escapedCode)
+      }
       // next could be alias or close
       if (nextCode === codes.verticalBar) {
         return aliasMarker(nextCode)
