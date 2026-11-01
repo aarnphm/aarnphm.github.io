@@ -55,8 +55,8 @@
     }
   }
 
-  &[data-kind='ref'][data-captioned] {
-    --frame-w: min(18rem, 90%);
+  &[data-kind='ref'][data-captioned]:not(.float-left, .float-right) {
+    --frame-w: 100%;
   }
 }
 

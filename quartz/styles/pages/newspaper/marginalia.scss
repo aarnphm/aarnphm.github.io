@@ -142,7 +142,8 @@ body[data-layout='newspaper'] #quartz-root > section.header {
   // Hand-placed floats keep their side inside the column, boxed as before.
   .profile-frame.float-right,
   .profile-frame.float-left {
-    --frame-w: min(46%, 14rem);
+    --frame-w: 45%;
+    box-sizing: border-box;
     max-width: none;
     margin-block: 0.4rem 1rem;
     padding: 0.6rem;
@@ -178,7 +179,7 @@ body[data-layout='newspaper'] #quartz-root > section.header {
   [data-layout='newspaper'] :where(#quartz-root) article {
     --mag-rail: 13rem;
     --mag-gap: 3rem;
-    --mag-offset: 2.5rem;
+    --mag-offset: 2rem;
     --mag-inset: 0px;
     // The body's axis: the middle of the article between the left inset and the notes rail.
     --mag-centre: calc(
@@ -224,12 +225,6 @@ body[data-layout='newspaper'] #quartz-root > section.header {
         }
       }
 
-      // Keep department notes beside the centered band as the article grows wider.
-      .collapsible-header-content[data-level='2']:has(> section.collapsible-header[data-level='3'])
-        .profile-note:not(.profile-note-boxed) {
-        left: min(calc(var(--mag-centre) + var(--band) / 2 + 2rem), calc(100% - var(--mag-rail)));
-      }
-
       #tldr > .profile-note,
       #tldr > .profile-note:first-of-type {
         left: calc(100% + var(--mag-offset));
@@ -246,13 +241,6 @@ body[data-layout='newspaper'] #quartz-root > section.header {
   [data-layout='newspaper'] :where(#quartz-root) article {
     --mag-inset: calc(var(--mag-rail) + var(--mag-gap));
     padding-left: var(--mag-inset);
-
-    section.collapsible-header[data-level='2']:has(
-        .collapsible-header-content[data-level='2'] > section.collapsible-header[data-level='3']
-      )
-      > .mag-running-head {
-      margin-left: max(0px, calc((100% - 68rem) / 2 - var(--mag-rail) - 2rem));
-    }
 
     // Section notes alternate sides (data-side from Profile), so each clears the note above on
     // its own rail.
@@ -271,11 +259,6 @@ body[data-layout='newspaper'] #quartz-root > section.header {
         left: auto;
         right: 0;
       }
-    }
-
-    .collapsible-header-content[data-level='2']:has(> section.collapsible-header[data-level='3'])
-      .profile-note[data-side='left'] {
-      left: max(0px, calc(var(--mag-centre) - var(--band) / 2 - 2rem - var(--mag-rail)));
     }
   }
 }

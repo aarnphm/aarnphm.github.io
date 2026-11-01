@@ -66,7 +66,7 @@
   }
 
   article {
-    --mag-measure: 50rem;
+    --mag-measure: 68rem;
     container: profile / inline-size;
     font-family: var(--mag-text);
     font-size: 20px;
@@ -85,7 +85,7 @@
       text-wrap: pretty;
     }
 
-    // Editor's note, then the lede: one narrow centred column under the masthead.
+    // Editor's note, then the lede: one centred column under the masthead.
     & > blockquote.callout.callout a {
       white-space: nowrap;
     }
@@ -333,7 +333,8 @@
 
     #tldr p,
     blockquote p,
-    li p {
+    li p,
+    p.signature {
       text-indent: 0;
     }
 
@@ -486,7 +487,11 @@
     @container profile-page (min-width: 84rem) {
       .mag-running-head {
         width: var(--mag-rail);
-        margin-left: calc((100% - var(--mag-measure)) / 2 - var(--mag-rail) - var(--mag-gap));
+        // Every chapter shares the outer rail of the widest department band.
+        margin-left: max(
+          0px,
+          calc((100% - var(--mag-measure)) / 2 - var(--mag-rail) - var(--mag-offset))
+        );
 
         > span {
           display: block;
@@ -551,8 +556,7 @@
     // compatibility lists). The chapter's opening paragraph keeps the measure; the departments
     // below it run in two newspaper columns across the band, each under its own small head.
     .collapsible-header-content[data-level='2']:has(> section.collapsible-header[data-level='3']) {
-      --band: min(100cqi, 68rem);
-      max-width: var(--band);
+      max-width: var(--mag-measure);
 
       & > p {
         max-width: var(--mag-measure);
@@ -577,8 +581,10 @@
       font-size: 17px;
       line-height: 1.45;
 
+      // A department column holds about six words a line; justified, its items open rivers.
       li {
         break-inside: avoid;
+        text-align: start;
       }
 
       // The department head: a Garamond small-cap line under its own rule. Still a toggle.
@@ -643,14 +649,24 @@
       }
     }
 
-    // The activity widget wants the whole band; its department spans both columns.
+    // Keep the activity table and its accompanying text together across the department band.
     section.collapsible-header[data-level='3']:has([data-triathlon-latest], .strava-activities) {
       column-span: all;
-    }
 
-    // The compatibility lists run long; they may continue into the next column item by item.
-    #compatibility section.collapsible-header[data-level='3'] {
-      break-inside: auto;
+      @container profile (min-width: 42rem) {
+        .collapsible-header-content[data-level='3'] > ul {
+          columns: 2;
+          column-gap: 2.5rem;
+
+          > li:has([data-triathlon-latest], .strava-activities) {
+            break-after: column;
+
+            + li {
+              margin-top: 0;
+            }
+          }
+        }
+      }
     }
 
     // Pull quotes span every column; testimonials sit side by side.
