@@ -176,8 +176,8 @@ $toggle-gap: 0rem;
     }
   }
 
-  .collapse-toggle:hover .toggle-icons .circle-icon,
-  .collapse-toggle:focus-visible .toggle-icons .circle-icon {
+  .collapse-toggle[data-collapse-toggle]:hover .toggle-icons .circle-icon,
+  .collapse-toggle[data-collapse-toggle]:focus-visible .toggle-icons .circle-icon {
     display: none;
   }
 
@@ -229,4 +229,8 @@ $toggle-gap: 0rem;
       color: color-mix(in srgb, var(--gray) 68%, var(--dark) 32%);
     }
   }
+}
+
+.collapse-toggle[data-heading-static] {
+  cursor: default;
 }

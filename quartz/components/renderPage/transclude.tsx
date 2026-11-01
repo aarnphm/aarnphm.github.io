@@ -197,7 +197,10 @@ export function resolveTransclusions(
 
   // NOTE: handling collapsible nodes
   if (shouldProcessHeaders(fileData, dynalist, slug)) {
-    root.children = processHeaders(root.children as ElementContent[])
+    root.children = processHeaders(
+      root.children as ElementContent[],
+      fileData.frontmatter?.settings?.['heading-toggle'] !== false,
+    )
     if (fileData.profile) addRunningHeads(root, fileData.separator)
   }
 

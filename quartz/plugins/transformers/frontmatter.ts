@@ -184,6 +184,18 @@ export const FrontMatter: QuartzTransformerPlugin = () => ({
         const noindex = coerceToBoolean(coalesceAliases(data, ['noindex', 'unlisted']))
         if (noindex !== undefined) data.noindex = noindex
 
+        const settings: unknown = data.settings
+        if (settings && typeof settings === 'object' && !Array.isArray(settings)) {
+          data.settings = {
+            ...settings,
+            'heading-toggle': coerceToBoolean(
+              'heading-toggle' in settings ? settings['heading-toggle'] : undefined,
+            ),
+          }
+        } else {
+          delete data.settings
+        }
+
         const currentSlug = file.data.slug as FullSlug | undefined
 
         const socialImage = coalesceAliases(data, ['socialImage', 'image', 'cover'])
@@ -267,6 +279,7 @@ declare module 'vfile' {
       title: string
       pageLayout: ContentLayout
     } & Partial<{
+        settings: { 'heading-toggle'?: boolean }
         flashcards: { default?: boolean }
         masonry: string[]
         priority: number | undefined
