@@ -64,10 +64,10 @@
   vector-effect: non-scaling-stroke;
 }
 
-// Zero-length round-cap paths keep markers round under preserveAspectRatio="none".
+// Non-scaling square caps keep markers square under preserveAspectRatio="none".
 .tri-run-stride-centroid {
   fill: none;
-  stroke-linecap: round;
+  stroke-linecap: square;
   stroke-width: 7;
   vector-effect: non-scaling-stroke;
 }
@@ -106,7 +106,7 @@
     display: inline-block;
     width: 0.45rem;
     height: 0.45rem;
-    border-radius: 50%;
+    border-radius: var(--radius-none);
     background: var(--gray);
   }
 }
@@ -118,7 +118,6 @@
 .tri-run-stride-key--pace::before {
   width: 0.9rem;
   height: 0;
-  border-radius: 0;
   border-top: 1px dashed var(--gray);
   background: none;
 }
