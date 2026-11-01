@@ -10,6 +10,7 @@ title: pdfs
 pdfTitles:
   '00-On-Keeping-a-Notebook.pdf': 'On Keeping a Notebook'
   '15-1-1.pdf': 'Universality in Elementary Cellular Automata'
+  '1937-borges-raymondllullsthinkingmachine.pdf': "Ramon Lull's Thinking Machine"
   '2023-resume.pdf': 'Aaron Pham: Résumé (2023)'
   '2024-resume.pdf': 'Aaron Pham: Résumé (2024)'
   '2025q1-resume.pdf': 'Aaron Pham: Résumé (2025 Q1)'
@@ -53,6 +54,7 @@ pdfTitles:
   'Edward A. Lee, Pravin Varaiya - Structure and Interpretation of Signals and Systems-Addison-Wesley (2003).pdf': 'Structure and Interpretation of Signals and Systems'
   'Efficient Implementation of the Smalltalk-80 System.pdf': 'Efficient Implementation of the Smalltalk-80 System'
   "Fermat's Last Theorem.pdf": 'Fermat’s Last Theorem: The Story of a Riddle That Confounded the World’s Greatest Minds for 358 Years'
+  'factorization-krein-spaces.pdf': 'Factorization in Krein Spaces'
   'Foucault_on-the-Genealogy-of-Ethics.pdf': 'On the Genealogy of Ethics'
   'fphys-15-1343601.pdf': 'Understanding Optimal Cadence Dynamics: A Systematic Analysis of the Power-Velocity Relationship in Track Cyclists with Increasing Exercise Intensity'
   'fundamentals of digital logic with verilog design.pdf': 'Fundamentals of Digital Logic with Verilog Design, THIRD EDITION'
