@@ -20,6 +20,15 @@
       "bbox": [43.6517445, 43.6579542, -79.4077041, -79.3981331]
     },
     {
+      "id": "osm:relation:1634158",
+      "name": "Montréal",
+      "aliases": ["montréal"],
+      "kind": "city",
+      "city": "Montréal",
+      "centroid": [45.5031824, -73.5698065],
+      "bbox": [45.4100756, 45.7047897, -73.9741567, -73.4742952]
+    },
+    {
       "id": "osm:relation:16751345",
       "name": "Trinity Bellwoods Park",
       "aliases": ["trinity bellwoods park", "trinity bellwoods"],
@@ -27,6 +36,15 @@
       "city": "Toronto",
       "centroid": [43.647644, -79.4139122],
       "bbox": [43.6452101, 43.6502273, -79.4180559, -79.4115891]
+    },
+    {
+      "id": "osm:relation:1682493",
+      "name": "Interlaken",
+      "aliases": ["interlaken"],
+      "kind": "city",
+      "city": "Interlaken",
+      "centroid": [46.6855231, 7.8585139],
+      "bbox": [46.664589, 46.7040906, 7.8267786, 7.8887741]
     },
     {
       "id": "osm:relation:175905",
@@ -65,6 +83,15 @@
       "bbox": [34.9941528, 35.263879, -90.308366, -89.637089]
     },
     {
+      "id": "osm:relation:2387995",
+      "name": "St. Catharines",
+      "aliases": ["st catharines"],
+      "kind": "city",
+      "city": "St. Catharines",
+      "centroid": [43.1579812, -79.2441003],
+      "bbox": [43.106662, 43.2500098, -79.3209212, -79.1778306]
+    },
+    {
       "id": "osm:relation:324211",
       "name": "Toronto",
       "aliases": ["toronto"],
@@ -72,6 +99,24 @@
       "city": "Toronto",
       "centroid": [43.6534817, -79.3839347],
       "bbox": [43.5796082, 43.8554425, -79.6392832, -79.1132193]
+    },
+    {
+      "id": "osm:relation:4246124",
+      "name": "Melbourne",
+      "aliases": ["melbourne"],
+      "kind": "city",
+      "city": "Melbourne",
+      "centroid": [-37.8142454, 144.9631732],
+      "bbox": [-38.49937, -37.369693, 144.44405, 146.1925]
+    },
+    {
+      "id": "osm:relation:5750005",
+      "name": "Sydney",
+      "aliases": ["sydney"],
+      "kind": "city",
+      "city": "Sydney",
+      "centroid": [-33.8698439, 151.2082848],
+      "bbox": [-34.3374159, -33.3641864, 150.260825, 151.3431756]
     },
     {
       "id": "osm:relation:962190",

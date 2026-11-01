@@ -1,15 +1,16 @@
 ---
 address: 1471 Gerrard St E, Toronto, ON M4L 2A1, Canada
 category:
-  - '[[places to go|places to go]]'
+  - '[[places to go]]'
 coordinates:
   - '43.6723948'
   - '-79.3206899'
 date: '2025-11-22'
 description: pan-asian small plates over japanese charcoal, fusion of filipino, malaysian, and japanese
 id: Lake Inez
-modified: 2026-06-05 15:08:02 GMT-04:00
+modified: '2026-11-01'
 rating: 4
+source: 'https://www.instagram.com/p/DfDUc1yoNEc/'
 tags:
   - places
 title: Lake Inez

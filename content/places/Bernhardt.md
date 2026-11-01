@@ -1,15 +1,16 @@
 ---
 address: 202 Dovercourt Rd, Toronto, ON M6J 3C8, Canada
 category:
-  - '[[places to go|places to go]]'
+  - '[[places to go]]'
 coordinates:
-  - '43.647259'
-  - '-79.4271727'
+  - '43.6469585'
+  - '-79.4240098'
 date: '2025-10-27'
 description: little portugal wine bar with small plates and good taste
 id: Bernhardt's
-modified: 2026-06-05 15:08:04 GMT-04:00
+modified: '2026-11-01'
 rating: 5
+source: 'https://www.instagram.com/reel/DchKUk8Byux/'
 tags:
   - places
 title: Bernhardt's
