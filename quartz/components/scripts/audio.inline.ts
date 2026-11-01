@@ -5,6 +5,7 @@ import {
   memoPeaksUrl,
   resampleAudioPeaks,
 } from '../../util/audio'
+import { rootNavSignal } from './root-lifecycle'
 
 const PITCH = 4
 const SVG_PLAY = audioIconSvg(AUDIO_ICON_PATHS.play)
@@ -102,7 +103,7 @@ function hydrate(wrap: HTMLElement): (() => void) | undefined {
       decoding = true
       void computePeaks(audio.src, barEls.length, ac.signal).then(peaks => {
         decoding = false
-        if (!peaks) return
+        if (!peaks || ac.signal.aborted) return
         io.disconnect()
         for (let i = 0; i < barEls.length; i++) {
           barEls[i].style.height = `${Math.round(8 + (peaks[i] ?? 0) * 88)}%`
@@ -182,12 +183,21 @@ function hydrate(wrap: HTMLElement): (() => void) | undefined {
     io.disconnect()
     ac.abort()
     if (!audio.paused) audio.pause()
+    delete wrap.dataset.customized
   }
 }
 
 document.addEventListener('nav', () => {
-  document.querySelectorAll<HTMLElement>('figure.audio-player[data-audio-embed]').forEach(wrap => {
-    const cleanup = hydrate(wrap)
-    if (cleanup) window.addCleanup(cleanup)
-  })
+  const initialize = (root: ParentNode): void => {
+    root.querySelectorAll<HTMLElement>('figure.audio-player[data-audio-embed]').forEach(wrap => {
+      const cleanup = hydrate(wrap)
+      if (cleanup) rootNavSignal(wrap).addEventListener('abort', cleanup, { once: true })
+    })
+  }
+  initialize(document)
+  const onContentMounted = (event: CustomEventMap['contentdecrypted']): void => {
+    initialize(event.detail.content)
+  }
+  document.addEventListener('contentdecrypted', onContentMounted)
+  window.addCleanup(() => document.removeEventListener('contentdecrypted', onContentMounted))
 })
