@@ -1,4 +1,5 @@
 @use '../../../styles/variables.scss' as *;
+@use '../../../styles/pdf-instrument.scss' as instrument;
 
 .press-kit[data-transparent='true'] .press-kit-frame {
   background-color: #505050;
@@ -107,11 +108,8 @@
   }
 }
 
-.press-kit-frame {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.press-kit-viewport,
+.press-kit-link-frame {
   width: 100%;
   height: min(68dvh, 40rem);
   min-height: 0;
@@ -121,14 +119,77 @@
   }
 }
 
-// Width and height stay auto so the canvas scales inside the frame at its own ratio.
+.press-kit-viewport {
+  overflow: auto;
+  overflow-anchor: none;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+
+  &:focus-visible {
+    outline: 2px solid var(--control-focus);
+    outline-offset: -2px;
+  }
+}
+
+.press-kit-link-frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.press-kit-frame {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: max-content;
+  height: max-content;
+  min-width: 100%;
+  min-height: 100%;
+  padding: 2px;
+}
+
 .press-kit-canvas {
   display: block;
+  flex: none;
   width: auto;
   height: auto;
-  max-width: 100%;
-  max-height: 100%;
+  max-width: none;
+  max-height: none;
   outline: 1px solid var(--pk-line);
+}
+
+.press-kit-preview-zoom {
+  @include instrument.tokens;
+  @include instrument.type;
+  @include instrument.frame;
+  --pdf-instrument-height: calc(var(--pk-control) + 2px);
+  --pdf-instrument-font: var(--pk-meta);
+  --pdf-instrument-surface: var(--pk-surface);
+  --pdf-instrument-selected: var(--pk-selected);
+
+  > * {
+    @include instrument.cell;
+  }
+
+  button {
+    @include instrument.button;
+  }
+
+  [data-preview-zoom='actual'],
+  [data-preview-zoom='fit'] {
+    @include instrument.button(false);
+    aspect-ratio: auto;
+  }
+
+  output {
+    @include instrument.zoom-readout;
+  }
+
+  @media (pointer: coarse) {
+    --pdf-instrument-font: 16px;
+  }
 }
 
 .press-kit-unfurl {

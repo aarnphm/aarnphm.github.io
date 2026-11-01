@@ -8,6 +8,7 @@ import { classNames } from '../util/lang'
 import { simplifySlug } from '../util/path'
 import { formatDate, getDate } from './Date'
 import { ExportActions, NoteIncludes, TrainingControls } from './press-kit/controls'
+import { Preview } from './press-kit/preview'
 // @ts-ignore
 import script from './scripts/press-kit.inline'
 import style from './styles/pressKit.scss'
@@ -166,19 +167,7 @@ function getPressKitInnerTemplate(site: string): string {
         role="tabpanel"
         aria-labelledby="press-kit-tab-note"
       >
-        <figure class="press-kit-stage">
-          <div class="press-kit-frame">
-            <canvas class="press-kit-canvas" role="img" aria-label="aperçu de la carte" />
-            <div class="press-kit-unfurl" hidden>
-              <img class="press-kit-unfurl-image" alt="" decoding="async" data-ignore-popup />
-              <div class="press-kit-unfurl-text">
-                <span class="press-kit-unfurl-site">{site}</span>
-                <span class="press-kit-unfurl-title" />
-              </div>
-            </div>
-          </div>
-          <figcaption class="press-kit-caption" aria-live="polite" />
-        </figure>
+        <Preview site={site} />
 
         <div class="press-kit-controls">
           <div class="press-kit-group" data-for="image">
