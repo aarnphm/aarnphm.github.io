@@ -84,8 +84,7 @@ class Observer:
       return None
     try:
       started = (
-        datetime
-        .strptime(result.stdout.strip(), '%a %b %d %H:%M:%S %Y')
+        datetime.strptime(result.stdout.strip(), '%a %b %d %H:%M:%S %Y')
         .replace(tzinfo=timezone.utc)
         .timestamp()
       )
@@ -152,7 +151,7 @@ class Observer:
     if queue.get('updatedAt') != self.queue_updated:
       self.inventory.updated = 0
       self.queue_updated = text(queue.get('updatedAt'))
-    prefix = text(state.get('prefix'), 'thoughts/papers/')
+    prefix = ''
     index = self.root / 'public/static/searchIndex.json'
     command = state.get('command')
     if isinstance(command, list) and '--public-index' in command:

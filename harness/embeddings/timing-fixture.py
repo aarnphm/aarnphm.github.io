@@ -28,6 +28,12 @@ for folder in (run, content, index.parent):
 spec = ExtractionSpec('ocr', 'layout', 'sdk', 200, 'current-recipe')
 (cache_root / 'recipe.json').write_text(json.dumps(asdict(spec)))
 (root / 'quartz.config.ts').write_text('export default {ignorePatterns: []}')
+config = root / 'content/embeddings/index.md'
+config.parent.mkdir(parents=True, exist_ok=True)
+config.write_text(
+  "---\nembeddings:\n  - '[[thoughts/papers|papers]]'\n"
+  "  - '[[thoughts/pdfs|pdfs]]'\n---\n"
+)
 for name, total in [('alpha', 7), ('beta', 2)]:
   path = content / f'{name}.pdf'
   if not path.exists():
