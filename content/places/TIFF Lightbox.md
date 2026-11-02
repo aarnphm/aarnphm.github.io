@@ -1,14 +1,14 @@
 ---
 address: 350 King St W, Toronto, ON M5V 3X5, Canada
 category:
-  - '[[places to go|places to go]]'
+  - '[[places to go]]'
 coordinates:
-  - '43.6473074'
-  - '-79.3937604'
+  - '43.6465513'
+  - '-79.3904914'
 date: '2025-11-22'
 description: film institute cinema with curated international programming
 id: TIFF Lightbox
-modified: 2026-06-05 15:08:03 GMT-04:00
+modified: '2026-11-02'
 rating: 5
 tags:
   - places
