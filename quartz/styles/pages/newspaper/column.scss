@@ -471,15 +471,22 @@
         top: 3px;
         margin-left: calc((100% - var(--mag-measure)) / 2 - 2.5rem);
         z-index: var(--z-sticky);
-        background: var(--light);
+        background: transparent;
 
-        // Seal the top inset and give passing notes clearance around the running head.
+        // Keep ink legible while passing notes fade into the paper below the title.
         &::after {
           content: '';
           position: absolute;
-          inset: -3px -0.5rem 0;
+          inset: -3px -0.5rem -1rem;
           z-index: -1;
-          background: var(--light);
+          background: linear-gradient(to bottom, var(--light) calc(100% - 1rem), transparent);
+          mask-image: linear-gradient(
+            to right,
+            transparent,
+            black 0.5rem,
+            black calc(100% - 0.5rem),
+            transparent
+          );
         }
       }
     }
@@ -487,9 +494,9 @@
     @container profile-page (min-width: 84rem) {
       .mag-running-head {
         width: var(--mag-rail);
-        // Every chapter shares the outer rail of the widest department band.
+        // Match the left note rail, measured from the article's padded content edge.
         margin-left: max(
-          0px,
+          calc(-1 * var(--mag-inset)),
           calc((100% - var(--mag-measure)) / 2 - var(--mag-rail) - var(--mag-offset))
         );
 

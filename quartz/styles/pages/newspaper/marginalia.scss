@@ -30,11 +30,14 @@ body[data-layout='newspaper'] #quartz-root > section.header {
     container: profile-page / inline-size;
   }
 
+  // Inline, a note opens under its paragraph behind a hairline, clear of any float: a left rule
+  // would run down the column edge, behind the drop cap the note sits beside.
   .profile-note {
     display: block;
+    clear: both;
     margin: 0.4rem 0 1rem;
-    padding-left: 0.75rem;
-    border-left: 1px solid var(--gray);
+    padding-top: 0.4rem;
+    border-top: 1px solid var(--mag-rule);
     font-family: var(--mag-text);
     font-style: normal;
     font-size: 14px;
@@ -157,6 +160,20 @@ body[data-layout='newspaper'] #quartz-root > section.header {
     border-bottom-color: transparent;
   }
 
+  // A folded note's mark reads as a control; open, the square fills and the label rule goes solid.
+  .sidenote[data-note][role='button'] {
+    cursor: var(--cursor-pointer, pointer);
+  }
+
+  .sidenote[data-note][aria-expanded='true'] .sidenote-label {
+    border-bottom-style: solid;
+    border-bottom-color: var(--dark);
+  }
+
+  a[data-footnote-ref][aria-expanded='true'] {
+    background: currentColor;
+  }
+
   // Hand-placed floats keep their side inside the column, boxed as before.
   .profile-frame.float-right,
   .profile-frame.float-left {
@@ -184,6 +201,25 @@ body[data-layout='newspaper'] #quartz-root > section.header {
   .profile-frame:is(.float-right, .float-left) + p {
     text-align: start;
   }
+}
+
+// Without the rail, notes fold away until their mark is tapped (profile-notes.inline.ts toggles
+// data-open). Server-rendered folded, so nothing moves on load; a footnote's own link still opens
+// its note through :target when scripts are off. Boxed notes are body asides at every width.
+@mixin folded-notes {
+  [data-layout='newspaper']
+    :where(#quartz-root)
+    .profile-note:not(.profile-note-boxed, [data-open], :target) {
+    display: none;
+  }
+}
+
+@container profile-page (width < 70rem) {
+  @include folded-notes;
+}
+
+@supports not (anchor-name: --a) {
+  @include folded-notes;
 }
 
 @media all and (min-width: 1400px) {

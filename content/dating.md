@@ -9,7 +9,7 @@ description: or i might be that fish in the sea, for you.
 dropcap: goudy
 id: dating
 layout: newspaper
-modified: 2026-11-01 13:29:03 GMT-05:00
+modified: 2026-11-02 14:15:18 GMT-05:00
 readonly: true
 separator: grapevine
 slides: true
@@ -26,7 +26,7 @@ _epistemic status: personal anecdote_
 >
 > I'm more than happy to meet and go on a date should our [Nash equilibrium](https://en.wikipedia.org/wiki/Nash_equilibrium) works out. If you are interested in me as a friend, then I have a [[friends|friends-equivalent]] doc. I love to meet new people, well... _what is life if not the people you share it with?_
 
-Dating is a notorious numbers game, and us [[triathlon|triathletes]] are notoriously _lazy_[^lazy] and tired after a long work day chained with [brick sessions](https://triathlonmagazine.ca/training/why-bricks-matter-more-than-you-think/) or before/after-work workouts. I also don't like to repeat myself, therefore, making a dating docs seems like an reasonable next thing—something I can share with someone I find attractive.
+Dating is a notorious numbers game, and us [[triathlon|triathletes]] are infamous for _being lethargic_[^lazy] after work and [brick sessions](https://triathlonmagazine.ca/training/why-bricks-matter-more-than-you-think/). I also don't like to repeat myself, therefore, making a dating docs seems like an reasonable next thing—something I can share with someone I find attractive.
 
 [^lazy]: Or at least I'm 😸
 
@@ -41,14 +41,11 @@ Most people know me online as `aarnphm` /urn-fm/, but you can call me _Aaron_ (o
 
 Here's me in 30 seconds. By all means explore the rest of the documents.[^onion]
 
-[^onion]: According to ["what vegetable are you?"](https://sophie006liu.github.io/vegetal/), I'm an [[thoughts/images/onion.webp|onion.]] This is hilarious because I actually love [[thoughts/images/onionnnnnnnnnn.webp|_onion_]]!
-
-I'm love and _obssessed_ with what [[thoughts/craft|I do]]. Other's wellfare and working on important problems are things I care a lot about. But most importantly, I want to share a life with someone and build a family with. I work a lot—it's all I do these days—but I also want to build for something more than just myself. I'm lucky to date a lot of amazing women and men, but always the _wrong timing_ or we aren't aligned for the same thing. Hence, this document is more/less an encapsulation of what I want as well as the life I wish for as earnestly and openly as possible.
+I'm love and _obssessed_ with what [[thoughts/craft|I do]]. Other's wellfare and working on [hard problems](https://en.wikipedia.org/wiki/P_versus_NP_problem) are things I care a lot about. But most importantly, I want to share a life with someone and build a family with. I work a lot—it's all I do these days—but I also want to build for something more than just myself. I'm lucky to date a lot of amazing women and men, but always the _wrong timing_ or we aren't aligned for the same thing. Hence, this document is more/less an encapsulation of what I want as well as the life I wish for as earnestly and openly as possible.
 
 I don't really care what you do, as long as there are subjects/topics that excite you: beauty of math and science, the amazing feats of human engineering, the drive to help people, etc. I also value my relationship with my friends. I also travel around with my bike a lot.
 
-I'm the 3am call who shows up, so I'm reliable[^reliable]. I have moved mountains and earths to help me friends when they went through rough patches, as I strongly believed in their capabilities to be more and better than who they were used to be.
-I was poly and partake in a few polycules with several partners; my last relationship, however, showed me I'm better suited to monogamy.
+I'm the 3am call who shows up, so I'm reliable[^reliable]. I was poly with several partners; my last relationship, however, showed me I'm better suited to monogamy.
 My [love languages](https://en.wikipedia.org/wiki/The_Five_Love_Languages) are physical touch and quality time. I'm ["securely attached"](https://en.wikipedia.org/wiki/Attachment_theory#Attachment_styles_in_adults:~:text=%5B116%5D-,Securely%20attached,-%5Bedit%5D). I'm a bit of a free spirit, possibly due to the fact that I moved continents at a young age.
 
 [^reliable]: I'm considered to be both type-1 and type-2 fun, but I will make sure we got back home safely 🚶‍♂️‍➡️
@@ -58,6 +55,8 @@ I like them em-dash (—) (contrary to _many, many recent_ beliefs), parenthetic
 I listen to quite a bit of <span style="text-decoration: underline;">Rachmaninoff</span>, Bill Evans, UK garage, and often find myself rabbit-holing on random #math topics.
 
 [^personality]: You can also find the [[personality|personality report]] from Clearer Thinking's [Ultimate Personality Test](https://www.clearerthinking.org/tools/the-ultimate-personality-test)
+
+[^onion]: According to ["what vegetable are you?"](https://sophie006liu.github.io/vegetal/), I'm an [[thoughts/images/onion.webp|onion.]] This is hilarious because I actually love [[thoughts/images/onionnnnnnnnnn.webp|_onion_]]!
 
 </div>
 
@@ -161,8 +160,9 @@ I have the attention-span of a three-year-old, but an old soul (some said). So I
 
 - <div data-triathlon-latest />
 - I'm training for IRONMAN Lanzarote 2027. Feel free to check out progress in [daily stream](https://stream.aarnphm.xyz) or the [feed](https://t.aarnphm.xyz/feed)/[calendar](https://t.aarnphm.xyz/calendar)
-- More/less an excuse for me to travel. Here is me at Yosemite Fall in 2022
-  ![[thoughts/images/me-in-yosemite.webp#{float:left; width:min(40%, 14rem); height:auto; margin:0 0 1rem 1.5rem}|me and my colleague went on a three-days backpacking trips.]]
+- More/less an excuse for me to travel. Here is a random picture of me on a backpacking trip with my colleague at Yosemite Fall
+
+  ![[thoughts/images/me-in-yosemite.webp|3840x2160]]
 
 ### bouldering
 
