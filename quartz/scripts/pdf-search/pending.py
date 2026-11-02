@@ -12,7 +12,8 @@ from typing import Literal
 import portalocker
 import pymupdf
 
-from build import PdfSource, public_pdfs
+from build import PdfSource
+from scope import queued_pdfs
 from cache import canonical
 
 
@@ -75,13 +76,7 @@ class PendingPdfs:
     temporary.replace(self.path)
 
   def inventory(self) -> dict[str, PdfSource]:
-    return {
-      slug: source
-      for slug, source in public_pdfs(
-        self.index, self.root / 'content'
-      ).items()
-      if slug.startswith('thoughts/papers/')
-    }
+    return queued_pdfs(self.index, self.root / 'content')
 
   def enqueue(self, slugs: list[str]) -> dict[str, object]:
     inventory = self.inventory()
@@ -89,7 +84,7 @@ class PendingPdfs:
     unknown = set(selected) - inventory.keys()
     if unknown:
       raise ValueError(
-        f'PDF is absent from the public paper inventory: {sorted(unknown)}'
+        f'PDF is absent from the public PDF queue inventory: {sorted(unknown)}'
       )
     candidates: list[Job] = []
     for slug in selected:

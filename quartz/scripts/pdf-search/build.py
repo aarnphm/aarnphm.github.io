@@ -16,6 +16,7 @@ import numpy as np
 import portalocker
 
 from cache import ExtractionSpec, PageCache, canonical, digest
+from dates import note_dates, resolve
 from publication import publish, prune_vectors
 from regions import publish_regions
 
@@ -26,6 +27,7 @@ from embed_build import (
   ignore_pattern_matches,
   l2_normalize_rows,
   quartz_ignore_patterns,
+  slugify_file_path,
   write_shards,
 )
 
@@ -40,22 +42,26 @@ class PdfSource:
   aliases: tuple[str, ...]
 
 
-class PdfPassage(TypedDict):
+class PdfPassage(TypedDict, total=False):
   slug: str
   page: int
   pageLabel: str
   text: str
   title: str
   chunk: int
+  date: str | None
 
 
-class PdfMetadata(TypedDict):
+class PdfMetadata(TypedDict, total=False):
   title: str
   aliases: list[str]
   acronyms: list[str]
   sourceSha256: str
   pages: list[int]
   totalPages: int
+  date: str
+  datePrecision: str
+  dateSource: str
 
 
 def public_pdfs(index_path: Path, content_root: Path) -> dict[str, PdfSource]:
@@ -100,7 +106,9 @@ def public_pdfs(index_path: Path, content_root: Path) -> dict[str, PdfSource]:
 
 
 def read_passages(
-  cache_root: Path, inventory: dict[str, PdfSource]
+  cache_root: Path,
+  inventory: dict[str, PdfSource],
+  notes: dict[str, str] | None = None,
 ) -> tuple[list[PdfPassage], dict[str, PdfMetadata], ExtractionSpec]:
   spec = ExtractionSpec(**json.loads((cache_root / 'recipe.json').read_text()))
   by_source = {}
@@ -164,6 +172,9 @@ def read_passages(
       'pages': document['pages'],
       'totalPages': document['totalPages'],
     }
+    dated = resolve(slug, source, notes or {})
+    if dated:
+      documents[slug].update(dated)
     for page in pages:
       if page is None or not page.text:
         continue
@@ -182,6 +193,7 @@ def read_passages(
           'text': chunk['text'],
           'title': title,
           'chunk': chunk['chunk_id'],
+          'date': dated['date'] if dated else None,
         }
         for chunk in chunks
       )
@@ -210,7 +222,9 @@ def write_passage_shards(
 
 def build(args: argparse.Namespace) -> None:
   inventory = public_pdfs(args.public_index, args.content)
-  passages, documents, spec = read_passages(args.cache, inventory)
+  passages, documents, spec = read_passages(
+    args.cache, inventory, note_dates(args.content)
+  )
   if not passages:
     raise ValueError(
       'No verified PDF pages match the public attachment inventory'
@@ -332,6 +346,82 @@ def build(args: argparse.Namespace) -> None:
   print(json.dumps(report), flush=True)
 
 
+def restamp(args: argparse.Namespace) -> None:
+  """Add dates to the published generation without OCR, the encoder, or re-embedding.
+
+  Vectors are copied byte for byte; only documents/passages gain `date` fields, so the
+  generation hash changes and readers switch atomically through publish().
+  """
+  import shutil
+
+  current = json.loads((args.out / 'manifest.json').read_bytes())
+  previous = current['generation']
+  source_dir = args.out / previous
+  notes = note_dates(args.content)
+  documents = current['documents']
+  # Slugs dash-ify spaces ("The Bitter Lesson.pdf" -> The-Bitter-Lesson.pdf); map back to files.
+  sources = {
+    slugify_file_path(path.relative_to(args.content).as_posix()): path
+    for path in args.content.rglob('*.pdf')
+  }
+  for slug, metadata in documents.items():
+    for key in ('date', 'datePrecision', 'dateSource'):
+      metadata.pop(key, None)
+    dated = resolve(slug, sources.get(slug), notes)
+    if dated:
+      metadata.update(dated)
+  passages: list[PdfPassage] = []
+  for shard in current['passages']['shards']:
+    passages.extend(
+      json.loads((source_dir / Path(shard['path']).name).read_bytes())
+    )
+  for passage in passages:
+    passage['date'] = documents.get(passage['slug'], {}).get('date')
+  generation = digest({
+    'restamped': previous,
+    'documents': documents,
+    'passages': passages,
+  })
+  target = args.out / generation
+  target.mkdir(parents=True, exist_ok=True)
+  shards = []
+  for shard in current['vectors']['shards']:
+    name = Path(shard['path']).name
+    shutil.copyfile(source_dir / name, target / name)
+    shards.append({**shard, 'path': f'/embeddings/pdf/{generation}/{name}'})
+  passage_shards = write_passage_shards(passages, shards, target, generation)
+  manifest = {
+    **current,
+    'generation': generation,
+    'vectors': {**current['vectors'], 'shards': shards},
+    'documents': documents,
+    'passages': {'shards': passage_shards},
+  }
+  removed = publish(
+    args.out,
+    generation,
+    canonical(manifest),
+    shards,
+    passage_shards,
+    len(passages),
+  )
+  sources: dict[str, int] = {}
+  for metadata in documents.values():
+    key = metadata.get('dateSource', 'none')
+    sources[key] = sources.get(key, 0) + 1
+  print(
+    json.dumps({
+      'generation': generation,
+      'documents': len(documents),
+      'dateSources': dict(sorted(sources.items())),
+      'datedPassages': sum(1 for p in passages if p['date']),
+      'passages': len(passages),
+      'removedGenerations': removed,
+    }),
+    flush=True,
+  )
+
+
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description=__doc__)
   parser.add_argument(
@@ -345,6 +435,11 @@ if __name__ == '__main__':
     '--out', type=Path, default=Path('content/embeddings/pdf')
   )
   parser.add_argument('--port', type=int, default=8000)
+  parser.add_argument(
+    '--restamp',
+    action='store_true',
+    help='Only (re)compute document dates on the published generation; no OCR cache or encoder.',
+  )
   args = parser.parse_args()
   args.cache.mkdir(parents=True, exist_ok=True)
   args.out.mkdir(parents=True, exist_ok=True)
@@ -352,4 +447,4 @@ if __name__ == '__main__':
     portalocker.Lock(args.cache / '.build.lock', timeout=1),
     portalocker.Lock(args.out / '.publish.lock', timeout=1),
   ):
-    build(args)
+    restamp(args) if args.restamp else build(args)

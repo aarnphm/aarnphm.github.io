@@ -18,6 +18,117 @@ SCRIPTS = Path(__file__).resolve().parent
 
 
 class QueueClientTests(unittest.TestCase):
+  def test_both_directories_queue_and_runner_default(self):
+    with tempfile.TemporaryDirectory() as temporary:
+      root = Path(temporary)
+      index = root / 'public/static/searchIndex.json'
+      cache = root / 'quartz/.quartz-cache/pdf-search'
+      output = root / 'content/embeddings/pdf'
+      for directory in (index.parent, cache, output):
+        directory.mkdir(parents=True)
+      config = root / 'content/embeddings/index.md'
+      config.parent.mkdir(parents=True, exist_ok=True)
+      config.write_text(
+        "---\nembeddings:\n  - '[[thoughts/papers|papers]]'\n"
+        "  - '[[thoughts/pdfs|pdfs]]'\n---\n"
+      )
+      (root / 'quartz.config.ts').write_text(
+        'export default {ignorePatterns: []}'
+      )
+      inventory = {}
+      documents = {}
+      expected = ['thoughts/papers/a.pdf', 'thoughts/pdfs/b.pdf']
+      for slug in [*expected, 'thoughts/other/c.pdf']:
+        source = root / 'content' / slug
+        source.parent.mkdir(parents=True, exist_ok=True)
+        with pymupdf.open() as pdf:
+          pdf.new_page().insert_text((72, 72), slug)
+          pdf.save(source)
+        inventory[slug] = {'filePath': str(source), 'title': slug}
+        documents[slug] = {
+          'sourceSha256': hashlib.sha256(source.read_bytes()).hexdigest(),
+          'pages': [1],
+        }
+      inventory['thoughts/pdfs/private.pdf'] = {
+        'filePath': inventory[expected[1]]['filePath'],
+        'protected': True,
+      }
+      index.write_text(json.dumps(inventory))
+      with portalocker.Lock(cache / '.queue-worker.lock', timeout=0):
+        result = subprocess.run(
+          [
+            sys.executable,
+            str(SCRIPTS / 'queue-client.py'),
+            'enqueue',
+            '--root',
+            str(root),
+          ],
+          text=True,
+          capture_output=True,
+          timeout=60,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(json.loads(result.stdout)['queued'], 2)
+        jobs = json.loads((cache / 'queue.json').read_text())['jobs']
+        self.assertEqual(sorted(job['slug'] for job in jobs), expected)
+      batch = subprocess.run(
+        [sys.executable, str(SCRIPTS / 'batch.py'), '--inventory-only'],
+        cwd=root,
+        text=True,
+        capture_output=True,
+        timeout=60,
+      )
+      self.assertEqual(batch.returncode, 0, batch.stderr)
+      self.assertEqual(json.loads(batch.stdout)['sources'], expected)
+      (output / 'manifest.json').write_text(
+        json.dumps({'documents': documents})
+      )
+      for filters, count in [
+        ([], 2),
+        (['--slug', expected[1]], 1),
+        (['--prefix', 'thoughts/papers/'], 1),
+      ]:
+        result = subprocess.run(
+          [
+            sys.executable,
+            str(SCRIPTS / 'run.py'),
+            '--root',
+            str(root),
+            *filters,
+          ],
+          text=True,
+          capture_output=True,
+          timeout=60,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        status = json.loads(
+          (cache / 'background-papers/status.json').read_text()
+        )
+        self.assertEqual(status['phase'], 'complete')
+        self.assertEqual(status['coverage']['documents'], count)
+
+      config.write_text("---\nembeddings: ['[[thoughts/other]]']\n---\n")
+      selected = subprocess.run(
+        [sys.executable, str(SCRIPTS / 'batch.py'), '--inventory-only'],
+        cwd=root,
+        text=True,
+        capture_output=True,
+        timeout=60,
+      )
+      self.assertEqual(selected.returncode, 0, selected.stderr)
+      self.assertEqual(
+        json.loads(selected.stdout)['sources'], ['thoughts/other/c.pdf']
+      )
+      config.write_text("---\nembeddings: ['[[../outside]]']\n---\n")
+      invalid = subprocess.run(
+        [sys.executable, str(SCRIPTS / 'batch.py'), '--inventory-only'],
+        cwd=root,
+        text=True,
+        capture_output=True,
+        timeout=60,
+      )
+      self.assertNotEqual(invalid.returncode, 0)
+
   def test_queue_deduplication_source_changes_and_public_boundaries(self):
     with tempfile.TemporaryDirectory() as temporary:
       root = Path(temporary)
@@ -26,6 +137,12 @@ class QueueClientTests(unittest.TestCase):
       cache = root / 'quartz/.quartz-cache/pdf-search'
       for directory in (papers, index.parent, cache):
         directory.mkdir(parents=True)
+      config = root / 'content/embeddings/index.md'
+      config.parent.mkdir(parents=True, exist_ok=True)
+      config.write_text(
+        "---\nembeddings:\n  - '[[thoughts/papers|papers]]'\n"
+        "  - '[[thoughts/pdfs|pdfs]]'\n---\n"
+      )
       (root / 'quartz.config.ts').write_text(
         'export default {ignorePatterns: []}'
       )

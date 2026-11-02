@@ -20,7 +20,7 @@ from urllib.request import urlopen
 import portalocker
 import pymupdf
 
-from build import public_pdfs
+from scope import queued_pdfs
 from cache import canonical, ExtractionSpec, PageCache
 from contract import OCR_MODELS
 
@@ -152,7 +152,7 @@ class Runner:
     raise ValueError(f'{name} produced no completion report: {log}')
 
   def coverage(self) -> dict[str, int]:
-    inventory = public_pdfs(self.args.public_index, self.args.content)
+    inventory = queued_pdfs(self.args.public_index, self.args.content)
     sources = {
       slug: source
       for slug, source in inventory.items()
@@ -348,7 +348,7 @@ def main() -> None:
   parser.add_argument('--root', type=Path, default=ROOT)
   parser.add_argument('--slug', action='append', default=[])
   parser.add_argument('--wait-for-lock', action='store_true')
-  parser.add_argument('--prefix', default='thoughts/papers/')
+  parser.add_argument('--prefix', default='')
   parser.add_argument('--batch-pages', type=int, default=64)
   parser.add_argument('--first-pages', type=int, default=0)
   parser.add_argument('--ocr-port', type=int, default=8001)
