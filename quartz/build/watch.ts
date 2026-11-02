@@ -259,6 +259,36 @@ async function rebuild(clientRefresh: () => void, buildData: BuildData) {
     if (buildData.disposed || buildData.pending.size === 0) return
     const pending: PendingChanges = new Map(buildData.pending)
     buildData.pending.clear()
+    if (
+      ctx.incremental &&
+      [...pending.keys()].every(fp => fp.startsWith('embeddings/') && !isMarkdownPath(fp))
+    ) {
+      const files = new Set(ctx.allFiles)
+      for (const [fp, type] of pending) {
+        if (type === 'delete') files.delete(fp)
+        else files.add(fp)
+      }
+      syncCtxFiles(ctx, [...files])
+      const changes = [...pending].map(([path, type]) => ({ path, type }))
+      const owners = new Set(
+        changes.map(change =>
+          change.path.startsWith('embeddings/pdf/')
+            ? 'PdfSearch'
+            : change.path.startsWith('embeddings/images/')
+              ? 'ImageSearch'
+              : 'Assets',
+        ),
+      )
+      // Search publishers validate generations and write their root manifest last.
+      // Updating them directly avoids staging the site or refreshing the open page.
+      for (const owner of owners) {
+        if (ctx.cfg.plugins.emitters.some(emitter => emitter.name === owner)) {
+          await emitPartialEmitter(ctx, [...contentMap.values()], changes, owner)
+        }
+      }
+      console.log(`Updated embedding assets (${pending.size} changes)`)
+      return
+    }
     const incremental = ctx.incremental && pending.size > 0 && contentMap.size > 0
     globalThis.__quartzSourceEmissionSnapshot = undefined
     ctx.buildId = buildId
