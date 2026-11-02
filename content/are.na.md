@@ -5390,6 +5390,748 @@ title: are.na
 
 ## places
 
+- https://www.google.com/maps?cid=12644599170170829385 -- Copains Covent Garden
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [bakery, coffee shop]
+    - coord: [51.5146244, -0.1258979]
+    - address: 54 Neal St, London WC2H 9PA, United Kingdom
+    - later: true
+    - source: https://www.instagram.com/reel/Dd3UzWQsPpC/
+- https://burdockbrewery.com/pages/kensington -- Kensington Tavern
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [restaurant, bar]
+    - coord: [43.6539988, -79.40197569999999]
+    - address: 184 Augusta Ave, Toronto, ON M5T 2L6, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfNZFAegXFC/
+- https://www.greygardens.ca/ -- Grey Gardens
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [restaurant, bar]
+    - coord: [43.6538075, -79.4014753]
+    - address: 199 Augusta Ave, Toronto, ON M5T 2L4, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfNZFAegXFC/
+- https://brasseriecote.ca/ -- Brasserie Côte Annex
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [restaurant]
+    - coord: [43.66605209999999, -79.40776029999999]
+    - address: 400 Bloor St W, Toronto, ON M5S 1X5, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfNZFAegXFC/
+- https://quatrefoilrestaurant.com/ -- Quatrefoil Dundas
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [restaurant]
+    - coord: [43.2672547, -79.95691429999999]
+    - address: 16 Sydenham St, Dundas, ON L9H 2T4, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfNZFAegXFC/
+- https://www.pinotgrouchios.com/ -- Pinot Grouchio's
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [bar]
+    - coord: [43.6497057, -79.4352445]
+    - address: 1609 Dundas St W, Toronto, ON M6K 1T9, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfNZFAegXFC/
+- https://www.greytiger.ca/ -- Grey Tiger
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [bar]
+    - coord: [43.6594608, -79.43790509999999]
+    - address: 1190 Bloor St W, Toronto, ON M6H 1N2, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfNZFAegXFC/
+- https://www.hyatt.com/park-hyatt/en-US/torph-park-hyatt-toronto/dining/writers-room-bar -- Writers Room Bar
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [bar]
+    - coord: [43.6688232, -79.39462229999999]
+    - address: 4 Avenue Rd, 17th Floor, Toronto, ON M5R 2E8, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfNZFAegXFC/
+- https://www.novacancybar.ca/ -- No Vacancy
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [bar, restaurant]
+    - coord: [43.645823, -79.41979529999999]
+    - address: 74 Ossington Ave, Toronto, ON M6J 2Y7, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfNZFAegXFC/
+- https://www.sliceoflifebar.com/ -- Slice of Life
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [bar]
+    - coord: [43.6563673, -79.4065093]
+    - address: 409 College St, Toronto, ON M5T 1T1, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfNZFAegXFC/
+- https://roythomsonhall.mhrth.com/ -- Roy Thomson Hall
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [live music]
+    - coord: [43.6466068, -79.3864069]
+    - address: 60 Simcoe St, Toronto, ON M5J 2H5, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfNZFAegXFC/
+- https://www.google.com/maps?cid=7704327669151504229 -- Four Seasons Centre for the Performing Arts
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [theatre]
+    - coord: [43.650573, -79.385683]
+    - address: 145 Queen St W, Toronto, ON M5H 4G1, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfNZFAegXFC/
+- https://youngplace.ca/ -- Youngplace
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [art gallery, workshops]
+    - coord: [43.6469436, -79.417518]
+    - address: 180 Shaw St, Toronto, ON M6J 2W5, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfNZFAegXFC/
+- https://www.kofflerarts.org/ -- Koffler Arts
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [art gallery]
+    - coord: [43.6468947, -79.4175449]
+    - address: 180 Shaw St, Unit 104, Toronto, ON M6J 2W5, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfNZFAegXFC/
+- https://towards.info/ -- Towards Gallery
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [art gallery]
+    - coord: [43.6544685, -79.4443277]
+    - address: 163 Sterling Rd, Unit 144, Toronto, ON M6R 2B7, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfNZFAegXFC/
+- https://www.olgakorpergallery.com/ -- Olga Korper Gallery
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [art gallery]
+    - coord: [43.65254909999999, -79.4467356]
+    - address: 17 Morrow Ave, Toronto, ON M6R 2H9, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfNZFAegXFC/
+- https://www.generalhardware.ca/ -- General Hardware Contemporary
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [art gallery]
+    - coord: [43.640348, -79.4387126]
+    - address: 1520 Queen St W, Toronto, ON M6R 1A4, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfNZFAegXFC/
+- https://susanhobbs.com/ -- Susan Hobbs Gallery
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [art gallery]
+    - coord: [43.6456408, -79.4060387]
+    - address: 137 Tecumseth St., Toronto, ON M6J 2H2, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfNZFAegXFC/
+- https://www.unitedcontemporary.com/ -- United Contemporary
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [art gallery]
+    - coord: [43.6453546, -79.40597699999999]
+    - address: 129 Tecumseth St., Toronto, ON M6J 2H2, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfNZFAegXFC/
+- https://www.google.com/maps?cid=15112744297128827001 -- Patel Brown Toronto
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [art gallery]
+    - coord: [43.6588977, -79.44393099999999]
+    - address: 21 Wade Ave Unit 2, Toronto, ON M6H 1P4, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfNZFAegXFC/
+- https://www.google.com/maps?cid=15548511707807319477 -- Blouin Division Toronto
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [art gallery]
+    - coord: [43.6592734, -79.4504991]
+    - address: 45 Ernest Ave, Toronto, ON M6P 3M7, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfNZFAegXFC/
+- https://www.clintroenisch.com/ -- Clint Roenisch Gallery
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [art gallery]
+    - coord: [43.6545013, -79.4427204]
+    - address: 190 St Helens Ave, Toronto, ON M6H 4A1, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfNZFAegXFC/
+- https://www.google.com/maps?cid=13080794634728017984 -- Bau-Xi Gallery Dufferin
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [art gallery]
+    - coord: [43.6697565, -79.4398908]
+    - address: 1384 Dufferin St, Toronto, ON M6H 4C8, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfNZFAegXFC/
+- https://danielfariagallery.com/ -- Daniel Faria Gallery
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [art gallery]
+    - coord: [43.6544533, -79.44268869999999]
+    - address: 188 St Helens Ave, Toronto, ON M6H 4A1, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfNZFAegXFC/
+- https://mkg127.com/ -- MKG127
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [art gallery]
+    - coord: [43.6494985, -79.4301967]
+    - address: 1445 Dundas St W, Toronto, ON M6J 1Y7, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfNZFAegXFC/
+- https://www.google.com/maps?cid=169909478436136171 -- Dundas Lions Memorial Community Centre
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [communal]
+    - coord: [43.2674719, -79.96359679999999]
+    - address: 10 Market St S, Dundas, ON L9H 5G4, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfNZFAegXFC/
+- https://hughsroomlive.com/ -- Hugh's Room Live
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [live music]
+    - coord: [43.6638696, -79.3522165]
+    - address: 296 Broadview Ave, Toronto, ON M4M 2G7, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfNZFAegXFC/
+- https://401richmond.com/ -- 401 Richmond
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [art gallery]
+    - coord: [43.6476322, -79.3950698]
+    - address: 401 Richmond St W, Toronto, ON M5V 3A8, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfNZFAegXFC/
+- https://www.instagram.com/anima___space/ -- Anima Space
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [art gallery]
+    - later: true
+    - source: https://www.instagram.com/p/DfNZFAegXFC/
+- https://www.trullorestaurant.com/ -- Trullo Islington
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [restaurant]
+    - coord: [51.546265, -0.1015699]
+    - address: 300-302 St Paul's Rd, London N1 2LH, United Kingdom
+    - later: true
+    - source: https://www.instagram.com/reel/Dd3UzWQsPpC/
+- https://elliesbar.com/ -- Ellie's Dalston
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [bar]
+    - coord: [51.5420773, -0.07585059999999999]
+    - address: 428 Kingsland Rd, London E8 4AA, United Kingdom
+    - later: true
+    - source: https://www.instagram.com/reel/Dd3UzWQsPpC/
+- https://brilliantcornerslondon.co.uk/ -- Brilliant Corners
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [bar, restaurant]
+    - coord: [51.54305429999999, -0.0759088]
+    - address: 470–472 Kingsland Rd, London E8 4AE, United Kingdom
+    - later: true
+    - source: https://www.instagram.com/reel/Dd3UzWQsPpC/
+- https://392kingslandroad.co.uk/ -- 392 Kingsland Road
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [bar]
+    - coord: [51.5412943, -0.07611229999999999]
+    - address: 392 Kingsland Rd, London E8 4AA, United Kingdom
+    - later: true
+    - source: https://www.instagram.com/reel/Dd3UzWQsPpC/
+- https://www.threesheets-bar.com/dalston -- Three Sheets Dalston
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [bar]
+    - coord: [51.543952, -0.0758636]
+    - address: 510b Kingsland Rd, London E8 4AB, United Kingdom
+    - later: true
+    - source: https://www.instagram.com/reel/Dd3UzWQsPpC/
+- https://www.dishoom.com/carnaby/ -- Dishoom Carnaby
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [restaurant]
+    - coord: [51.5131089, -0.1397753]
+    - address: 22 Kingly St, Carnaby, London W1B 5QP, United Kingdom
+    - later: true
+    - source: https://www.instagram.com/reel/Dd3UzWQsPpC/
+- https://www.416snackbar.com/shortturn -- Short Turn
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant, bar]
+    - coord: [43.6474006, -79.4036024]
+    - address: 576 Queen St W, Toronto, ON M5V 2B5, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/Dct2BtxPmua/
+- https://ramenisshin.com/location/queen-st-west -- Ramen Isshin Queen West
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6473208, -79.4023734]
+    - address: 609 Queen St W, Toronto, ON M5V 2B7, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DcZuYT6hkC9/
+- https://www.mandarinrestaurant.com/locations/queensway/ -- Mandarin Queensway
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6209753, -79.5231708]
+    - address: 1255 The Queensway, Etobicoke, ON M8Z 1S1, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DcZuYT6hkC9/
+- https://www.google.com/maps?cid=1723593026346293629 -- Churrasqueira Martins Rogers Road
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6807613, -79.47349439999999]
+    - address: 605 Rogers Rd #1, York, ON M6M 1B9, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfIzlB_lF0Z/
+- https://www.google.com/maps?cid=1945178168614380277 -- Churrasqueira Martins St Clair West
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6665505, -79.4980698]
+    - address: 2700 St Clair Ave W, York, ON M6N 1M2, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfIzlB_lF0Z/
+- https://pjobrien.com/ -- P.J. O'Brien Irish Pub and Restaurant
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant, bar]
+    - coord: [43.6488889, -79.37527779999999]
+    - address: 39 Colborne St, Toronto, ON M5E 1E3, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfIzlB_lF0Z/
+- https://www.instagram.com/corduroylounge/ -- Corduroy Lounge
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant, bar]
+    - coord: [43.6614112, -79.33904699999999]
+    - address: 1012 Queen St E, Toronto, ON M4M 1K1, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfIzlB_lF0Z/
+- https://www.thedorsetwellington.com/ -- The Dorset
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant, bar]
+    - coord: [43.64313, -79.3973199]
+    - address: 457 Wellington St W, Toronto, ON M5V 1E7, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfIzlB_lF0Z/
+- https://www.saintjohnstavern.com/ -- Saint John's Tavern
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant, bar]
+    - coord: [43.6481345, -79.3901668]
+    - address: 117 John St, Toronto, ON M5V 2E2, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfIzlB_lF0Z/
+- https://www.therabbitholepub.ca/ -- The Rabbit Hole
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant, bar]
+    - coord: [43.6498946, -79.3798738]
+    - address: 21 Adelaide St W, Toronto, ON M5H 1L6, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfIzlB_lF0Z/
+- https://thecaledonian.ca/ -- The Caledonian
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant, bar]
+    - coord: [43.6543068, -79.42355959999999]
+    - address: 856 College St, Toronto, ON M6H 1A2, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfIzlB_lF0Z/
+- https://casaportuguesa.ca/ -- Casa Portuguesa
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.7198656, -79.46839249999999]
+    - address: 180 Bentworth Ave, York, ON M6A 1P7, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfIzlB_lF0Z/
+- https://www.mercadotoronto.com/ -- Mercado Restaurant
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6969196, -79.46351399999999]
+    - address: 682 Caledonia Rd, York, ON M6E 2T5, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfIzlB_lF0Z/
+- https://cafepolonez.ca/ -- Cafe Polonez
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.645128, -79.448359]
+    - address: 195 Roncesvalles Ave, Toronto, ON M6R 2L5, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfIzlB_lF0Z/
+- https://www.maventoronto.ca/ -- Maven
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.662852, -79.403746]
+    - address: 112 Harbord St, Toronto, ON M5S 1G6, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfIzlB_lF0Z/
+- https://www.google.com/maps?cid=4758572695584685323 -- WVRST King West
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant, bar]
+    - coord: [43.64416629999999, -79.40072099999999]
+    - address: 609 King St W, Upstairs, Toronto, ON M5V 1M5, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfIzlB_lF0Z/
+- https://www.gonzofoodcompany.com/ -- Gonzo Izakaya
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6537777, -79.4266306]
+    - address: 940 College St, Toronto, ON M6H 1A5, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DcZuYT6hkC9/
+- https://www.google.com/maps?cid=13644886789904817480 -- Que Ling Vietnamese Cuisine
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6658369, -79.34940539999999]
+    - address: 248 Boulton Ave, Toronto, ON M4M 1Y3, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DcZuYT6hkC9/
+- https://www.breakwallbbq.com/ -- Breakwall BBQ
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6692038, -79.3044438]
+    - address: 1910 Queen St E, Toronto, ON M4L 1H5, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DcZuYT6hkC9/
+- https://www.tatsuros.com/ -- Tatsuro's
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6645963, -79.32497169999999]
+    - address: 1378 Queen St E, Toronto, ON M4L 1C9, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DcZuYT6hkC9/
+- https://www.instagram.com/tripleabar/ -- AAA Bar
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [bar]
+    - coord: [43.6517557, -79.37280609999999]
+    - address: 138 Adelaide St E, Toronto, ON M5C 1K9, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DcZuYT6hkC9/
+- https://www.isshobakery.com/ -- Issho Bakery
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [bakery, coffee shop]
+    - coord: [43.6654201, -79.35223599999999]
+    - address: 583 Gerrard St E, Toronto, ON M4M 1Y2, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DcZuYT6hkC9/
+- https://bartlettlodge.com/ -- Bartlett Lodge
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [45.5520558, -78.5932004]
+    - address: Highway 60, km 23.7, Cache Lake, Algonquin Park, ON P0A 1H0, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DdPM3R8CG2n/
+- https://dottys.ca/ -- Dotty's
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6653235, -79.4540523]
+    - address: 1588 Dupont St, Toronto, ON M6P 3S6, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfGFOhKGoEJ/
+- https://www.almaygil.com/ -- Alma + Gil
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6435728, -79.42945979999999]
+    - address: 392 Dufferin St, Toronto, ON M6K 0G3, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfGFOhKGoEJ/
+- https://www.waterworksfoodhall.com/restaurants/civil-works -- Civil Works
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [bar]
+    - coord: [43.6467895, -79.3987214]
+    - address: 50 Brant St, Second Level, Unit 21, Toronto, ON M5V 3G9, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfGFOhKGoEJ/
+- https://www.santamadre.ca/ -- Santa Madre
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6720925, -79.32197029999999]
+    - address: 1437 Gerrard St E, Toronto, ON M4L 1Z7, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfGFOhKGoEJ/
+- https://www.instagram.com/hastingssnackbar/ -- Hastings Snack Bar
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6637672, -79.3289542]
+    - address: 5 Hastings Ave, Toronto, ON M4L 2L1, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfGFOhKGoEJ/
+- https://www.lebaratin.ca/ -- Le Baratin
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6499558, -79.4350699]
+    - address: 1600 Dundas St W, Toronto, ON M6K 1T8, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfGFOhKGoEJ/
+- https://www.sonnycantdance.com/ -- Sonny Can't Dance
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6433687, -79.4066366]
+    - address: 788 King St W, Toronto, ON M5V 1N6, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfGFOhKGoEJ/
+- https://www.goodcompanyto.ca/ -- Good Company Queen West
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [bar]
+    - coord: [43.6479597, -79.4011993]
+    - address: 498 Queen St W, Toronto, ON M5V 2B3, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfGFOhKGoEJ/
+- https://fallowrestaurant.com/ -- Fallow St James
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [51.50941, -0.1327837]
+    - address: 52 Haymarket, London SW1Y 4RP, United Kingdom
+    - later: true
+    - source: https://www.instagram.com/reel/DfMaijrpbIZ/
+- https://www.onelove-kitchen.co.uk/ -- One Love Kitchen Crouch Hill
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [51.5706491, -0.1160788]
+    - address: 9 Crouch Hill, Finsbury Park, London N4 4AP, United Kingdom
+    - later: true
+    - source: https://www.instagram.com/reel/DfMaijrpbIZ/
+- https://www.allmyfriends.uk/ -- All My Friends Hackney Wick
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [bar, shop]
+    - coord: [51.5425759, -0.0218531]
+    - address: Unit 1, Hamlet Estate, 96 White Post Lane, London E9 5EN, United Kingdom
+    - later: true
+    - source: https://www.instagram.com/reel/DfMaijrpbIZ/
+- https://www.google.com/maps?cid=621170323317011578 -- Garage Coffee Roasters Whitstable
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [coffee shop]
+    - coord: [51.3563585, 1.024489]
+    - address: 21a Oxford St, Whitstable CT5 1DB, United Kingdom
+    - later: true
+    - source: https://www.instagram.com/reel/DfMaijrpbIZ/
+- https://www.google.com/maps?cid=6575091315654756129 -- Dunns Bakery Muswell Hill
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [bakery]
+    - coord: [51.5895162, -0.1445463]
+    - address: 36 Muswell Hill Broadway, Muswell Hill, London N10 3RT, United Kingdom
+    - later: true
+    - source: https://www.instagram.com/reel/DfMaijrpbIZ/
+- https://www.thened.com/london/ -- The Ned London
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [51.5136949, -0.09016929999999999]
+    - address: 27 Poultry, London EC2R 8AJ, United Kingdom
+    - later: true
+    - source: https://www.instagram.com/reel/DfMaijrpbIZ/
+- https://www.google.com/maps?cid=12832001657454920645 -- Donutelier Charing Cross Road
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [bakery, deserts]
+    - coord: [51.5119301, -0.1282582]
+    - address: 48–50 Charing Cross Road, London WC2H 0BB, United Kingdom
+    - later: true
+    - source: https://www.instagram.com/reel/DfMaijrpbIZ/
+- https://frescapizzatoronto.com/ -- Fresca Pizza and Pasta
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6578177, -79.4017248]
+    - address: 302 College St, Toronto, ON M5T 1S2, Canada
+    - later: true
+    - source: https://www.instagram.com/p/De9nxxGlQvi/
+- https://leslieville.descendantdsp.com/ -- Descendant Detroit Style Pizza Leslieville
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6629183, -79.3323893]
+    - address: 1168 Queen St E, Toronto, ON M4M 1L4, Canada
+    - later: true
+    - source: https://www.instagram.com/p/De9nxxGlQvi/
+- https://www.pizzerialibretto.com/bar-libretto/ -- Bar Libretto Ossington
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6490017, -79.4203433]
+    - address: 221 Ossington Ave, Toronto, ON M6J 2Z8, Canada
+    - later: true
+    - source: https://www.instagram.com/p/De9nxxGlQvi/
+- https://www.google.com/maps?cid=7013441623847705989 -- Pizzeria Libretto Danforth
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6785472, -79.34766669999999]
+    - address: 550 Danforth Ave, Toronto, ON M4K 1P7, Canada
+    - later: true
+    - source: https://www.instagram.com/p/De9nxxGlQvi/
+- https://www.google.com/maps?cid=5101338635776664886 -- Pizzeria Libretto University
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6484999, -79.3849529]
+    - address: 155 University Ave, Toronto, ON M5H 3B7, Canada
+    - later: true
+    - source: https://www.instagram.com/p/De9nxxGlQvi/
+- https://www.google.com/maps?cid=1738110759782548365 -- Pizzeria Libretto Yonge-Sheppard
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.7661847, -79.41249619999999]
+    - address: 5000 Yonge St, North York, ON M2N 6P1, Canada
+    - later: true
+    - source: https://www.instagram.com/p/De9nxxGlQvi/
+- https://www.instagram.com/grams.pizza/ -- Gram's Pizza
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6651239, -79.4557703]
+    - address: 1640 Dupont St Unit 3, Toronto, ON M6P 3T2, Canada
+    - later: true
+    - source: https://www.instagram.com/p/De9nxxGlQvi/
+- https://queeneast.slowhandpizza.com/ -- Slowhand Sourdough Pizza Leslieville
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.66185429999999, -79.3376217]
+    - address: 99 Pape Ave, Toronto, ON M4M 2V7, Canada
+    - later: true
+    - source: https://www.instagram.com/p/De9nxxGlQvi/
+- https://kingwest.slowhandpizza.com/ -- Slowhand Sourdough Pizza King West
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6447588, -79.4012798]
+    - address: 8 Waterloo Terrace, Toronto, ON M5V 3S4, Canada
+    - later: true
+    - source: https://www.instagram.com/p/De9nxxGlQvi/
+- https://www.google.com/maps?cid=6724014123205763156 -- King Slice Bloor
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.65593399999999, -79.45499289999999]
+    - address: 1598 Bloor St W, Toronto, ON M6P 1A7, Canada
+    - later: true
+    - source: https://www.instagram.com/p/De9nxxGlQvi/
+- https://www.google.com/maps?cid=15934893749174738005 -- King Slice Queen West
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6432659, -79.423951]
+    - address: 1130 Queen St W, Toronto, ON, Canada
+    - later: true
+    - source: https://www.instagram.com/p/De9nxxGlQvi/
+- https://www.dannyspizzatavern.com/ -- Danny's Pizza Tavern
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.654919, -79.41451499999999]
+    - address: 611 College St, Toronto, ON M6G 1B5, Canada
+    - later: true
+    - source: https://www.instagram.com/p/De9nxxGlQvi/
+- https://www.google.com/maps?cid=1885112095518195794 -- North of Brooklyn Geary
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6692264, -79.4391641]
+    - address: 229 Geary Ave, Toronto, ON M6H 2C1, Canada
+    - later: true
+    - source: https://www.instagram.com/p/De9nxxGlQvi/
+- https://www.macspizza.ca/ -- Mac's Pizza Dovercourt
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6616361, -79.4294931]
+    - address: 759 Dovercourt Rd, Toronto, ON M6H 2X1, Canada
+    - later: true
+    - source: https://www.instagram.com/p/De9nxxGlQvi/
+- https://www.google.com/maps?cid=9802049566590557389 -- Absolutely Fabrics Rosedale
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [shop]
+    - coord: [43.6797213, -79.39031919999999]
+    - address: 1091 Yonge St, Toronto, ON M4W 2L5, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DeuVzOlIC6l/
+- https://lostintokyo.online/ -- Lost in Tokyo
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [coffee shop, deserts]
+    - coord: [43.6469198, -79.4059626]
+    - address: 636 Queen St W, Toronto, ON M6J 1E4, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DeuVzOlIC6l/
+- https://www.google.com/maps?cid=6968803240490394155 -- Matcha Matcha Dundas Club
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [coffee shop]
+    - coord: [43.6545071, -79.3912893]
+    - address: 294 Dundas St W, Toronto, ON M5T 1G2, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DeuVzOlIC6l/
+- https://www.google.com/maps?cid=5846649904317380033 -- Wilbur's Taco Shop Liberty Village
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [restaurant]
+    - coord: [43.6375783, -79.42052959999999]
+    - address: 50 Atlantic Ave, Toronto, ON M6K 1X8, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DeuVzOlIC6l/
+- https://issuesmagshop.com/ -- Issues Magazine Shop
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [bookstore]
+    - coord: [43.649499, -79.43164259999999]
+    - address: 1489A Dundas St W, Toronto, ON M6K 1T6, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DeuVzOlIC6l/
+- https://www.instagram.com/botaniccoffeeandcaphe/ -- Botanic Coffee and Caphe
+  - [meta]:
+    - date: 11/01/2026
+    - tags: [coffee shop]
+    - coord: [43.6467528, -79.40697569999999]
+    - address: 662 Queen St W, Toronto, ON M6J 1E5, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DeuVzOlIC6l/
 - https://birdcph.dk/ -- Bird Frederiksberg
   - [meta]:
     - date: 11/01/2026
@@ -6749,7 +7491,8 @@ title: are.na
   - [meta]:
     - date: 11/22/2025
     - tags: [theatre]
-    - coord: [43.6473074, -79.3937604]
+    - coord: [43.6465513, -79.3904914]
+    - address: 350 King St W, Toronto, ON M5V 3X5, Canada
 - https://maps.app.goo.gl/5LZH4dg9NcdKxb8WA -- Hanmoto [**]
   - [meta]:
     - date: 11/22/2025
@@ -6881,7 +7624,8 @@ title: are.na
   - [meta]:
     - date: 08/05/2025
     - tags: [coffee shop]
-    - coord: [43.6559416, -79.3953671]
+    - coord: [43.6559416, -79.3927922]
+    - address: 17 Baldwin St, Toronto, ON M5T 1L1, Canada
 - https://maps.app.goo.gl/EvYLaxoUAhqXejhj6 -- Alternity
   - [meta]:
     - date: 08/05/2025
