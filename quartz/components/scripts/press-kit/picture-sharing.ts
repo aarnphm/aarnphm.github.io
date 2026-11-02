@@ -119,12 +119,6 @@ export function draw() {
   unfurl.hidden = true
   const colors = session.page.colors as unknown as { light: SiteColors; dark: SiteColors }
   const palette = palettes(colors.light, colors.dark)[session.theme]
-  if (session.editor?.textColor && session.editor.textColor !== 'auto') {
-    const ink = session.editor.textColor === 'white' ? 'white' : 'black'
-    palette.ink = ink
-    palette.muted = ink
-    palette.hlInk = ink
-  }
   const targetFormat = session.format
   const targetFonts = session.fonts
   const targetDialog = session.dialog

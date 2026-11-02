@@ -8,14 +8,18 @@ export interface LayerBounds {
 export interface CardLayer extends LayerBounds {
   id: string
   label: string
-  image: CanvasImageSource
+  image: HTMLCanvasElement | HTMLImageElement
   renderer?: LayerRenderer
+  /** Repaints with new ink and, on a highlighted layer, a new highlighter colour. */
+  recolor?: false | ((color?: string, background?: string) => HTMLCanvasElement)
+  /** Draws a highlighter behind its text, so the editor offers a background colour too. */
+  highlight?: boolean
 }
 
 export interface LayerRenderer extends LayerBounds {
   minWidth: number
   minHeight: number
-  render: (width: number, height: number) => Promise<CanvasImageSource>
+  render: (width: number, height: number) => Promise<CardLayer['image']>
 }
 
 export interface CardScene {
@@ -33,6 +37,10 @@ export function captureLayer<T>(
   label: string,
   bounds: LayerBounds,
   paint: (context: CanvasRenderingContext2D) => T,
+  recolor?:
+    | false
+    | ((context: CanvasRenderingContext2D, color?: string, background?: string) => void),
+  highlight = false,
 ): T {
   if (!layers || bounds.width <= 0 || bounds.height <= 0) return paint(ctx)
   const scale = ctx.getTransform().a
@@ -40,15 +48,36 @@ export function captureLayer<T>(
   const y = Math.floor((bounds.y - 3) * scale) / scale
   const width = Math.ceil((bounds.x + bounds.width + 3 - x) * scale) / scale
   const height = Math.ceil((bounds.y + bounds.height + 3 - y) * scale) / scale
-  const canvas = document.createElement('canvas')
-  canvas.width = Math.ceil(width * scale)
-  canvas.height = Math.ceil(height * scale)
-  const context = canvas.getContext('2d')
-  if (!context) throw new Error('Canvas is unavailable')
-  context.setTransform(scale, 0, 0, scale, -x * scale, -y * scale)
+  const surface = () => {
+    const canvas = document.createElement('canvas')
+    canvas.width = Math.ceil(width * scale)
+    canvas.height = Math.ceil(height * scale)
+    const context = canvas.getContext('2d')
+    if (!context) throw new Error('Canvas is unavailable')
+    context.setTransform(scale, 0, 0, scale, -x * scale, -y * scale)
+    return { canvas, context }
+  }
+  const { canvas, context } = surface()
   const result = paint(context)
   ctx.drawImage(canvas, x, y, width, height)
-  layers.push({ id, label, x, y, width, height, image: canvas })
+  layers.push({
+    id,
+    label,
+    x,
+    y,
+    width,
+    height,
+    image: canvas,
+    recolor:
+      typeof recolor === 'function'
+        ? (color, background) => {
+            const { canvas, context } = surface()
+            recolor(context, color, background)
+            return canvas
+          }
+        : recolor,
+    highlight: highlight || undefined,
+  })
   return result
 }
 

@@ -154,6 +154,15 @@ export function chrome(
       { x, y: pt - meta * 0.2, width: crumbWidth, height: meta * 1.5 },
       context =>
         drawCrumbs(context, mono, meta, model.crumbs, x, headerBaseline, crumbWidth, palette),
+      // Ink and highlighter recolour apart, so the last crumb stays legible on its block.
+      (context, ink, bg) =>
+        drawCrumbs(context, mono, meta, model.crumbs, x, headerBaseline, crumbWidth, {
+          ...palette,
+          muted: ink ?? palette.muted,
+          hlInk: ink ?? palette.hlInk,
+          hl: bg ?? palette.hl,
+        }),
+      true,
     )
   if (dateWidth)
     captureLayer(

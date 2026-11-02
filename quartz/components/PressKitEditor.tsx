@@ -50,6 +50,7 @@ export class PressKitEditor {
       drafts: new Map<string, Draft>(),
       draft: { value: empty(), past: [], future: [] },
       rasters: new Map<CardLayer, LayerRaster>(),
+      tints: new Map(),
       selected: new Set<string>(),
       frame: 0,
       revision: 0,
@@ -180,6 +181,7 @@ export class PressKitEditor {
         canvas.parentElement?.removeAttribute('data-editor-rulers')
         state.scene = undefined
         state.rasters.clear()
+        state.tints.clear()
         state.drafts.clear()
         state.draft = { value: empty(), past: [], future: [] }
       },
@@ -202,10 +204,6 @@ export class PressKitEditor {
 
   get railTextScale() {
     return this.state.draft.value.railTextScale
-  }
-
-  get textColor() {
-    return this.state.draft.value.textColor
   }
 
   context(key: string, formatKey: string, available: boolean) {
@@ -260,6 +258,7 @@ export class PressKitEditor {
     }
     state.railAnchors.clear()
     state.rasters.clear()
+    state.tints.clear()
     compose(state)
     state.syncView()
   }

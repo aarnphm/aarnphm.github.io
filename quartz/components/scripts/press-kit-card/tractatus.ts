@@ -87,23 +87,28 @@ export function drawTractatus(
       [size, size],
       1,
     )
+    // Recolour runs after the loop has moved `y` on, so the passage keeps its own top.
+    const top = y
+    const paint = (context: CanvasRenderingContext2D, ink?: string, bg?: string) => {
+      draw(context, number, frame.x + indent, top, ink ?? palette.muted)
+      draw(
+        context,
+        fitted,
+        frame.x + numberWidth + indent,
+        top,
+        ink ?? palette.ink,
+        model.show.highlight ? { bg: bg ?? palette.hl, ink: ink ?? palette.hlInk } : undefined,
+      )
+    }
     captureLayer(
       ctx,
       layers,
       `proposition-${index}-${passage.number}`,
       passage.number,
       { x: frame.x, y, width: frame.w, height: Math.max(number.height, fitted.height) },
-      context => {
-        draw(context, number, frame.x + indent, y, palette.muted)
-        draw(
-          context,
-          fitted,
-          frame.x + numberWidth + indent,
-          y,
-          palette.ink,
-          model.show.highlight ? { bg: palette.hl, ink: palette.hlInk } : undefined,
-        )
-      },
+      context => paint(context),
+      (context, ink, bg) => paint(context, ink, bg),
+      model.show.highlight,
     )
     y += Math.max(number.height, fitted.height) + gap
   }

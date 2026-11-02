@@ -1,6 +1,7 @@
 import { render } from 'preact'
 import { useEffect, useRef } from 'preact/hooks'
 import { buildSelect, type Select, type SelectOption } from '../controls/select'
+import { SelectionColor } from './color-view'
 import { history, resizeKey } from './gestures'
 import {
   bounds,
@@ -133,7 +134,7 @@ export const updateEditorView = (state: EditorState) => {
               document.background = undefined
               document.metricGap = 0
               document.railTextScale = 1
-              document.textColor = 'auto'
+              document.colors = {}
               document.title = undefined
             })
           }
@@ -149,6 +150,19 @@ export const updateEditorView = (state: EditorState) => {
           onClick={() => state.file.click()}
         >
           fond…
+        </button>
+        <button
+          type="button"
+          class="press-kit-segment press-kit-editor-rulers-toggle"
+          aria-pressed={!state.rulers.hidden}
+          title="afficher les règles en pixels autour de la carte"
+          disabled={!state.available}
+          onClick={() => {
+            state.showRulers = !state.showRulers
+            state.syncView()
+          }}
+        >
+          règles
         </button>
       </div>
       {state.showRulers && (
@@ -172,25 +186,6 @@ export const updateEditorView = (state: EditorState) => {
           }}
         />
       </label>
-      <div class="press-kit-editor-field">
-        <span aria-hidden="true">couleur du texte</span>
-        <EditorSelect
-          id="press-kit-editor-text-color"
-          label="couleur du texte"
-          options={[
-            { value: 'auto', label: 'auto' },
-            { value: 'black', label: 'noir' },
-            { value: 'white', label: 'blanc' },
-          ]}
-          selected={doc.textColor}
-          onSelect={value => {
-            if (value === 'auto' || value === 'black' || value === 'white')
-              edit(state, (_, document) => {
-                document.textColor = value
-              })
-          }}
-        />
-      </div>
       {state.loading && <p role="status">chargement de l’image…</p>}
       {state.error && <p role="alert">{state.error}</p>}
       {redrawFailed(state) && <p role="alert">impossible de redimensionner le graphique</p>}
@@ -286,6 +281,7 @@ export const updateEditorView = (state: EditorState) => {
       {selBounds && limits && (
         <fieldset>
           <legend>{label}</legend>
+          <SelectionColor state={state} />
           <div class="press-kit-editor-fields">
             {number(
               'x (px)',

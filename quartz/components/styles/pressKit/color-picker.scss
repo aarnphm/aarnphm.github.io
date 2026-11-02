@@ -1,0 +1,216 @@
+// Sits flush in the hex field's segmented row: the row draws the one hairline around both.
+.press-kit-editor-swatch {
+  box-sizing: border-box;
+  display: grid;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: var(--light);
+  cursor: pointer;
+
+  // Auto and mixed have no single colour: a hairline diagonal reads as "none".
+  &[data-empty] > span {
+    background: linear-gradient(
+      to top right,
+      transparent calc(50% - 0.5px),
+      var(--pk-line) calc(50% - 0.5px) calc(50% + 0.5px),
+      transparent calc(50% + 0.5px)
+    );
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--control-focus);
+    outline-offset: -2px;
+  }
+}
+
+// Top-layer popover: same hairline and paper as the g-select menu, square everywhere.
+.press-kit-color-picker {
+  position: fixed;
+  inset: auto;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0.5rem;
+  border: 1px solid var(--pk-line);
+  border-radius: 0;
+  background: var(--light);
+  color: var(--dark);
+  font: var(--pk-meta) / 1.2 var(--codeFont);
+  font-variant-numeric: tabular-nums;
+
+  &:popover-open {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  // First frame waits for floating-ui so the panel never flashes at the viewport centre.
+  &:not([data-placed]) {
+    visibility: hidden;
+  }
+
+  :where([role='slider']) {
+    position: relative;
+    border: 1px solid var(--pk-line);
+    touch-action: none;
+    cursor: crosshair;
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: var(--x);
+      box-sizing: border-box;
+      border: 1px solid #fff;
+      outline: 1px solid #000;
+      pointer-events: none;
+      transform: translateX(-50%);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--control-focus);
+      outline-offset: 1px;
+    }
+
+    // Okhsv has no CSS gradient form, so both are small bitmaps the browser smooths when scaling.
+    > canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+
+.press-kit-color-plane {
+  aspect-ratio: 16 / 9;
+
+  &::after {
+    top: var(--y);
+    width: 9px;
+    height: 9px;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.press-kit-color-hue {
+  height: 0.7rem;
+
+  &::after {
+    top: -2px;
+    bottom: -2px;
+    width: 5px;
+  }
+}
+
+// Doubled class: this partial loads before `.press-kit-editor input` in pressKit.scss.
+.press-kit-color-picker .press-kit-color-channels {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: end;
+  gap: 0.35rem;
+
+  label {
+    display: grid;
+    gap: 0.2rem;
+    min-width: 0;
+    margin: 0;
+    color: var(--darkgray);
+  }
+
+  input {
+    box-sizing: border-box;
+    width: 100%;
+    height: var(--pk-control);
+    padding: 0 0.35rem;
+    border: 1px solid var(--pk-line);
+    border-radius: 0;
+    background: var(--pk-surface);
+    color: var(--dark);
+    font: inherit;
+    text-align: end;
+
+    &:focus-visible {
+      outline: 2px solid var(--control-focus);
+      outline-offset: -2px;
+    }
+  }
+}
+
+// Sampled chips share the preset grid, with a meta label hung in the gutter above.
+.press-kit-color-row {
+  display: grid;
+  gap: 0.2rem;
+
+  > span {
+    color: var(--darkgray);
+  }
+}
+
+// The segments' 1px-gap-over-line ground draws the dividers.
+.press-kit-color-presets {
+  display: grid;
+  grid-template-columns: repeat(var(--cells, 10), minmax(0, 1fr));
+  gap: 1px;
+  border: 1px solid var(--pk-line);
+  background: var(--pk-line);
+
+  button {
+    aspect-ratio: 1;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    cursor: pointer;
+
+    &[aria-pressed='true'] {
+      box-shadow: inset 0 0 0 2px var(--light);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--control-focus);
+      outline-offset: -2px;
+    }
+  }
+}
+
+// Empty cells keep the sampled row the same tray as the presets.
+.press-kit-color-presets > span {
+  background: var(--light);
+}
+
+.press-kit-color-presets > .press-kit-color-dropper {
+  display: grid;
+  place-items: center;
+  background: var(--light);
+  color: var(--darkgray);
+
+  svg {
+    width: 66%;
+    max-width: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.4;
+    stroke-linecap: round;
+  }
+
+  rect {
+    fill: currentColor;
+    stroke: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: var(--dark);
+      background: var(--pk-surface);
+    }
+  }
+}
+
+@media (pointer: coarse) {
+  .press-kit-color-presets {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .press-kit-color-picker .press-kit-color-channels input {
+    font-size: max(16px, 1rem);
+  }
+}

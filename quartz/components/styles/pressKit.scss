@@ -3,6 +3,7 @@
 @use './pressKit/data-grid';
 @use './pressKit/stage';
 @use './pressKit/controls';
+@use './pressKit/color-picker';
 
 .press-kit-editor {
   margin-top: 0.75rem;
@@ -133,6 +134,11 @@
     color: var(--gray);
     cursor: default;
   }
+
+  // Fifth cell: a full-width row keeps the 2-column grid closed.
+  > .press-kit-editor-rulers-toggle {
+    grid-column: 1 / -1;
+  }
 }
 
 .press-kit-editor > div > label,
@@ -160,6 +166,33 @@
   display: flex;
   gap: 0.35rem;
   flex-wrap: wrap;
+}
+.press-kit-editor-color {
+  display: grid;
+  gap: 0.25rem;
+
+  > .press-kit-segments {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+// Swatch and hex share one hairline box; the 1px gap over the line colour is the divider.
+.press-kit-editor-color-custom {
+  display: grid;
+  grid-template-columns: var(--pk-control) minmax(0, 1fr);
+  gap: 1px;
+  border: 1px solid var(--pk-line);
+  background: var(--pk-line);
+
+  input {
+    height: var(--pk-control);
+    padding-block: 0;
+    border: 0;
+  }
+
+  input:focus-visible {
+    outline: 2px solid var(--control-focus);
+    outline-offset: -2px;
+  }
 }
 .press-kit-editor-view {
   display: flex;

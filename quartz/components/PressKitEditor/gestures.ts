@@ -42,8 +42,7 @@ export const history = (state: EditorState, redo: boolean) => {
   if (
     before.metricGap !== value.metricGap ||
     before.railTextScale !== value.railTextScale ||
-    before.title !== value.title ||
-    before.textColor !== value.textColor
+    before.title !== value.title
   )
     state.requestScene()
   else queue(state)

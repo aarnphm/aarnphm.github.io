@@ -1,6 +1,7 @@
 import type { CardLayer, LayerBounds } from '../scripts/press-kit-layers'
 import { readCardBackground } from '../scripts/press-kit-background'
 import { paintRulers } from '../scripts/press-kit-rulers'
+import { colorImage } from './color'
 import {
   bounds,
   composition,
@@ -166,7 +167,7 @@ export const compose = (state: EditorState) => {
       ctx.beginPath()
       ctx.rect(p.x, p.y, lw, lh)
       ctx.clip()
-      ctx.drawImage(raster.image, p.x, p.y, raster.width, raster.height)
+      ctx.drawImage(colorImage(state, layer, raster.image), p.x, p.y, raster.width, raster.height)
       ctx.restore()
     }
   }
@@ -211,8 +212,7 @@ export const edit = (state: EditorState, mutate: (comp: Composition, doc: Layout
   if (
     before.metricGap !== doc.metricGap ||
     before.railTextScale !== doc.railTextScale ||
-    before.title !== doc.title ||
-    before.textColor !== doc.textColor
+    before.title !== doc.title
   )
     state.requestScene()
   else queue(state)
