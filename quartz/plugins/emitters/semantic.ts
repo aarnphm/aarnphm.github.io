@@ -92,6 +92,32 @@ function runEmbedBuild(
   })
 }
 
+const isoDay = (date: Date | undefined): string | undefined =>
+  date && !Number.isNaN(date.getTime())
+    ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+    : undefined
+
+/**
+ * One date per document for the embeddings store: when the note was written if the
+ * frontmatter says so (`date`/`created`/`published`), else its frontmatter `modified`,
+ * else the file mtime. `dateSource` lets readers grey out the filesystem guesses.
+ */
+export function embeddingDate(data: {
+  frontmatter?: { created?: unknown; published?: unknown; modified?: unknown }
+  dates?: { created: Date; modified: Date; published: Date }
+}): { date?: string; dateSource?: 'frontmatter' | 'modified' | 'filesystem' } {
+  const fm = data.frontmatter
+  const dates = data.dates
+  if (!dates) return {}
+  const [date, dateSource] =
+    fm?.published || fm?.created
+      ? [isoDay(dates.published) ?? isoDay(dates.created), 'frontmatter' as const]
+      : fm?.modified
+        ? [isoDay(dates.modified), 'modified' as const]
+        : [isoDay(dates.modified), 'filesystem' as const]
+  return date ? { date, dateSource } : {}
+}
+
 export const SemanticIndex: QuartzEmitterPlugin<
   Partial<GlobalConfiguration['semanticSearch']>
 > = opts => {
@@ -140,7 +166,7 @@ export const SemanticIndex: QuartzEmitterPlugin<
         const title = file.data.frontmatter?.title ?? slug
         const text = file.data.text
         if (!text) continue
-        lines.push(JSON.stringify({ slug, title, text }))
+        lines.push(JSON.stringify({ slug, title, text, ...embeddingDate(file.data) }))
       }
 
       yield write({
