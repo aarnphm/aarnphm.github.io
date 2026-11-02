@@ -18,13 +18,14 @@
   --control-focus: var(--dark);
   position: fixed;
   inset: 0;
-  width: min(64rem, calc(100vw - 2rem));
+  box-sizing: border-box;
+  width: 100%;
   max-width: none;
-  height: fit-content;
-  max-height: min(92dvh, 54rem);
-  margin: auto;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
   padding: 0;
-  border: 1px solid var(--pk-line);
+  border: 0;
   border-radius: var(--radius-none);
   background: var(--light);
   color: var(--darkgray);
@@ -62,11 +63,6 @@
 
   @media #{$mobile} {
     --pk-offset: 0, 1.5rem;
-    inset: auto 0 0;
-    width: 100%;
-    max-height: 94dvh;
-    border-inline: 0;
-    border-bottom: 0;
     padding-bottom: env(safe-area-inset-bottom);
   }
 

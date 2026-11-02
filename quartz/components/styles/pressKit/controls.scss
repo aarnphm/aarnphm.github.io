@@ -8,10 +8,6 @@
   overscroll-behavior: contain;
   scrollbar-width: thin;
   scrollbar-color: var(--pk-line) transparent;
-
-  @media #{$mobile} {
-    overflow: visible;
-  }
 }
 
 .press-kit-group {

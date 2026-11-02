@@ -77,15 +77,6 @@ export const TrainingControls = () => (
       <div class="press-kit-overlay" />
       <div class="press-kit-data-grid press-kit-overlay-background">
         <Include name="transparent" label="fond transparent" data />
-        <button
-          type="button"
-          class="press-kit-data-toggle"
-          data-editor-rulers
-          aria-pressed="false"
-          disabled
-        >
-          <span class="press-kit-data-label">règles</span>
-        </button>
       </div>
     </fieldset>
 

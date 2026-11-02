@@ -84,16 +84,16 @@
 
   @media #{$mobile} {
     grid-template-columns: minmax(0, 1fr);
-    overflow-y: auto;
+    grid-template-rows: minmax(0, 42%) minmax(0, 1fr);
   }
 }
 
 .press-kit-stage {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.6rem;
   min-width: 0;
   min-height: 0;
   margin: 0;
@@ -111,12 +111,8 @@
 .press-kit-viewport,
 .press-kit-link-frame {
   width: 100%;
-  height: min(68dvh, 40rem);
+  height: 100%;
   min-height: 0;
-
-  @media #{$mobile} {
-    height: 42dvh;
-  }
 }
 
 .press-kit-viewport {
@@ -160,14 +156,48 @@
   outline: 1px solid var(--pk-line);
 }
 
-.press-kit-preview-zoom {
+.press-kit-preview-tools {
   @include instrument.tokens;
   @include instrument.type;
-  @include instrument.frame;
   --pdf-instrument-height: calc(var(--pk-control) + 2px);
   --pdf-instrument-font: var(--pk-meta);
+  --pdf-instrument-icon: 18px;
   --pdf-instrument-surface: var(--pk-surface);
   --pdf-instrument-selected: var(--pk-selected);
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  z-index: 2;
+  max-width: calc(100% - 1.5rem);
+  border: 1px solid var(--darkgray);
+  background: var(--light);
+
+  summary {
+    @include instrument.button(false);
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: var(--pk-control);
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+  }
+
+  &[open] > summary {
+    border-bottom: 1px solid var(--pk-line);
+
+    svg {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+.press-kit-preview-zoom {
+  @include instrument.frame;
+  width: 100%;
+  border: 0;
 
   > * {
     @include instrument.cell;
@@ -177,18 +207,14 @@
     @include instrument.button;
   }
 
-  [data-preview-zoom='actual'],
-  [data-preview-zoom='fit'] {
+  [data-preview-zoom='actual'] {
     @include instrument.button(false);
     aspect-ratio: auto;
   }
 
   output {
     @include instrument.zoom-readout;
-  }
-
-  @media (pointer: coarse) {
-    --pdf-instrument-font: 16px;
+    flex: 1;
   }
 }
 
@@ -228,8 +254,11 @@
 }
 
 .press-kit-caption {
+  padding: 0.5rem;
+  border-top: 1px solid var(--pk-line);
   color: var(--darkgray);
   font-family: var(--codeFont);
-  font-size: 0.6rem;
+  font-size: var(--pk-meta);
   font-variant-numeric: tabular-nums;
+  line-height: 1.5;
 }

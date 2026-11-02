@@ -29,9 +29,9 @@ export interface Composition {
 }
 export interface Layout {
   formats: Record<string, Composition>
+  colors: Record<string, string>
   metricGap: number
   railTextScale: number
-  textColor: 'auto' | 'black' | 'white'
   title?: string
   background?: Background
 }
@@ -73,7 +73,7 @@ export type Gesture = PointerGesture &
 export interface LayerRaster {
   width: number
   height: number
-  image: CanvasImageSource
+  image: CardLayer['image']
   pending?: Promise<void>
   failed?: { width: number; height: number }
 }
@@ -96,6 +96,7 @@ export interface EditorState {
   draft: Draft
   scene?: CardScene
   rasters: Map<CardLayer, LayerRaster>
+  tints: Map<CardLayer, { source: CardLayer['image']; color: string; image: HTMLCanvasElement }>
   selected: Set<string>
   gesture?: Gesture
   frame: number
@@ -111,17 +112,12 @@ export interface EditorState {
   observer: ResizeObserver
 }
 
-export const empty = (): Layout => ({
-  formats: {},
-  metricGap: 0,
-  railTextScale: 1,
-  textColor: 'auto',
-})
+export const empty = (): Layout => ({ formats: {}, colors: {}, metricGap: 0, railTextScale: 1 })
 
 export const copy = (layout: Layout): Layout => ({
+  colors: { ...layout.colors },
   metricGap: layout.metricGap,
   railTextScale: layout.railTextScale,
-  textColor: layout.textColor,
   title: layout.title,
   formats: Object.fromEntries(
     Object.entries(layout.formats).map(([key, composition]) => [

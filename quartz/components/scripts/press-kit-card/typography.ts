@@ -291,6 +291,20 @@ export function draw(
         height: fitted.height,
       },
       context => draw(context, fitted, x, y, color, highlight, align, maxWidth),
+      highlight
+        ? (context, ink, bg) =>
+            draw(
+              context,
+              fitted,
+              x,
+              y,
+              ink ?? highlight.ink,
+              { bg: bg ?? highlight.bg, ink: ink ?? highlight.ink },
+              align,
+              maxWidth,
+            )
+        : undefined,
+      !!highlight,
     )
   }
   const { size, lines, block } = fitted

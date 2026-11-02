@@ -72,18 +72,26 @@ function drawArt(
     ctx.fillRect(x, y, w, h)
   }
   const print = (x: number, y: number, w: number, h: number, cut: ('left' | 'bottom')[]) =>
-    captureLayer(ctx, layers, 'art', 'illustration', { x, y, width: w, height: h }, ctx => {
-      drawCover(ctx, art, model.artFocus ?? ART_FOCUS, x, y, w, h)
-      if (bleed) {
-        const band = Math.round(h * 0.28)
-        if (cut.includes('bottom')) fade(ctx, x, y + h - band, w, band, 'bottom')
-        if (cut.includes('left')) fade(ctx, x, y, band, h, 'left')
-        return
-      }
-      ctx.strokeStyle = palette.rule
-      ctx.lineWidth = 2
-      ctx.strokeRect(x + 1, y + 1, w - 2, h - 2)
-    })
+    captureLayer(
+      ctx,
+      layers,
+      'art',
+      'illustration',
+      { x, y, width: w, height: h },
+      ctx => {
+        drawCover(ctx, art, model.artFocus ?? ART_FOCUS, x, y, w, h)
+        if (bleed) {
+          const band = Math.round(h * 0.28)
+          if (cut.includes('bottom')) fade(ctx, x, y + h - band, w, band, 'bottom')
+          if (cut.includes('left')) fade(ctx, x, y, band, h, 'left')
+          return
+        }
+        ctx.strokeStyle = palette.rule
+        ctx.lineWidth = 2
+        ctx.strokeRect(x + 1, y + 1, w - 2, h - 2)
+      },
+      false,
+    )
   if (spec === FORMATS.landscape) {
     const w = Math.round(frame.w * 0.4)
     print(frame.x + frame.w - w, frame.top, w, avail, ['left', 'bottom'])
