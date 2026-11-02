@@ -4605,16 +4605,16 @@ test('labels Wahoo climb analysis as Summit and efforts as Summit Segments', () 
   const climbing = table(rendered, 'climbing')
   assert.equal(climbing.properties.ariaLabel, 'Summit Segments efforts')
   assert.deepEqual(headerText(climbing), [
-    'Segment',
-    'Time',
-    'Distance',
-    'Gain',
-    'Grade',
-    'Speed',
-    'Heart rate',
-    'Power',
-    'W/kg',
-    'VAM',
+    'segment',
+    'time',
+    'distance',
+    'gain',
+    'grade',
+    'speed',
+    'heart rate',
+    'power',
+    'w/kg',
+    'vam',
   ])
   assert.equal(bodyRows(climbing)[0][0], 'Summit 2/6')
 })
