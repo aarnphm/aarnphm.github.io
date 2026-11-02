@@ -68,11 +68,22 @@ Acceptance cases, recorded before implementation:
 
 ## Add PDFs to the queue
 
-After a new public paper appears in the watcher’s search inventory, use **queue missing PDFs** or expand its row and choose **queue PDF**. Failed jobs expose **retry PDF**. Equivalent commands:
+The `embeddings` frontmatter list in `content/embeddings/index.md` selects
+directories for the queue, runner, extraction batches and harness. Entries are
+content-relative directory wikilinks, with optional aliases, such as
+`[[thoughts/pdfs|pdfs]]`. The current list includes `thoughts/papers/` and
+`thoughts/pdfs/`. The harness shows all configured collections even when the
+current runner is processing a narrower selection. Changes appear on the next
+inventory refresh (within 60 seconds); queue commands read the list immediately.
+An empty list selects no PDFs. A missing or malformed list raises an error. Protected, encrypted and ignored sources
+remain excluded by the public inventory.
+
+After a new public PDF appears in the watcher’s search inventory, use **queue missing PDFs** or expand its row and choose **queue PDF**. Failed jobs expose **retry PDF**. Equivalent commands:
 
 ```sh
 pnpm pdf:queue
 pnpm pdf:queue --slug thoughts/papers/example.pdf
+pnpm pdf:queue --slug thoughts/pdfs/example.pdf
 ```
 
 The client checks source hashes and full physical-page coverage. Complete papers are skipped; repeated requests share one pending job. Requests persist in `quartz/.quartz-cache/pdf-search/queue.json`. One detached dispatcher holds `.queue-worker.lock`, waits for the existing runner lock, and drains later arrivals. Its PID and log are `queue-worker.pid` and `queue-worker.log` beside the queue. Failed jobs retain their error and require an explicit retry.

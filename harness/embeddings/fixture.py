@@ -23,21 +23,34 @@ def create(root: Path, pid: int, advance: bool) -> None:
   run = cache / 'background-papers'
   output = content / 'embeddings/pdf'
   public = root / 'public/static'
-  for directory in (run, output, public, content / 'thoughts/papers'):
+  for directory in (
+    run,
+    output,
+    public,
+    content / 'thoughts/papers',
+    content / 'thoughts/pdfs',
+  ):
     directory.mkdir(parents=True, exist_ok=True)
   spec = ExtractionSpec('fixture-ocr', 'fixture-layout', 'fixture-sdk', 200)
   (cache / 'recipe.json').write_text(json.dumps(asdict(spec)))
   (root / 'quartz.config.ts').write_text('export default {ignorePatterns: []}')
+  config = root / 'content/embeddings/index.md'
+  config.parent.mkdir(parents=True, exist_ok=True)
+  config.write_text(
+    "---\nembeddings:\n  - '[[thoughts/papers|papers]]'\n"
+    "  - '[[thoughts/pdfs|pdfs]]'\n---\n"
+  )
   inventory = {}
   for name, pages in [('alpha', 3), ('beta', 2)]:
-    source = content / f'thoughts/papers/{name}.pdf'
+    folder = 'papers' if name == 'alpha' else 'pdfs'
+    source = content / f'thoughts/{folder}/{name}.pdf'
     if not source.exists():
       with pymupdf.open() as pdf:
         for number in range(pages):
           page = pdf.new_page()
           page.insert_text((72, 72), f'{name} page {number + 1}')
         pdf.save(source)
-    inventory[f'thoughts/papers/{name}.pdf'] = {
+    inventory[f'thoughts/{folder}/{name}.pdf'] = {
       'filePath': str(source),
       'fileName': source.name,
       'title': name.title(),
@@ -73,7 +86,7 @@ def create(root: Path, pid: int, advance: bool) -> None:
   log = run / '20261023T120000000000-extracting.log'
   events = [
     {'slug': 'thoughts/papers/alpha.pdf', 'newPages': [2, 3]},
-    {'slug': 'thoughts/papers/beta.pdf', 'newPages': [1, 2]},
+    {'slug': 'thoughts/pdfs/beta.pdf', 'newPages': [1, 2]},
     {'page': 2, 'seconds': 10, 'characters': 17},
   ]
   if advance:

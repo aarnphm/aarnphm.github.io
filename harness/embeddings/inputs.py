@@ -13,7 +13,7 @@ import pymupdf
 
 REPOSITORY = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPOSITORY / 'quartz/scripts/pdf-search'))
-from build import public_pdfs
+from scope import queued_pdfs
 from cache import ExtractionSpec, PageCache
 
 
@@ -89,7 +89,7 @@ class Inventory:
     previous = {source.path: source for source in self.sources}
     sources = []
     for slug, entry in sorted(
-      public_pdfs(index, self.root / 'content').items()
+      queued_pdfs(index, self.root / 'content').items()
     ):
       if not slug.startswith(prefix):
         continue
