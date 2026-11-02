@@ -2,7 +2,7 @@ import { Mutex } from 'async-mutex'
 import { toHtml } from 'hast-util-to-html'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises'
 import { registerHooks } from 'node:module'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
@@ -10,6 +10,7 @@ import test from 'node:test'
 import { setTimeout as delay } from 'node:timers/promises'
 import type { QuartzConfig } from './cfg'
 import type { Argv } from './util/ctx'
+import { Assets } from './plugins/emitters/assets'
 import { write } from './plugins/emitters/helpers'
 import { resetProcessedContentCache } from './processors/parse'
 
@@ -229,6 +230,160 @@ test('dispose reports pending content edits queued while the build mutex is held
     } finally {
       release()
     }
+  } finally {
+    await watching?.dispose()
+    resetProcessedContentCache()
+    process.chdir(originalDirectory)
+    await rm(directory, { recursive: true, force: true })
+    assets.deregister()
+  }
+})
+
+test('embedding asset updates publish without parsing, rendering, or refreshing pages', async () => {
+  const assets = registerHooks({
+    resolve(specifier, context, next) {
+      return next(specifier.endsWith('.inline') ? `${specifier}.ts` : specifier, context)
+    },
+    load(url, context, next) {
+      if (/\.(?:scss|css|inline\.ts)$/.test(url)) {
+        return {
+          format: 'module',
+          source: `export default ${JSON.stringify(readFileSync(new URL(url), 'utf8'))}`,
+          shortCircuit: true,
+        }
+      }
+      return next(url, context)
+    },
+  })
+  const { buildQuartz } = await import('./build')
+  const originalDirectory = process.cwd()
+  const directory = await mkdtemp(path.join(tmpdir(), 'quartz-embedding-update-'))
+  const input = path.join(directory, 'content')
+  const output = path.join(directory, 'public')
+  await mkdir(input)
+  await mkdir(path.join(directory, 'quartz/static'), { recursive: true })
+  await mkdir(path.join(directory, '.agents/skills'), { recursive: true })
+  const source = path.join(input, 'note.md')
+  await writeFile(source, 'initial note content')
+  const colors = {
+    light: '#fff',
+    lightgray: '#eee',
+    gray: '#999',
+    darkgray: '#555',
+    dark: '#111',
+    secondary: '#123',
+    tertiary: '#456',
+    highlight: '#def',
+    textHighlight: '#fed',
+  }
+  let parses = 0
+  let renders = 0
+  let refreshes = 0
+  const config: QuartzConfig = {
+    configuration: {
+      pageTitle: 'dispose fixture',
+      enableSPA: false,
+      enablePopovers: false,
+      analytics: null,
+      ignorePatterns: [],
+      defaultDateType: 'created',
+      locale: 'en-US',
+      theme: {
+        typography: { header: 'sans-serif', body: 'sans-serif', code: 'monospace' },
+        cdnCaching: false,
+        colors: { lightMode: colors, darkMode: colors },
+        fontOrigin: 'local',
+      },
+    },
+    plugins: {
+      transformers: [
+        {
+          name: 'FixtureText',
+          textTransform(_ctx, source) {
+            parses++
+            return source
+          },
+        },
+      ],
+      filters: [],
+      emitters: [
+        Assets(),
+        {
+          name: 'FixturePage',
+          async *emit(ctx, content) {
+            renders++
+            for (const [tree, file] of content) {
+              if (!file.data.slug) throw new Error('missing slug')
+              yield write({ ctx, slug: file.data.slug, ext: '.html', content: toHtml(tree) })
+            }
+          },
+        },
+      ],
+    },
+  }
+  const argv: Argv = {
+    directory: input,
+    output,
+    watch: true,
+    serve: false,
+    verbose: false,
+    force: false,
+    port: 0,
+    wsPort: 0,
+    concurrency: 1,
+  }
+  const mut = new Mutex()
+  process.chdir(directory)
+  resetProcessedContentCache()
+  let watching: Awaited<ReturnType<typeof buildQuartz>>
+  try {
+    watching = await buildQuartz(config, argv, mut, () => {
+      refreshes++
+    })
+    assert.ok(watching)
+    const page = path.join(output, 'note.html')
+    const before = await stat(page)
+    const rendered = renders
+    const parsed = parses
+    const embedding = path.join(input, 'embeddings/vectors.bin')
+    const published = path.join(output, 'embeddings/vectors.bin')
+    await mkdir(path.dirname(embedding), { recursive: true })
+    async function waitFor(check: () => Promise<boolean>) {
+      for (let attempt = 0; attempt < 100; attempt++) {
+        if (await check()) return
+        await delay(50)
+      }
+      assert.fail('embedding publication timed out')
+    }
+    for (const value of ['first vectors', 'replacement vectors']) {
+      await writeFile(embedding, value)
+      await waitFor(async () => (await readFile(published, 'utf8').catch(() => '')) === value)
+    }
+    await rm(embedding)
+    await waitFor(async () => !(await stat(published).catch(() => undefined)))
+    await delay(200)
+    assert.equal(parses, parsed)
+    assert.equal(renders, rendered)
+    assert.equal(refreshes, 0)
+    const after = await stat(page)
+    assert.equal(after.ino, before.ino)
+    assert.equal(after.mtimeMs, before.mtimeMs)
+    // Authored notes inside the same directory still use the content pipeline.
+    await writeFile(path.join(input, 'embeddings/index.md'), 'Embedding documentation')
+    await waitFor(async () =>
+      (await readFile(path.join(output, 'embeddings/index.html'), 'utf8').catch(() => '')).includes(
+        'Embedding documentation',
+      ),
+    )
+    assert.ok(renders > rendered)
+    console.log(
+      JSON.stringify({
+        embeddingAddChangeDelete: true,
+        pageIdentityPreserved: true,
+        embeddingRefreshes: 0,
+        authoredNoteRendered: true,
+      }),
+    )
   } finally {
     await watching?.dispose()
     resetProcessedContentCache()
