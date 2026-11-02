@@ -36,3 +36,41 @@ document.addEventListener('nav', () => {
     cancelAnimationFrame(frame)
   })
 })
+
+// Below the rail width each note is folded under its paragraph (marginalia.scss); tapping the
+// mark (sidenote word or footnote square) opens or closes it. With the rail, a note already sits
+// beside its mark, so the mark keeps its usual behaviour.
+document.addEventListener('nav', () => {
+  if (document.body.dataset.layout !== 'newspaper') return
+  const controller = new AbortController()
+  const { signal } = controller
+  for (const mark of document.querySelectorAll<HTMLElement>('article [data-note]')) {
+    const note = document.getElementById(mark.dataset.note ?? '')
+    if (!note || note.classList.contains('profile-note-boxed')) continue
+    const link = mark instanceof HTMLAnchorElement
+    mark.setAttribute('aria-controls', note.id)
+    mark.setAttribute('aria-expanded', 'false')
+    if (!link) {
+      mark.setAttribute('role', 'button')
+      mark.tabIndex = 0
+    }
+    const toggle = (event: Event) => {
+      if (getComputedStyle(note).position === 'absolute') return
+      event.preventDefault()
+      event.stopImmediatePropagation()
+      const open = !note.hasAttribute('data-open')
+      note.toggleAttribute('data-open', open)
+      mark.setAttribute('aria-expanded', String(open))
+    }
+    mark.addEventListener('click', toggle, { capture: true, signal })
+    if (!link)
+      mark.addEventListener(
+        'keydown',
+        event => {
+          if (event.key === 'Enter' || event.key === ' ') toggle(event)
+        },
+        { signal },
+      )
+  }
+  window.addCleanup(() => controller.abort())
+})
