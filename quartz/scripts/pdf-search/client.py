@@ -14,6 +14,12 @@ from PIL import Image
 
 from cache import ExtractedPage, normalize_page
 from streaming import PdfPage, PdfPipeline
+from recovery import (
+  native_binary_text,
+  native_region_text,
+  reviewed_scan_artifact,
+  vector_aside,
+)
 
 
 class CheckedOCRClient(OCRClient):
@@ -100,26 +106,104 @@ class OcrClient:
         number, label = loaded.source.number, loaded.label
         recovered = False
         for region in raw[0]:
-          if region.get('label') in {
-            'content',
-            'table',
-            'display_formula',
-          } and region.get('content') in (None, ''):
+          if region.get('content') in (None, ''):
+            native = None
+            method = 'native-pdf-text-v1'
+            if region.get('label') in self.layout.label_task_mapping['text']:
+              native = native_region_text(
+                loaded.source.source, number, region['bbox_2d']
+              )
+            elif region.get('label') in ('table', 'display_formula'):
+              native = native_binary_text(
+                loaded.source.source, number, region['bbox_2d']
+              )
+              method = 'native-binary-text-v1'
+            if native is not None:
+              region['content'] = native
+              region['recovery'] = method
+              recovered = True
+              print(
+                json.dumps({
+                  'event': 'page-region-recovery',
+                  'source': str(loaded.source.source),
+                  'page': number,
+                  'region': region['index'],
+                  'method': method,
+                }),
+                flush=True,
+              )
+              continue
+          if (
+            region.get('label') in self.layout.label_task_mapping['text']
+            and region.get('content') == ''
+            and (
+              vector_aside(loaded.source.source, number, region['bbox_2d'])
+              or reviewed_scan_artifact(
+                loaded.source.source, number, region['bbox_2d']
+              )
+            )
+          ):
+            region['original_label'] = region['label']
+            region['label'] = 'image'
+            region['recovery'] = (
+              'reviewed-scan-artifact-v1'
+              if reviewed_scan_artifact(
+                loaded.source.source, number, region['bbox_2d']
+              )
+              else 'native-vector-aside-v1'
+            )
+            recovered = True
+            print(
+              json.dumps({
+                'event': 'page-region-recovery',
+                'source': str(loaded.source.source),
+                'page': number,
+                'region': region['index'],
+                'method': region['recovery'],
+              }),
+              flush=True,
+            )
+            continue
+          failed_text = (
+            region.get('label') in self.layout.label_task_mapping['text']
+            and region.get('label') not in ('algorithm', 'content')
+            and region.get('content') is None
+          )
+          if (
+            failed_text
+            or region.get('label')
+            in {'content', 'table', 'display_formula', 'algorithm'}
+          ) and region.get('content') in (None, ''):
             # Structured regions can loop under the layout's recognition prompt.
             # Retry once with the other supported representation of the crop.
             task = 'table' if region['label'] == 'content' else 'text'
             bounds = region['bbox_2d']
-            if region['label'] == 'display_formula':
-              # Formula boxes can clip edge glyphs. Keep a small page-bounded
+            if failed_text or region['label'] in (
+              'display_formula',
+              'algorithm',
+            ):
+              # Structured boxes can clip edge glyphs. Keep a small page-bounded
               # margin for the retry and retain the detector's original bounds.
               left, top, right, bottom = bounds
+              margin = 32 if failed_text else 8
               bounds = [
-                max(0, left - 8),
-                max(0, top - 8),
-                min(1000, right + 8),
-                min(1000, bottom + 8),
+                max(0, left - margin),
+                max(0, top - margin),
+                min(1000, right + margin),
+                min(1000, bottom + margin),
               ]
               region['recovery_bbox_2d'] = bounds
+            print(
+              json.dumps({
+                'event': 'page-region-retry',
+                'source': str(loaded.source.source),
+                'page': number,
+                'region': region['index'],
+                'label': region['label'],
+                'bounds': bounds,
+              }),
+              flush=True,
+            )
             with crop_image_region(loaded.image, bounds) as crop:
               request = self.pipeline.page_loader.build_request_from_image(
                 crop, task_type=task
@@ -130,7 +214,8 @@ class OcrClient:
               'content': 'contents-table-ocr-v1',
               'table': 'table-text-ocr-v1',
               'display_formula': 'formula-margin-text-ocr-v1',
-            }[region['label']]
+              'algorithm': 'algorithm-margin-text-ocr-v1',
+            }.get(region['label'], 'text-margin-ocr-v1')
             recovered = True
             print(
               json.dumps({
@@ -163,8 +248,33 @@ class OcrClient:
                 enlarged, task_type='text'
               )
               response, _ = self.pipeline.ocr_client.process(request)
-          region['content'] = response['choices'][0]['message']['content']
-          region['recovery'] = 'small-region-min-edge-ocr-v2'
+              content = response['choices'][0]['message']['content']
+              method = 'small-region-min-edge-ocr-v2'
+              if content is None or all(
+                line.strip() in ('', '```', '```markdown')
+                for line in content.splitlines()
+              ):
+                request = self.pipeline.page_loader.build_request_from_image(
+                  enlarged, task_type='formula'
+                )
+                response, _ = self.pipeline.ocr_client.process(request)
+                formula = response['choices'][0]['message']['content']
+                symbol = (
+                  (formula or '')
+                  .strip()
+                  .removeprefix('$$')
+                  .removesuffix('$$')
+                  .strip()
+                )
+                if len(symbol) != 1 or not symbol.isalnum():
+                  raise ValueError(
+                    'Tiny text recovery did not return one letter or digit'
+                  )
+                content = symbol
+                method = 'small-region-symbol-ocr-v1'
+                region['recovery_response'] = formula
+          region['content'] = content
+          region['recovery'] = method
           recovered = True
           print(
             json.dumps({
@@ -179,13 +289,19 @@ class OcrClient:
         if recovered:
           formatted, _, _ = self.pipeline.result_formatter.process(raw)
           output = json.loads(formatted)
-        if not raw[0] and loaded.has_native_text:
-          # Sparse body text can be classified as a discarded header. Retry the
-          # rendered page through the same checked recognizer before committing.
+        empty_recognition = bool(raw[0]) and all(
+          region.get('content') == ''
+          and region.get('label') in self.layout.label_task_mapping['text']
+          for region in raw[0]
+        )
+        if (not raw[0] or empty_recognition) and loaded.has_native_text:
+          # Layout can miss captions and classify a photograph as empty text.
+          # Recover the whole page only when no recognized text is replaced.
           request = self.pipeline.page_loader.build_request_from_image(
             loaded.image, task_type='text'
           )
           response, _ = self.pipeline.ocr_client.process(request)
+          original_regions = raw[0]
           raw = [
             [
               {
@@ -193,7 +309,12 @@ class OcrClient:
                 'label': 'text',
                 'bbox_2d': [0, 0, 1000, 1000],
                 'content': response['choices'][0]['message']['content'],
-                'recovery': 'empty-layout-full-page-ocr-v1',
+                'recovery': (
+                  'empty-recognition-full-page-ocr-v1'
+                  if empty_recognition
+                  else 'empty-layout-full-page-ocr-v1'
+                ),
+                'original_regions': original_regions,
               }
             ]
           ]

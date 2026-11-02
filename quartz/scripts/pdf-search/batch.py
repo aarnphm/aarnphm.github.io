@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pymupdf
 
-from build import public_pdfs
+from scope import queued_pdfs
 from cache import PageCache
 from client import OcrClient
 from extract import recipe
@@ -60,7 +60,7 @@ def main() -> None:
     parser.error(
       'Use nonnegative page limits, DPI 72-300, and concurrency/lookahead 1-16'
     )
-  inventory = public_pdfs(args.public_index, args.content)
+  inventory = queued_pdfs(args.public_index, args.content)
   sources = {
     slug: source
     for slug, source in sorted(inventory.items())
