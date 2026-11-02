@@ -7,7 +7,7 @@ flashcards:
   default: true
 id: word
 layout: technical
-modified: 2026-10-31 14:54:17 GMT-04:00
+modified: 2026-11-01 13:47:46 GMT-05:00
 tags:
   - evergreen
 title: lists
@@ -376,3 +376,7 @@ title: lists
 - bellibone
 - alembic
 - storge
+- lethargic
+- spent
+- knackered
+- languid
