@@ -6,7 +6,7 @@ date: '2026-01-17'
 description: my name is Aaron, and on the virtue of friendship
 id: friends
 layout: technical
-modified: 2026-10-30 13:56:30 GMT-04:00
+modified: 2026-11-01 13:42:25 GMT-05:00
 tags:
   - evergreen
   - friend
@@ -72,9 +72,9 @@ quick tl/dr: i used to live in sf for a bit for work, and moved abroad to vancou
                                                 * about their intrinsic [[thoughts/Agency|drive]].
 ```
 
-> [!note]- some definitely _not personal information about me_
+> [!note]- some non-confidential information about me
 >
-> _that you would definitely not able to grab from this website_
+> _that you would not be able to grab from this website_
 >
 > scheduling [[triathlon|hangouts]] nowadays look very much like we will be either on the beach (per me swimming in open water) or a movie date at home (per me spinning on the turbo)
 >
@@ -103,8 +103,9 @@ friendship was what taught me that love is an endurance sport with no finish lin
 Ava
 ```
 
-Aristotle distinguished three kinds of philia: (1) utility (we exchange value), (2) pleasure (we enjoy each other's company), and (3) virtue (we love each other as we actually are). Now from this framing, we notice that the first two categories of frienship dissolve as soon as circumstances change (as they no longer satisfy the [Nash equilibrium](https://en.wikipedia.org/wiki/Nash_equilibrium)).
-Hencewhile one must agree with Aristotle about virtuous friendship, as the foundation of the relationship is based on who you are rather than what you provide. [^1]
+Aristotle distinguished three kinds of philia: utility (we help each other), pleasure (we enjoy each other's company), and virtue (we value each other's good character and wish each other well). In [Nicomachean Ethics VIII.3](https://classics.mit.edu/Aristotle/nicomachaen.8.viii.html), the first two depend on the benefit or pleasure that sustains them. When that disappears, the friendship can dissolve.
+
+I agree with his emphasis on character as a foundation for friendship. Caring about who someone is gives us a reason to stay when circumstances change. [^1]
 
 [^1]: iirc Karlsson also wrote that "love is friendship on hard mode.", which is true. [[thoughts/love|Romantic]] relationships aren't a different category from friendship, but a superset of [[thoughts/friendship|friendship]]. they're friendship plus difficulty, plus stakes, plus everything that makes it easier to fuck up.
 

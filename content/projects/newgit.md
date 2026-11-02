@@ -15,26 +15,26 @@ title: newgit
 
 pain:
 
-- each node is essentially a miniature filesystem (tree + blob), which is cheap, but the object model knows almost nothing about operations. move/rename/copy is not supported; renames are mostly heuristic (-M). good enough for most cases.
-- it doesn’t actually track rename, which is annoying; it only infers them during diff/merge via similarity. mercurial really does support renames.
-- merge is not associative/commutative at all; merges are a mess. there is room for a crdt here.
-- contents are essentially opaque blobs. git only merges line-wise, but we have ast parsers now, so merges could be ast-based.
-- scaling is a pain: patches, packfiles, bitmaps, bisect, etc. are all circumventions for scaling up. monorepos without them are hell, especially for people who don’t know how to use these tools well.
-- out-of-band blobs like lfs are not scalable; partial clone only reduces history transfer. many of these are band-aids for large companies.
-- sha-1 is outdated; sha-256 paths exist but identities are tightly coupled.
+- git commits point to tree snapshots; blobs hold file contents. moves, renames and copies are inferred from snapshots rather than stored as operations. rename detection uses similarity (`-M`), which is good enough for most cases. i'd like file identity to survive a move explicitly. see [diffcore](https://git-scm.com/docs/gitdiffcore).
+- ordinary git merges can leave conflicts for a person to resolve. there is room for a crdt here, with a defined policy for concurrent edits.
+- blobs have no syntax model. git's default text merge works on lines; [custom merge drivers](https://git-scm.com/docs/gitattributes#_defining_a_custom_merge_driver) can already use an ast. a typed object model could make structural editing part of the stored history.
+- monorepos still require storage and transfer tuning. packfiles and reachability bitmaps help with those costs.
+- large assets need a retrieval policy. lfs uses pointers to separately stored files. [partial clone](https://git-scm.com/docs/partial-clone) can omit blobs and trees, then fetch them on demand; shallow clone limits commit history. deferred objects need an available server when requested.
+- sha-256 support exists, but changing the object hash changes identifiers and references between objects. the [hash transition design](https://git-scm.com/docs/hash-function-transition) has to account for those links.
 - and then there is posix.
 
 stuff to do:
 
-- merkle-crdt: content-addressable storage (like docker layers) with a history dag:
-  - merges are a lattice over well-typed objects so concurrent edits converge
+- merkle-crdt: content-addressable storage with a history dag:
+  - define a state-based merge as a join: associative, commutative and idempotent. updates must advance the state in its partial order, and replicas must eventually receive each other's updates. these are the [convergence conditions](https://inria.hal.science/inria-00555588) to prove; hashing the history alone doesn't establish them.
   - patches/changes are first class
   - commits are views
-- content stores: dag-cbor or any canonical encoding (with blake3 and zstd for compression)
+- content stores: dag-cbor or another canonical encoding, with blake3 for hashing and zstd for compression
 - typed nodes:
-  - observed-remove set (or-set) of entries {name -> fileid} with move/rename as crdt ops
-  - deletes handled via add-wins/remove-wins policy
-  - files as plain blobs with diff3 as fallback, or sequence crdts for files that opt into collaborative semantic diff
-  - for code, use something like ast-grep or an auxiliary ast index for structural merges
+  - observed-remove set (or-set) of directory entries mapping names to stable file ids
+  - define move/rename operations, same-name conflicts and delete-versus-move behaviour. directory moves must preserve an acyclic tree even when replicas move concurrently. [replicated-tree moves](https://martin.kleppmann.com/2021/10/07/crdt-tree-move-operation.html) need more than set membership.
+  - choose an add-wins/remove-wins policy; an observed-remove set has add-wins behaviour for a concurrent add and remove
+  - files as plain blobs with diff3 as fallback, or sequence crdts for collaborative text. a diff3 conflict still needs resolution; converging on a shared conflict record would leave the content decision open.
+  - for code, use something like ast-grep or an auxiliary ast index for structural merges. a syntactically valid merge can still change program behaviour.
   - patches/changes as first-class objects, similar to <https://pijul.org/manual/theory.html>
   - commits as manifest/metadata views
