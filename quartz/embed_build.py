@@ -474,6 +474,7 @@ def load_notebook_documents(
       'slug': slug,
       'title': title or record['title'],
       'text': text,
+      **file_date(fp),
     })
   if docs or failed:
     print(
@@ -497,13 +498,126 @@ def merge_documents(recs: list[dict], additions: list[dict]) -> list[dict]:
       index_by_slug[addition['slug']] = len(merged)
       merged.append(addition)
       continue
-    merged[idx] = {**merged[idx], **addition}
+    kept = {k: merged[idx][k] for k in DATE_KEYS if merged[idx].get(k)}
+    merged[idx] = {**merged[idx], **addition, **kept}
     replaced += 1
   if additions:
     print(
       f'Merged {len(additions)} notebook document(s) ({replaced} replaced, {len(additions) - replaced} added)'
     )
   return merged
+
+
+DATE_KEYS = ('date', 'dateSource')
+ISO_DAY = re.compile(r'^\d{4}-\d{2}-\d{2}$')
+TEXT_STORE_DIR = 'notes'
+
+
+def file_date(fp: Path) -> dict:
+  from datetime import date
+
+  try:
+    stamp = fp.stat().st_mtime
+  except OSError:
+    return {}
+  return {
+    'date': date.fromtimestamp(stamp).isoformat(),
+    'dateSource': 'filesystem',
+  }
+
+
+def passage_rows(chunks: list[dict], recs: list[dict]) -> list[dict]:
+  """One record per embedded row: the exact text the encoder saw (minus the title prefix) and its document date."""
+  by_slug = {rec['slug']: rec for rec in recs}
+  cursor: dict[str, int] = {}
+  rows = []
+  for chunk in chunks:
+    parent = chunk.get('parent_slug', chunk['slug'])
+    doc = by_slug.get(parent, {})
+    date = doc.get('date')
+    dated = isinstance(date, str) and bool(ISO_DAY.match(date))
+    # Splitter chunks are verbatim substrings in order (overlapping), so a forward scan
+    # recovers their offsets into the jsonl document text.
+    source = doc.get('text', '')
+    start = source.find(chunk['text'], cursor.get(parent, 0))
+    if start >= 0:
+      cursor[parent] = start + 1
+    rows.append({
+      'id': chunk['slug'],
+      'slug': parent,
+      'chunk': chunk.get('chunk_id', 0),
+      'text': chunk['text'],
+      'charStart': start if start >= 0 else None,
+      'charEnd': start + len(chunk['text']) if start >= 0 else None,
+      'date': date if dated else None,
+      'datePrecision': 'day' if dated else None,
+      'dateSource': doc.get('dateSource') if dated else None,
+    })
+  return rows
+
+
+def canonical_json(value) -> bytes:
+  return json.dumps(
+    value, ensure_ascii=False, separators=(',', ':'), sort_keys=True
+  ).encode('utf-8')
+
+
+def write_text_store(
+  out_dir: Path, rows: list[dict], shards: list[dict], vector_digest: str
+) -> dict:
+  """Write passages-NNN.json beside the note vectors, row for row, under a content-hashed generation dir.
+
+  Same layout as the PDF store (embeddings/pdf/<generation>/passages-NNN.json); older
+  generations are pruned once the new one is on disk.
+  """
+  import shutil
+
+  if sum(shard['rows'] for shard in shards) != len(rows):
+    raise ValueError('passage rows do not cover the vector shards')
+  generation = hashlib.sha256(
+    canonical_json({'rows': rows, 'vectors': vector_digest})
+  ).hexdigest()
+  root = out_dir / TEXT_STORE_DIR
+  target = root / generation
+  target.mkdir(parents=True, exist_ok=True)
+  layout = []
+  for index, shard in enumerate(shards):
+    start = shard['rowOffset']
+    payload = canonical_json(rows[start : start + shard['rows']])
+    name = f'passages-{index:03d}.json'
+    (target / name).write_bytes(payload)
+    layout.append({
+      'path': f'/embeddings/{TEXT_STORE_DIR}/{generation}/{name}',
+      'rows': shard['rows'],
+      'rowOffset': start,
+      'byteLength': len(payload),
+      'sha256': hashlib.sha256(payload).hexdigest(),
+    })
+  for directory in root.iterdir():
+    if (
+      directory.name != generation
+      and re.fullmatch(r'[a-f0-9]{64}', directory.name)
+      and directory.is_dir()
+      and not directory.is_symlink()
+    ):
+      shutil.rmtree(directory)
+  dated = sum(1 for row in rows if row['date'])
+  sources: dict[str, int] = {}
+  for row in rows:
+    key = row['dateSource'] or 'none'
+    sources[key] = sources.get(key, 0) + 1
+  return {
+    'generation': generation,
+    'shards': layout,
+    'dated': dated,
+    'dateSources': dict(sorted(sources.items())),
+  }
+
+
+def vector_digest(shards: list[dict]) -> str:
+  return hashlib.sha256(
+    ''.join(shard['sha256'] for shard in shards).encode()
+  ).hexdigest()
 
 
 def l2_normalize_rows(x: np.ndarray) -> np.ndarray:
@@ -822,6 +936,12 @@ def main():
     help='Number of concurrent requests to vLLM (default: 8)',
   )
   ap.add_argument(
+    '--text-only',
+    action='store_true',
+    help='Re-chunk the JSONL and (re)write only the passage text/date sidecar for the existing '
+    'manifest in --out; no embedding server needed. Rows whose id no longer matches get text null.',
+  )
+  ap.add_argument(
     '--batch-size',
     type=int,
     default=int(os.environ.get('VLLM_BATCH_SIZE', '64')),
@@ -904,6 +1024,11 @@ def main():
   ids = [c['slug'] for c in chunks]
   titles = [c.get('title', c['slug']) for c in chunks]
   texts = [c['text'] for c in chunks]
+  rows = passage_rows(chunks, recs)
+
+  if args.text_only:
+    restamp_text_store(Path(args.out), rows)
+    return
 
   if args.use_vllm:
     vecs = embed_vllm(
@@ -949,10 +1074,73 @@ def main():
     'titles': titles,
     'chunkMetadata': chunk_metadata,
   }
+  store = write_text_store(out_dir, rows, shards, vector_digest(shards))
+  manifest['passages'] = {
+    'generation': store['generation'],
+    'shards': store['shards'],
+  }
   (out_dir / 'manifest.json').write_text(
     json.dumps(manifest, ensure_ascii=False), encoding='utf-8'
   )
   print(f'Wrote {len(shards)} vector shard(s) and manifest to {out_dir}')
+  print(
+    f'Wrote passage text for {len(rows)} rows ({store["dated"]} dated: {store["dateSources"]})'
+  )
+
+
+def restamp_text_store(out_dir: Path, rows: list[dict]) -> None:
+  """Backfill the sidecar for vectors that were embedded before it existed.
+
+  Rows are matched by id against the published manifest, so the vectors stay
+  untouched; an id the current content no longer produces keeps its slot with
+  text null rather than borrowing a neighbour's text.
+  """
+  manifest_path = out_dir / 'manifest.json'
+  manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+  by_id = {row['id']: row for row in rows}
+  published: list[dict] = []
+  missing = 0
+  for row_id in manifest['ids']:
+    row = by_id.get(row_id)
+    if row is None:
+      missing += 1
+      parent = manifest.get('chunkMetadata', {}).get(row_id, {})
+      row = {
+        'id': row_id,
+        'slug': parent.get('parentSlug', row_id),
+        'chunk': parent.get('chunkId', 0),
+        'text': None,
+        'charStart': None,
+        'charEnd': None,
+        'date': None,
+        'datePrecision': None,
+        'dateSource': None,
+      }
+    published.append(row)
+  # Undated-by-drift rows still get their document's date when the document survives.
+  doc_dates = {
+    row['slug']: (row['date'], row['datePrecision'], row['dateSource'])
+    for row in rows
+    if row['date']
+  }
+  for row in published:
+    if row['date'] is None and row['slug'] in doc_dates:
+      row['date'], row['datePrecision'], row['dateSource'] = doc_dates[
+        row['slug']
+      ]
+  shards = manifest['vectors']['shards']
+  store = write_text_store(out_dir, published, shards, vector_digest(shards))
+  manifest['passages'] = {
+    'generation': store['generation'],
+    'shards': store['shards'],
+  }
+  manifest_path.write_text(
+    json.dumps(manifest, ensure_ascii=False), encoding='utf-8'
+  )
+  print(
+    f'Restamped {len(published)} rows: {len(published) - missing} with text, '
+    f'{missing} drifted (text null), {store["dated"]} dated {store["dateSources"]}'
+  )
 
 
 if __name__ == '__main__':
