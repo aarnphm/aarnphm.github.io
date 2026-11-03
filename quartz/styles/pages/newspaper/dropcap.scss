@@ -264,8 +264,7 @@ body:not([data-layout='newspaper']) :where(#quartz-root) article :is(p, li):has(
   // A specimen is the letter over its caption, centred in a 9rem card. The letter is a block
   // (a floated initial is one; inline, it would take the glyph's advance and metrics as its box,
   // which stretches a procedural tile), and every face's ink starts at the top of that block,
-  // so the captions share a line. The top padding is room for an ornament that rises above
-  // its letter.
+  // so the captions share a line.
   .dropcap-specimen {
     display: inline-flex;
     flex-direction: column;
@@ -273,7 +272,6 @@ body:not([data-layout='newspaper']) :where(#quartz-root) article :is(p, li):has(
     vertical-align: top;
     width: 9rem;
     margin: 0 0.5rem 1.5rem 0;
-    padding-top: 0.75rem;
     text-align: center;
 
     .mag-initial {
@@ -282,6 +280,14 @@ body:not([data-layout='newspaper']) :where(#quartz-root) article :is(p, li):has(
       height: var(--dc-block);
       margin: 0;
       translate: 0 calc((var(--dc-top) - 1) * var(--dc-size));
+    }
+
+    // The default face's ornament fills its em square (glyph bounds 0 to 1em, within 0.013em
+    // for every letter), about 1.23 times its letter's ink. The specimen fits the square, not
+    // the letter, to the block, so the ornament is as tall as the other faces' letters.
+    .mag-initial[data-letter]:not([data-face]) {
+      --dc-top: 1;
+      --dc-bottom: 0;
     }
 
     figcaption {
