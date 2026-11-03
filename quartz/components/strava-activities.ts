@@ -1,6 +1,7 @@
 import type { Element, Root } from 'hast'
-import { h } from 'hastscript'
+import { h, s } from 'hastscript'
 import { SKIP, visit } from 'unist-util-visit'
+import { SPORT_ICON } from '../plugins/stores/strava'
 import { localIsoDay } from '../util/local-date'
 import { joinSegments, pathToRoot, type FullSlug } from '../util/path'
 import {
@@ -62,7 +63,14 @@ const activityRow = (activity: StravaCardActivity, currentYear: string, root: st
       },
       [
         h('span.strava-activity-name', { title: activity.name }, [
-          h('span.strava-activity-kind', kind),
+          // The link's aria-label already names the sport; the title keeps the word on hover.
+          h('span.strava-activity-kind', { title: kind }, [
+            s(
+              'svg',
+              { viewBox: '0 0 24 24', fill: 'none', ariaHidden: 'true', focusable: 'false' },
+              SPORT_ICON[activity.kind].map(d => s('path', { d })),
+            ),
+          ]),
           activity.name,
         ]),
         h('time.strava-activity-date', { dateTime: activity.date }, date),
@@ -118,7 +126,7 @@ export function renderStravaActivities(root: Root, slug: FullSlug): void {
       const sum = summary.totals[kind]
       return sum ? [`${KIND_LABEL[kind]} ${km(sum.distanceM, 0)}`] : []
     })
-    const hours = Object.values(summary.totals).reduce((s, sum) => s + sum.movingTimeS, 0) / 3600
+    const hours = Object.values(summary.totals).reduce((total, sum) => total + sum.movingTimeS, 0) / 3600
     node.children = [
       h('div.strava-activities-head', [
         h('a.internal.strava-activities-title', { href: joinSegments(root, 'triathlon') }, [

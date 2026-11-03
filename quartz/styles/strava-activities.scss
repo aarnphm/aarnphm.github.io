@@ -155,12 +155,24 @@
 
 .strava-activity-kind {
   display: inline-block;
-  // Fixed to the longest label (swim, ride) so every name starts on the same column.
-  inline-size: 4ch;
+  inline-size: 1.05rem;
+  block-size: 1.05rem;
   margin-inline-end: var(--space-2);
-  font-family: var(--codeFont);
-  font-size: var(--text-meta);
+  vertical-align: -0.2em;
   color: var(--darkgray);
+
+  svg {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  path {
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
 }
 
 .strava-activity-num {
