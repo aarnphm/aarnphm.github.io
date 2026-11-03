@@ -7,6 +7,42 @@ import re
 import pymupdf
 
 
+def reviewed_region_text(
+  source: Path, number: int, bounds: list[float], content: str | None
+) -> dict[str, str] | None:
+  if number == 96 and bounds == [155, 514, 222, 534]:
+    if content not in (None, ''):
+      return None
+    text = 'Forms'
+    models = 'gemini-4-argon-high,claude-opus-5-5-high'
+  elif number == 12 and bounds == [256, 825, 766, 912]:
+    text = (
+      'begin  new max, min;\n'
+      "  bop max ←'new a,b. if a>b then a else b';\n"
+      "  bop min ←'new a,b. if a<b then a else b';"
+    )
+    models = 'gemini-4-argon-high'
+  else:
+    return None
+  source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+  if source_hash != (
+    '0caa6b96a86bb319a6a577500705cb8072da1b96341d46f35624ea48d8a80a49'
+  ):
+    return None
+  reviewed = {
+    'content': text,
+    'recovery': 'reviewed-region-text-v1',
+    'review_source_sha256': source_hash,
+    'review_reference': 'docs/verification/ocr-aside-recovery/source-review.md',
+    'review_models': models,
+    'review_approved_by': 'aarnphm',
+    'review_date': '2026-11-02',
+  }
+  if number == 12:
+    reviewed['review_recognition'] = 'approved-transcription-before-ocr'
+  return reviewed
+
+
 def reviewed_scan_artifact(
   source: Path, number: int, bounds: list[float]
 ) -> bool:
