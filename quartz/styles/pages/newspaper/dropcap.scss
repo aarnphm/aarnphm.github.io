@@ -248,7 +248,12 @@ $faces: (
 
 // Reading pages keep paragraphs apart, so a short opener has to grow around its initial.
 // Newspaper paragraphs share one grid and let the float run into the next line.
-:is(body:not(.stack-mode, [data-layout='newspaper']) :where(#quartz-root), .note-layout:not([data-layout='newspaper'])) article :is(p, li):has(.mag-initial) {
+:is(
+    body:not(.stack-mode, [data-layout='newspaper']) :where(#quartz-root),
+    .note-layout:not([data-layout='newspaper'])
+  )
+  article
+  :is(p, li):has(.mag-initial) {
   display: flow-root;
   line-height: var(--mag-line);
 }

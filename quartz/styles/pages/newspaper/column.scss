@@ -5,7 +5,12 @@
 // callouts.scss pins margin-left and padding with !important inside the base layer.
 // Keep these overrides in that layer so they win over the base declarations.
 @layer quartz-base {
-  :is(body:not(.stack-mode)[data-layout='newspaper'] :where(#quartz-root), .note-layout[data-layout='newspaper']) article > blockquote.callout {
+  :is(
+      body:not(.stack-mode)[data-layout='newspaper'] :where(#quartz-root),
+      .note-layout[data-layout='newspaper']
+    )
+    article
+    > blockquote.callout {
     margin-inline: auto !important;
     padding: 0 !important;
   }
@@ -13,7 +18,47 @@
 
 // Newspaper layout uses Profile markup (quartz/plugins/transformers/profile.ts); opt in with
 // layout: newspaper. Popovers mount on <body>, so rules use the page root via :where.
-:is(body:not(.stack-mode)[data-layout='newspaper'] :where(#quartz-root), .note-layout[data-layout='newspaper']) {
+:is(
+  body:not(.stack-mode)[data-layout='newspaper'] :where(#quartz-root),
+  .note-layout[data-layout='newspaper']
+) {
+  &.note-layout {
+    .page-header .article-title {
+      font-size: clamp(2rem, 10cqi, 4rem);
+    }
+
+    article {
+      .mag-chapter-vine {
+        width: 100%;
+        margin-inline: 0;
+      }
+
+      .collapse-rail {
+        display: flex;
+        width: var(--rail-width);
+      }
+
+      .collapse-toggle[data-collapse-toggle] {
+        display: grid;
+        grid-template-columns: var(--rail-width) minmax(0, 1fr) auto;
+        cursor: pointer;
+
+        svg.circle-icon {
+          display: block;
+        }
+      }
+
+      .collapse-body {
+        display: grid;
+        grid-template-columns: var(--rail-width) minmax(0, 1fr);
+      }
+
+      .collapse-shell:not(.is-open) > .collapse-body {
+        display: none;
+      }
+    }
+  }
+
   // Masthead and section titles stay Parclo; running text is Source Serif 4; initials, chapter
   // numerals and department heads take the ITC Garamond cut the menu already serves.
   --mag-serif: 'Parclo Serif', 'ITCGaramondStdLtCond', Georgia, 'Times New Roman', serif;

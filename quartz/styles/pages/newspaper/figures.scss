@@ -102,7 +102,10 @@ body[data-slug='dating'] article .profile-frame {
 }
 
 @container profile (min-width: 48rem) {
-  :is(body:not(.stack-mode)[data-layout='newspaper'] :where(#quartz-root), .note-layout[data-layout='newspaper'])
+  :is(
+      body:not(.stack-mode)[data-layout='newspaper'] :where(#quartz-root),
+      .note-layout[data-layout='newspaper']
+    )
     .profile-pulls
     blockquote.quotes
     + blockquote.quotes {
@@ -111,7 +114,10 @@ body[data-slug='dating'] article .profile-frame {
     padding-left: 2rem;
   }
 
-  :is(body:not(.stack-mode)[data-layout='newspaper'] :where(#quartz-root), .note-layout[data-layout='newspaper'])
+  :is(
+      body:not(.stack-mode)[data-layout='newspaper'] :where(#quartz-root),
+      .note-layout[data-layout='newspaper']
+    )
     .profile-frame[data-kind='me']:not(.profile-strip *) {
     --frame-w: min(24rem, 100%);
   }
@@ -119,6 +125,10 @@ body[data-slug='dating'] article .profile-frame {
 
 // No backlinks or footer chrome under a feature. The extra element beats the per-page mobile
 // rules in custom.scss that force the footer back on as a grid.
-:is(body:not(.stack-mode)[data-layout='newspaper'] :where(#quartz-root), .note-layout[data-layout='newspaper']) .page-footer {
+:is(
+    body:not(.stack-mode)[data-layout='newspaper'] :where(#quartz-root),
+    .note-layout[data-layout='newspaper']
+  )
+  .page-footer {
   display: none !important;
 }

@@ -38,9 +38,9 @@ function hydrateArticle(article: HTMLElement) {
   window.addEventListener('resize', scheduleHeads, { passive: true, signal: signal })
   signal.addEventListener('abort', () => cancelAnimationFrame(frame), { once: true })
 
-// Below the rail width each note is folded under its paragraph (marginalia.scss); tapping the
-// mark (sidenote word or footnote square) opens or closes it. With the rail, a note already sits
-// beside its mark, so the mark keeps its usual behaviour.
+  // Below the rail width each note is folded under its paragraph (marginalia.scss); tapping the
+  // mark (sidenote word or footnote square) opens or closes it. With the rail, a note already sits
+  // beside its mark, so the mark keeps its usual behaviour.
   for (const mark of article.querySelectorAll<HTMLElement>('[data-note]')) {
     const note = article.querySelector<HTMLElement>(`[id="${CSS.escape(mark.dataset.note ?? '')}"]`)
     if (!note || note.classList.contains('profile-note-boxed')) continue

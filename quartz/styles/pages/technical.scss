@@ -1,6 +1,9 @@
 @use '../variables.scss' as *;
 
-:is(body:not(.stack-mode)[data-layout='technical-tractatus'], .note-layout[data-layout='technical-tractatus']),
+:is(
+  body:not(.stack-mode)[data-layout='technical-tractatus'],
+  .note-layout[data-layout='technical-tractatus']
+),
 :is(body:not(.stack-mode)[data-layout='technical'], .note-layout[data-layout='technical']) {
   .page-footer {
     padding: 0;
@@ -20,7 +23,11 @@
 }
 
 // the tractatus numbers its own lines; a technical note keeps the heading rails
-:is(body:not(.stack-mode)[data-layout='technical-tractatus'], .note-layout[data-layout='technical-tractatus']) .collapse-rail {
+:is(
+    body:not(.stack-mode)[data-layout='technical-tractatus'],
+    .note-layout[data-layout='technical-tractatus']
+  )
+  .collapse-rail {
   width: 0;
 
   & > .collapse-line {
@@ -28,7 +35,10 @@
   }
 }
 
-:is(body:not(.stack-mode)[data-layout='technical-tractatus'], .note-layout[data-layout='technical-tractatus']) {
+:is(
+  body:not(.stack-mode)[data-layout='technical-tractatus'],
+  .note-layout[data-layout='technical-tractatus']
+) {
   .page-content :is(ul, ol) {
     list-style: none;
     padding-inline-start: 0;

@@ -20,7 +20,10 @@ body:not(.stack-mode)[data-layout='newspaper'] #quartz-root > section.header {
   }
 }
 
-:is(body:not(.stack-mode)[data-layout='newspaper'] :where(#quartz-root), .note-layout[data-layout='newspaper']) {
+:is(
+  body:not(.stack-mode)[data-layout='newspaper'] :where(#quartz-root),
+  .note-layout[data-layout='newspaper']
+) {
   .breadcrumb-container,
   .page-content > .aside-container.left-col {
     display: none;
@@ -207,7 +210,10 @@ body:not(.stack-mode)[data-layout='newspaper'] #quartz-root > section.header {
 // data-open). Server-rendered folded, so nothing moves on load; a footnote's own link still opens
 // its note through :target when scripts are off. Boxed notes are body asides at every width.
 @mixin folded-notes {
-  :is(body:not(.stack-mode)[data-layout='newspaper'] :where(#quartz-root), .note-layout[data-layout='newspaper'])
+  :is(
+      body:not(.stack-mode)[data-layout='newspaper'] :where(#quartz-root),
+      .note-layout[data-layout='newspaper']
+    )
     .profile-note:not(.profile-note-boxed, [data-open], :target) {
     display: none;
   }
@@ -223,13 +229,22 @@ body:not(.stack-mode)[data-layout='newspaper'] #quartz-root > section.header {
 
 @media all and (min-width: 1400px) {
   // The desktop grid keeps the article to four tracks; a feature takes every content track.
-  :is(body:not(.stack-mode)[data-layout='newspaper'] :where(#quartz-root), .note-layout[data-layout='newspaper']) .page-content > article.main-col {
+  :is(
+      body:not(.stack-mode)[data-layout='newspaper'] :where(#quartz-root),
+      .note-layout[data-layout='newspaper']
+    )
+    .page-content
+    > article.main-col {
     grid-column: 3 / -3;
   }
 }
 
 @container profile-page (min-width: 70rem) {
-  :is(body:not(.stack-mode)[data-layout='newspaper'] :where(#quartz-root), .note-layout[data-layout='newspaper']) article {
+  :is(
+      body:not(.stack-mode)[data-layout='newspaper'] :where(#quartz-root),
+      .note-layout[data-layout='newspaper']
+    )
+    article {
     --mag-rail: 13rem;
     --mag-gap: 3rem;
     --mag-offset: 2rem;
@@ -312,7 +327,11 @@ body:not(.stack-mode)[data-layout='newspaper'] #quartz-root > section.header {
 
 // With room to spare, mirror the notes rail on the left so the body shares the masthead's axis.
 @container profile-page (min-width: 84rem) {
-  :is(body:not(.stack-mode)[data-layout='newspaper'] :where(#quartz-root), .note-layout[data-layout='newspaper']) article {
+  :is(
+      body:not(.stack-mode)[data-layout='newspaper'] :where(#quartz-root),
+      .note-layout[data-layout='newspaper']
+    )
+    article {
     --mag-inset: calc(var(--mag-rail) + var(--mag-gap));
     padding-left: var(--mag-inset);
 
