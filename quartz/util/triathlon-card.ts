@@ -426,9 +426,7 @@ export const buildDayCard = <N>(
         day.map(d => d.sport),
       ),
     )
-    const track = f.el('div', 'tri-day-track', undefined, {
-      style: `--tri-day-count:${day.length}`,
-    })
+    const track = f.el('div', 'tri-day-track')
     for (const d of day) f.add(track, render(d, sharedFuelingRows > 0))
     f.add(card, track)
   } else {

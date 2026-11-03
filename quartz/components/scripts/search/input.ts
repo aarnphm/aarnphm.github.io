@@ -246,7 +246,7 @@ export function onType(s: SearchSession) {
   if (s.previewScope !== previewScope) {
     s.previewScope = previewScope
     s.currentHover = null
-    setPreviewVisible(s, query.explicit)
+    setPreviewVisible(s, true)
   }
   image.similarity.cancel()
   image.semantic?.cancel()

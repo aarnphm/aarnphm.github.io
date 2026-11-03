@@ -171,8 +171,8 @@ function pixelLayers<Tone extends string>(
 
   return tones
     .map(
-      (tone, index) =>
-        `<path class="trail-mountain-paint ${classPrefix}-${tone}" style="--trail-paint-step: ${index}" d="${marks.get(tone)?.join('') ?? ''}"/>`,
+      tone =>
+        `<path class="trail-mountain-paint ${classPrefix}-${tone}" d="${marks.get(tone)?.join('') ?? ''}"/>`,
     )
     .join('')
 }

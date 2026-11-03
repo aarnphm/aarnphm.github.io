@@ -199,13 +199,8 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
     // crosses a crown (seconds per tree unit, matching the per-tree delays in refreshForest).
     const flex = 1 - cover * 0.45
     const push = state.gust > 0.025 ? Math.min(2.2, 0.6 + state.gust * 1.8) * flex : 0
-    const rest = state.wind * 1.1 * flex
     const front = 55 + state.gust * 90
     scene.style.setProperty('--trail-leaf-push-x', (state.dx * push).toFixed(3))
-    scene.style.setProperty('--trail-leaf-push-y', (state.dy * push * 0.35).toFixed(3))
-    scene.style.setProperty('--trail-leaf-rest-x', (state.dx * rest).toFixed(3))
-    scene.style.setProperty('--trail-leaf-rest-y', (state.dy * rest * 0.35).toFixed(3))
-    scene.style.setProperty('--trail-leaf-flip', Math.min(1, 0.35 + state.gust).toFixed(3))
     scene.style.setProperty('--trail-leaf-lag-x', `${(state.dx / front).toFixed(4)}s`)
     scene.style.setProperty('--trail-leaf-lag-y', `${(state.dy / front).toFixed(4)}s`)
     scene.style.setProperty('--trail-leaf-travel-x', `${(state.dx * state.gust * 45).toFixed(2)}px`)

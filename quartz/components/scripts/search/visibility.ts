@@ -56,6 +56,7 @@ export function showSearch(s: SearchSession, type: SearchType) {
     shared.searchMode = 'lexical'
     s.requestedMode = 'lexical'
     updateModeUI(s, 'lexical')
+    setPreviewVisible(s, true)
     container!.showPopover()
   }
   container!.classList.add('active')
