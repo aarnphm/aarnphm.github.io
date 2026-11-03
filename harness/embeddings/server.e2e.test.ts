@@ -170,6 +170,33 @@ test(
             isRecord(index) && index.name === 'pdf' && index.rows === 3 && index.servedRows === 1,
         ),
       )
+      const collectionFile = path.join(root, 'content/embeddings/index.md')
+      const alphaPath = path.join(root, 'content/thoughts/papers/alpha.pdf')
+      const alphaBytes = await readFile(alphaPath)
+      const retainedQueue = await readFile(queuePath, 'utf8')
+      frames.length = 0
+      await writeFile(
+        collectionFile,
+        "---\nembeddings: ['[[thoughts/papers]]', '[[thoughts/pdfs]]']\npdfExclude: ['[[thoughts/papers/alpha.pdf|finished puzzle]]']\n---\n",
+      )
+      const excluded = await waitFor(
+        frame => isRecord(frame.totals) && frame.totals.documents === 1,
+      )
+      assert.ok(isRecord(excluded.totals))
+      assert.equal(excluded.totals.totalPages, 2)
+      assert.equal(excluded.totals.ocrPages, 0)
+      assert.equal(excluded.totals.indexedPages, 0)
+      assert.ok(isRecord(excluded.queue))
+      assert.equal(excluded.queue.failed, 0)
+      assert.equal(await readFile(queuePath, 'utf8'), retainedQueue)
+      assert.deepEqual(await readFile(alphaPath), alphaBytes)
+      const excludedQueue = await fetch(address + '/api/queue', {
+        method: 'POST',
+        headers: queueHeaders,
+        body: JSON.stringify({ slugs: ['thoughts/papers/alpha.pdf'] }),
+      })
+      assert.equal(excludedQueue.status, 400)
+
       const statusFile = path.join(
         root,
         'quartz/.quartz-cache/pdf-search/background-papers/status.json',
@@ -188,6 +215,8 @@ test(
         JSON.stringify({
           initial: first.totals,
           updated: next.totals,
+          excluded: excluded.totals,
+          excludedSourcesAndQueuePreserved: true,
           frames: frames.length,
           unrelatedWritesRejected: true,
           completedPdfQueueNoop: true,

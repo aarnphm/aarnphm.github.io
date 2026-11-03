@@ -73,10 +73,23 @@ directories for the queue, runner, extraction batches and harness. Entries are
 content-relative directory wikilinks, with optional aliases, such as
 `[[thoughts/pdfs|pdfs]]`. The current list includes `thoughts/papers/` and
 `thoughts/pdfs/`. The harness shows all configured collections even when the
-current runner is processing a narrower selection. Changes appear on the next
-inventory refresh (within 60 seconds); queue commands read the list immediately.
+current runner is processing a narrower selection. Collection changes appear on the next observer sample; queue commands read
+the list immediately.
 An empty list selects no PDFs. A missing or malformed list raises an error. Protected, encrypted and ignored sources
 remain excluded by the public inventory.
+
+`pdfExclude` removes individual PDFs from OCR, embedding publication and harness
+coverage while preserving their website attachments and cached results. Use
+content-relative PDF wikilinks, with optional aliases:
+
+```yaml
+pdfExclude:
+  - '[[thoughts/pdfs/nytimes/sudoku-01-06-26.pdf|Sudoku]]'
+```
+
+Plain content-relative paths remain accepted. Exclusions apply to the linked
+file, so fragments, paths outside `content/`, and directory targets are rejected.
+Changing this list refreshes the running observer's inventory on its next sample.
 
 After a new public PDF appears in the watcher’s search inventory, use **queue missing PDFs** or expand its row and choose **queue PDF**. Failed jobs expose **retry PDF**. Equivalent commands:
 

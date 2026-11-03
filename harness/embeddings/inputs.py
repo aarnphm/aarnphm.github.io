@@ -81,11 +81,19 @@ class Inventory:
     self.sources: list[Source] = []
     self.identity: tuple[Path, str, int] | None = None
     self.updated = 0.0
+    self.collection_signature: tuple[int, int] | None = None
     self.checked: dict[Path, tuple[int, int, bool, bool, bool]] = {}
 
   def refresh(self, index: Path, prefix: str, limit: int) -> None:
     identity = (index, prefix, limit)
-    if identity == self.identity and time.monotonic() - self.updated < 60:
+    config = self.root / 'content/embeddings/index.md'
+    stat = config.stat()
+    collection_signature = (stat.st_mtime_ns, stat.st_size)
+    if (
+      identity == self.identity
+      and collection_signature == self.collection_signature
+      and time.monotonic() - self.updated < 60
+    ):
       return
     previous = {source.path: source for source in self.sources}
     sources = []
@@ -117,6 +125,7 @@ class Inventory:
       )
     self.sources = sources
     self.identity, self.updated = identity, time.monotonic()
+    self.collection_signature = collection_signature
 
   def pages(
     self, source: Source, cache_root: Path, spec: ExtractionSpec | None
