@@ -6,7 +6,13 @@ export function searchResultsTable(columns: readonly string[], label = 'search r
   for (const name of columns) {
     const heading = document.createElement('th')
     heading.scope = 'col'
-    heading.className = `search-column-${name === 'file' ? 'note' : name === 'rank' ? 'score' : name}`
+    const column =
+      name === 'file' || name === 'path'
+        ? 'note'
+        : name === 'rank' || name === 'pages'
+          ? 'score'
+          : name
+    heading.className = `search-column-${column}`
     heading.textContent = name
     head.append(heading)
   }

@@ -356,6 +356,8 @@ export function populateStackedPayloadContent(
 ) {
   popoverInner.classList.add('grid')
   const html = p.parseFromString(payload.content, 'text/html')
+  const noteLayout = html.querySelector('.note-layout')
+  if (noteLayout) noteLayout.replaceWith(...noteLayout.childNodes)
   normalizeRelativeURLs(html, new URL(`/${payload.slug}`, targetUrl))
   const telescope = cloneTelescopicPreview(html, targetUrl, hash, payload.title)
   if (telescope) {

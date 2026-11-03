@@ -152,7 +152,9 @@ export function syncPaletteHelper(s: PaletteState) {
   s.container.dataset.mode = paletteMode.actionType
   s.rankButton.hidden = paletteMode.actionType !== 'quick_open'
   s.bar.placeholder =
-    paletteMode.actionType === 'quick_open' ? SEARCH_QUERY_PLACEHOLDER : 'sélectionnez une option…'
+    paletteMode.actionType === 'quick_open'
+      ? `${SEARCH_QUERY_PLACEHOLDER} · /path`
+      : 'sélectionnez une option…'
   s.bar.setAttribute('aria-label', s.bar.placeholder)
   s.helper.querySelectorAll<HTMLLIElement>('li[data-quick-open]').forEach(el => {
     el.style.display = paletteMode.actionType === 'quick_open' ? '' : 'none'

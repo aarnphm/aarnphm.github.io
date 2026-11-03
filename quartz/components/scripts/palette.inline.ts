@@ -1,5 +1,6 @@
 import { parseCodeQuery } from '../../util/code-query'
 import { getFullSlug, isFullSlug, pathToRoot } from '../../util/path'
+import { parsePathQuery } from '../../util/path-query'
 import { parseSearchQuery } from '../../util/search-scope'
 import { CodeSearchClient } from './code-search'
 import { registerEscapeHandler } from './escape-handler'
@@ -15,6 +16,7 @@ import {
 } from './palette/actions'
 import { connectorActions } from './palette/connectors'
 import { fetchContent } from './palette/format'
+import { completeFocusedPath } from './palette/paths'
 import { displayNearbyNotes, displayQuickOpenResults, querySearch } from './palette/search'
 import {
   commandInputValue,
@@ -218,6 +220,14 @@ async function shortcutHandler(s: PaletteState, e: HTMLElementEventMap['keydown'
       moveSelection(s, e.shiftKey ? -1 : 1)
       return
     }
+    if (paletteMode.actionType === 'quick_open' && parsePathQuery(s.bar.value)) {
+      if (e.shiftKey || !completeFocusedPath(s)) {
+        moveSelection(s, e.shiftKey ? -1 : 1)
+        return
+      }
+      s.queryGeneration += 1
+      return await querySearch(s, s.bar.value, s.queryGeneration)
+    }
     const focusedElement = s.currentHover
       ? s.currentHover
       : s.output.querySelector<HTMLDivElement>('.suggestion-item.focus')
@@ -275,6 +285,11 @@ async function onType(s: PaletteState, e: HTMLElementEventMap['input']) {
     const { term: query, scope } = parseSearchQuery(paletteMode.currentSearchTerm)
     const rawQuery = paletteMode.currentSearchTerm
     const generation = s.queryGeneration
+    // Path matching is a map walk; skipping the debounce keeps type-then-Enter on fresh rows.
+    if (parsePathQuery(rawQuery)) {
+      await querySearch(s, rawQuery, generation)
+      return
+    }
     const cached = s.quickOpenSemantic?.cached(query, s.quickOpenSemantic.index.ids.length)
     if (!parseCodeQuery(rawQuery) && query && scope === 'notes' && cached !== undefined) {
       displayQuickOpenResults(s, cached, query, scope)

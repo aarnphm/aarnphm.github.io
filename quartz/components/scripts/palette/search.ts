@@ -1,6 +1,7 @@
 import { parseCodeQuery } from '../../../util/code-query'
 import { createNoteRanker, type NoteRanker } from '../../../util/note-pagerank'
 import { FullSlug, isFullSlug, resolveRelative } from '../../../util/path'
+import { parsePathQuery } from '../../../util/path-query'
 import { pdfMetadata, type PdfPassage, type PdfSearchDocument } from '../../../util/pdf-search'
 import { isSearchExcluded } from '../../../util/search-exclude'
 import { parseSearchQuery, searchScopeIncludes, type SearchScope } from '../../../util/search-scope'
@@ -15,6 +16,7 @@ import { isSemanticCancellation } from '../semantic.inline'
 import { getCommandItems } from './actions'
 import { searchPaletteCode } from './code'
 import { appendHighlightedText } from './format'
+import { searchPaths } from './paths'
 import {
   ensureAttachmentData,
   ensureContentData,
@@ -70,6 +72,11 @@ export async function querySearch(
 ) {
   const queryActionType = paletteMode.actionType
   if (paletteMode.actionType === 'quick_open') {
+    const pathQuery = parsePathQuery(currentSearchTerm)
+    if (pathQuery) {
+      await searchPaths(s, pathQuery, generation)
+      return
+    }
     const codeQuery = parseCodeQuery(currentSearchTerm)
     if (codeQuery) {
       await searchPaletteCode(s, codeQuery, generation)

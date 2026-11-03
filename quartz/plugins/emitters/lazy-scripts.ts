@@ -1,4 +1,5 @@
-import { build } from 'esbuild'
+import { build, type Plugin } from 'esbuild'
+import { readFile } from 'node:fs/promises'
 import { devFeatureEnabled, type DevFeature } from '../../dev-features'
 import type { QuartzEmitterPlugin } from '../../types/plugin'
 import { FullSlug, joinSegments, QUARTZ } from '../../util/path'
@@ -15,6 +16,30 @@ export type LazyScript = {
 }
 
 export type Options = { scripts: LazyScript[] }
+
+/**
+ * pseudocode.js (a lazy script's pseudo fences) requires KaTeX itself, which would add ~500kB to a
+ * script that typesets its math elsewhere; the require sits in a try, so an empty module is enough.
+ * Its sources also assign two undeclared variables, which a strict-mode bundle turns into
+ * ReferenceErrors; they are declared here.
+ */
+const pseudocodeBundle: Plugin = {
+  name: 'pseudocode-bundle',
+  setup(b) {
+    const inPseudocode = /[\\/]node_modules[\\/]pseudocode[\\/]/
+    b.onResolve({ filter: /^(katex|mathjax)$/ }, args =>
+      inPseudocode.test(args.importer) ? { path: args.path, namespace: 'no-math' } : undefined,
+    )
+    b.onLoad({ filter: /.*/, namespace: 'no-math' }, args => ({
+      contents: `throw new Error('${args.path} is not bundled')`,
+      loader: 'js',
+    }))
+    b.onLoad({ filter: /[\\/]pseudocode[\\/]src[\\/][^\\/]+\.js$/ }, async args => ({
+      contents: `var attrVal, ifCond;\n${await readFile(args.path, 'utf8')}`,
+      loader: 'js',
+    }))
+  },
+}
 
 /**
  * Bundles a script under `static/scripts/` instead of into the page scripts every page loads,
@@ -38,6 +63,7 @@ export const LazyScripts: QuartzEmitterPlugin<Options> = opts => {
             platform: 'browser',
             format: 'esm',
             write: false,
+            plugins: [pseudocodeBundle],
           })
 
           return write({

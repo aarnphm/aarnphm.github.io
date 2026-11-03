@@ -51,6 +51,25 @@
       white-space: nowrap;
       text-overflow: ellipsis;
     }
+    &.suggestion-path .suggestion-title {
+      display: flex;
+      align-items: baseline;
+      gap: 1ch;
+    }
+    .suggestion-route {
+      flex-shrink: 0;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: var(--codeFont);
+      font-size: var(--text-meta);
+    }
+    .suggestion-route-title {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--gray);
+    }
     .suggestion-aux {
       display: flex;
       justify-content: space-between;
