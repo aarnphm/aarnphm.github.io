@@ -2,6 +2,15 @@
   "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
   "features": [
     {
+      "id": "osm:node:13707878",
+      "name": "København",
+      "aliases": ["københavn"],
+      "kind": "city",
+      "city": "København",
+      "centroid": [55.6867243, 12.5700724],
+      "bbox": [55.5267243, 55.8467243, 12.4100724, 12.7300724]
+    },
+    {
       "id": "osm:relation:111968",
       "name": "San Francisco",
       "aliases": ["san francisco", "sf"],
@@ -45,6 +54,15 @@
       "city": "Interlaken",
       "centroid": [46.6855231, 7.8585139],
       "bbox": [46.664589, 46.7040906, 7.8267786, 7.8887741]
+    },
+    {
+      "id": "osm:relation:175342",
+      "name": "Greater London",
+      "aliases": ["greater london"],
+      "kind": "city",
+      "city": "Greater London",
+      "centroid": [51.5074456, -0.1277653],
+      "bbox": [51.2867601, 51.6918741, -0.5103751, 0.3340155]
     },
     {
       "id": "osm:relation:175905",
@@ -92,6 +110,15 @@
       "bbox": [43.106662, 43.2500098, -79.3209212, -79.1778306]
     },
     {
+      "id": "osm:relation:2513976",
+      "name": "Whitstable",
+      "aliases": ["whitstable"],
+      "kind": "city",
+      "city": "Whitstable",
+      "centroid": [51.3606286, 1.0240626],
+      "bbox": [51.3364256, 51.3697384, 0.9858235, 1.0809773]
+    },
+    {
       "id": "osm:relation:324211",
       "name": "Toronto",
       "aliases": ["toronto"],
@@ -117,6 +144,24 @@
       "city": "Sydney",
       "centroid": [-33.8698439, 151.2082848],
       "bbox": [-34.3374159, -33.3641864, 150.260825, 151.3431756]
+    },
+    {
+      "id": "osm:relation:7034910",
+      "name": "Hamilton",
+      "aliases": ["hamilton"],
+      "kind": "city",
+      "city": "Hamilton",
+      "centroid": [43.2560802, -79.8728583],
+      "bbox": [43.0505073, 43.4706805, -80.2485579, -79.6221146]
+    },
+    {
+      "id": "osm:relation:7540518",
+      "name": "Unorganized South Nipissing",
+      "aliases": ["unorganized south nipissing"],
+      "kind": "city",
+      "city": "Unorganized South Nipissing",
+      "centroid": [45.8256394, -78.3505799],
+      "bbox": [45.4144787, 46.2342022, -79.2578582, -77.4978984]
     },
     {
       "id": "osm:relation:962190",
