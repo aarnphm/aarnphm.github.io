@@ -82,6 +82,8 @@ const STACK_VIEWPORT_GUTTER = 20
 
 interface ToastEntry {
   element: HTMLDivElement
+  /** padding given by the caller; the stack layout otherwise sets its own per depth */
+  padding?: string
   actionButton?: HTMLButtonElement
   hideTimer?: number
   teardownTimer?: number
@@ -152,7 +154,7 @@ export class Toast {
     }
 
     container.appendChild(toast)
-    const entry: ToastEntry = { element: toast, actionButton }
+    const entry: ToastEntry = { element: toast, actionButton, padding: options.styles?.padding }
     if (actionButton && options.action) {
       const action = options.action
       actionButton.addEventListener('click', () => {
@@ -302,7 +304,7 @@ export class Toast {
       }
 
       const paddingY = Math.max(6, 12 - depth * 2)
-      el.style.padding = `${paddingY}px 12px`
+      el.style.padding = entry.padding ?? `${paddingY}px 12px`
 
       if (depth === 0) {
         el.style.color = 'var(--dark)'
