@@ -143,7 +143,11 @@ a {
   }
 }
 
-blockquote:not(:where(.arena-reader blockquote, .twitter-post blockquote, .pdf-mark-card-quote)) {
+// .lat-quote: latent reader passages keep only their left rule (latent.scss); the glyph would sit
+// on the § gutter
+blockquote:not(
+  :where(.arena-reader blockquote, .twitter-post blockquote, .pdf-mark-card-quote, .lat-quote)
+) {
   border-left: none;
   padding-left: 0;
   margin: 1.5rem 0 1.5rem 2.5rem;

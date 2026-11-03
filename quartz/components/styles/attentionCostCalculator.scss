@@ -5,9 +5,6 @@
 .attention-cost-calculator {
   @include figure-frame('acc-figure', 34rem);
 
-  --acc-line: color-mix(in srgb, var(--gray) 24%, transparent);
-  --acc-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
-  --acc-div: color-mix(in srgb, var(--gray) 28%, transparent);
   --acc-note: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
   --acc-salmon: var(--fig-salmon);
   --acc-sage: var(--fig-sage);

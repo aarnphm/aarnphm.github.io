@@ -15,8 +15,6 @@
   color: var(--dark);
 
   --vw-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
-  --vw-stroke-soft: color-mix(in srgb, var(--gray) 55%, transparent);
-  --vw-divider: color-mix(in srgb, var(--gray) 35%, transparent);
   --vw-note-fg: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
   --vw-box-weight: var(--light);
   --vw-box-dots: color-mix(in srgb, var(--tertiary) 40%, var(--light));

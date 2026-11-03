@@ -69,6 +69,11 @@ button.clipboard-button {
   }
 }
 
+pre > button.clipboard-button > svg {
+  width: 12px;
+  height: 12px;
+}
+
 .expand-button {
   right: 1.6rem;
 }

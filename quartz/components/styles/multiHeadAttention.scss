@@ -5,9 +5,6 @@
 .multi-head-attention {
   @include figure-frame('mha-figure', 54rem);
 
-  --mha-line: color-mix(in srgb, var(--gray) 24%, transparent);
-  --mha-surface-shadow:
-    0 0 0 1px var(--mha-line) inset, 0 18px 46px color-mix(in srgb, var(--dark) 7%, transparent);
   --mha-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
   --mha-stroke-soft: color-mix(in srgb, var(--gray) 45%, transparent);
   --mha-note: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);

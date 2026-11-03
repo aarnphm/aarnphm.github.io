@@ -5,9 +5,7 @@
 .attention-circuits {
   @include figure-frame('acir-figure', 42rem);
 
-  --acir-line: color-mix(in srgb, var(--gray) 24%, transparent);
   --acir-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
-  --acir-stroke-soft: color-mix(in srgb, var(--gray) 55%, transparent);
   --acir-note-fg: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
   --acir-box: var(--light);
   --acir-box-soft: color-mix(in srgb, var(--lightgray) 80%, var(--light));

@@ -5,9 +5,7 @@
 .radix-prefix-tree {
   @include figure-frame('rpt-figure', 34rem);
 
-  --rpt-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
   --rpt-stroke-soft: color-mix(in srgb, var(--gray) 45%, transparent);
-  --rpt-divider: color-mix(in srgb, var(--gray) 30%, transparent);
   --rpt-note-fg: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
   --rpt-node-bg: color-mix(in srgb, var(--lightgray) 55%, var(--light));
   --rpt-match: var(--fig-salmon);

@@ -5,7 +5,6 @@
 .positional-encoding-comparison {
   @include figure-frame('pec-figure', 38rem);
 
-  --pec-line: color-mix(in srgb, var(--gray) 24%, transparent);
   --pec-note: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
   --pec-div: color-mix(in srgb, var(--gray) 28%, transparent);
   --pec-pos: var(--fig-salmon);

@@ -6,11 +6,9 @@
   @include figure-frame('mfa-figure', 38rem);
 
   --mfa-stroke-soft: color-mix(in srgb, var(--gray) 40%, transparent);
-  --mfa-divider: color-mix(in srgb, var(--gray) 28%, transparent);
   --mfa-note-fg: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
   --mfa-cell-bg: color-mix(in srgb, var(--lightgray) 35%, var(--light));
   --mfa-neg: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
-  --mfa-salmon: var(--fig-salmon);
   --mfa-sage: var(--fig-sage);
 }
 

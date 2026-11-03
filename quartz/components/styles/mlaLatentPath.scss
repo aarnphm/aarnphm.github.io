@@ -5,7 +5,6 @@
 .mla-latent-path {
   @include figure-frame('mla-figure', 42rem, $zoom: false);
   --mla-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
-  --mla-div: color-mix(in srgb, var(--gray) 28%, transparent);
   --mla-note: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
   --mla-salmon: var(--fig-salmon);
   --mla-sage: var(--fig-sage);
