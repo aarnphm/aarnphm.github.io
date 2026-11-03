@@ -1,6 +1,11 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { streamAssetPathname, streamDocumentRedirectUrl, streamHostUrl } from './stream-host'
+import {
+  isAbsoluteStreamDocument,
+  streamAssetPathname,
+  streamDocumentRedirectUrl,
+  streamHostUrl,
+} from './stream-host'
 
 test('maps stream host document paths to emitted stream assets', () => {
   assert.equal(streamAssetPathname('/', true), '/stream')
@@ -45,6 +50,17 @@ test('keeps stream documents on the stream host', () => {
     ),
     null,
   )
+})
+
+test('keeps absolute stream documents on the stream host', () => {
+  assert.equal(isAbsoluteStreamDocument('https://stream.aarnphm.xyz/'), true)
+  assert.equal(isAbsoluteStreamDocument('https://stream.aarnphm.xyz'), true)
+  assert.equal(isAbsoluteStreamDocument('https://stream.aarnphm.xyz/on/2026/10/28'), true)
+  assert.equal(isAbsoluteStreamDocument('https://stream.aarnphm.xyz/stream'), true)
+  assert.equal(isAbsoluteStreamDocument('/'), false)
+  assert.equal(isAbsoluteStreamDocument('/stream'), false)
+  assert.equal(isAbsoluteStreamDocument('https://aarnphm.xyz/'), false)
+  assert.equal(isAbsoluteStreamDocument('https://stream.aarnphm.xyz/colophon'), false)
 })
 
 test('builds canonical stream host URLs', () => {

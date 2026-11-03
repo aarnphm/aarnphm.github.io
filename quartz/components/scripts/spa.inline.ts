@@ -43,6 +43,23 @@ async function startViewTransition(callback: () => void): Promise<void> {
   await transition.updateCallbackDone
 }
 
+function adoptPdfReaderRedirect(requested: URL, responseUrl: string): URL {
+  if (!requested.pathname.startsWith('/read/') || !/\.pdf$/i.test(requested.pathname)) {
+    return requested
+  }
+  let settled: URL
+  try {
+    settled = new URL(responseUrl, requested)
+  } catch {
+    return requested
+  }
+  if (settled.origin !== requested.origin || settled.pathname === requested.pathname) {
+    return requested
+  }
+  settled.hash = requested.hash
+  return settled
+}
+
 const getOpts = ({ target }: Event): { url: URL; scroll?: boolean } | undefined => {
   if (!isElement(target)) return
   const a = target.closest('a')
@@ -188,6 +205,7 @@ async function navigate(
     .then(res => {
       const contentType = res.headers.get('content-type')
       if (contentType?.startsWith('text/html')) {
+        url = adoptPdfReaderRedirect(url, res.url)
         return res.text()
       } else {
         if (!signal.aborted) window.location.assign(url)
