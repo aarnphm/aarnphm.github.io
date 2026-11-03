@@ -1,0 +1,168 @@
+import type { LatentKind } from '../../../util/latent/types'
+import { buildSelect } from '../../controls/select'
+import { BENCH_VIEW, bindBenchGestures } from '../latent-bench-gestures'
+import { axisBase, drawBench, fitBenchCanvas, hoverBench } from './bench-canvas'
+import { goTo } from './reader'
+import { metaOf, requestVec, vecWorker, type Bench, type Runtime } from './runtime'
+
+// ---- 3-d bench --------------------------------------------------------------------------
+
+const KIND_INDEX: Record<LatentKind, number> = { note: 0, pdf: 1, image: 2, base: 3 }
+
+export async function openBench(rt: Runtime): Promise<void> {
+  if (rt.bench) return
+  const status = rt.probe.querySelector<HTMLElement>('.lat-bench-status')
+  const canvas = rt.probe.querySelector<HTMLCanvasElement>('.lat-bench-canvas')
+  const controls = rt.probe.querySelector<HTMLElement>('.lat-bench-controls')
+  if (!status || !canvas || !controls) return
+  status.textContent = 'loading document vectors…'
+  const { worker } = vecWorker(rt)
+  const bench: Bench = {
+    worker,
+    seq: 0,
+    level: 'docs',
+    coords: null,
+    extent: 1,
+    ...BENCH_VIEW,
+    kinds: null,
+    axes: [0, 1, 2],
+    meta: null,
+    frame: 0,
+    hover: -1,
+    w: canvas.clientWidth || canvas.width,
+    h: canvas.clientHeight || canvas.height,
+    dpr: 1,
+  }
+  rt.bench = bench
+  fitBenchCanvas(rt, canvas)
+  const meta = await metaOf(rt)
+  bench.meta = meta
+  // open on the first three principal components; a probe without them keeps the first three axes
+  const pcs = [1, 2, 3].map(n => meta.axes.findIndex(axis => axisBase(axis.name) === `pc${n}`))
+  if (pcs.every(i => i >= 0)) bench.axes = pcs
+  bench.kinds = new Uint8Array(rt.docs.length)
+  for (const doc of rt.docs) bench.kinds[doc.d] = KIND_INDEX[doc.s]
+  // x, y, z and the level as rows of a ruled table: the axis and a garden select for its
+  // component. The menus float in the top layer because the probe scrolls
+  // and would clip them
+  const table = document.createElement('table')
+  table.className = 'lat-bench-table'
+  const body = document.createElement('tbody')
+  table.append(body)
+  const row = (label: string, ...cells: HTMLTableCellElement[]) => {
+    const tr = document.createElement('tr')
+    const th = document.createElement('th')
+    th.scope = 'row'
+    th.textContent = label
+    tr.append(th, ...cells)
+    body.append(tr)
+  }
+  const cell = (className: string, ...children: (Node | string)[]) => {
+    const td = document.createElement('td')
+    td.className = className
+    td.append(...children)
+    return td
+  }
+  // the variance share is on the axes tab; here an axis is its name
+  const options = meta.axes.map((axis, i) => ({ value: i, label: axisBase(axis.name) }))
+  for (const slot of [0, 1, 2]) {
+    const name = 'xyz'[slot]
+    const select = buildSelect<number>({
+      id: `lat-bench-${name}`,
+      label: `${name} axis`,
+      groups: [{ options }],
+      selected: bench.axes[slot],
+      onSelect: value => {
+        bench.axes[slot] = value
+        void projectBench(rt)
+      },
+      floating: true,
+    })
+    const unmount = select.mount()
+    rt.signal.addEventListener('abort', unmount, { once: true })
+    row(name, cell('lat-bench-pick', select.element))
+  }
+  const level = (value: 'docs' | 'rows', text: string) => {
+    const button = document.createElement('button')
+    button.type = 'button'
+    button.className = 'lat-bench-level'
+    button.dataset.level = value
+    button.setAttribute('aria-pressed', String(value === 'docs'))
+    button.textContent = text
+    return button
+  }
+  const levels = cell('lat-bench-levels', level('docs', 'documents'), level('rows', 'chunks'))
+  row('level', levels)
+  controls.replaceChildren(table)
+  controls.addEventListener(
+    'click',
+    event => {
+      const button = (event.target as HTMLElement).closest<HTMLButtonElement>('.lat-bench-level')
+      if (!button || button.getAttribute('aria-pressed') === 'true') return
+      for (const other of controls.querySelectorAll<HTMLButtonElement>('.lat-bench-level'))
+        other.setAttribute('aria-pressed', String(other === button))
+      void loadBench(rt, button.dataset.level === 'rows' ? 'rows' : 'docs')
+    },
+    { signal: rt.signal },
+  )
+  bindBenchPointer(rt, canvas)
+  await loadBench(rt, 'docs')
+}
+
+async function loadBench(rt: Runtime, level: 'docs' | 'rows'): Promise<void> {
+  const bench = rt.bench
+  const status = rt.probe.querySelector<HTMLElement>('.lat-bench-status')
+  if (!bench || !bench.meta || !status) return
+  bench.level = level
+  const rows = level === 'docs' ? bench.meta.docs : bench.meta.rows
+  const url = `${rt.base}/vec/${level}-256-int8.bin`
+  status.textContent = `loading ${level === 'docs' ? 'document' : 'chunk'} vectors (${((rows * 256) / 1e6).toFixed(1)} MB)…`
+  const t0 = performance.now()
+  await requestVec(rt, { type: 'load', url, rows, dims: 256 })
+  if (level === 'rows') {
+    bench.kinds = new Uint8Array(rows)
+    for (const doc of rt.docs) bench.kinds.fill(KIND_INDEX[doc.s], doc.r0, doc.r0 + doc.n)
+  } else {
+    bench.kinds = new Uint8Array(rt.docs.length)
+    for (const doc of rt.docs) bench.kinds[doc.d] = KIND_INDEX[doc.s]
+  }
+  status.textContent = `${rows} ${level === 'docs' ? 'documents' : 'chunks'} in ${(performance.now() - t0).toFixed(0)} ms`
+  await projectBench(rt)
+}
+
+async function projectBench(rt: Runtime): Promise<void> {
+  const bench = rt.bench
+  if (!bench || !bench.meta) return
+  const dirs = new Float32Array(3 * 256)
+  bench.axes.forEach((axis, slot) => dirs.set(bench.meta!.axes[axis].dir, slot * 256))
+  const mean = new Float32Array(bench.meta.mean)
+  const t0 = performance.now()
+  const url = `${rt.base}/vec/${bench.level}-256-int8.bin`
+  const result = await requestVec(
+    rt,
+    { type: 'project', url, dirs, mean, scale: bench.meta.scale },
+    [dirs.buffer, mean.buffer],
+  )
+  if (result.type !== 'projected') return
+  bench.coords = result.coords
+  bench.extent = result.extent || 1
+  const status = rt.probe.querySelector<HTMLElement>('.lat-bench-status')
+  if (status)
+    status.textContent = `${bench.coords.length / 3} points · projected in ${(performance.now() - t0).toFixed(0)} ms`
+  drawBench(rt)
+}
+
+function bindBenchPointer(rt: Runtime, canvas: HTMLCanvasElement): void {
+  bindBenchGestures(canvas, rt.signal, {
+    view: () => rt.bench,
+    hovering: () => (rt.bench?.hover ?? -1) >= 0,
+    hover: (x, y) => hoverBench(rt, x, y),
+    redraw: () => drawBench(rt),
+    open: () => {
+      const bench = rt.bench
+      if (!bench || bench.hover < 0) return
+      const row = bench.level === 'docs' ? rt.docs[bench.hover].r0 : bench.hover
+      void goTo(rt, row)
+    },
+  })
+}

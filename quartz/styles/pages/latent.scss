@@ -925,6 +925,15 @@
       border-bottom: 1px solid var(--ledger-line);
       cursor: grab;
       touch-action: none;
+
+      &[data-drag='rotate'] {
+        cursor: grabbing;
+      }
+
+      &[data-drag='pan'] {
+        cursor: move;
+      }
+
       // read by drawBench for the axis labels
       font-family: var(--lat-mono);
       font-size: var(--lat-micro);
