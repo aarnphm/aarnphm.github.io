@@ -184,6 +184,57 @@ document.addEventListener('nav', () => {
     { once: true },
   )
 
+  // Helper to check if we should ignore the target
+  const shouldIgnoreTarget = (el: EventTarget | null) => {
+    if (!el || !(el instanceof Element)) return false
+    const tag = el.tagName.toLowerCase()
+
+    // Check if headings modal is open
+    const isHeadingsModalOpen =
+      document.querySelector<HTMLDialogElement>('dialog.headings-modal')?.open ?? false
+
+    return (
+      tag === 'input' ||
+      tag === 'textarea' ||
+      tag === 'select' ||
+      el.closest('[role="listbox"]') !== null ||
+      (el as HTMLElement).isContentEditable ||
+      el.closest('.cm-editor') !== null ||
+      el.closest('.search .search-container') !== null ||
+      el.closest('dialog.press-kit') !== null ||
+      isHeadingsModalOpen
+    )
+  }
+
+  function shortcutHandler(e: HTMLElementEventMap['keydown']) {
+    if (
+      e.key.toLowerCase() === 'b' &&
+      (e.shiftKey || e.altKey || e.isComposing || shouldIgnoreTarget(e.target))
+    )
+      return
+    if (_mapping.get(e.key) !== undefined && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault()
+      const action = _mapping.get(e.key)
+      if (typeof action === 'function') {
+        action()
+      } else if (typeof action === 'string') {
+        container?.classList.toggle('active', false)
+        const origin =
+          action === '/' && [TRIATHLON_HOSTNAME, STREAM_HOSTNAME].includes(window.location.hostname)
+            ? 'https://aarnphm.xyz'
+            : window.location.origin
+        const destination = new URL(action, origin)
+        if (window.location.href === destination.href) return
+        window.spaNavigate(destination)
+      }
+    }
+  }
+
+  document.addEventListener('keydown', shortcutHandler)
+  window.addCleanup(() => document.removeEventListener('keydown', shortcutHandler))
+
+  if (document.body.dataset.slug === 'triathlon') return
+
   // Show Vimium warning on initial load
   showVimiumWarning()
 
@@ -216,28 +267,6 @@ document.addEventListener('nav', () => {
 
   document.addEventListener('click', handleClickOutside)
   window.addCleanup(() => document.removeEventListener('click', handleClickOutside))
-
-  // Helper to check if we should ignore the target
-  const shouldIgnoreTarget = (el: EventTarget | null) => {
-    if (!el || !(el instanceof Element)) return false
-    const tag = el.tagName.toLowerCase()
-
-    // Check if headings modal is open
-    const isHeadingsModalOpen =
-      document.querySelector<HTMLDialogElement>('dialog.headings-modal')?.open ?? false
-
-    return (
-      tag === 'input' ||
-      tag === 'textarea' ||
-      tag === 'select' ||
-      el.closest('[role="listbox"]') !== null ||
-      (el as HTMLElement).isContentEditable ||
-      el.closest('.cm-editor') !== null ||
-      el.closest('.search .search-container') !== null ||
-      el.closest('dialog.press-kit') !== null ||
-      isHeadingsModalOpen
-    )
-  }
 
   const isPaletteActive = () => {
     const palette = document.getElementById('palette-container')
@@ -594,31 +623,4 @@ document.addEventListener('nav', () => {
       renderShortcut(short, binding, span)
     }
   }
-
-  function shortcutHandler(e: HTMLElementEventMap['keydown']) {
-    if (
-      e.key.toLowerCase() === 'b' &&
-      (e.shiftKey || e.altKey || e.isComposing || shouldIgnoreTarget(e.target))
-    )
-      return
-    if (_mapping.get(e.key) !== undefined && (e.ctrlKey || e.metaKey)) {
-      e.preventDefault()
-      const action = _mapping.get(e.key)
-      if (typeof action === 'function') {
-        action()
-      } else if (typeof action === 'string') {
-        container?.classList.toggle('active', false)
-        const origin =
-          action === '/' && [TRIATHLON_HOSTNAME, STREAM_HOSTNAME].includes(window.location.hostname)
-            ? 'https://aarnphm.xyz'
-            : window.location.origin
-        const destination = new URL(action, origin)
-        if (window.location.href === destination.href) return
-        window.spaNavigate(destination)
-      }
-    }
-  }
-
-  document.addEventListener('keydown', shortcutHandler)
-  window.addCleanup(() => document.removeEventListener('keydown', shortcutHandler))
 })

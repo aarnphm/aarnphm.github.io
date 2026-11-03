@@ -35,6 +35,7 @@ function isVisible(element: HTMLElement): boolean {
 }
 
 function hintRoot(): Element | null {
+  if (document.body.dataset.slug === 'triathlon') return null
   const arena = document.querySelector<HTMLElement>('#arena-modal.active')
   if (arena && getComputedStyle(arena).display !== 'none') {
     const content = arena.querySelector('.arena-modal-content')
