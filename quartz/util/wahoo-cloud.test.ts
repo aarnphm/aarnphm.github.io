@@ -220,3 +220,55 @@ test('reports a long Wahoo quota reset without sending repeated requests', async
     )
   }
 })
+
+// Page overlap can hide a different workout; accepting fewer unique IDs would replace a complete cache.
+for (const persistent of [false, true]) {
+  test(`overlapping workout pages ${persistent ? 'fail closed when coverage stays incomplete' : 'recover through a wider pagination pass'}`, async () => {
+    const directory = await fs.mkdtemp(join(tmpdir(), 'wahoo-overlap-'))
+    const sizes: number[] = []
+    const server = createServer((request, response) => {
+      response.setHeader('Content-Type', 'application/json')
+      const url = new URL(request.url ?? '/', 'http://localhost')
+      if (url.pathname === '/oauth/token') {
+        response.end(
+          JSON.stringify({ access_token: 'access', refresh_token: 'refresh', expires_in: 3600 }),
+        )
+        return
+      }
+      const page = Number(url.searchParams.get('page'))
+      const size = Number(url.searchParams.get('per_page'))
+      sizes.push(size)
+      const ids =
+        size === 2 ? (page === 1 ? [1, 2] : [2, 3]) : persistent ? [1, 2, 2, 3] : [1, 2, 3, 4]
+      response.end(JSON.stringify({ workouts: ids.map(workout), total: 4, page, per_page: size }))
+    })
+    server.listen(0, '127.0.0.1')
+    await once(server, 'listening')
+    try {
+      const address = server.address()
+      if (!address || typeof address === 'string') assert.fail('expected TCP server')
+      const baseUrl = `http://127.0.0.1:${address.port}`
+      const client = new WahooCloudClient(
+        { clientId: 'client', clientSecret: 'secret', refreshToken: 'refresh' },
+        {
+          apiBaseUrl: baseUrl,
+          tokenUrl: `${baseUrl}/oauth/token`,
+          refreshTokenFile: join(directory, 'token'),
+        },
+      )
+      if (persistent) await assert.rejects(client.listWorkouts(2), /pagination.*3 of 4/)
+      else
+        assert.deepEqual(
+          (await client.listWorkouts(2)).map(value => value.id),
+          [1, 2, 3, 4],
+        )
+      assert.ok(sizes.includes(4))
+      assert.ok(sizes.length <= 6, 'recovery must be bounded')
+    } finally {
+      await new Promise<void>((resolveClose, rejectClose) =>
+        server.close(error => (error ? rejectClose(error) : resolveClose())),
+      )
+      await fs.rm(directory, { recursive: true, force: true })
+    }
+  })
+}
