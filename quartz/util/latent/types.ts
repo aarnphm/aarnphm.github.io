@@ -79,6 +79,12 @@ export interface LatentChunk {
   box?: [number, number, number, number]
   /** 1 when `text` is the note's markdown slice rather than its rendered text */
   m?: 1
+  /**
+   * Page text another chunk already shows: [row, chunk index, why]. `repeat` is source text again
+   * (a table's run-together cells), `figure` the text a figure draws, `code` a code cell's
+   * runtime data. The reader points at that chunk instead of showing it.
+   */
+  same?: [number, number, 'repeat' | 'figure' | 'code']
 }
 
 export interface LatentText {

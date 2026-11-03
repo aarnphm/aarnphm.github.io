@@ -197,6 +197,25 @@ function passageBlocks(raw: string, options: PassageOptions = {}): Element[] {
 
 export type ReaderMeta = Pick<LatentText, 'd' | 'store' | 'total' | 'part'>
 
+const SAME_LEAD: Record<NonNullable<LatentChunk['same']>[2], string> = {
+  repeat: 'the page text of ',
+  figure: 'the text drawn by the figure in ',
+  code: 'the runtime data of the code cell in ',
+}
+
+/** A chunk whose text another chunk already shows: one line pointing there. */
+function samePointer(same: NonNullable<LatentChunk['same']>): Element {
+  const [row, chunk, why] = same
+  return h('p.lat-empty.lat-same', [
+    SAME_LEAD[why] ?? SAME_LEAD.repeat,
+    h(
+      'a',
+      { href: `?focus=${row}`, dataLatFocus: String(row), dataNoPopover: true },
+      `§${chunk + 1}`,
+    ),
+  ])
+}
+
 /** `article.lat-chunk` for each chunk; `chunk.c` is its index in the document. */
 export function chunkArticles(
   meta: Pick<LatentText, 'store'>,
@@ -222,16 +241,41 @@ export function chunkArticles(
                 { href: rowHref(doc, chunk.p), dataNoPopover: true },
                 `p. ${pageLabel(chunk.l, chunk.p)} ¶${chunk.c + 1}`,
               )
-            : `§${chunk.c + 1}`,
+            : h(
+                'a',
+                { href: `?focus=${chunk.r}`, dataLatFocus: String(chunk.r), dataNoPopover: true },
+                `§${chunk.c + 1}`,
+              ),
         ]),
-        ...passageBlocks(chunk.text ?? '', {
-          code: meta.store === 'note',
-          markdown: chunk.m === 1,
-          lines: meta.store === 'note' && chunk.m !== 1,
-        }),
+        // an image row is the image: its embedding has no text to show
+        ...(meta.store === 'image'
+          ? [imageFrame(doc)]
+          : chunk.same
+            ? [samePointer(chunk.same)]
+            : passageBlocks(chunk.text ?? '', {
+                code: meta.store === 'note',
+                markdown: chunk.m === 1,
+                lines: meta.store === 'note' && chunk.m !== 1,
+              })),
       ],
     ),
   )
+}
+
+/**
+ * An image row in the reader. The frame has a fixed height so the image arriving does not move
+ * the passages under it; the image is contained in it, top-left.
+ */
+function imageFrame(doc: Pick<LatentDoc, 'id' | 's'>): Element {
+  const href = rowHref(doc)
+  return h('a.lat-image', { href, dataNoPopover: true }, [
+    h('img', {
+      src: href,
+      alt: doc.id.split('/').pop() ?? doc.id,
+      loading: 'lazy',
+      decoding: 'async',
+    }),
+  ])
 }
 
 /**
@@ -254,7 +298,10 @@ export function moreSentinel(
 
 type HeadDoc = Pick<LatentDoc, 'id' | 's' | 't' | 'date' | 'n' | 'pages'>
 
-/** A document's head line. `mirror` is the reader's sticky copy that holds the head row. */
+/**
+ * A document's head line. `mirror` is the reader's one frozen head: it sits at the top of the
+ * reader and is retitled for the document under the reading line, so the top band never moves.
+ */
 export function docHead(doc: HeadDoc, mirror = false): Element {
   const href = rowHref(doc)
   const unit = doc.s === 'pdf' ? 'passages' : doc.s === 'note' ? 'chunks' : 'rows'
@@ -354,13 +401,22 @@ export function linksPane(
               item.preview.s === 'pdf'
                 ? h('a.lat-link-read', { href, dataNoPopover: true }, '/read →')
                 : null,
+              // the map card: a pdf's page boxes, or a note's chunks as lines of text; a click
+              // on it opens the row as the title does
               item.preview.s === 'pdf' && item.doc.sha && item.preview.p
                 ? h('span.lat-silhouette', {
                     dataSha: item.doc.sha,
                     dataPage: String(item.preview.p),
+                    dataLatFocus: String(item.preview.r),
                     ariaHidden: 'true',
                   })
-                : null,
+                : item.preview.s === 'note'
+                  ? h('span.lat-silhouette', {
+                      dataNote: '',
+                      dataLatFocus: String(item.preview.r),
+                      ariaHidden: 'true',
+                    })
+                  : null,
             ],
           )
         }),
@@ -652,9 +708,6 @@ function poleNote(axis: LatentAxis, side: 'a' | 'b'): string {
 const SOURCES_NOTE =
   'every store, embedded by one encoder into one space. counts are rows, one vector each: a note chunk, a pdf passage, an image, a base entry. documents count the wholes.'
 
-const COVERAGE_NOTE =
-  'pdfs embedded so far out of those eligible, and the pages they span. the rest are not in the space yet.'
-
 function modelNote(index: LatentIndex, model: string, scoped: boolean): string {
   const scope = scoped
     ? ' the scope picks the opening passage and greys links that leave it; nothing outside is dropped.'
@@ -715,26 +768,16 @@ export function axisCard(axis: LatentAxis, focusValue: number | null): Element {
 const count = (n: number) => n.toLocaleString('en-US')
 
 /**
- * The stores behind the space, one row each: kind, store, rows. A pdf store adds its coverage
- * underneath; an excluded store says why in place of a count.
+ * The stores behind the space, one row each: store and rows. An excluded store says why in
+ * place of a count.
  */
 export function ledger(index: LatentIndex, scope: string[]): Element {
   const rows: ElementContent[] = index.stores.map(store => {
     const name = store.id.replace(/^embeddings\/?/, '') || 'notes'
-    const coverage = store.included && store.coverage
     return h('li', { dataIncluded: store.included ? '' : undefined }, [
-      store.kind ? mark(store.kind) : h('span'),
       h('span.lat-ledger-id', name),
       h('span.lat-ledger-rows', store.included ? count(store.rows ?? 0) : 'excluded'),
-      coverage
-        ? h(
-            'span.lat-ledger-detail',
-            tipProps(COVERAGE_NOTE, 'end'),
-            `${count(coverage.indexedDocuments)} of ${count(coverage.eligibleDocuments)} pdfs, ${count(coverage.indexedPages)} pages`,
-          )
-        : store.included
-          ? null
-          : h('span.lat-ledger-detail', store.reason ?? ''),
+      store.included ? null : h('span.lat-ledger-detail', store.reason ?? ''),
     ])
   })
   const model = index.model.replace(/^[^/]+\//, '')

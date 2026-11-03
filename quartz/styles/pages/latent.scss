@@ -1,5 +1,6 @@
 @use '../variables.scss' as *;
 @use '../mixin.scss' as *;
+@use './latent-reader' as latent-reader;
 
 // `layout: latent`: rail | reader | links | probe. Markup from quartz/util/latent/markup.ts.
 // Popovers mount on <body>, so every rule hangs off the page root through :where.
@@ -31,6 +32,11 @@
     display: contents;
   }
 
+  .page-content {
+    // Extra trailing space pushes sticky panes above the viewport floor during fast flings.
+    margin-bottom: 0;
+  }
+
   .page-content > article,
   .folder-layout--latent > .folder-layout--article {
     grid-column: 2 / -2;
@@ -56,7 +62,8 @@
   grid-template-columns: var(--lat-rail) minmax(0, 1fr) var(--lat-links) var(--lat-probe);
   gap: 1rem;
   align-items: start;
-  margin: 1rem 0 3rem;
+  // the grid starts where the panes stick, so the first pixels of scroll move nothing
+  margin: var(--lat-top) 0;
   font-family: var(--lat-ui);
   font-size: var(--text-ui);
   line-height: var(--line-height);
@@ -129,7 +136,9 @@
       padding-left: 0.75rem;
     }
 
-    .lat-reader .lat-reader-head {
+    // the reader scrolls in the page on phones; each document keeps its own head
+    .lat-reader > .lat-reader-head,
+    .lat-reader::after {
       display: none;
     }
 
@@ -243,10 +252,12 @@
   }
 
   // ---- rail ---------------------------------------------------------------------------
+  // the rail and the links are always one viewport tall, whatever they hold, so their floors
+  // sit on the reader's bottom rule
   .lat-rail {
     position: sticky;
     top: var(--lat-top);
-    max-height: calc(100vh - var(--lat-top) - 0.5rem);
+    height: calc(100vh - 2 * var(--lat-top));
     overflow: hidden;
 
     // inset from the box so the year labels clear its left rule
@@ -370,196 +381,18 @@
     }
   }
 
-  // ---- reader -------------------------------------------------------------------------
-  .lat-reader {
-    font-family: var(--lat-text);
-    font-size: 1.05rem;
-    line-height: 1.55;
-    min-width: 0;
-
-    .lat-doc {
-      margin-bottom: 4rem;
-    }
-
-    .lat-doc-stub {
-      min-height: 40vh;
-      opacity: 0.55;
-    }
-
-    // one line on the head row's floor: mark, title and year on the left, counts and the
-    // /read link on the right. The global header rule centres flex items; align to the baseline.
-    // Each document's own head is an in-flow divider; .lat-reader-head is the copy that holds
-    // the head row, so scrolling between documents swaps its text and never moves the row
-    .lat-doc-head {
-      box-sizing: border-box;
-      height: var(--lat-head);
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
-      background: var(--ledger-surface);
-      padding: 0 0.625rem;
-      line-height: 1.25;
-      border-top: 1px solid var(--ledger-line);
-      border-bottom: 1px solid var(--ledger-line);
-      margin-bottom: 1rem;
-      font-family: var(--lat-ui);
-      font-size: var(--text-ui);
-
-      > * {
-        margin-left: 0;
-      }
-    }
-
-    // takes no space: it sits over the first document's own head and stays there
-    .lat-reader-head {
-      position: sticky;
-      top: var(--lat-top);
-      z-index: 2;
-      margin-bottom: calc(-1 * var(--lat-head));
-      // the passage scrolling past shows in the --lat-top band above the head; cover it
-      box-shadow: 0 calc(-1 * var(--lat-top)) 0 var(--light);
-    }
-
-    .lat-doc-kicker {
-      display: flex;
-      align-items: baseline;
-      gap: 0.6rem;
-      flex: 1 1 auto;
-      min-width: 0;
-    }
-
-    .lat-doc-title {
-      flex: 1 1 auto;
-      min-width: 0;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      font-family: var(--lat-text);
-      font-weight: var(--lat-strong);
-      font-size: 1.05rem;
-      color: var(--dark);
-      text-decoration: none;
-    }
-
-    .lat-doc-date {
-      font-family: var(--lat-mono);
-      color: var(--gray);
-      font-size: var(--text-meta);
-    }
-
-    .lat-doc-meta {
-      display: flex;
-      flex: 0 0 auto;
-      gap: 0.5rem;
-      white-space: nowrap;
-      font-family: var(--lat-mono);
-      font-size: var(--text-meta);
-      color: var(--gray);
-
-      > * + *::before {
-        content: '·';
-        margin-right: 0.5rem;
-      }
-
-      a {
-        color: var(--darkgray);
-        text-decoration: none;
-      }
-    }
-
-    .lat-chunk {
-      position: relative;
-      padding: 0.2rem 0.75rem 0.2rem 3.4rem;
-      margin: 0 0 0.9rem;
-      border-left: 2px solid transparent;
-
-      & > p,
-      & > .lat-h {
-        margin: 0;
-        white-space: pre-wrap;
-        overflow-wrap: anywhere;
-      }
-
-      & > * + * {
-        margin-top: 0.75em;
-      }
-
-      // the locus is absolutely placed (a block above the text on phones), not a paragraph
-      & > .lat-locus + * {
-        margin-top: 0;
-      }
-
-      .lat-h {
-        font: inherit;
-        font-weight: var(--lat-strong);
-        color: var(--dark);
-      }
-
-      // KaTeX at the reader's size; display math scrolls sideways rather than widening the column
-      .katex {
-        font-size: 1.08em;
-        white-space: normal;
-      }
-
-      .katex-display {
-        margin: 0;
-        overflow-x: auto;
-        overflow-y: hidden;
-        padding: 0.15em 0;
-      }
-
-      .lat-empty {
-        font-family: var(--lat-mono);
-        font-size: var(--text-meta);
-        color: var(--gray);
-      }
-
-      &[data-focus] {
-        border-left-color: var(--dark);
-      }
-
-      &[data-focus] .lat-locus {
-        color: var(--dark);
-      }
-    }
-
-    .lat-more {
-      padding: 0.4rem 0.75rem 0.4rem 3.4rem;
-      margin: 0 0 0.9rem;
-      font-family: var(--lat-mono);
-      font-size: var(--text-meta);
-      color: var(--gray);
-    }
-
-    .lat-locus {
-      position: absolute;
-      left: 0.5rem;
-      top: 0.35rem;
-      width: 2.6rem;
-      font-family: var(--lat-mono);
-      font-size: var(--lat-micro);
-      color: var(--gray);
-      line-height: 1.2;
-
-      a {
-        color: inherit;
-        text-decoration: none;
-
-        &:hover {
-          text-decoration: underline;
-        }
-      }
-    }
-  }
+  @include latent-reader.styles;
 
   // ---- links --------------------------------------------------------------------------
   .lat-links {
     position: sticky;
     top: var(--lat-top);
-    max-height: calc(100vh - var(--lat-top) - 0.5rem);
+    height: calc(100vh - 2 * var(--lat-top));
+    // a wheel or a trackpad fling that reaches the list's top or end stops there: chained on to
+    // the page it scrolled the reader, which moved the focus and re-rendered the links mid-read
+    overscroll-behavior: contain;
     overflow-y: auto;
+    overflow-anchor: none;
     scrollbar-width: thin;
     // the head comes from linksPane inside .lat-links-body (the client re-renders the body);
     // the body has no box, so the head goes first, the search under it, then the list
@@ -721,10 +554,11 @@
       box-shadow: 0 0.4rem 1.2rem color-mix(in srgb, var(--dark) 18%, transparent);
       opacity: 0;
       visibility: hidden;
-      pointer-events: none;
+      cursor: pointer;
+      // the hide waits long enough for the pointer to cross from the title to the card
       transition:
-        opacity 120ms,
-        visibility 0s linear 120ms;
+        opacity 120ms linear 280ms,
+        visibility 0s linear 400ms;
 
       svg {
         width: 100%;
@@ -738,9 +572,17 @@
           fill: var(--lat-pdf);
         }
       }
+
+      // a note's map marks its chunk in the note colour
+      &[data-note] rect[data-hit] {
+        fill: var(--dark);
+      }
     }
 
-    .lat-link-title:is(:hover, :focus-visible) ~ .lat-silhouette[data-ready] {
+    // the card stays while the pointer moves from the title onto it, so it can be clicked like
+    // the title
+    .lat-link-title:is(:hover, :focus-visible) ~ .lat-silhouette[data-ready],
+    .lat-silhouette[data-ready]:hover {
       opacity: 1;
       visibility: visible;
       transition: opacity 120ms;
@@ -753,6 +595,7 @@
     top: var(--lat-top);
     max-height: calc(100vh - var(--lat-top) - 0.5rem);
     overflow-y: auto;
+    overscroll-behavior: contain;
     scrollbar-width: thin;
     font-size: var(--text-meta);
     --lat-mark-gap: 0.45rem;
@@ -799,8 +642,9 @@
       }
     }
 
+    // the bench runs edge to edge in the probe box: the picker strip, then the canvas
     .lat-bench {
-      padding: 0.625rem 0.75rem;
+      padding: 0 0 0.625rem;
     }
 
     .lat-axis {
@@ -934,42 +778,74 @@
 
     // x, y, z and the level as a ruled table: axis | component (a garden select) | variance
     .lat-bench-controls {
-      margin-bottom: 0.6rem;
+      margin: 0;
     }
 
+    // x, y and z share one ruled line, a third each, with the level on the line under them.
+    // The client builds one table row per axis; the grid lays those rows side by side
     .lat-bench-table {
+      display: block;
       width: 100%;
-      table-layout: fixed;
-      border-collapse: collapse;
       margin: 0;
+      border-collapse: collapse;
       font-size: var(--text-meta);
+
+      tbody {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      tr {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        min-width: 0;
+        height: 2rem;
+        padding: 0 0.625rem;
+        border-bottom: 1px solid var(--ledger-line);
+
+        & + tr {
+          border-left: 1px solid var(--ledger-line);
+        }
+
+        // the level row
+        &:nth-child(4) {
+          grid-column: 1 / -1;
+          border-left: 0;
+        }
+      }
 
       th,
       td {
-        padding: 0.2rem 0;
+        display: block;
+        padding: 0;
         border: 0;
-        border-bottom: 1px solid var(--lat-hair);
-        vertical-align: baseline;
         text-align: left;
       }
 
       th {
-        width: 3.2rem;
+        flex: none;
         font-family: var(--lat-mono);
         font-size: var(--lat-micro);
         font-weight: 400;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
         color: var(--gray);
       }
 
+      .lat-bench-pick {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+
       .lat-bench-share {
-        width: 3.6rem;
-        text-align: right;
+        flex: none;
         font-family: var(--lat-mono);
         font-size: var(--lat-micro);
         font-variant-numeric: tabular-nums;
         color: var(--gray);
+
+        &:empty {
+          display: none;
+        }
       }
 
       // the select reads as the cell's text: no box, the chevron at the cell's end
@@ -978,11 +854,13 @@
         min-width: 0;
       }
 
+      // no box: the strip's rules are the only lines
       button.g-select-trigger {
         width: 100%;
         min-width: 0;
         min-height: 0;
-        padding: 0 0.4rem 0 0;
+        height: auto;
+        padding: 0;
         border: 0;
         border-radius: 0;
         background: transparent;
@@ -1010,12 +888,23 @@
       margin-left: 0.9rem;
     }
 
+    // both levels on the row's one line; the site's button rules would stack them
+    .lat-bench-levels {
+      white-space: nowrap;
+    }
+
+    // the levels are set like their label (mono, the micro size), so the row reads as one line
     .lat-bench-level {
+      display: inline-block;
+      width: auto;
+      min-width: 0;
       padding: 0;
       border: 0;
       background: none;
-      font: inherit;
-      font-family: var(--lat-text);
+      font-family: var(--lat-mono);
+      font-size: var(--lat-micro);
+      font-weight: 400;
+      line-height: 1;
       color: var(--gray);
       cursor: pointer;
 
@@ -1037,7 +926,8 @@
       width: 100%;
       aspect-ratio: 1;
       height: auto;
-      border: 1px solid var(--lat-hair);
+      border: 0;
+      border-bottom: 1px solid var(--ledger-line);
       cursor: grab;
       touch-action: none;
       // read by drawBench for the axis labels
@@ -1045,12 +935,26 @@
       font-size: var(--lat-micro);
     }
 
+    // one line: a hovered name wider than the pane scrolls to its end and back (setBenchStatus);
+    // with reduced motion it ends in an ellipsis instead
     .lat-bench-status {
       font-family: var(--lat-mono);
       font-size: var(--lat-micro);
       color: var(--gray);
-      min-height: 1.2em;
-      margin: 0.3rem 0 0;
+      height: 1.5em;
+      line-height: 1.5;
+      margin: 0.4rem 0 0;
+      padding: 0 0.75rem;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+
+      @media (prefers-reduced-motion: no-preference) {
+        &[data-overflow] > span {
+          display: inline-block;
+          animation: lat-marquee var(--lat-marquee, 6s) linear 0.6s infinite alternate;
+        }
+      }
     }
 
     .lat-ledger {
@@ -1063,12 +967,11 @@
         font-family: var(--lat-mono);
         font-size: var(--lat-micro);
         display: grid;
-        grid-template-columns: auto minmax(0, 1fr) auto;
-        column-gap: var(--lat-mark-gap);
+        grid-template-columns: minmax(0, 1fr) auto;
+        column-gap: 0.5rem;
       }
 
-      // mark | store | rows on the list's columns (subgrid), with a pdf store's coverage
-      // under the store name
+      // store | rows on the list's columns (subgrid); an excluded store's reason under its name
       li {
         display: grid;
         grid-column: 1 / -1;
@@ -1085,10 +988,6 @@
         &:not([data-included]) {
           color: var(--gray);
         }
-
-        .lat-mark {
-          justify-self: start;
-        }
       }
 
       .lat-ledger-id {
@@ -1103,7 +1002,7 @@
       }
 
       .lat-ledger-detail {
-        grid-column: 2 / -1;
+        grid-column: 1 / -1;
         color: var(--gray);
       }
 
@@ -1264,4 +1163,18 @@
 // the browser's own scroll anchoring on top of that moved the page twice on scroll-up
 html:has(> body[data-layout='latent']) {
   overflow-anchor: none;
+  scroll-behavior: auto;
+}
+
+// the probe's status line: hold, scroll to the end, hold (run alternate, so back again)
+@keyframes lat-marquee {
+  0%,
+  20% {
+    transform: translateX(0);
+  }
+
+  80%,
+  100% {
+    transform: translateX(var(--lat-shift, 0));
+  }
 }

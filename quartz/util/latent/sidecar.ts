@@ -61,7 +61,9 @@ function listOf(value: unknown): unknown[] {
   return typeof value === 'string' ? [value] : Array.isArray(value) ? value : []
 }
 
-function poleSpec(value: unknown): { paths: string[]; tags: string[] } {
+type PoleSpec = { paths: string[]; tags: string[] }
+
+function poleSpec(value: unknown): PoleSpec {
   let tags: unknown = []
   let paths: unknown = []
   if (typeof value === 'string' || Array.isArray(value)) tags = value
@@ -71,10 +73,7 @@ function poleSpec(value: unknown): { paths: string[]; tags: string[] } {
     paths = v.paths || []
   }
   const sorted = (xs: string[]) => [...new Set(xs.filter(Boolean))].sort()
-  return {
-    paths: sorted(listOf(paths).map(linkTarget)),
-    tags: sorted(listOf(tags).map(tagKey)),
-  }
+  return { paths: sorted(listOf(paths).map(linkTarget)), tags: sorted(listOf(tags).map(tagKey)) }
 }
 
 /**
@@ -84,7 +83,7 @@ function poleSpec(value: unknown): { paths: string[]; tags: string[] } {
  */
 export function axesSpec(raw: unknown): string {
   if (!Array.isArray(raw)) return ''
-  const out: { a: ReturnType<typeof poleSpec>; b: ReturnType<typeof poleSpec>; name: string | null }[] = []
+  const out: { a: PoleSpec; b: PoleSpec; name: string | null }[] = []
   for (const ax of raw) {
     if (!ax || typeof ax !== 'object' || Array.isArray(ax)) continue
     const { a: rawA, b: rawB, name } = ax as Record<string, unknown>
@@ -271,10 +270,10 @@ export function defaultFocus(sidecar: Sidecar, prefixes: string[], focus?: unkno
   for (const doc of sidecar.docs) docOf.fill(doc.d, doc.r0, doc.r0 + doc.n)
   const scopedDoc = new Uint8Array(sidecar.docs.length)
   for (const doc of sidecar.docs) scopedDoc[doc.d] = inScope(doc.id, prefixes) ? 1 : 0
-  // `focus: [[thoughts/LLMs]]` names the document; its row with the widest reach into the scope
-  // opens the page, whether or not the document itself is in the scope
+  // `focus: [[thoughts/LLMs]]` names the document, in the scope or not, and the page opens at its
+  // top: the widest-reach row of a note is its bibliography (every citation is a paper's neighbour)
   const named = focusDoc(sidecar, focus)
-  if (named) return bestRow(sidecar, [named], docOf, scopedDoc) ?? named.r0
+  if (named) return named.r0
   const scoped = sidecar.docs.filter(
     d => scopedDoc[d.d] && (d.s === 'note' || d.s === 'pdf') && d.n >= 3,
   )
