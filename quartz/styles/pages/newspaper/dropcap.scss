@@ -253,40 +253,54 @@ body:not([data-layout='newspaper']) :where(#quartz-root) article :is(p, li):has(
   line-height: var(--mag-line);
 }
 
-// `procedural`: an initialis halo grown around the capital at build time (quartz/util/grapevine).
-// The tile is a 1em square the SVG draws whole: the span's own letter stays in the flow for
-// selection and readers but prints transparent, and the SVG's letter is the default face's
-// EB Garamond capital as a path. Ink A is the letter, B the wreath, C the cells, from one
-// initialis share; dark theme lifts the same hues so the letter stays readable on --light.
+// `procedural` and `procedural-<seed>`: an Initialis tile (quartz/util/grapevine/presets.ts)
+// grown in the browser. The span's letter stays for selection and shows until the canvas paints.
+// The border is the tile edge; the picture inside is that preset, paper included.
 :where(#quartz-root) {
   --mag-vine: color-mix(in srgb, var(--dark) 60%, var(--secondary));
   --mag-leaf: color-mix(in srgb, var(--secondary) 72%, var(--light));
   --mag-grape: color-mix(in srgb, var(--tertiary) 78%, var(--dark));
 
+  .dropcap-specimen {
+    display: inline-block;
+    vertical-align: top;
+    width: 9rem;
+    margin: 0 0.5rem 1.5rem 0;
+
+    .mag-initial {
+      float: none;
+    }
+
+    figcaption {
+      display: block;
+      margin-top: 0.4rem;
+      font-size: var(--text-meta);
+      color: var(--darkgray);
+      line-height: 1.3;
+    }
+  }
+
   article .mag-initial[data-face='procedural'] {
     --dc-top: 1;
     --dc-bottom: 0;
     --dc-gap: 0.12em;
-    --mag-ink-a: #592c63;
-    --mag-ink-b: #8b81c3;
-    --mag-ink-c: #838a2d;
     width: 1em;
-    color: transparent;
+    box-sizing: border-box;
+    color: var(--mag-ink-a, var(--dark));
+    background: var(--mag-paper, var(--light));
+    border: 1.5px solid var(--mag-ink-a, var(--dark));
 
-    svg {
+    &.is-drawn {
+      color: transparent;
+    }
+
+    canvas {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
-      overflow: visible;
     }
   }
-}
-
-:root[saved-theme='dark'] :where(#quartz-root) article .mag-initial[data-face='procedural'] {
-  --mag-ink-a: #f0e4f6;
-  --mag-ink-b: #c9c1e6;
-  --mag-ink-c: #d5d98a;
 }
 
 :where(#quartz-root) {
@@ -324,34 +338,5 @@ body:not([data-layout='newspaper']) :where(#quartz-root) article :is(p, li):has(
     stroke-width: 26;
     stroke-linejoin: round;
     paint-order: stroke;
-  }
-
-  .gv-initial {
-    .gv-cells {
-      fill: var(--mag-ink-c);
-    }
-
-    .gv-stem path,
-    .gv-stem circle {
-      fill: var(--mag-ink-b);
-      stroke: var(--mag-ink-b);
-      stroke-width: 0.7px;
-      stroke-linejoin: round;
-      vector-effect: non-scaling-stroke;
-    }
-
-    .gv-leaf path,
-    .gv-grapes path {
-      fill: var(--mag-ink-b);
-      stroke: none;
-    }
-
-    .gv-letter {
-      fill: var(--light);
-      stroke: var(--mag-ink-a);
-      stroke-width: 2.2px;
-      vector-effect: non-scaling-stroke;
-      paint-order: stroke fill;
-    }
   }
 }

@@ -1,7 +1,6 @@
 import ah from './glyphs/a-h.json'
 import ip from './glyphs/i-p.json'
 import qz from './glyphs/q-z.json'
-import { resample } from './vendor/initialis/util.js'
 
 // The capital of EB Garamond Initials' letter layer (Georg Duffner, OFL; the face the default
 // drop cap already serves), A to Z as SVG path data in font units (1000/em, y up), dumped with
@@ -111,66 +110,4 @@ export function placeLetter(letter: string, size: number, scale: number): Placed
     transform: `matrix(${s.toFixed(4)} 0 0 ${(-s).toFixed(4)} ${tx.toFixed(1)} ${baseline.toFixed(1)})`,
     rings: flatten(glyph.d).map(ring => ring.map(map)),
   }
-}
-
-export interface Tip {
-  x: number
-  y: number
-  nx: number
-  ny: number
-}
-
-function inside(rings: Pt[][], x: number, y: number): boolean {
-  let wind = 0
-  for (const ring of rings) {
-    for (let i = 0, n = ring.length; i < n; i++) {
-      const [x0, y0] = ring[i]
-      const [x1, y1] = ring[(i + 1) % n]
-      if ((y0 <= y && y1 > y) || (y1 <= y && y0 > y)) {
-        const t = (y - y0) / (y1 - y0)
-        if (x < x0 + t * (x1 - x0)) wind += y1 > y0 ? 1 : -1
-      }
-    }
-  }
-  return wind !== 0
-}
-
-export function letterTips(rings: Pt[][], count: number, rnd: () => number): Tip[] {
-  const cand: (Tip & { score: number })[] = []
-  for (const ring of rings) {
-    const pts = resample(ring, 6, true)
-    const n = pts.length
-    if (n < 8) continue
-    for (let i = 0; i < n; i++) {
-      const a = pts[(i - 3 + n) % n]
-      const p = pts[i]
-      const b = pts[(i + 3) % n]
-      const t1 = Math.atan2(p[1] - a[1], p[0] - a[0])
-      const t2 = Math.atan2(b[1] - p[1], b[0] - p[0])
-      let turn = t2 - t1
-      while (turn > Math.PI) turn -= Math.PI * 2
-      while (turn < -Math.PI) turn += Math.PI * 2
-      const tx = b[0] - a[0]
-      const ty = b[1] - a[1]
-      const tl = Math.hypot(tx, ty) || 1
-      let nx = ty / tl
-      let ny = -tx / tl
-      if (inside(rings, p[0] + nx * 6, p[1] + ny * 6)) {
-        nx = -nx
-        ny = -ny
-      }
-      const mx = (a[0] + b[0]) / 2 - p[0]
-      const my = (a[1] + b[1]) / 2 - p[1]
-      if (mx * nx + my * ny > -0.5) continue
-      cand.push({ x: p[0], y: p[1], nx, ny, score: Math.abs(turn) + rnd() * 0.05 })
-    }
-  }
-  cand.sort((u, v) => v.score - u.score)
-  const out: Tip[] = []
-  for (const c of cand) {
-    if (out.length >= count) break
-    if (out.some(o => Math.hypot(o.x - c.x, o.y - c.y) < 90)) continue
-    out.push(c)
-  }
-  return out
 }
