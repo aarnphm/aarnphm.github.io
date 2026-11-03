@@ -53,9 +53,9 @@
     }
     .suggestion-aux {
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
       align-items: center;
-      gap: 4px;
+      gap: 0.75rem;
       flex-wrap: nowrap;
       white-space: nowrap;
       .suggestion-rank {
