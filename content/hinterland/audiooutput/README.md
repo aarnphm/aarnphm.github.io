@@ -17,6 +17,10 @@ Each application and site has a 0–300% volume slider in 5% steps and a 100% re
 
 Website volume requires local blob media or explicitly CORS-enabled media, an unprotected player, and browser support for AudioContext output selection. Click the player if the browser requires a playback gesture. Reload the extension and player tabs after upgrading. Players that already own their media element through Web Audio cannot be boosted by a second graph.
 
+When the selected system output has no hardware volume control (including the Yamaha AG03MK2), **Use volume keys** enables a software master from 0–100%. Click **Allow volume keys…** and grant Audio Output Accessibility access. Volume-up/down change the master by 1/16; Shift–Option uses 1/64 steps. Mute toggles without losing the saved level. The master multiplies app gain, so 50% master with 200% app gain yields 100% effective gain. Its percentage appears beside the system output. Per-device levels persist. Pause, disabling the option, or switching to a hardware-volume-capable output releases the master tap and passes keys through.
+
+The master covers the selected device's single stereo stream. Sites routed to another output stay independent. Apps already routed by Audio Output receive the master in their existing renderer; the device tap excludes those processes and its own renderer to prevent duplicate gain or feedback. Device-scoped capture covers other apps and browser media without changing the extension.
+
 The gear menu contains the standalone window, login-item switch, extension folder, and capture-permission settings. Keep the app at a stable path before enabling login startup.
 
 ## YouTube Music and other websites

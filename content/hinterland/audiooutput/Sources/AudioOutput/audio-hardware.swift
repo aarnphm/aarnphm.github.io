@@ -82,6 +82,26 @@ enum Hardware {
             .reduce(0) { $0 + $1.mNumberChannels }
     }
 
+    static func hasStereoOutput(_ device: AudioObjectID) -> Bool {
+        guard let streams = try? objects(device, kAudioDevicePropertyStreams, scope: kAudioDevicePropertyScopeOutput),
+              streams.count == 1, let stream = streams.first,
+              let format = try? scalar(stream, kAudioStreamPropertyVirtualFormat, initial: AudioStreamBasicDescription()) else { return false }
+        return format.mChannelsPerFrame == 2
+    }
+
+    static func hasOutputVolume(_ device: AudioObjectID) -> Bool {
+        for element: UInt32 in [0, 1, 2] {
+            var property = address(kAudioDevicePropertyVolumeScalar, kAudioDevicePropertyScopeOutput)
+            property.mElement = element
+            var writable: DarwinBoolean = false
+            if AudioObjectHasProperty(device, &property),
+               AudioObjectIsPropertySettable(device, &property, &writable) == noErr, writable.boolValue {
+                return true
+            }
+        }
+        return false
+    }
+
     static func outputs() throws -> [OutputDevice] {
         try objects(system, kAudioHardwarePropertyDevices).compactMap { device in
             guard (try? channels(device, scope: kAudioDevicePropertyScopeOutput)) ?? 0 > 0,
