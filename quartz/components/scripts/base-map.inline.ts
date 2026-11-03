@@ -6,6 +6,7 @@ import {
 import { mapboxStyleUrl, type MapboxTheme } from '../../util/mapbox-style'
 import { isRecord, readString } from '../../util/type-guards'
 import { createPopupContent, markerColor, readBaseMapData, type MarkerData } from './base-map-data'
+import { clusterMapDensity } from './base-map-density'
 import { mountBaseMapView } from './base-map-view'
 import { applyMonochromeMapPalette, loadMapbox } from './mapbox-client'
 
@@ -24,11 +25,12 @@ interface MapLayerEvent {
 }
 interface MarkerSource {
   setData(data: unknown): void
+  getClusterExpansionZoom(id: number, callback: (error: unknown, zoom?: number) => void): void
 }
 type Padding = { top: number; right: number; bottom: number; left: number }
 interface BaseMapInstance extends MapboxOverlayMap {
   once(type: 'load', listener: () => void): void
-  on(type: 'style.load', listener: () => void): void
+  on(type: 'style.load' | 'zoomend', listener: () => void): void
   on(type: 'click', layer: string, listener: (event: MapLayerEvent) => void): void
   on(type: 'mouseenter' | 'mouseleave', layer: string, listener: () => void): void
   queryRenderedFeatures(point: unknown, options: { layers: string[] }): MapFeature[]
@@ -96,8 +98,6 @@ function disposeMap(container: HTMLElement, state: BaseMapState): void {
 // camera centred on the visible part.
 const HIDDEN_STRIP = 44
 
-// Density replaces numbered clusters: a glow that pools where spots crowd and
-// thins out as you zoom in, under dots that never merge.
 function heatColor(dark: boolean): unknown[] {
   return dark
     ? [
@@ -113,9 +113,9 @@ function heatColor(dark: boolean): unknown[] {
         0.55,
         'rgba(253, 178, 162, 0.42)',
         0.8,
-        'rgba(253, 178, 162, 0.66)',
+        'rgba(253, 178, 162, 0.52)',
         1,
-        'rgba(255, 249, 243, 0.82)',
+        'rgba(253, 178, 162, 0.60)',
       ]
     : [
         'interpolate',
@@ -134,6 +134,19 @@ function heatColor(dark: boolean): unknown[] {
         1,
         'rgba(175, 48, 41, 0.6)',
       ]
+}
+function coordinatesFromFeature(feature: MapFeature | undefined): Coordinates | undefined {
+  const coordinates = feature?.geometry?.coordinates
+  if (
+    !Array.isArray(coordinates) ||
+    coordinates.length < 2 ||
+    typeof coordinates[0] !== 'number' ||
+    typeof coordinates[1] !== 'number' ||
+    !Number.isFinite(coordinates[0]) ||
+    !Number.isFinite(coordinates[1])
+  )
+    return undefined
+  return [coordinates[0], coordinates[1]]
 }
 function readPreference(key: string): boolean {
   try {
@@ -207,7 +220,10 @@ async function initializeMap(container: HTMLElement, state: BaseMapState): Promi
       select: marker => select(marker, true),
       clear: () => popup?.remove(),
       filter: markers => {
-        if (map?.isStyleLoaded()) map.getSource('markers')?.setData(geojson(markers))
+        if (map?.isStyleLoaded()) {
+          map.getSource('markers')?.setData(geojson(markers))
+          map.getSource('density')?.setData(clusterMapDensity(markers, map.getZoom()))
+        }
         for (const [slug, element] of iconMarkers) {
           element.hidden = !markers.some(marker => marker.slug === slug)
         }
@@ -302,7 +318,18 @@ async function initializeMap(container: HTMLElement, state: BaseMapState): Promi
     applyMapTerrain(current, threeDimensional, style(), theme(), 'base')
     applyMapElevation(current, elevation, style(), theme(), 'metric', 'base')
     if (!current.getSource('markers'))
-      current.addSource('markers', { type: 'geojson', data: geojson(view.markers()) })
+      current.addSource('markers', {
+        type: 'geojson',
+        data: geojson(view.markers()),
+        cluster: dense,
+        clusterMaxZoom: 14,
+        clusterRadius: 44,
+      })
+    if (dense && !current.getSource('density'))
+      current.addSource('density', {
+        type: 'geojson',
+        data: clusterMapDensity(view.markers(), current.getZoom()),
+      })
     if (current.getLayer('spot-points')) return
     const dark = satellite || theme() === 'dark'
     if (dense)
@@ -310,24 +337,13 @@ async function initializeMap(container: HTMLElement, state: BaseMapState): Promi
         {
           id: 'spot-density',
           type: 'heatmap',
-          source: 'markers',
+          source: 'density',
+          minzoom: 15,
           maxzoom: 17,
           paint: {
-            'heatmap-weight': 1,
-            'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 9, 0.5, 13, 1.1, 16, 1.8],
-            'heatmap-radius': [
-              'interpolate',
-              ['exponential', 1.6],
-              ['zoom'],
-              9,
-              12,
-              12,
-              24,
-              14,
-              40,
-              16,
-              72,
-            ],
+            'heatmap-weight': ['/', ['get', 'count'], 12],
+            'heatmap-intensity': 0.8,
+            'heatmap-radius': ['get', 'radius'],
             'heatmap-color': heatColor(dark),
             'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 11, 0.9, 14, 0.7, 16.5, 0.3],
           },
@@ -335,9 +351,34 @@ async function initializeMap(container: HTMLElement, state: BaseMapState): Promi
         current.getStyle()?.layers?.find(layer => layer.type === 'symbol')?.id,
       )
     current.addLayer({
+      id: 'clusters',
+      type: 'circle',
+      source: 'markers',
+      filter: ['has', 'point_count'],
+      paint: {
+        'circle-color': theme() === 'dark' ? '#b7a58b' : '#5c5141',
+        'circle-radius': ['step', ['get', 'point_count'], 17, 10, 23, 30, 30],
+        'circle-stroke-width': 2,
+        'circle-stroke-color': theme() === 'dark' ? '#100f0f' : '#fff9f3',
+      },
+    })
+    current.addLayer({
+      id: 'cluster-count',
+      type: 'symbol',
+      source: 'markers',
+      filter: ['has', 'point_count'],
+      layout: {
+        'text-field': '{point_count_abbreviated}',
+        'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+        'text-size': 12,
+      },
+      paint: { 'text-color': theme() === 'dark' ? '#100f0f' : '#fff9f3' },
+    })
+    current.addLayer({
       id: 'spot-points',
       type: 'circle',
       source: 'markers',
+      filter: ['!', ['has', 'point_count']],
       paint: {
         'circle-color': ['get', 'color'],
         'circle-radius': dense ? ['interpolate', ['linear'], ['zoom'], 9, 2.5, 12, 4, 15, 7] : 7,
@@ -361,6 +402,7 @@ async function initializeMap(container: HTMLElement, state: BaseMapState): Promi
       id: 'spot-labels',
       type: 'symbol',
       source: 'markers',
+      filter: ['!', ['has', 'point_count']],
       minzoom: 13,
       layout: {
         'text-field': ['get', 'title'],
@@ -379,9 +421,24 @@ async function initializeMap(container: HTMLElement, state: BaseMapState): Promi
     view.ready()
   }
   current.on('style.load', installLayers)
+  current.on('zoomend', () => {
+    if (current.isStyleLoaded())
+      current.getSource('density')?.setData(clusterMapDensity(view.markers(), current.getZoom()))
+  })
   current.once('load', () => {
     if (!isCurrentState(container, state)) return
     if (!data.config.defaultCenter && data.markers.length > 1) fit()
+  })
+  current.on('click', 'clusters', event => {
+    const feature = current.queryRenderedFeatures(event.point, { layers: ['clusters'] })[0]
+    const coordinates = coordinatesFromFeature(feature)
+    if (!coordinates || !isRecord(feature?.properties)) return
+    const clusterId = Number(feature.properties.cluster_id)
+    if (!Number.isFinite(clusterId)) return
+    current.getSource('markers')?.getClusterExpansionZoom(clusterId, (error, zoom) => {
+      if (!error && zoom !== undefined && isCurrentState(container, state))
+        current.easeTo({ center: coordinates, zoom, duration: reduce ? 0 : 450 })
+    })
   })
   current.on('click', 'spot-points', event => {
     const properties = event.features?.[0]?.properties
@@ -393,12 +450,14 @@ async function initializeMap(container: HTMLElement, state: BaseMapState): Promi
       select(marker, false)
     }
   })
-  current.on('mouseenter', 'spot-points', () => {
-    current.getCanvas().style.cursor = 'var(--cursor-pointer, pointer)'
-  })
-  current.on('mouseleave', 'spot-points', () => {
-    current.getCanvas().style.cursor = ''
-  })
+  for (const layer of ['clusters', 'spot-points']) {
+    current.on('mouseenter', layer, () => {
+      current.getCanvas().style.cursor = 'var(--cursor-pointer, pointer)'
+    })
+    current.on('mouseleave', layer, () => {
+      current.getCanvas().style.cursor = ''
+    })
+  }
   const resize = new ResizeObserver(() => current.resize())
   resize.observe(view.canvas)
   document.addEventListener(

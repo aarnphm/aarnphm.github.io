@@ -35,6 +35,19 @@
   min-width: 0;
   min-height: 0;
   overflow: hidden;
+
+  &:has(.mapboxgl-canvas:focus-visible)::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 2px solid var(--dark);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .mapboxgl-canvas:focus {
+    outline: none;
+  }
 }
 
 .base-map .base-map-canvas {
