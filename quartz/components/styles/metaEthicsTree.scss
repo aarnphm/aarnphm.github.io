@@ -6,9 +6,7 @@
   @include figure-frame('mep-figure', 38rem);
 
   --mep-stroke-soft: color-mix(in srgb, var(--gray) 45%, transparent);
-  --mep-divider: color-mix(in srgb, var(--gray) 30%, transparent);
   --mep-note-fg: color-mix(in srgb, var(--darkgray) 80%, var(--dark) 20%);
-  --mep-cat-fg: color-mix(in srgb, var(--darkgray) 68%, var(--dark) 32%);
   --mep-q-bg: color-mix(in srgb, var(--light) 98%, transparent);
   --mep-pos-bg: color-mix(in srgb, var(--fig-sage) 24%, var(--light));
   --mep-pos-stroke: color-mix(in srgb, var(--fig-sage) 66%, var(--darkgray));

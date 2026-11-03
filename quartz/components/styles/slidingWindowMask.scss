@@ -6,7 +6,6 @@
   @include figure-frame('swm-figure', 38rem);
 
   --swm-note: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
-  --swm-div: color-mix(in srgb, var(--gray) 28%, transparent);
   --swm-window: var(--fig-salmon);
   --swm-window-bg: color-mix(in srgb, var(--fig-salmon) 78%, var(--light));
   --swm-global-bg: color-mix(in srgb, var(--fig-sage) 78%, var(--light));

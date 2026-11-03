@@ -14,9 +14,7 @@
   color: var(--dark);
 
   --rs-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
-  --rs-stroke-soft: color-mix(in srgb, var(--gray) 55%, transparent);
   --rs-divider: color-mix(in srgb, var(--gray) 35%, transparent);
-  --rs-divider-soft: color-mix(in srgb, var(--gray) 22%, transparent);
   --rs-note-fg: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
   --rs-box-accent: color-mix(in srgb, var(--tertiary) 80%, var(--light));
   --rs-box-neutral: var(--lightgray);

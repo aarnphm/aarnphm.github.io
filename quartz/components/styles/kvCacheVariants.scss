@@ -5,7 +5,6 @@
 .kv-cache-variants {
   @include figure-frame('kvc-figure', 22rem, $bg: transparent, $zoom: false);
 
-  --kvc-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
   --kvc-soft: color-mix(in srgb, var(--gray) 50%, transparent);
   --kvc-div: color-mix(in srgb, var(--gray) 32%, transparent);
   --kvc-note: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);

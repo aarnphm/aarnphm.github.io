@@ -5,8 +5,6 @@
 .razor-head-taxonomy {
   @include figure-frame('rht-figure', 24rem);
 
-  --rht-echo: var(--fig-salmon);
-  --rht-induction: var(--fig-sage);
   --rht-cell-bg: var(--fig-surface);
   --rht-cell-edge: var(--fig-stroke-soft);
   --rht-query-bg: color-mix(in srgb, var(--fig-sage) 16%, var(--light));

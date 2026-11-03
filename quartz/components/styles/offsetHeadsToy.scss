@@ -5,11 +5,7 @@
 .offset-heads-toy {
   @include figure-frame('oht-figure', 36rem);
 
-  --oht-line: color-mix(in srgb, var(--gray) 24%, transparent);
-  --oht-surface-shadow:
-    0 0 0 1px var(--oht-line) inset, 0 18px 46px color-mix(in srgb, var(--dark) 7%, transparent);
   --oht-note: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
-  --oht-div: color-mix(in srgb, var(--gray) 28%, transparent);
   --oht-head1: var(--fig-salmon);
   --oht-head2: var(--fig-sage);
   --oht-surrogate: color-mix(in srgb, var(--gray) 70%, var(--darkgray) 30%);

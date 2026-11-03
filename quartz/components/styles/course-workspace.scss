@@ -369,7 +369,7 @@
 }
 
 ::highlight(course-contra) {
-  background: color-mix(in srgb, var(--red) 30%, var(--light));
+  background: color-mix(in srgb, var(--rose) 30%, var(--light));
   color: var(--dark);
   text-decoration: underline;
 }

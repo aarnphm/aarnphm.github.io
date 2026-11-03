@@ -6,7 +6,6 @@
   @include figure-frame('kvg-figure', 38rem);
 
   --kvg-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
-  --kvg-stroke-soft: color-mix(in srgb, var(--gray) 45%, transparent);
   --kvg-note-fg: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
   --kvg-salmon: var(--fig-salmon);
   --kvg-sage: var(--fig-sage);
