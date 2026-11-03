@@ -1,5 +1,4 @@
-import { Root as HTMLRoot } from 'hast'
-import { toString } from 'hast-util-to-string'
+import type { Root as HTMLRoot, RootContent } from 'hast'
 import readingTime, { ReadTimeResults } from 'reading-time'
 import { QuartzTransformerPlugin } from '../../types/plugin'
 import { renderDescriptionHtml, resolveManifestDescription } from '../../util/description'
@@ -25,6 +24,20 @@ const urlRegex = new RegExp(
   /(https?:\/\/)?(?<domain>([\da-z.-]+)\.([a-z.]{2,6})(:\d+)?)(?<path>[/\w.-]*)(\?[/\w.=&;-]*)?/,
   'g',
 )
+
+// A page's text feeds search, descriptions and the embeddings. Script, style and template bodies
+// are not text a reader sees: a notebook cell's runtime data (its JSON, the cell source again) or a
+// figure's props would otherwise land in every chunk after them. Otherwise hast-util-to-string.
+const UNREAD = new Set(['script', 'style', 'template'])
+
+function readableText(node: HTMLRoot | RootContent): string {
+  if (node.type === 'text') return node.value
+  if (node.type === 'element' && UNREAD.has(node.tagName)) return ''
+  if (!('children' in node)) return ''
+  let out = ''
+  for (const child of node.children) out += readableText(child)
+  return out
+}
 
 const MAX_TEXT_CACHE_ENTRIES = 512
 const textCache = releasedOnReload(
@@ -151,7 +164,7 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = userOpts =
             let textReadingTime = cachedText?.readingTime
             if (text === undefined || !textReadingTime) {
               if (text === undefined) {
-                text = escapeHTML(toString(tree))
+                text = escapeHTML(readableText(tree))
                 if (opts.replaceExternalLinks) {
                   text = text.replace(urlRegex, '$<domain>' + '$<path>')
                 }
