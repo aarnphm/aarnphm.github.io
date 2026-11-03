@@ -19,6 +19,21 @@ test(
     const fixture = path.resolve('harness/embeddings/fixture.py')
     const python = path.resolve('.venv/bin/python')
     await execute(python, [fixture, root, String(process.pid)])
+    const queuePath = path.join(root, 'quartz/.quartz-cache/pdf-search/queue.json')
+    const queueHistory = JSON.stringify({
+      version: 1,
+      updatedAt: new Date().toISOString(),
+      jobs: ['thoughts/papers/alpha.pdf', 'thoughts/pdfs/removed.pdf'].map(slug => ({
+        slug,
+        sourceSha256: '0'.repeat(64),
+        title: slug,
+        totalPages: 3,
+        queuedAt: new Date().toISOString(),
+        state: 'error',
+        error: 'Preserved extraction failure',
+      })),
+    })
+    await writeFile(queuePath, queueHistory)
     const server = spawn(
       process.execPath,
       [
@@ -77,6 +92,11 @@ test(
       assert.equal(first.totals.indexedPages, 1)
       assert.equal(first.totals.remainingOcrPages, 3)
       assert.equal(first.totals.documents, 2)
+      assert.ok(isRecord(first.queue))
+      assert.equal(first.queue.failed, 1)
+      assert.ok(Array.isArray(first.queue.jobs))
+      assert.equal(first.queue.jobs.length, 2)
+      assert.equal(await readFile(queuePath, 'utf8'), queueHistory)
       assert.ok(isRecord(first.current))
       assert.equal(first.current.page, 3)
       assert.equal(first.current.slug, 'thoughts/papers/alpha.pdf')

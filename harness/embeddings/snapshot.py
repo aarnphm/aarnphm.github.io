@@ -84,7 +84,8 @@ class Observer:
       return None
     try:
       started = (
-        datetime.strptime(result.stdout.strip(), '%a %b %d %H:%M:%S %Y')
+        datetime
+        .strptime(result.stdout.strip(), '%a %b %d %H:%M:%S %Y')
         .replace(tzinfo=timezone.utc)
         .timestamp()
       )
@@ -159,6 +160,10 @@ class Observer:
       if position < len(command) and isinstance(command[position], str):
         index = self.root / command[position]
     self.inventory.refresh(index, prefix, number(state.get('firstPages')))
+    public_slugs = {source.slug for source in self.inventory.sources}
+    public_jobs = [
+      job for job in queue_jobs if job.get('slug') in public_slugs
+    ]
     spec = extraction_spec(self.files.read(self.cache / 'recipe.json'))
     manifest = self.files.read(
       self.root / 'content/embeddings/pdf/manifest.json'
@@ -329,9 +334,9 @@ class Observer:
       'queue': {
         'jobs': queue_jobs,
         'pending': sum(
-          job.get('state') in ('queued', 'active') for job in queue_jobs
+          job.get('state') in ('queued', 'active') for job in public_jobs
         ),
-        'failed': sum(job.get('state') == 'error' for job in queue_jobs),
+        'failed': sum(job.get('state') == 'error' for job in public_jobs),
         'updatedAt': queue.get('updatedAt'),
       },
       'current': current,
