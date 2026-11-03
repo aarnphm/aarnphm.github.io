@@ -1,0 +1,113 @@
+@use '../variables.scss' as *;
+
+// `layout: latent`: hover and focus notes on the probe's terms (bc, the pc share, poles,
+// sources, model). markup.ts puts the text in data-tip and it is drawn from attr(), so it never
+// joins the page text. Box and motion follow the triathlon day tooltips.
+[data-layout='latent'] :where(#quartz-root) .lat-probe {
+  [data-tip] {
+    position: relative;
+    cursor: help;
+    outline: none;
+    text-decoration: underline dotted var(--lat-hair);
+    text-underline-offset: 0.22em;
+
+    &:hover,
+    &:focus-visible {
+      text-decoration-color: var(--gray);
+    }
+
+    &:focus-visible {
+      outline: 1px solid var(--secondary);
+      outline-offset: 2px;
+    }
+
+    &::after {
+      content: attr(data-tip);
+      position: absolute;
+      z-index: 3;
+      top: calc(100% + 0.3rem);
+      left: 0;
+      box-sizing: border-box;
+      width: max-content;
+      max-width: min(16rem, 80vw);
+      padding: 0.3rem 0.45rem;
+      border: 1px solid color-mix(in srgb, var(--gray) 30%, transparent);
+      background: var(--light);
+      color: var(--darkgray);
+      font-family: var(--lat-mono);
+      font-size: var(--lat-micro);
+      font-style: normal;
+      font-weight: normal;
+      line-height: 1.4;
+      letter-spacing: 0;
+      text-align: left;
+      text-transform: none;
+      white-space: normal;
+      text-wrap: pretty;
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-0.14rem) scale(0.98);
+      transform-origin: left top;
+      transition:
+        opacity 100ms ease,
+        transform 100ms cubic-bezier(0.23, 1, 0.32, 1),
+        visibility 0s linear 100ms;
+    }
+
+    // terms in the right column or flush right open leftward, so the note stays in the pane
+    &[data-tip-at='end']::after {
+      left: auto;
+      right: 0;
+      transform-origin: right top;
+    }
+
+    // the model line closes the pane, so its note opens upward
+    &[data-tip-at='up']::after {
+      top: auto;
+      bottom: calc(100% + 0.3rem);
+      transform: translateY(0.14rem) scale(0.98);
+      transform-origin: left bottom;
+    }
+  }
+
+  // the chip's border already says it is a term; a dotted rule under whole lines is noise
+  .lat-chip[data-tip],
+  .lat-ledger-detail[data-tip],
+  .lat-ledger-note[data-tip] {
+    text-decoration: none;
+  }
+
+  [data-tip]:focus-visible::after {
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    transition-delay: 70ms;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    [data-tip]:hover::after {
+      visibility: visible;
+      opacity: 1;
+      transform: none;
+      transition-delay: 70ms;
+    }
+  }
+
+  // touch: a tap focuses the term and shows its note; tapping elsewhere hides it
+  @media (hover: none) {
+    [data-tip]:focus::after {
+      visibility: visible;
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-tip]::after,
+    [data-tip][data-tip-at]::after {
+      transform: none;
+      transition: opacity 100ms ease;
+    }
+  }
+}

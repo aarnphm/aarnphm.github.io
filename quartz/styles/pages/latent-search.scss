@@ -1,0 +1,120 @@
+@use '../variables.scss' as *;
+
+// `layout: latent`: the typed query box above the links, feature matches in the probe, and the
+// rail as a control (click a slot, wheel through documents). Kept apart from latent.scss, which
+// holds the panes' type and layout.
+[data-layout='latent'] :where(#quartz-root) {
+  // curius's search bar as a row of the links box: mono, ruled below, the magnifier at the right
+  .lat-search {
+    position: relative;
+    display: block;
+    margin: 0;
+    padding: 0;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 1rem;
+      right: 0.75rem;
+      width: 14px;
+      height: 14px;
+      transform: translateY(-50%);
+      background: var(--gray);
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-4-4'/%3E%3C/svg%3E")
+        center / contain no-repeat;
+      pointer-events: none;
+    }
+
+    input[type='search'] {
+      display: block;
+      width: 100%;
+      height: 2rem;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0.25rem 2rem 0.25rem 0.75rem;
+      border: 0;
+      border-bottom: 1px solid var(--ledger-line);
+      border-radius: var(--radius-none);
+      background: var(--light);
+      font: 0.7rem/1.4 var(--codeFont);
+      color: var(--dark);
+      appearance: none;
+      -webkit-appearance: none;
+
+      &::placeholder {
+        color: var(--gray);
+      }
+
+      &:focus {
+        outline: 0;
+        border-bottom-color: var(--secondary);
+      }
+
+      &::-webkit-search-cancel-button {
+        -webkit-appearance: none;
+      }
+    }
+
+    // only takes room while it has something to say
+    .lat-search-hint {
+      display: block;
+      padding: 0.3rem 0.75rem;
+      border-bottom: 1px solid var(--ledger-line);
+      font-family: var(--lat-mono);
+      font-size: var(--lat-micro, 0.68rem);
+      color: var(--gray);
+
+      &:empty {
+        display: none;
+      }
+    }
+  }
+
+  .lat-links[data-query] .lat-search input[type='search'] {
+    border-bottom-color: var(--secondary);
+  }
+
+  .lat-axis[data-match] {
+    outline: 1px solid var(--dark);
+    outline-offset: 4px;
+  }
+
+  .lat-rail svg.lat-track {
+    cursor: pointer;
+    touch-action: none;
+  }
+
+  // the dated lanes as density strips, the undated band as one row per kind
+  .lat-rail .lat-density {
+    fill: var(--gray);
+    stroke: none;
+    opacity: 0.3;
+
+    &[data-kind='pdf'] {
+      fill: var(--lat-pdf);
+      opacity: 0.85;
+    }
+
+    &[data-kind='image'] {
+      fill: var(--lat-image);
+      opacity: 0.9;
+    }
+
+    &[data-kind='base'] {
+      fill: var(--gray);
+    }
+  }
+
+  .lat-rail .lat-undated-count {
+    font-size: 7px;
+    fill: var(--gray);
+    dominant-baseline: middle;
+    letter-spacing: 0.04em;
+  }
+
+  .lat-rail .lat-year.lat-undated {
+    text-anchor: start;
+    letter-spacing: 0;
+    font-size: 8px;
+  }
+}

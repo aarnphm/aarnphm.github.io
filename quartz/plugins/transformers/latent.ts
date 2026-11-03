@@ -8,13 +8,14 @@ import { QuartzTransformerPlugin } from '../../types/plugin'
 import cachedKatex from '../../util/cached-katex'
 import {
   axisCard,
+  docHead,
   ledger,
   linksPane,
   railSvg,
   readerDocument,
   scopeFlagsFor,
 } from '../../util/latent/markup'
-import { defaultFocus, docOfRow, openSidecar } from '../../util/latent/sidecar'
+import { axesSpec, defaultFocus, docOfRow, openSidecar } from '../../util/latent/sidecar'
 import { LATENT, inScope, scopePrefixes } from '../../util/latent/types'
 
 /**
@@ -22,7 +23,9 @@ import { LATENT, inScope, scopePrefixes } from '../../util/latent/types'
  * (an embeddings folder, `[[embeddings]]` by default). The first screen is rendered here from the
  * sidecar on disk: rail, reader, links and probe need no fetch and no script. `embeddings:` keeps
  * its harness meaning and doubles as the scope: folder links name which documents the page is
- * about; neighbours outside the scope are greyed, never dropped.
+ * about; neighbours outside the scope are greyed, never dropped. `axes:` names the probe's
+ * frontmatter axes by tag or path poles (baked in by the builder, see build.py), and `focus:`
+ * the document the page opens on.
  */
 
 function directoryOf(value: unknown): string {
@@ -50,7 +53,11 @@ export const Latent: QuartzTransformerPlugin = () => {
           if (frontmatter?.pageLayout !== LATENT) return
           const directory = directoryOf(frontmatter.directory)
           const prefixes = scopePrefixes(frontmatter.embeddings)
-          const sidecar = openSidecar(ctx.argv.directory, directory)
+          const sidecar = openSidecar(
+            ctx.argv.directory,
+            directory,
+            axesSpec(frontmatter.axes),
+          )
           file.data.latent = { directory, scope: prefixes, hash: sidecar?.index.hash ?? null }
 
           if (!sidecar) {
@@ -70,7 +77,11 @@ export const Latent: QuartzTransformerPlugin = () => {
 
           const { index, docs, track, probe } = sidecar
           const flags = scopeFlagsFor(docs, prefixes)
-          const focus = defaultFocus(sidecar, prefixes)
+          const focus = defaultFocus(
+            sidecar,
+            prefixes,
+            frontmatter.focus,
+          )
           const focusDoc = docOfRow(sidecar, focus)
           const focusPreview = sidecar.preview(focus)
           const links = sidecar.knn(focus)
@@ -80,9 +91,11 @@ export const Latent: QuartzTransformerPlugin = () => {
             return { preview, score: n.score, doc, inScope: inScope(doc.id, prefixes) }
           })
           const neighbourDocs = new Map<number, number>()
+          const neighbourWeights = new Map<number, number>()
           for (const item of items) {
             const best = neighbourDocs.get(item.doc.d) ?? 0
             if (item.score > best) neighbourDocs.set(item.doc.d, item.score)
+            neighbourWeights.set(item.doc.d, (neighbourWeights.get(item.doc.d) ?? 0) + 1)
           }
           const head = sidecar.text(focusDoc.d)
           const focusChunkIndex = Math.max(0, focus - focusDoc.r0)
@@ -101,6 +114,7 @@ export const Latent: QuartzTransformerPlugin = () => {
               open: focusDoc.d,
               focus,
               neighbours: neighbourDocs,
+              weights: neighbourWeights,
               focusChunkIndex,
               scopeFlags: flags,
             }),
@@ -126,12 +140,30 @@ export const Latent: QuartzTransformerPlugin = () => {
               { stub: true },
             )
           const reader = h('section.lat-reader', { dataFocus: String(focus) }, [
+            docHead(focusDoc, true),
             prev ? stub(prev) : null,
             readerDocument(text, focusDoc, focus, { offset }),
             next ? stub(next) : null,
           ])
 
-          const linksEl = linksPane(focusPreview, items, index.kinds)
+          // the typed query (Prism's search box): a text is embedded in the browser by the site's
+          // query encoder and scored against the 256-d rows; features match the probe's axes
+          const search = h('form.lat-search', { role: 'search' }, [
+            h('input', {
+              type: 'search',
+              name: 'q',
+              placeholder: 'search text or a feature…',
+              autocomplete: 'off',
+              spellcheck: 'false',
+              ariaLabel: 'search the latent space',
+            }),
+            h('output.lat-search-hint', { ariaLive: 'polite' }),
+          ])
+          const linksInner = linksPane(focusPreview, items, index.kinds)
+          const linksEl = h('section.lat-links', { dataFocus: String(focus) }, [
+            search,
+            h('div.lat-links-body', linksInner.children),
+          ])
 
           const probeEl = h('aside.lat-probe', [
             h('header.lat-pane-head', [
@@ -139,22 +171,23 @@ export const Latent: QuartzTransformerPlugin = () => {
               h('nav.lat-tabs', { role: 'tablist' }, [
                 h(
                   'button.lat-tab',
-                  { type: 'button', dataTab: 'axes', ariaSelected: 'true' },
+                  { type: 'button', dataTab: 'axes', ariaSelected: 'false' },
                   'axes',
                 ),
                 h(
                   'button.lat-tab',
-                  { type: 'button', dataTab: 'bench', ariaSelected: 'false' },
+                  { type: 'button', dataTab: 'bench', ariaSelected: 'true' },
                   '3-d',
                 ),
               ]),
             ]),
             h(
               'div.lat-panel',
-              { dataPanel: 'axes' },
+              { dataPanel: 'axes', hidden: true },
               probe.axes.slice(0, 4).map((axis, i) => axisCard(axis, links.axes[i] ?? null)),
             ),
-            h('div.lat-panel.lat-bench', { dataPanel: 'bench', hidden: true }, [
+            // the probe opens on the 3-d bench; the client loads it once the page is idle
+            h('div.lat-panel.lat-bench', { dataPanel: 'bench' }, [
               h('div.lat-bench-controls'),
               h('canvas.lat-bench-canvas', { width: 320, height: 320 }),
               h('p.lat-bench-status'),
@@ -176,6 +209,7 @@ export const Latent: QuartzTransformerPlugin = () => {
               dataLatentScope: prefixes.join(','),
               dataLatentRows: String(index.rows),
               dataLatentDocs: String(index.docs),
+              dataLatentModel: index.model,
               dataLatentMacros: JSON.stringify(customMacros),
             },
             [rail, reader, linksEl, probeEl],

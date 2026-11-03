@@ -10,14 +10,17 @@ import type {
   LatentTextPart,
   LatentTrackDoc,
 } from '../../util/latent/types'
+import type { SemanticEmbedRequest, SemanticWorkerResponse } from '../../util/semantic-protocol'
 import type { LatentWorkerRequest, LatentWorkerResponse } from '../../workers/latent.worker'
 import {
   chunkArticles,
   linksPane,
+  docHead,
   moreSentinel,
   railSvg,
   readerDocument,
 } from '../../util/latent/markup'
+import { RAIL_HEIGHT, RAIL_WIDTH, layoutRail, type RailLayout } from '../../util/latent/rail'
 import {
   blockName,
   blockOf,
@@ -26,6 +29,7 @@ import {
   inScope,
   partName,
 } from '../../util/latent/types'
+import { buildSelect } from '../controls/select'
 import { loadPageStyles } from './page-styles'
 import { rootNavSignal } from './root-lifecycle'
 
@@ -65,6 +69,16 @@ interface Runtime {
   links: HTMLElement
   probe: HTMLElement
   bench: Bench | null
+  /** the vectors worker, shared by the bench and the query */
+  vec: { worker: Worker; seq: number } | null
+  semantic: Worker | null
+  model: string
+  /** a typed query pins the links pane to its hits until cleared */
+  query: { text: string; items: LinkItem[] } | null
+  railLayout: RailLayout | null
+  /** rail viewBox height: the pane's aspect ratio in rail units, so the track spans the pane */
+  railHeight: number
+  railItems: LinkItem[]
 }
 
 interface Bench {
@@ -87,6 +101,10 @@ interface Bench {
   } | null
   frame: number
   hover: number
+  // canvas size in css px; the backing store is w·dpr × h·dpr so points and labels stay sharp
+  w: number
+  h: number
+  dpr: number
 }
 
 async function fetchJson<T>(rt: Pick<Runtime, 'signal'>, url: string): Promise<T> {
@@ -247,9 +265,11 @@ async function renderLinks(rt: Runtime, row: number): Promise<void> {
     const doc = rt.docs[preview.d]
     return { preview, score: links.neighbours[i].score, doc, inScope: inScope(doc.id, rt.scope) }
   })
-  const pane = linksPane(focusPreview, items, rt.kinds)
-  rt.links.innerHTML = toHtml(pane.children as never, { allowDangerousHtml: false })
-  rt.links.dataset.focus = String(row)
+  if (!rt.query) {
+    const pane = linksPane(focusPreview, items, rt.kinds)
+    linksBody(rt).innerHTML = toHtml(pane.children as never, { allowDangerousHtml: false })
+    rt.links.dataset.focus = String(row)
+  }
   // probe ticks
   const ticks = rt.probe.querySelectorAll<SVGLineElement>('.lat-axis .lat-focus-tick')
   rt.probe.querySelectorAll<SVGSVGElement>('.lat-axis').forEach((card, i) => {
@@ -268,16 +288,303 @@ async function renderLinks(rt: Runtime, row: number): Promise<void> {
     tick.setAttribute('x2', x)
   })
   void ticks
-  renderRail(rt, items)
+  renderRail(rt, rt.query ? rt.query.items : items)
   if (rt.bench) drawBench(rt)
 }
 
+function linksBody(rt: Runtime): HTMLElement {
+  return rt.links.querySelector<HTMLElement>('.lat-links-body') ?? rt.links
+}
+
+// ---- typed query ----------------------------------------------------------------------------
+
+function vecWorker(rt: Runtime): { worker: Worker; seq: number } {
+  if (!rt.vec) {
+    const worker = new Worker(new URL('latent.worker.js', import.meta.url), { type: 'module' })
+    rt.vec = { worker, seq: 0 }
+    rt.signal.addEventListener('abort', () => worker.terminate())
+  }
+  return rt.vec
+}
+
+type VecMessage = LatentWorkerRequest extends infer R
+  ? R extends LatentWorkerRequest
+    ? Omit<R, 'seq'>
+    : never
+  : never
+
+function requestVec(
+  rt: Runtime,
+  message: VecMessage,
+  transfer: Transferable[] = [],
+): Promise<LatentWorkerResponse> {
+  const vec = vecWorker(rt)
+  const seq = ++vec.seq
+  return new Promise((resolve, reject) => {
+    const onMessage = (event: MessageEvent<LatentWorkerResponse>) => {
+      if (event.data.seq !== seq) return
+      vec.worker.removeEventListener('message', onMessage)
+      if (event.data.type === 'error') reject(new Error(event.data.message))
+      else resolve(event.data)
+    }
+    vec.worker.addEventListener('message', onMessage)
+    vec.worker.postMessage({ ...message, seq } as LatentWorkerRequest, transfer)
+  })
+}
+
+/** The site's query encoder, in its own worker; loads on the first query. */
+function embedQuery(rt: Runtime, text: string, hint: HTMLElement): Promise<Float32Array> {
+  if (!rt.semantic) {
+    rt.semantic = new Worker(new URL('semantic.worker.js', import.meta.url), { type: 'module' })
+    rt.signal.addEventListener('abort', () => rt.semantic?.terminate())
+  }
+  const worker = rt.semantic
+  const seq = Date.now()
+  return new Promise((resolve, reject) => {
+    const onMessage = (event: MessageEvent<SemanticWorkerResponse>) => {
+      const data = event.data
+      if (data.type === 'model-progress') {
+        const pct = data.totalBytes ? Math.round((data.loadedBytes / data.totalBytes) * 100) : 0
+        hint.textContent =
+          data.phase === 'loading' ? `loading the encoder ${pct}%` : 'starting the encoder'
+        return
+      }
+      if (data.type === 'embedding' && data.seq === seq) {
+        worker.removeEventListener('message', onMessage)
+        resolve(data.vector)
+      } else if (data.type === 'error' && data.seq === seq) {
+        worker.removeEventListener('message', onMessage)
+        reject(new Error(data.message))
+      }
+    }
+    worker.addEventListener('message', onMessage)
+    const message: SemanticEmbedRequest = {
+      type: 'embed',
+      seq,
+      text,
+      model: rt.model,
+      dims: 256,
+      queryDtype: 'q4',
+    }
+    worker.postMessage(message)
+  })
+}
+
+/** Probe axes whose name or pole terms contain the query: "search for features". */
+function matchAxes(rt: Runtime, text: string): number {
+  const needle = text.trim().toLowerCase()
+  let first: HTMLElement | null = null
+  let count = 0
+  for (const card of rt.probe.querySelectorAll<HTMLElement>('.lat-axis')) {
+    const hit = needle.length > 1 && (card.textContent ?? '').toLowerCase().includes(needle)
+    if (hit) {
+      card.dataset.match = ''
+      count++
+      first ??= card
+    } else delete card.dataset.match
+  }
+  if (first) {
+    for (const tab of rt.probe.querySelectorAll<HTMLButtonElement>('.lat-tab'))
+      tab.setAttribute('aria-selected', String(tab.dataset.tab === 'axes'))
+    for (const panel of rt.probe.querySelectorAll<HTMLElement>('.lat-panel'))
+      panel.hidden = panel.dataset.panel !== 'axes'
+    first.scrollIntoView({ block: 'nearest' })
+  }
+  return count
+}
+
+async function runQuery(rt: Runtime, text: string): Promise<void> {
+  const hint = rt.links.querySelector<HTMLElement>('.lat-search-hint')
+  if (!hint) return
+  const axes = matchAxes(rt, text)
+  hint.textContent = 'embedding the query…'
+  try {
+    const vector = await embedQuery(rt, text, hint)
+    if (rt.signal.aborted) return
+    const url = `${rt.base}/vec/rows-256-int8.bin`
+    const meta = await metaOf(rt)
+    hint.textContent = `scoring ${meta.rows} chunks…`
+    await requestVec(rt, { type: 'load', url, rows: meta.rows, dims: 256 })
+    const t0 = performance.now()
+    const result = await requestVec(
+      rt,
+      { type: 'query', url, vector, scale: meta.scale, k: rt.k },
+      [vector.buffer],
+    )
+    if (result.type !== 'queried' || rt.signal.aborted) return
+    const previews = await Promise.all([...result.hits].map(r => previewOf(rt, r)))
+    const items: LinkItem[] = previews.map((preview, i) => {
+      const doc = rt.docs[preview.d]
+      return {
+        preview,
+        score: Math.round(Math.max(0, result.scores[i]) * 255),
+        doc,
+        inScope: inScope(doc.id, rt.scope),
+      }
+    })
+    rt.query = { text, items }
+    const pane = linksPane(
+      { r: -1, d: -1, s: 'note', t: text, c: 0, p: null, l: '', x: '' },
+      items,
+      rt.kinds,
+      'query',
+    )
+    linksBody(rt).innerHTML = toHtml(pane.children as never, { allowDangerousHtml: false })
+    rt.links.dataset.query = text
+    hint.textContent = `${items.length} chunks in ${(performance.now() - t0).toFixed(0)} ms${axes ? ` · ${axes} ${axes === 1 ? 'axis' : 'axes'} match` : ''}`
+    renderRail(rt, items)
+  } catch (error) {
+    hint.textContent = error instanceof Error ? error.message : String(error)
+  }
+}
+
+function clearQuery(rt: Runtime): void {
+  for (const card of rt.probe.querySelectorAll<HTMLElement>('.lat-axis[data-match]'))
+    delete card.dataset.match
+  const hint = rt.links.querySelector<HTMLElement>('.lat-search-hint')
+  if (hint) hint.textContent = ''
+  if (!rt.query && !rt.links.dataset.query) return
+  rt.query = null
+  delete rt.links.dataset.query
+  void renderLinks(rt, rt.focus)
+}
+
+let metaCache: WeakMap<Runtime, Promise<NonNullable<Bench['meta']>>> = new WeakMap()
+function metaOf(rt: Runtime): Promise<NonNullable<Bench['meta']>> {
+  let meta = metaCache.get(rt)
+  if (!meta) {
+    meta = fetchJson<NonNullable<Bench['meta']>>(rt, `${rt.base}/vec/meta.json`)
+    metaCache.set(rt, meta)
+  }
+  return meta
+}
+
+function bindSearch(rt: Runtime): void {
+  const form = rt.links.querySelector<HTMLFormElement>('form.lat-search')
+  const input = form?.querySelector<HTMLInputElement>('input')
+  if (!form || !input) return
+  form.addEventListener(
+    'submit',
+    event => {
+      event.preventDefault()
+      const text = input.value.trim()
+      if (!text) clearQuery(rt)
+      else void runQuery(rt, text)
+    },
+    { signal: rt.signal },
+  )
+  input.addEventListener(
+    'keydown',
+    event => {
+      if (event.key === 'Escape') {
+        input.value = ''
+        clearQuery(rt)
+        input.blur()
+      }
+    },
+    { signal: rt.signal },
+  )
+  input.addEventListener(
+    'input',
+    () => {
+      if (!input.value.trim()) clearQuery(rt)
+    },
+    { signal: rt.signal },
+  )
+}
+
+// ---- the rail as a control -----------------------------------------------------------------
+
+function railLayoutOf(rt: Runtime): RailLayout {
+  rt.railLayout ??= layoutRail(rt.track, rt.railHeight)
+  return rt.railLayout
+}
+
+/** Size the rail's viewBox to its pane so the track runs the full height; true when it changed. */
+function measureRail(rt: Runtime): boolean {
+  const svg = rt.rail.querySelector<SVGSVGElement>('svg.lat-track')
+  if (!svg) return false
+  const box = svg.getBoundingClientRect()
+  if (box.width < 40 || box.height < 120) return false
+  const height = Math.max(400, Math.round((RAIL_WIDTH * box.height) / box.width))
+  if (Math.abs(height - rt.railHeight) < 2) return false
+  rt.railHeight = height
+  rt.railLayout = null
+  return true
+}
+
+/** The document whose slot is nearest a y in rail viewBox units. */
+function docNearY(rt: Runtime, y: number): number {
+  const layout = railLayoutOf(rt)
+  let best = 0
+  let bestDist = Infinity
+  for (let i = 0; i < layout.y.length; i++) {
+    const dist = Math.abs(layout.y[i] - y)
+    if (dist < bestDist) {
+      bestDist = dist
+      best = i
+    }
+  }
+  return best
+}
+
+function bindRail(rt: Runtime): void {
+  let stepping = false
+  let wheelBudget = 0
+  const observer = new ResizeObserver(() => {
+    if (measureRail(rt)) renderRail(rt, rt.railItems)
+  })
+  observer.observe(rt.rail)
+  rt.signal.addEventListener('abort', () => observer.disconnect())
+  // a click on the track opens the document nearest that point in time
+  rt.rail.addEventListener(
+    'click',
+    event => {
+      const target = event.target as Element | null
+      if (!target || target.closest('text.lat-label')) return
+      const svg = target.closest<SVGSVGElement>('svg.lat-track')
+      if (!svg) return
+      const ctm = svg.getScreenCTM()
+      if (!ctm) return
+      const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(ctm.inverse())
+      if (point.y < 0 || point.y > rt.railHeight) return
+      event.preventDefault()
+      const d = docNearY(rt, point.y)
+      if (d !== rt.open) void goTo(rt, rt.docs[d].r0)
+    },
+    { signal: rt.signal },
+  )
+  // the wheel over the rail steps through documents in time order instead of scrolling the page
+  rt.rail.addEventListener(
+    'wheel',
+    event => {
+      event.preventDefault()
+      if (stepping) return
+      wheelBudget += event.deltaY
+      if (Math.abs(wheelBudget) < 40) return
+      const direction = Math.sign(wheelBudget)
+      wheelBudget = 0
+      const next = rt.open + direction
+      if (next < 0 || next >= rt.docs.length) return
+      stepping = true
+      void goTo(rt, rt.docs[next].r0).finally(() => {
+        stepping = false
+      })
+    },
+    { passive: false, signal: rt.signal },
+  )
+}
+
 function renderRail(rt: Runtime, items: LinkItem[]): void {
+  rt.railItems = items
+  measureRail(rt)
   const open = rt.open
   const neighbours = new Map<number, number>()
+  const weights = new Map<number, number>()
   for (const item of items) {
     const best = neighbours.get(item.doc.d) ?? 0
     if (item.score > best) neighbours.set(item.doc.d, item.score)
+    weights.set(item.doc.d, (weights.get(item.doc.d) ?? 0) + 1)
   }
   const chunks = [
     ...rt.reader.querySelectorAll<HTMLElement>(`.lat-doc[data-doc="${open}"] .lat-chunk[data-row]`),
@@ -294,8 +601,10 @@ function renderRail(rt: Runtime, items: LinkItem[]): void {
     open,
     focus: rt.focus,
     neighbours,
+    weights,
     focusChunkIndex,
     scopeFlags: flags,
+    height: rt.railHeight,
   })
   const current = rt.rail.querySelector('svg.lat-track')
   const html = toHtml(svg as never)
@@ -308,6 +617,8 @@ function setFocus(rt: Runtime, row: number, options: { push?: boolean } = {}): v
   rt.focus = row
   rt.open = docOfRow(rt, row).d
   rt.root.dataset.latentFocus = String(row)
+  if (rt.root.dataset.latentDoc !== String(rt.open)) setReaderHead(rt)
+  rt.root.dataset.latentDoc = String(rt.open)
   for (const chunk of rt.reader.querySelectorAll<HTMLElement>('.lat-chunk[data-focus]'))
     delete chunk.dataset.focus
   const chunk = rt.reader.querySelector<HTMLElement>(`.lat-chunk[data-row="${row}"]`)
@@ -320,6 +631,25 @@ function setFocus(rt: Runtime, row: number, options: { push?: boolean } = {}): v
   void renderLinks(rt, row).catch(error => {
     if (!rt.signal.aborted) console.warn('[latent]', error)
   })
+}
+
+/** The head row's copy of the open document's head: only its text changes on scroll. */
+function readerHead(rt: Runtime): HTMLElement | null {
+  return rt.reader.querySelector<HTMLElement>(':scope > .lat-reader-head')
+}
+
+function setReaderHead(rt: Runtime): void {
+  const html = toHtml(docHead(rt.docs[rt.open], true) as never)
+  const head = readerHead(rt)
+  if (head) head.outerHTML = html
+  else rt.reader.insertAdjacentHTML('afterbegin', html)
+}
+
+/** Put document html at the top of the reader, under the head row's copy. */
+function prependDocument(rt: Runtime, html: string): void {
+  const head = readerHead(rt)
+  if (head) head.insertAdjacentHTML('afterend', html)
+  else rt.reader.insertAdjacentHTML('afterbegin', html)
 }
 
 /** Mount a document into the reader (replacing its stub), keeping one stub either side. */
@@ -356,15 +686,18 @@ function ensureStubs(rt: Runtime): void {
   const hi = Math.max(...mounted)
   const stubHtml = (d: number) =>
     toHtml(readerDocument(stubText(rt.docs[d]), rt.docs[d], -1, { stub: true }) as never)
-  if (lo > 0 && !rt.reader.querySelector(`.lat-doc[data-doc="${lo - 1}"]`))
-    rt.reader.insertAdjacentHTML('afterbegin', stubHtml(lo - 1))
-  if (hi + 1 < rt.docs.length && !rt.reader.querySelector(`.lat-doc[data-doc="${hi + 1}"]`))
-    rt.reader.insertAdjacentHTML('beforeend', stubHtml(hi + 1))
-  // unmount documents two away from the open one
-  for (const el of rt.reader.querySelectorAll<HTMLElement>('.lat-doc')) {
-    const d = Number(el.dataset.doc)
-    if (Math.abs(d - rt.open) > 2) el.remove()
-  }
+  // a stub added or a document dropped above the reading line must not move the text under it
+  keepLine(chunkUnderLine(rt), () => {
+    if (lo > 0 && !rt.reader.querySelector(`.lat-doc[data-doc="${lo - 1}"]`))
+      prependDocument(rt, stubHtml(lo - 1))
+    if (hi + 1 < rt.docs.length && !rt.reader.querySelector(`.lat-doc[data-doc="${hi + 1}"]`))
+      rt.reader.insertAdjacentHTML('beforeend', stubHtml(hi + 1))
+    // unmount documents two away from the open one
+    for (const el of rt.reader.querySelectorAll<HTMLElement>('.lat-doc')) {
+      const d = Number(el.dataset.doc)
+      if (Math.abs(d - rt.open) > 2) el.remove()
+    }
+  })
 }
 
 /** Open a row's document in the reader and put that row under the reading line. */
@@ -381,7 +714,9 @@ async function goTo(rt: Runtime, row: number): Promise<void> {
     const next = doc.d + 1 < rt.docs.length ? rt.docs[doc.d + 1] : null
     const stub = (d: LatentDoc) =>
       toHtml(readerDocument(stubText(d), d, -1, { stub: true }) as never)
+    const mirror = readerHead(rt)
     rt.reader.innerHTML = [prev ? stub(prev) : '', html, next ? stub(next) : ''].join('')
+    if (mirror) rt.reader.prepend(mirror)
     chunk = rt.reader.querySelector<HTMLElement>(`.lat-chunk[data-row="${row}"]`)
   }
   if (!chunk) return
@@ -524,7 +859,7 @@ async function openBench(rt: Runtime): Promise<void> {
   const controls = rt.probe.querySelector<HTMLElement>('.lat-bench-controls')
   if (!status || !canvas || !controls) return
   status.textContent = 'loading document vectors…'
-  const worker = new Worker(new URL('latent.worker.js', import.meta.url), { type: 'module' })
+  const { worker } = vecWorker(rt)
   const bench: Bench = {
     worker,
     seq: 0,
@@ -539,68 +874,88 @@ async function openBench(rt: Runtime): Promise<void> {
     meta: null,
     frame: 0,
     hover: -1,
+    w: canvas.clientWidth || canvas.width,
+    h: canvas.clientHeight || canvas.height,
+    dpr: 1,
   }
   rt.bench = bench
-  rt.signal.addEventListener('abort', () => worker.terminate())
-  const meta = await fetchJson<NonNullable<Bench['meta']>>(rt, `${rt.base}/vec/meta.json`)
+  fitBenchCanvas(rt, canvas)
+  const meta = await metaOf(rt)
   bench.meta = meta
   bench.kinds = new Uint8Array(rt.docs.length)
   for (const doc of rt.docs) bench.kinds[doc.d] = KIND_INDEX[doc.s]
-  controls.innerHTML =
-    [0, 1, 2]
-      .map(
-        slot =>
-          `<label><span>${'xyz'[slot]}</span><select data-slot="${slot}">${meta.axes
-            .map(
-              (axis, i) =>
-                `<option value="${i}"${i === bench.axes[slot] ? ' selected' : ''}>${axis.name}</option>`,
-            )
-            .join('')}</select></label>`,
-      )
-      .join('') +
-    '<button type="button" class="lat-bench-level" data-level="rows">chunk level</button>'
-  controls.addEventListener(
-    'change',
-    event => {
-      const select = (event.target as HTMLElement).closest<HTMLSelectElement>('select[data-slot]')
-      if (!select) return
-      bench.axes[Number(select.dataset.slot)] = Number(select.value)
-      void projectBench(rt)
-    },
-    { signal: rt.signal },
-  )
+  // x, y, z and the level as rows of a ruled table: the axis, a garden select for its component
+  // and the variance it carries. The menus float in the top layer because the probe scrolls
+  // and would clip them
+  const table = document.createElement('table')
+  table.className = 'lat-bench-table'
+  const body = document.createElement('tbody')
+  table.append(body)
+  const row = (label: string, ...cells: HTMLTableCellElement[]) => {
+    const tr = document.createElement('tr')
+    const th = document.createElement('th')
+    th.scope = 'row'
+    th.textContent = label
+    tr.append(th, ...cells)
+    body.append(tr)
+  }
+  const cell = (className: string, ...children: (Node | string)[]) => {
+    const td = document.createElement('td')
+    td.className = className
+    td.append(...children)
+    return td
+  }
+  // axis names carry their variance ("pc1 · 6.2 %"); the table gives it its own column
+  const parts = meta.axes.map(axis => {
+    const match = /^(.*?)\s+·\s+([\d.]+\s*%)$/.exec(axis.name)
+    return match ? { name: match[1], share: match[2] } : { name: axis.name, share: '' }
+  })
+  const options = parts.map((part, i) => ({ value: i, label: part.name, detail: part.share }))
+  for (const slot of [0, 1, 2]) {
+    const name = 'xyz'[slot]
+    const share = cell('lat-bench-share', parts[bench.axes[slot]]?.share ?? '')
+    const select = buildSelect<number>({
+      id: `lat-bench-${name}`,
+      label: `${name} axis`,
+      groups: [{ options }],
+      selected: bench.axes[slot],
+      onSelect: value => {
+        bench.axes[slot] = value
+        share.textContent = parts[value]?.share ?? ''
+        void projectBench(rt)
+      },
+      floating: true,
+    })
+    const unmount = select.mount()
+    rt.signal.addEventListener('abort', unmount, { once: true })
+    row(name, cell('lat-bench-pick', select.element), share)
+  }
+  const level = (value: 'docs' | 'rows', text: string) => {
+    const button = document.createElement('button')
+    button.type = 'button'
+    button.className = 'lat-bench-level'
+    button.dataset.level = value
+    button.setAttribute('aria-pressed', String(value === 'docs'))
+    button.textContent = text
+    return button
+  }
+  const levels = cell('lat-bench-levels', level('docs', 'documents'), level('rows', 'chunks'))
+  levels.colSpan = 2
+  row('level', levels)
+  controls.replaceChildren(table)
   controls.addEventListener(
     'click',
     event => {
       const button = (event.target as HTMLElement).closest<HTMLButtonElement>('.lat-bench-level')
-      if (!button) return
-      const level = button.dataset.level === 'rows' ? 'rows' : 'docs'
-      button.dataset.level = level === 'rows' ? 'docs' : 'rows'
-      button.textContent = level === 'rows' ? 'document level' : 'chunk level'
-      void loadBench(rt, level)
+      if (!button || button.getAttribute('aria-pressed') === 'true') return
+      for (const other of controls.querySelectorAll<HTMLButtonElement>('.lat-bench-level'))
+        other.setAttribute('aria-pressed', String(other === button))
+      void loadBench(rt, button.dataset.level === 'rows' ? 'rows' : 'docs')
     },
     { signal: rt.signal },
   )
   bindBenchPointer(rt, canvas)
   await loadBench(rt, 'docs')
-}
-
-function request(
-  bench: Bench,
-  message: LatentWorkerRequest,
-  transfer: Transferable[] = [],
-): Promise<LatentWorkerResponse> {
-  return new Promise((resolve, reject) => {
-    const seq = message.seq
-    const onMessage = (event: MessageEvent<LatentWorkerResponse>) => {
-      if (event.data.seq !== seq) return
-      bench.worker.removeEventListener('message', onMessage)
-      if (event.data.type === 'error') reject(new Error(event.data.message))
-      else resolve(event.data)
-    }
-    bench.worker.addEventListener('message', onMessage)
-    bench.worker.postMessage(message, transfer)
-  })
 }
 
 async function loadBench(rt: Runtime, level: 'docs' | 'rows'): Promise<void> {
@@ -612,7 +967,7 @@ async function loadBench(rt: Runtime, level: 'docs' | 'rows'): Promise<void> {
   const url = `${rt.base}/vec/${level}-256-int8.bin`
   status.textContent = `loading ${level === 'docs' ? 'document' : 'chunk'} vectors (${((rows * 256) / 1e6).toFixed(1)} MB)…`
   const t0 = performance.now()
-  await request(bench, { type: 'load', seq: ++bench.seq, url, rows, dims: 256 })
+  await requestVec(rt, { type: 'load', url, rows, dims: 256 })
   if (level === 'rows') {
     bench.kinds = new Uint8Array(rows)
     for (const doc of rt.docs) bench.kinds.fill(KIND_INDEX[doc.s], doc.r0, doc.r0 + doc.n)
@@ -631,9 +986,10 @@ async function projectBench(rt: Runtime): Promise<void> {
   bench.axes.forEach((axis, slot) => dirs.set(bench.meta!.axes[axis].dir, slot * 256))
   const mean = new Float32Array(bench.meta.mean)
   const t0 = performance.now()
-  const result = await request(
-    bench,
-    { type: 'project', seq: ++bench.seq, dirs, mean, scale: bench.meta.scale },
+  const url = `${rt.base}/vec/${bench.level}-256-int8.bin`
+  const result = await requestVec(
+    rt,
+    { type: 'project', url, dirs, mean, scale: bench.meta.scale },
     [dirs.buffer, mean.buffer],
   )
   if (result.type !== 'projected') return
@@ -643,6 +999,46 @@ async function projectBench(rt: Runtime): Promise<void> {
   if (status)
     status.textContent = `${bench.coords.length / 3} points · projected in ${(performance.now() - t0).toFixed(0)} ms`
   drawBench(rt)
+}
+
+// Match the backing store to device pixels. device-pixel-content-box gives the exact snapped
+// size (Chromium, Firefox) and re-fires when the window moves to a screen with another density;
+// Safari falls back to css size × devicePixelRatio. Capped at 3× so a zoomed-in page does not
+// blow the fill cost up.
+function fitBenchCanvas(rt: Runtime, canvas: HTMLCanvasElement): void {
+  const apply = (cssW: number, cssH: number, devW?: number, devH?: number) => {
+    const bench = rt.bench
+    if (!bench || cssW <= 0 || cssH <= 0) return
+    const dpr = Math.min(3, window.devicePixelRatio || 1)
+    let pw = Math.round(cssW * dpr)
+    let ph = Math.round(cssH * dpr)
+    if (devW && devH && devW / cssW <= 3) {
+      pw = devW
+      ph = devH
+    }
+    bench.w = cssW
+    bench.h = cssH
+    bench.dpr = pw / cssW
+    if (canvas.width !== pw || canvas.height !== ph) {
+      canvas.width = pw
+      canvas.height = ph
+    }
+    drawBench(rt)
+  }
+  const observer = new ResizeObserver(entries => {
+    const entry = entries[entries.length - 1]
+    const box = entry.contentBoxSize?.[0]
+    const dev = entry.devicePixelContentBoxSize?.[0]
+    const cssW = box ? box.inlineSize : entry.contentRect.width
+    const cssH = box ? box.blockSize : entry.contentRect.height
+    apply(cssW, cssH, dev?.inlineSize, dev?.blockSize)
+  })
+  try {
+    observer.observe(canvas, { box: 'device-pixel-content-box' })
+  } catch {
+    observer.observe(canvas)
+  }
+  rt.signal.addEventListener('abort', () => observer.disconnect())
 }
 
 function bindBenchPointer(rt: Runtime, canvas: HTMLCanvasElement): void {
@@ -672,11 +1068,7 @@ function bindBenchPointer(rt: Runtime, canvas: HTMLCanvasElement): void {
         drawBench(rt)
       } else {
         const rect = canvas.getBoundingClientRect()
-        hoverBench(
-          rt,
-          (event.clientX - rect.left) * (canvas.width / rect.width),
-          (event.clientY - rect.top) * (canvas.height / rect.height),
-        )
+        hoverBench(rt, event.clientX - rect.left, event.clientY - rect.top)
       }
     },
     { signal: rt.signal },
@@ -707,10 +1099,19 @@ function bindBenchPointer(rt: Runtime, canvas: HTMLCanvasElement): void {
 
 function projected(bench: Bench, i: number, w: number, h: number): [number, number, number] {
   const c = bench.coords!
+  return projectPoint(bench, c[i * 3], c[i * 3 + 1], c[i * 3 + 2], w, h)
+}
+
+/** A point of the bench's space on the canvas: [x, y, depth in -1..1]. */
+function projectPoint(
+  bench: Bench,
+  x: number,
+  y: number,
+  z: number,
+  w: number,
+  h: number,
+): [number, number, number] {
   const s = (Math.min(w, h) * 0.42 * bench.zoom) / bench.extent
-  const x = c[i * 3]
-  const y = c[i * 3 + 1]
-  const z = c[i * 3 + 2]
   const cy = Math.cos(bench.yaw)
   const sy = Math.sin(bench.yaw)
   const cp = Math.cos(bench.pitch)
@@ -724,13 +1125,12 @@ function projected(bench: Bench, i: number, w: number, h: number): [number, numb
 
 function hoverBench(rt: Runtime, px: number, py: number): void {
   const bench = rt.bench
-  const canvas = rt.probe.querySelector<HTMLCanvasElement>('.lat-bench-canvas')
-  if (!bench || !bench.coords || !canvas) return
+  if (!bench || !bench.coords) return
   const n = bench.coords.length / 3
   let best = -1
   let bestDist = 36
   for (let i = 0; i < n; i++) {
-    const [x, y] = projected(bench, i, canvas.width, canvas.height)
+    const [x, y] = projected(bench, i, bench.w, bench.h)
     const d = (x - px) ** 2 + (y - py) ** 2
     if (d < bestDist) {
       bestDist = d
@@ -766,8 +1166,10 @@ function drawBench(rt: Runtime): void {
       style.getPropertyValue('--lat-image').trim() || '#cdd597',
       style.getPropertyValue('--gray').trim() || '#6f6e69',
     ]
-    const w = canvas.width
-    const h = canvas.height
+    const w = bench.w
+    const h = bench.h
+    // draw in css px; the transform maps them onto the device-pixel backing store
+    ctx.setTransform(bench.dpr, 0, 0, bench.dpr, 0, 0)
     ctx.fillStyle = paper
     ctx.fillRect(0, 0, w, h)
     const n = bench.coords.length / 3
@@ -783,6 +1185,7 @@ function drawBench(rt: Runtime): void {
       order[i] = i
     }
     order.sort((a, b) => depth[a] - depth[b])
+    drawBenchAxes(ctx, bench, w, h, colours[3], style)
     const openDoc = rt.open
     const focusRow = rt.focus
     for (const i of order) {
@@ -810,16 +1213,98 @@ function drawBench(rt: Runtime): void {
       ctx.arc(xs[bench.hover], ys[bench.hover], 5, 0, Math.PI * 2)
       ctx.stroke()
     }
-    // axis names at the frame edges
-    ctx.globalAlpha = 0.8
-    ctx.fillStyle = ink
-    ctx.font = '10px ui-monospace, monospace'
-    const names = bench.axes.map(a => bench.meta?.axes[a].name ?? '')
-    ctx.fillText(`x ${names[0]}`, 6, h - 18)
-    ctx.fillText(`y ${names[1]}`, 6, h - 6)
-    ctx.fillText(`z ${names[2]}`, w / 2, h - 6)
+    // the three axis names on one line along the floor, in the page's mono face (the canvas
+    // inherits it from latent.scss), on a paper halo so the point cloud does not run through
+    // the glyphs. The variance is in the table above, so only the names
     ctx.globalAlpha = 1
+    ctx.font = `${style.fontSize} ${style.fontFamily}`
+    ctx.textBaseline = 'alphabetic'
+    ctx.lineJoin = 'round'
+    ctx.lineWidth = 3
+    ctx.strokeStyle = paper
+    ctx.fillStyle = ink
+    const names = bench.axes.map(
+      (a, slot) => `${'xyz'[slot]} ${axisBase(bench.meta?.axes[a].name ?? '')}`,
+    )
+    const gap = ctx.measureText('   ').width
+    const room = (w - 12 - gap * 2) / 3
+    const fitted = names.map(name => fitText(ctx, name, room))
+    let x = 6
+    for (const text of fitted) {
+      ctx.strokeText(text, x, h - 6)
+      ctx.fillText(text, x, h - 6)
+      x += ctx.measureText(text).width + gap
+    }
   })
+}
+
+/** "pc1 · 6.2 %" → "pc1"; the variance has its own column in the controls table. */
+function axisBase(name: string): string {
+  return name.replace(/\s+·\s+[\d.]+\s*%$/, '')
+}
+
+function fitText(ctx: CanvasRenderingContext2D, text: string, room: number): string {
+  if (ctx.measureText(text).width <= room) return text
+  let cut = text.length
+  while (cut > 2 && ctx.measureText(`${text.slice(0, cut)}…`).width > room) cut--
+  return `${text.slice(0, cut)}…`
+}
+
+/**
+ * The three axes through the origin, drawn under the points: a hairline from end to end with
+ * ticks at the half and full extent, and the axis letter past the positive end.
+ */
+function drawBenchAxes(
+  ctx: CanvasRenderingContext2D,
+  bench: Bench,
+  w: number,
+  h: number,
+  colour: string,
+  style: CSSStyleDeclaration,
+): void {
+  const e = bench.extent
+  const ends: [number, number, number][] = [
+    [e, 0, 0],
+    [0, e, 0],
+    [0, 0, e],
+  ]
+  const [ox, oy] = projectPoint(bench, 0, 0, 0, w, h)
+  ctx.save()
+  ctx.globalAlpha = 0.7
+  ctx.strokeStyle = colour
+  ctx.fillStyle = colour
+  ctx.lineWidth = 1
+  ctx.font = `${style.fontSize} ${style.fontFamily}`
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  ends.forEach(([ex, ey, ez], slot) => {
+    const at = (t: number) => projectPoint(bench, ex * t, ey * t, ez * t, w, h)
+    const [ax, ay] = at(-1)
+    const [bx, by] = at(1)
+    ctx.beginPath()
+    ctx.moveTo(ax, ay)
+    ctx.lineTo(bx, by)
+    ctx.stroke()
+    // ticks perpendicular to the axis as drawn; a foreshortened axis keeps short ticks
+    const len = Math.hypot(bx - ax, by - ay)
+    if (len > 8) {
+      const nx = -(by - ay) / len
+      const ny = (bx - ax) / len
+      ctx.beginPath()
+      for (const t of [-1, -0.5, 0.5, 1]) {
+        const [tx, ty] = at(t)
+        ctx.moveTo(tx - nx * 3, ty - ny * 3)
+        ctx.lineTo(tx + nx * 3, ty + ny * 3)
+      }
+      ctx.stroke()
+    }
+    // the letter just past the positive end, pushed out from the origin
+    const dx = bx - ox
+    const dy = by - oy
+    const d = Math.hypot(dx, dy) || 1
+    ctx.fillText('xyz'[slot], bx + (dx / d) * 9, by + (dy / d) * 9)
+  })
+  ctx.restore()
 }
 
 // ---- math ------------------------------------------------------------------------------
@@ -828,7 +1313,7 @@ function drawBench(rt: Runtime): void {
 // carry their TeX in `.math-inline` / `.math-display` spans; KaTeX comes from the CDN the first
 // time one appears, so the runtime stays small, and its stylesheet is the page-scoped sheet the
 // Latex plugin registers (loadPageStyles links it once `.katex` markup exists).
-const KATEX = 'https://cdn.jsdelivr.net/npm/katex@0.17.0/dist'
+const KATEX = 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist'
 
 interface Katex {
   render(tex: string, element: HTMLElement, options: Record<string, unknown>): void
@@ -933,6 +1418,13 @@ export function mountLatent(root: HTMLElement): void {
     links,
     probe,
     bench: null,
+    vec: null,
+    semantic: null,
+    model: root.dataset.latentModel ?? '',
+    query: null,
+    railLayout: null,
+    railHeight: RAIL_HEIGHT,
+    railItems: [],
   }
   bindSilhouettes(rt)
   watchMath(rt)
@@ -949,7 +1441,17 @@ export function mountLatent(root: HTMLElement): void {
       rt.docByRow = byRow
       bindReader(rt)
       bindClicks(rt)
+      bindSearch(rt)
+      bindRail(rt)
       root.dataset.latentLive = ''
+      // the probe opens on the 3-d bench: its vectors wait for an idle moment after the reader
+      if (rt.probe.querySelector('.lat-tab[data-tab="bench"][aria-selected="true"]')) {
+        const open = () => {
+          if (!signal.aborted) void openBench(rt)
+        }
+        if ('requestIdleCallback' in window) requestIdleCallback(open, { timeout: 2000 })
+        else setTimeout(open, 300)
+      }
       const param = new URL(window.location.href).searchParams.get('focus')
       const wanted = param === null ? NaN : Number(param)
       if (Number.isInteger(wanted) && wanted >= 0 && wanted !== rt.focus && wanted < byRow.length)
