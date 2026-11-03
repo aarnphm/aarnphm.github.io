@@ -38,6 +38,7 @@ import {
   thinYears,
   truncate,
 } from './rail'
+import { titleRuns, titleText } from './title'
 import { KIND_ORDER, inScope, rowHref } from './types'
 
 /**
@@ -368,7 +369,11 @@ export function docHead(doc: HeadDoc, mirror = false): Element {
   return h(mirror ? 'header.lat-doc-head.lat-reader-head' : 'header.lat-doc-head', [
     h('div.lat-doc-kicker', [
       mark(doc.s),
-      h('a.lat-doc-title', { href, dataNoPopover: true, title: doc.t }, doc.t),
+      h(
+        'a.lat-doc-title',
+        { href, dataNoPopover: true, title: titleText(doc.t) },
+        titleRuns(doc.t),
+      ),
       doc.date ? h('time.lat-doc-date', { dateTime: doc.date }, doc.date.slice(0, 4)) : null,
     ]),
     h('div.lat-doc-meta', [
@@ -450,7 +455,7 @@ export function linksPane(
               h(
                 'a.lat-link-title',
                 { href: `?focus=${item.preview.r}`, dataLatFocus: String(item.preview.r) },
-                [item.doc.t],
+                titleRuns(item.doc.t),
               ),
               h('span.lat-link-locus', [
                 locus(item.preview),
@@ -647,7 +652,7 @@ export function railSvg(model: RailModel): Element {
       h(
         'text.lat-open-title',
         { x: LEADER_X, y: (top - 4).toFixed(1) },
-        truncate(model.titles(model.open), 26),
+        truncate(titleText(model.titles(model.open)), 26),
       ),
     )
     // ribbons to neighbour documents: width is how many of the focus row's neighbours the
@@ -673,7 +678,7 @@ export function railSvg(model: RailModel): Element {
       const count = model.weights?.get(d) ?? 1
       const width = Math.min(5, 0.6 + 0.9 * (count - 1))
       const opacity = 0.35 + 0.55 * (hi > lo ? (score - lo) / (hi - lo) : 1)
-      const title = model.titles(d)
+      const title = titleText(model.titles(d))
       children.push(
         h('path.lat-leader', {
           dataKind: doc.kind,
@@ -795,7 +800,11 @@ export function axisCard(axis: LatentAxis, focusValue: number | null): Element {
           .map(p =>
             h('li', [
               mark(p.s),
-              h('a', { href: `?focus=${p.r}`, dataLatFocus: String(p.r) }, truncate(p.t, 44)),
+              h(
+                'a',
+                { href: `?focus=${p.r}`, dataLatFocus: String(p.r) },
+                truncate(titleText(p.t), 44),
+              ),
             ]),
           ),
       ),

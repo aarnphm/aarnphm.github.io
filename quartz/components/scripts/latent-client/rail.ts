@@ -7,6 +7,7 @@ import {
   truncate,
   type RailLayout,
 } from '../../../util/latent/rail'
+import { titleText } from '../../../util/latent/title'
 import { yearOfDay } from '../../../util/latent/types'
 import { goTo } from './reader'
 import { measureRail, renderRail } from './search'
@@ -122,7 +123,7 @@ function bindRailHover(rt: Runtime, busy: () => boolean): void {
     text.setAttribute('x', String(LABEL_X))
     // the probe reads above the line near the bottom of the track, below it elsewhere
     text.setAttribute('y', (y > rt.railHeight * 0.8 ? y - 4 : y + 10).toFixed(1))
-    text.textContent = `${truncate(rt.docs[d]?.t ?? '', 24)}${year ? ` · ${year}` : ''}`
+    text.textContent = `${truncate(titleText(rt.docs[d]?.t ?? ''), 24)}${year ? ` · ${year}` : ''}`
   }
   const settle = () => {
     frame = 0

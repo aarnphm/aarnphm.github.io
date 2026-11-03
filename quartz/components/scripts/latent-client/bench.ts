@@ -2,12 +2,20 @@ import type { LatentKind } from '../../../util/latent/types'
 import { buildSelect } from '../../controls/select'
 import { BENCH_VIEW, bindBenchGestures } from '../latent-bench-gestures'
 import { axisBase, drawBench, fitBenchCanvas, hoverBench } from './bench-canvas'
+import { loadBenchLinks } from './bench-links'
 import { goTo } from './reader'
 import { metaOf, requestVec, vecWorker, type Bench, type Runtime } from './runtime'
 
 // ---- 3-d bench --------------------------------------------------------------------------
 
 const KIND_INDEX: Record<LatentKind, number> = { note: 0, pdf: 1, image: 2, base: 3 }
+// named as the sources ledger names them
+const KIND_LABEL: Record<LatentKind, string> = {
+  note: 'notes',
+  pdf: 'pdf',
+  image: 'images',
+  base: 'bases',
+}
 
 export async function openBench(rt: Runtime): Promise<void> {
   if (rt.bench) return
@@ -25,6 +33,9 @@ export async function openBench(rt: Runtime): Promise<void> {
     extent: 1,
     ...BENCH_VIEW,
     kinds: null,
+    hidden: 0,
+    links: null,
+    showLinks: false,
     axes: [0, 1, 2],
     meta: null,
     frame: 0,
@@ -49,12 +60,15 @@ export async function openBench(rt: Runtime): Promise<void> {
   table.className = 'lat-bench-table'
   const body = document.createElement('tbody')
   table.append(body)
-  const row = (label: string, ...cells: HTMLTableCellElement[]) => {
+  const row = (label: string | null, ...cells: HTMLTableCellElement[]) => {
     const tr = document.createElement('tr')
-    const th = document.createElement('th')
-    th.scope = 'row'
-    th.textContent = label
-    tr.append(th, ...cells)
+    if (label !== null) {
+      const th = document.createElement('th')
+      th.scope = 'row'
+      th.textContent = label
+      tr.append(th)
+    }
+    tr.append(...cells)
     body.append(tr)
   }
   const cell = (className: string, ...children: (Node | string)[]) => {
@@ -92,11 +106,38 @@ export async function openBench(rt: Runtime): Promise<void> {
     return button
   }
   const levels = cell('lat-bench-levels', level('docs', 'documents'), level('rows', 'chunks'))
-  row('level', levels)
+  // the sources share the level's line; each button is also the legend for its colour
+  const source = (kind: LatentKind) => {
+    const button = document.createElement('button')
+    button.type = 'button'
+    button.className = 'lat-bench-source'
+    button.dataset.kind = kind
+    button.setAttribute('aria-pressed', 'true')
+    button.textContent = KIND_LABEL[kind]
+    return button
+  }
+  const kinds = Object.keys(KIND_INDEX) as LatentKind[]
+  const sources = cell('lat-bench-levels lat-bench-sources', ...kinds.map(source))
+  sources.setAttribute('role', 'group')
+  sources.setAttribute('aria-label', 'sources')
+  // documents and chunks name the level themselves, so the row has no heading
+  levels.setAttribute('role', 'group')
+  levels.setAttribute('aria-label', 'level')
+  row(null, levels, sources)
   controls.replaceChildren(table)
   controls.addEventListener(
     'click',
     event => {
+      const toggle = (event.target as HTMLElement).closest<HTMLButtonElement>('.lat-bench-source')
+      if (toggle) {
+        const shown = toggle.getAttribute('aria-pressed') !== 'true'
+        toggle.setAttribute('aria-pressed', String(shown))
+        bench.hidden ^= 1 << KIND_INDEX[toggle.dataset.kind as LatentKind]
+        if (bench.hover >= 0 && bench.kinds && (bench.hidden >> bench.kinds[bench.hover]) & 1)
+          bench.hover = -1
+        drawBench(rt)
+        return
+      }
       const button = (event.target as HTMLElement).closest<HTMLButtonElement>('.lat-bench-level')
       if (!button || button.getAttribute('aria-pressed') === 'true') return
       for (const other of controls.querySelectorAll<HTMLButtonElement>('.lat-bench-level'))
@@ -105,6 +146,7 @@ export async function openBench(rt: Runtime): Promise<void> {
     },
     { signal: rt.signal },
   )
+  bindLinksToggle(rt, status)
   bindBenchPointer(rt, canvas)
   await loadBench(rt, 'docs')
 }
@@ -150,6 +192,36 @@ async function projectBench(rt: Runtime): Promise<void> {
   if (status)
     status.textContent = `${bench.coords.length / 3} points · projected in ${(performance.now() - t0).toFixed(0)} ms`
   drawBench(rt)
+}
+
+// the links toggle sits at the end of the status line, under the canvas
+function bindLinksToggle(rt: Runtime, status: HTMLElement): void {
+  const foot = document.createElement('div')
+  foot.className = 'lat-bench-foot'
+  const button = document.createElement('button')
+  button.type = 'button'
+  button.className = 'lat-bench-links'
+  button.setAttribute('aria-pressed', 'false')
+  button.title = 'draw the wikilinks between points'
+  button.textContent = 'links'
+  status.before(foot)
+  foot.append(status, button)
+  button.addEventListener(
+    'click',
+    async () => {
+      const bench = rt.bench
+      if (!bench) return
+      bench.showLinks = !bench.showLinks
+      button.setAttribute('aria-pressed', String(bench.showLinks))
+      if (bench.showLinks && !bench.links) {
+        status.textContent = 'loading links…'
+        bench.links = await loadBenchLinks(rt)
+        status.textContent = `${bench.links.length / 2} links`
+      }
+      drawBench(rt)
+    },
+    { signal: rt.signal },
+  )
 }
 
 function bindBenchPointer(rt: Runtime, canvas: HTMLCanvasElement): void {

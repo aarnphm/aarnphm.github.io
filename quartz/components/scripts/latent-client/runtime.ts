@@ -73,6 +73,11 @@ export interface Bench {
   panX: number
   panY: number
   kinds: Uint8Array | null
+  /** one bit per kind index (note, pdf, image, base); a set bit leaves that source undrawn */
+  hidden: number
+  /** wikilinks as flat pairs of doc indices, fetched the first time they are shown */
+  links: Int32Array | null
+  showLinks: boolean
   axes: number[]
   meta: {
     scale: number

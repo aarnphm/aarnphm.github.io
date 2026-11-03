@@ -1,3 +1,5 @@
+import { titleText } from '../../../util/latent/title'
+import { drawBenchLinks } from './bench-links'
 import { docOfRow, type Bench, type Runtime } from './runtime'
 
 // Match the backing store to device pixels. device-pixel-content-box gives the exact snapped
@@ -73,6 +75,7 @@ export function hoverBench(rt: Runtime, px: number, py: number): void {
   let best = -1
   let bestDist = 36
   for (let i = 0; i < n; i++) {
+    if (bench.kinds && (bench.hidden >> bench.kinds[i]) & 1) continue
     const [x, y] = projected(bench, i, bench.w, bench.h)
     const d = (x - px) ** 2 + (y - py) ** 2
     if (d < bestDist) {
@@ -86,7 +89,7 @@ export function hoverBench(rt: Runtime, px: number, py: number): void {
     const status = rt.probe.querySelector<HTMLElement>('.lat-bench-status')
     if (status && best >= 0) {
       const doc = bench.level === 'docs' ? rt.docs[best] : docOfRow(rt, best)
-      setBenchStatus(status, `${doc.s} · ${doc.t}`)
+      setBenchStatus(status, `${doc.s} · ${titleText(doc.t)}`)
     }
   }
 }
@@ -150,7 +153,10 @@ export function drawBench(rt: Runtime): void {
     drawBenchAxes(ctx, bench, w, h, colours[3], style)
     const openDoc = rt.open
     const focusRow = rt.focus
+    const shown = (i: number) => !((bench.hidden >> bench.kinds![i]) & 1)
+    drawBenchLinks(ctx, rt, bench, { xs, ys, depth }, shown, colours[3], ink)
     for (const i of order) {
+      if (!shown(i)) continue
       const t = (depth[i] + 1) / 2
       const r = bench.level === 'docs' ? 1.2 + t * 2.2 : 0.6 + t * 1.4
       ctx.globalAlpha = 0.25 + t * 0.65
@@ -160,7 +166,7 @@ export function drawBench(rt: Runtime): void {
       ctx.fill()
     }
     const mark = bench.level === 'docs' ? openDoc : focusRow
-    if (mark >= 0 && mark < n) {
+    if (mark >= 0 && mark < n && shown(mark)) {
       ctx.globalAlpha = 1
       ctx.strokeStyle = ink
       ctx.lineWidth = 1.5
@@ -168,7 +174,7 @@ export function drawBench(rt: Runtime): void {
       ctx.arc(xs[mark], ys[mark], 6, 0, Math.PI * 2)
       ctx.stroke()
     }
-    if (bench.hover >= 0 && bench.hover < n) {
+    if (bench.hover >= 0 && bench.hover < n && shown(bench.hover)) {
       ctx.globalAlpha = 1
       ctx.strokeStyle = colours[1]
       ctx.beginPath()

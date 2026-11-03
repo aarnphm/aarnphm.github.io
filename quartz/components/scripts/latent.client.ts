@@ -1,10 +1,11 @@
 import { RAIL_HEIGHT } from '../../util/latent/rail'
 import { decodeTrack, type LatentDoc, type LatentKind } from '../../util/latent/types'
-import { openBench } from './latent.client/bench'
-import { bindRail } from './latent.client/rail'
-import { bindReader, chunkUnderLine, goTo, keepLine } from './latent.client/reader'
-import { fetchBytes, fetchJson, partOf, textOf, type Runtime } from './latent.client/runtime'
-import { bindSearch } from './latent.client/search'
+import { openBench } from './latent-client/bench'
+import { bindFeatures } from './latent-client/features'
+import { bindRail } from './latent-client/rail'
+import { bindReader, chunkUnderLine, goTo, keepLine } from './latent-client/reader'
+import { fetchBytes, fetchJson, partOf, textOf, type Runtime } from './latent-client/runtime'
+import { bindSearch } from './latent-client/search'
 import { loadPageStyles } from './page-styles'
 import { rootNavSignal } from './root-lifecycle'
 
@@ -282,6 +283,7 @@ export function mountLatent(root: HTMLElement): void {
       bindReader(rt)
       bindClicks(rt)
       bindSearch(rt)
+      bindFeatures(rt)
       bindRail(rt)
       root.dataset.latentLive = ''
       // the probe opens on the 3-d bench: its vectors wait for an idle moment after the reader
