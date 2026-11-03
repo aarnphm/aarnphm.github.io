@@ -135,6 +135,70 @@ Support a small subsets of the features, with wikilinks parsing
 > ```
 > ````
 
+### drop caps
+
+A note opens on a face by setting `dropcap:` (`garamond`, `ebgaramond`, `goudy`, `yinit`, `dezs`, `procedural`, or `procedural-<seed>`). A fence draws one letter on its own. `type` is the face. `seed` picks which procedural picture, and any other seed still lands on one of them.
+
+```dropcap type=garamond
+G
+```
+
+```dropcap type=ebgaramond
+E
+```
+
+```dropcap type=goudy
+O
+```
+
+```dropcap type=yinit
+L
+```
+
+```dropcap type=dezs
+D
+```
+
+```dropcap type=procedural seed=621289
+T
+```
+
+```dropcap type=procedural seed=m6jknmR1LR
+N
+```
+
+```dropcap type=procedural seed=x4qlgp2EVj
+L
+```
+
+```dropcap type=procedural seed=JxuNoeq2sF
+G
+```
+
+```dropcap type=procedural seed=VqZlgENWol
+U
+```
+
+```dropcap type=procedural seed=zTE0SQlakx
+L
+```
+
+```dropcap type=procedural seed=xuDEyxKwS3
+N
+```
+
+> [!summary]- code
+>
+> ````
+> ```dropcap type=procedural seed=621289
+> I
+> ```
+>
+> ```dropcap type=yinit
+> L
+> ```
+> ````
+
 ### TikZ support
 
 to use in {{sidenotes[conjunction]: Currently, there is a few pgfplots bug upstream in node port, so to remove the graph from target rendering add `alt` as the URI svg (see examples below).}} with [obsidian-tikzjax](https://github.com/artisticat1/obsidian-tikzjax/)
