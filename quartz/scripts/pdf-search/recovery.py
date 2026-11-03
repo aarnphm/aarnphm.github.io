@@ -46,13 +46,19 @@ def reviewed_region_text(
 def reviewed_scan_artifact(
   source: Path, number: int, bounds: list[float]
 ) -> bool:
-  # Physical page 18 has scan-edge scratches in this exact detector box.
-  # Visual evidence and replay: docs/verification/ocr-aside-recovery.
-  if number != 18 or bounds != [9, 269, 27, 468]:
+  # Exact scan-edge boxes verified against full pages and enlarged crops.
+  # Visual evidence and replay: docs/verification/ocr-aside-recovery/source-review.md.
+  if number == 18 and bounds == [9, 269, 27, 468]:
+    expected = (
+      '8a4f49282b4843078f7935c77b232a7ad06f258f4d2479691b74c38ed68e698a'
+    )
+  elif number == 36 and bounds == [34, 541, 51, 652]:
+    expected = (
+      '52d6338905af0ab30081fc02e8b998f50e813495e54e2d0e28a7283c97553fee'
+    )
+  else:
     return False
-  return hashlib.sha256(source.read_bytes()).hexdigest() == (
-    '8a4f49282b4843078f7935c77b232a7ad06f258f4d2479691b74c38ed68e698a'
-  )
+  return hashlib.sha256(source.read_bytes()).hexdigest() == expected
 
 
 def vector_aside(source: Path, number: int, bounds: list[float]) -> bool:

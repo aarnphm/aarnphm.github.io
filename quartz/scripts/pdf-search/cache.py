@@ -10,6 +10,8 @@ from pathlib import Path
 import tempfile
 from typing import Mapping, Sequence
 
+from reviewed import reviewed_regions
+
 
 @dataclass(frozen=True)
 class ExtractionSpec:
@@ -178,9 +180,6 @@ class PageCache:
         for r in page['regions']
       ]
       parsed = normalize_page(page_number, page['page_label'], regions)
-      return ExtractedPage(
-        page_number, parsed.page_label, parsed.regions, ignored
-      )
     except (
       FileNotFoundError,
       UnicodeDecodeError,
@@ -190,3 +189,10 @@ class PageCache:
     ):
       # Incomplete or stale pages are re-extracted; permission and I/O errors remain visible.
       return None
+    # Review failures must surface, rather than turning preserved OCR into a cache miss.
+    corrected = reviewed_regions(self.source_sha256, page_number, regions)
+    if corrected is not None:
+      parsed = normalize_page(page_number, parsed.page_label, corrected)
+    return ExtractedPage(
+      page_number, parsed.page_label, parsed.regions, ignored
+    )
