@@ -139,7 +139,7 @@ async function shortcutHandler(s: PaletteState, e: HTMLElementEventMap['keydown'
       showPalette(s, 'command', 'quick_open')
     }
     return
-  } else if (key === 'p' && (e.altKey || e.metaKey) && !e.ctrlKey) {
+  } else if (key === 'p' && (e.altKey || e.metaKey || e.ctrlKey)) {
     e.preventDefault()
     const barOpen = s.container?.classList.contains('active')
     if (barOpen) {

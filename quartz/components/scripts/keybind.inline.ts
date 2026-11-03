@@ -541,22 +541,6 @@ document.addEventListener('nav', () => {
         break
       }
 
-      case 'n': {
-        const target = currentScrollTarget(e)
-        e.preventDefault()
-        e.stopPropagation()
-        scrollTargetBy(target, SCROLL_AMOUNT_SMALL, 'instant')
-        break
-      }
-
-      case 'p': {
-        const target = currentScrollTarget(e)
-        e.preventDefault()
-        e.stopPropagation()
-        scrollTargetBy(target, -SCROLL_AMOUNT_SMALL, 'instant')
-        break
-      }
-
       case 'e': {
         const target = currentScrollTarget(e)
         e.preventDefault()
