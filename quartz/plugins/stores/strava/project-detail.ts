@@ -347,6 +347,7 @@ export function projectDetail(
   return {
     id: a.id,
     virtual: a.sportType.startsWith('Virtual'),
+    electric: a.sportType === 'EBikeRide',
     commute: a.commute === true,
     sport,
     name: a.name,

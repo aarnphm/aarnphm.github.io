@@ -3,7 +3,7 @@ import { isRecord } from './type-guards'
 
 export type TimelineActivity = Pick<
   StravaActivityDetail,
-  'sport' | 'name' | 'distanceKm' | 'movingTimeS'
+  'sport' | 'electric' | 'name' | 'distanceKm' | 'movingTimeS'
 >
 
 export function readTimelineActivities(source: string | undefined): TimelineActivity[] {
@@ -15,6 +15,7 @@ export function readTimelineActivities(source: string | undefined): TimelineActi
       (activity): activity is TimelineActivity =>
         isRecord(activity) &&
         isActivityKind(activity.sport) &&
+        (activity.electric === undefined || typeof activity.electric === 'boolean') &&
         typeof activity.name === 'string' &&
         typeof activity.distanceKm === 'number' &&
         Number.isFinite(activity.distanceKm) &&

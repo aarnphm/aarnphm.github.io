@@ -180,6 +180,7 @@ export interface StravaActivityDetail {
   equipment?: ActivityEquipment
   sources?: ActivitySource[]
   virtual?: boolean
+  electric?: boolean
   commute?: boolean
   distanceSource?: 'garmin' | 'strava'
   provenance?: ActivityProvenance

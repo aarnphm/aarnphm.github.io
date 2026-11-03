@@ -150,6 +150,7 @@ export interface StravaMapActivityEntry {
   start: string
   sport: StravaActivityDetail['sport']
   virtual?: boolean
+  electric?: boolean
   commute?: boolean
   distanceKm: number
   movingTimeS: number
@@ -230,6 +231,7 @@ export function serializeStravaMapPayload(
       start: detail.start,
       sport: detail.sport,
       virtual: detail.virtual,
+      electric: detail.electric,
       commute: detail.commute,
       distanceKm: detail.distanceKm,
       movingTimeS: detail.movingTimeS,
@@ -303,6 +305,7 @@ export function hydrateStravaMapPayload(value: unknown): StravaDetailPayload | n
       date: raw.date,
       start: raw.start,
       virtual: raw.virtual,
+      electric: raw.electric,
       commute: raw.commute,
       distanceKm: raw.distanceKm,
       movingTimeS: raw.movingTimeS,

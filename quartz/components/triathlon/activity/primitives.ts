@@ -36,8 +36,11 @@ const svgElement = (node: HTMLElement | SVGElement): SVGElement => {
   throw new TypeError('Expected an SVG activity node')
 }
 
-export const buildIcon = (presentation: TriathlonPresentation, sport: ActivityKind): SVGElement =>
-  svgElement(buildIconNode(createDomFactory(presentation), sport))
+export const buildIcon = (
+  presentation: TriathlonPresentation,
+  sport: ActivityKind,
+  electric?: boolean,
+): SVGElement => svgElement(buildIconNode(createDomFactory(presentation), sport, electric))
 
 export const buildElevation = (
   presentation: TriathlonPresentation,

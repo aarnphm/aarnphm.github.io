@@ -4,7 +4,7 @@ import type {
   TriathlonPreviewActivity,
   TriathlonPreviewTarget,
 } from '../../util/triathlon-preview'
-import { SPORT_ICON, type ActivityKind } from '../../plugins/stores/strava'
+import { SPORT_ICON, activityIcon, type ActivityKind } from '../../plugins/stores/strava'
 import {
   computeTriathlonCalcTimes,
   formatDurationClock,
@@ -84,13 +84,13 @@ const ICONS: Record<string, string[]> = {
 const isSport = (name: string): name is ActivityKind =>
   Object.prototype.hasOwnProperty.call(SPORT_ICON, name)
 
-function icon(name: string): SVGSVGElement {
+function icon(name: string, electric?: boolean): SVGSVGElement {
   const sport = isSport(name)
   const glyph = document.createElementNS(SVG_NS, 'svg')
   glyph.setAttribute('viewBox', '0 0 24 24')
   glyph.setAttribute('aria-hidden', 'true')
   if (sport) glyph.dataset.sport = name
-  for (const d of sport ? SPORT_ICON[name] : (ICONS[name] ?? ICONS.day)) {
+  for (const d of sport ? activityIcon(name, electric) : (ICONS[name] ?? ICONS.day)) {
     const path = document.createElementNS(SVG_NS, 'path')
     path.setAttribute('d', d)
     glyph.appendChild(path)
@@ -108,6 +108,7 @@ export function windowPreview(options: {
   href: string
   title: string
   icon: string
+  electric?: boolean
   meta: string[]
   trace: SVGSVGElement | null
   body: HTMLElement | null
@@ -129,7 +130,7 @@ export function windowPreview(options: {
   frame.appendChild(surface)
 
   const badge = el('span', 'document-popover-badge')
-  badge.appendChild(icon(options.icon))
+  badge.appendChild(icon(options.icon, options.electric))
   anchor.append(frame, badge, el('span', 'document-popover-title', options.title))
   card.appendChild(anchor)
 
@@ -231,6 +232,7 @@ export function renderTriathlonPreview(
       href,
       title: focus ? focus.name : longDate(preview.date),
       icon: (focus ?? traced)?.sport ?? preview.activities[0]?.sport ?? 'day',
+      electric: (focus ?? traced ?? preview.activities[0])?.electric,
       meta: dayMeta(p, preview, focus),
       trace: traced ? traceFigure(traced) : focus ? poolFigure(focus) : null,
       body,
@@ -261,6 +263,7 @@ export function renderTriathlonComparisonPreview(
       href,
       title: 'comparison',
       icon: (traced ?? activities[0])?.sport ?? 'day',
+      electric: (traced ?? activities[0])?.electric,
       meta: ['comparison', String(activities.length)],
       trace: traced ? traceFigure(traced) : null,
       body: traced

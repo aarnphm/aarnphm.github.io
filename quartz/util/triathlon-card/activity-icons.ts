@@ -1,6 +1,6 @@
 import type { TriNodeFactory } from './construction-contracts'
 import {
-  SPORT_ICON,
+  activityIcon,
   type ActivityKind,
   type StravaActivityDetail,
 } from '../../plugins/stores/strava'
@@ -12,14 +12,14 @@ const BATTERY = [
   'M10.1667 9L8.5 12H12.5L10.8333 15',
 ]
 
-export const buildIcon = <N>(f: TriNodeFactory<N>, sport: ActivityKind): N => {
+export const buildIcon = <N>(f: TriNodeFactory<N>, sport: ActivityKind, electric?: boolean): N => {
   const icon = f.svg('svg', { class: 'tri-ico', viewBox: '0 0 24 24', fill: 'none' })
-  for (const d of SPORT_ICON[sport]) f.add(icon, f.svg('path', { d }))
+  for (const d of activityIcon(sport, electric)) f.add(icon, f.svg('path', { d }))
   return icon
 }
 
 export const buildActivityIcon = <N>(f: TriNodeFactory<N>, activity: StravaActivityDetail): N => {
-  const icon = buildIcon(f, activity.sport)
+  const icon = buildIcon(f, activity.sport, activity.electric)
   const stravaId = activity.sources
     ? activity.sources.find(source => source.provider === 'strava')?.activityId
     : activity.sauna

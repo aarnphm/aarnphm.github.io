@@ -10,6 +10,7 @@ export type StravaCardKind = Extract<ActivityKind, 'swim' | 'bike' | 'run'>
 export interface StravaCardActivity {
   id: number
   kind: StravaCardKind
+  electric: boolean
   name: string
   // Local calendar day of the start, YYYY-MM-DD.
   date: string
@@ -78,6 +79,7 @@ const loadLatest = (path: string): StravaLatestActivities | null => {
           {
             id: activity.id,
             kind,
+            electric: activity.sportType === 'EBikeRide',
             name: activity.name,
             date: activity.startDateLocal.slice(0, 10),
             distanceM: activity.distance,

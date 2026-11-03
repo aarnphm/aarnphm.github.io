@@ -1,6 +1,6 @@
 import type { TriathlonContext } from '../runtime/context'
 import type { TriathlonFormatter } from '../runtime/formatter'
-import { SPORT_ICON, type ActivityKind } from '../../../plugins/stores/strava'
+import { EBIKE_ICON, SPORT_ICON, type ActivityKind } from '../../../plugins/stores/strava'
 import { buildBattery, buildIcon } from '../../../util/triathlon-card/activity-icons'
 import { prettyDate } from '../../../util/triathlon-card/metric-text'
 import { timelineActivityValue } from '../../../util/triathlon-card/timeline-day-card'
@@ -162,7 +162,10 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
   restEl.append(buildBattery(domF), restValEl)
   const listEl = el('ul', 'tri-timeline-list')
   // Slots are reused across sports, so each holds as many paths as the largest icon.
-  const iconPathSlots = Math.max(...Object.values(SPORT_ICON).map(paths => paths.length))
+  const iconPathSlots = Math.max(
+    EBIKE_ICON.length,
+    ...Object.values(SPORT_ICON).map(paths => paths.length),
+  )
   const itemSlots = Array.from({ length: maxDayActivities }, () => {
     const item = el('li', 'tri-timeline-item')
     const entry = el('span', 'tri-timeline-row tri-timeline-activity', undefined, { role: 'group' })
@@ -181,16 +184,20 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
   cardEl.append(dateEl, restEl, listEl)
   scroller.appendChild(cardEl)
 
-  const iconSpecs = new Map<ActivityKind, { cls: string; paths: string[] }>()
-  const getIconSpec = (sport: ActivityKind): { cls: string; paths: string[] } => {
-    let spec = iconSpecs.get(sport)
+  const iconSpecs = new Map<string, { cls: string; paths: string[] }>()
+  const getIconSpec = (
+    sport: ActivityKind,
+    electric?: boolean,
+  ): { cls: string; paths: string[] } => {
+    const key = electric && sport === 'bike' ? 'ebike' : sport
+    let spec = iconSpecs.get(key)
     if (!spec) {
-      const node = buildIcon(domF, sport)
+      const node = buildIcon(domF, sport, electric)
       spec = {
         cls: node.getAttribute('class') ?? 'tri-ico',
         paths: Array.from(node.querySelectorAll('path')).map(p => p.getAttribute('d') ?? ''),
       }
-      iconSpecs.set(sport, spec)
+      iconSpecs.set(key, spec)
     }
     return spec
   }
@@ -226,7 +233,7 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
       const aria = `${triText(context.presentation.locale, activity.sport)} · ${activity.name} · ${value}`
       slot.entry.setAttribute('aria-label', aria)
       slot.entry.setAttribute('title', activity.name)
-      const spec = getIconSpec(activity.sport)
+      const spec = getIconSpec(activity.sport, activity.electric)
       slot.icon.setAttribute('class', spec.cls)
       for (let k = 0; k < slot.paths.length; k++) {
         const d = spec.paths[k]

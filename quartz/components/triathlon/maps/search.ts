@@ -45,6 +45,7 @@ const candidateActivities = (
       date: detail.date,
       sport: detail.sport,
       virtual: detail.virtual,
+      electric: detail.electric,
       commute: detail.commute,
       treadmill: detail.sport === 'run' && /\btreadmill\b/i.test(detail.name),
       name: detail.name,
@@ -88,7 +89,7 @@ export const buildMapSearchView = (
     for (const activity of activities.slice(0, 50)) {
       const head = el('span', 'tri-ana-ritem-h')
       head.append(
-        buildIcon(presentation, activity.sport),
+        buildIcon(presentation, activity.sport, activity.electric),
         el('span', '', activity.name || activity.sport),
       )
       const sub = `${activity.date} · ${dist(presentation, activity.distanceKm, activity.sport)} · ${dur(activity.movingTimeS)}`

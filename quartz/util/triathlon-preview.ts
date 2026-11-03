@@ -50,6 +50,8 @@ export interface TriathlonPreviewActivity {
   load: number | null
   location: string | null
   virtual: boolean
+  /** Strava EBikeRide; absent from older payloads. */
+  electric?: boolean
   /** Route shape as SVG path data in a 100×100 box; no coordinates leave the build. */
   trace: string | null
   /** Pool swims only: lengths on an elapsed-time axis, absent from older payloads. */
@@ -314,6 +316,7 @@ export function buildTriathlonPreview(input: {
         load: input.activities.get(detail.id)?.load ?? null,
         location: detail.location,
         virtual: detail.virtual === true,
+        electric: detail.electric === true,
         trace: previewTrace(detail),
         pool: poolChart(detail),
       }),
@@ -353,6 +356,7 @@ function isPreviewActivity(value: unknown): value is TriathlonPreviewActivity {
     finiteOrNull(value.load) &&
     (value.location === null || typeof value.location === 'string') &&
     typeof value.virtual === 'boolean' &&
+    (value.electric === undefined || typeof value.electric === 'boolean') &&
     (value.trace === null || typeof value.trace === 'string') &&
     (value.pool === undefined ||
       value.pool === null ||

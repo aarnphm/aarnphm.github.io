@@ -187,6 +187,7 @@ export default (() => {
                               if (!activity) return []
                               const summary: TimelineActivity = {
                                 sport: activity.sport,
+                                ...(activity.electric && { electric: true }),
                                 name: activity.name,
                                 distanceKm: activity.distanceKm,
                                 movingTimeS: activity.movingTimeS,

@@ -41,7 +41,11 @@ export const buildTimelineDayCard = <N>(
       'aria-label': `${triText(f.presentation.locale, activity.sport)} · ${activity.name} · ${value}`,
       title: activity.name,
     })
-    f.add(entry, buildIcon(f, activity.sport), f.el('span', 'tri-timeline-value', value))
+    f.add(
+      entry,
+      buildIcon(f, activity.sport, activity.electric),
+      f.el('span', 'tri-timeline-value', value),
+    )
     f.add(item, entry)
     f.add(list, item)
   }

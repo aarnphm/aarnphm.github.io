@@ -1,7 +1,7 @@
 import type { Element, Root } from 'hast'
 import { h, s } from 'hastscript'
 import { SKIP, visit } from 'unist-util-visit'
-import { SPORT_ICON } from '../plugins/stores/strava'
+import { activityIcon } from '../plugins/stores/strava'
 import { localIsoDay } from '../util/local-date'
 import { joinSegments, pathToRoot, type FullSlug } from '../util/path'
 import {
@@ -68,7 +68,7 @@ const activityRow = (activity: StravaCardActivity, currentYear: string, root: st
             s(
               'svg',
               { viewBox: '0 0 24 24', fill: 'none', ariaHidden: 'true', focusable: 'false' },
-              SPORT_ICON[activity.kind].map(d => s('path', { d })),
+              activityIcon(activity.kind, activity.electric).map(d => s('path', { d })),
             ),
           ]),
           activity.name,

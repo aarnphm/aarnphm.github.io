@@ -165,7 +165,7 @@ export const setupFeed = (root: HTMLElement, context: TriathlonContext): (() => 
           'aria-expanded': 'false',
         })
         head.append(
-          buildIcon(context.presentation, a.sport),
+          buildIcon(context.presentation, a.sport, a.electric),
           el('span', 'tri-feed-name', a.name || a.sport),
           buildSub(a),
         )

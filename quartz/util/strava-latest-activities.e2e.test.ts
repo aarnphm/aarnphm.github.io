@@ -62,6 +62,7 @@ test('the homepage summary reads its default raw cache without initializing anal
           {
             id: 1,
             kind: 'run',
+            electric: false,
             name: 'Evening run',
             date: '2026-10-21',
             distanceM: 5000,

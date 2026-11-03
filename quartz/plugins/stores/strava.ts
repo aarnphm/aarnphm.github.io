@@ -137,6 +137,12 @@ export const SPORT_ICON: Record<ActivityKind, string[]> = {
   ],
 }
 
+// An e-bike ride is a bike ride with the battery bolt drawn in the empty top-left.
+export const EBIKE_ICON: readonly string[] = [...SPORT_ICON.bike, 'M6.5 2.5L4 6.5H8L5.5 10.5']
+
+export const activityIcon = (sport: ActivityKind, electric?: boolean): readonly string[] =>
+  electric && sport === 'bike' ? EBIKE_ICON : SPORT_ICON[sport]
+
 export const hasFetchedActivityDetail = (
   detail: Partial<RawStravaActivityDetail> | undefined,
 ): detail is RawStravaActivityDetail =>

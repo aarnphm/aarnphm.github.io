@@ -152,6 +152,7 @@ export function buildActivitySummaries(scope: ActivitySummaryScope): ActivitySum
       virtual:
         inputs.activityDetails?.[String(act.a.id)]?.virtual ??
         act.a.sportType.startsWith('Virtual'),
+      electric: act.a.sportType === 'EBikeRide',
       commute: act.a.commute === true,
       treadmill:
         act.sport === 'run' && (act.a.trainer === true || /\btreadmill\b/i.test(act.a.name)),

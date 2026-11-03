@@ -36,6 +36,7 @@ export interface ActivitySummary {
   date: string
   sport: ActivityKind
   virtual?: boolean
+  electric?: boolean
   commute?: boolean
   treadmill?: boolean
   name: string

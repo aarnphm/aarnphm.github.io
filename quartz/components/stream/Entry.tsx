@@ -197,6 +197,7 @@ export const renderStreamEntry = (
       key={entry.id}
       id={entry.id}
       class="stream-entry"
+      data-notes-protected={protectedEntry || privateEntry ? 'true' : undefined}
       data-entry-id={entry.id}
       data-stream-group-id={options.groupId}
       data-stream-timestamp={timestampAttr}

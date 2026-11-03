@@ -323,7 +323,10 @@ export function mountActivityViews(s: AnalyticsSession) {
       grp.appendChild(el('div', 'tri-ana-rlabel', s.context.formatter.text('activities')))
       for (const a of acts.slice(0, 50)) {
         const head = el('span', 'tri-ana-ritem-h')
-        head.append(buildIcon(s.context.presentation, a.sport), el('span', '', a.name || a.sport))
+        head.append(
+          buildIcon(s.context.presentation, a.sport, a.electric),
+          el('span', '', a.name || a.sport),
+        )
         const sub =
           `${s.context.formatter.longDate(a.date)} · ${dist(s.context.presentation, a.distanceKm, a.sport)} · ${dur(a.movingTimeS)}` +
           (a.cadence ? (a.sport === 'run' ? ` · ${a.cadence * 2} spm` : ` · ${a.cadence} rpm`) : '')
