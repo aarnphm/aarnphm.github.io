@@ -126,7 +126,8 @@ export function renderStravaActivities(root: Root, slug: FullSlug): void {
       const sum = summary.totals[kind]
       return sum ? [`${KIND_LABEL[kind]} ${km(sum.distanceM, 0)}`] : []
     })
-    const hours = Object.values(summary.totals).reduce((total, sum) => total + sum.movingTimeS, 0) / 3600
+    const hours =
+      Object.values(summary.totals).reduce((total, sum) => total + sum.movingTimeS, 0) / 3600
     node.children = [
       h('div.strava-activities-head', [
         h('a.internal.strava-activities-title', { href: joinSegments(root, 'triathlon') }, [

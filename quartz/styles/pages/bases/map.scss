@@ -140,7 +140,7 @@
   display: block;
   color: var(--base-map-meta-color);
   font-family: var(--codeFont);
-  font-size: 0.65rem;
+  font-size: var(--text-meta);
   line-height: 1.5;
 }
 
@@ -163,7 +163,7 @@
     background: transparent;
     color: var(--darkgray);
     font-family: var(--codeFont);
-    font-size: 0.6875rem;
+    font-size: var(--text-meta);
     line-height: 1.5;
     text-align: start;
     cursor: pointer;
@@ -227,7 +227,7 @@
   strong {
     display: block;
     font-family: var(--bodyFont);
-    font-size: 0.86rem;
+    font-size: var(--text-ui);
     font-weight: 500;
     line-height: 1.35;
     color: var(--dark);
@@ -253,7 +253,7 @@
   margin-top: 4px;
   color: var(--base-map-meta-color);
   font-family: var(--codeFont);
-  font-size: 0.63rem;
+  font-size: var(--text-meta);
 }
 
 .base-map-spot-description {
@@ -263,7 +263,7 @@
   overflow: hidden;
   margin-top: 5px;
   font-family: var(--bodyFont);
-  font-size: 0.75rem;
+  font-size: var(--text-meta);
   line-height: 1.45;
 }
 
@@ -332,7 +332,7 @@
     color: var(--base-map-text-color);
     text-align: start;
     font-family: var(--bodyFont);
-    font-size: 0.72rem;
+    font-size: var(--text-meta);
     cursor: pointer;
 
     span:last-child {
@@ -350,7 +350,7 @@
 
 .base-map-no-results {
   padding: 0.75rem 1rem;
-  font-size: 0.85rem;
+  font-size: var(--text-meta);
   color: var(--darkgray);
 }
 

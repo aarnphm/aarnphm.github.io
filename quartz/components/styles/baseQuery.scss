@@ -18,7 +18,7 @@ body[data-is-base='true'] #quartz-root > .page-body-grid > .page-header {
 // One frame recipe for the whole Base toolbar row: the view menu button (baseViewSelector.scss),
 // search, filter, and sort share the line, the surface and the selected ground.
 :is(.bases-toolbar, .bases-search[data-base-query]) {
-  --base-toolbar-font-size: 0.6875rem;
+  --base-toolbar-font-size: var(--text-ui);
   --base-query-line: color-mix(in srgb, var(--gray) 55%, transparent);
   --base-query-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
   --base-query-selected: color-mix(in srgb, var(--secondary) 18%, var(--base-query-surface));

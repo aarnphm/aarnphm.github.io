@@ -30,7 +30,7 @@
 }
 
 .base-map-popup-title {
-  font-size: 16px;
+  font-size: var(--text-ui);
   font-weight: 500;
   color: var(--dark);
   text-decoration: none;
@@ -55,7 +55,7 @@
   margin-bottom: 0.4rem;
   padding-right: 1rem;
   font-family: var(--codeFont);
-  font-size: 0.65rem;
+  font-size: var(--text-meta);
   color: var(--base-map-meta-color);
 }
 
@@ -67,13 +67,12 @@
 .base-map-popup-description,
 .base-map-popup-address {
   margin: 0.5rem 0;
-  font-size: 0.8rem;
+  font-size: var(--text-meta);
   line-height: 1.5;
   color: var(--base-map-text-color, var(--darkgray));
 }
 
 .base-map-popup-address {
-  font-size: 0.7rem;
   color: var(--base-map-meta-color, var(--darkgray));
 }
 
@@ -85,7 +84,7 @@
   margin-top: 0.75rem;
   border-top: 1px solid var(--lightgray);
   font-family: var(--codeFont);
-  font-size: 0.65rem;
+  font-size: var(--text-meta);
 
   a {
     color: var(--base-map-text-color, var(--darkgray));
