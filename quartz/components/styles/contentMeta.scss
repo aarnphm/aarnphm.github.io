@@ -56,8 +56,7 @@ ul.content-meta {
     align-items: center;
     gap: 0.5em;
 
-    // The sprite draws a 16-unit glyph in a 24-unit viewBox; the 24-unit <use> in ContentMeta
-    // makes the glyph fill this box, so the grid centres the ink on the text.
+    // Sized to the text, not the 16px code-block icon.
     .clipboard-button > svg {
       width: 11px;
       height: 11px;

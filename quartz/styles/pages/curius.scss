@@ -1,9 +1,10 @@
 @use '../variables.scss' as *;
+@use '../mixin.scss' as *;
 
 body[data-slug='curius'] {
-  --curius-line: color-mix(in srgb, var(--gray) 55%, transparent);
-  --curius-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
-  --curius-selected: color-mix(in srgb, var(--secondary) 18%, var(--curius-surface));
+  --curius-line: var(--ledger-line);
+  --curius-surface: var(--ledger-surface);
+  --curius-selected: var(--ledger-selected);
   --curius-control-height: 1.75rem;
   --curius-preview-width: min(46vw, 46rem);
 
@@ -108,27 +109,8 @@ body[data-slug='curius'] {
 
   #curius-bar {
     display: block;
-    box-sizing: border-box;
     width: 100%;
-    height: var(--curius-control-height);
-    padding: 0.25rem 2rem 0.25rem 0.5rem;
-    border: 1px solid var(--curius-line);
-    border-radius: var(--radius-none);
-    color: var(--dark);
-    background: var(--light);
-    font: 0.7rem/1.4 var(--codeFont);
-
-    &:focus {
-      border-color: var(--secondary);
-    }
-
-    &::placeholder {
-      color: var(--gray);
-    }
-
-    &::-webkit-search-cancel-button {
-      display: none;
-    }
+    @include ledgerField(var(--curius-control-height), 0.25rem 2rem 0.25rem 0.5rem);
   }
 
   .curius-search-icon {
@@ -218,20 +200,7 @@ body[data-slug='curius'] {
   }
 
   .curius-icon-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-    flex-shrink: 0;
-    width: var(--curius-control-height);
-    height: var(--curius-control-height);
-    min-height: 0;
-    padding: 0;
-    border: 1px solid var(--curius-line);
-    border-radius: var(--radius-none);
-    color: var(--darkgray);
-    background: var(--light);
-    cursor: pointer;
+    @include ledgerIconButton(var(--curius-control-height));
 
     &[hidden] {
       display: none;
@@ -241,17 +210,6 @@ body[data-slug='curius'] {
       width: 14px;
       height: 14px;
       pointer-events: none;
-    }
-
-    &:hover:not(:disabled),
-    &[aria-expanded='true'] {
-      color: var(--dark);
-      background: var(--curius-selected);
-    }
-
-    &:disabled {
-      opacity: 0.4;
-      cursor: default;
     }
   }
 
@@ -475,12 +433,7 @@ body[data-slug='curius'] {
     font-size: 0.75rem;
 
     > h2 {
-      padding: 0.5rem 0.625rem;
-      margin: 0;
-      border-bottom: 1px solid var(--curius-line);
-      background: var(--curius-surface);
-      color: var(--darkgray);
-      font: 0.7rem/1.5 var(--codeFont);
+      @include ledgerHead;
     }
 
     a {

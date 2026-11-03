@@ -59,7 +59,7 @@
       flex-wrap: nowrap;
       white-space: nowrap;
       .suggestion-rank {
-        margin-inline-start: 0;
+        margin-inline-start: auto;
       }
       font-size: var(--text-meta);
     }
