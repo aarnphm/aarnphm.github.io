@@ -72,6 +72,7 @@ class CachedPages:
   title: str | None = None
   key: str | None = None
   extracted: set[int] = field(default_factory=set)
+  partial: set[int] = field(default_factory=set)
 
 
 class Inventory:
@@ -80,7 +81,7 @@ class Inventory:
     self.sources: list[Source] = []
     self.identity: tuple[Path, str, int] | None = None
     self.updated = 0.0
-    self.checked: dict[Path, tuple[int, int, bool, bool]] = {}
+    self.checked: dict[Path, tuple[int, int, bool, bool, bool]] = {}
 
   def refresh(self, index: Path, prefix: str, limit: int) -> None:
     identity = (index, prefix, limit)
@@ -125,6 +126,7 @@ class Inventory:
     cache = PageCache(cache_root, source.sha256, spec)
     valid: set[int] = set()
     extracted: set[int] = set()
+    partial: set[int] = set()
     invalid = 0
     latest = None
     for path in cache.directory.glob('*.json'):
@@ -133,13 +135,23 @@ class Inventory:
       stat = path.stat()
       previous = self.checked.get(path)
       if previous and previous[:2] == (stat.st_mtime_ns, stat.st_size):
-        ok, migrated = previous[2:]
+        ok, migrated, incomplete = previous[2:]
       else:
-        ok = cache.read(int(path.stem)) is not None
+        page = cache.read(int(path.stem))
+        ok = page is not None
+        incomplete = page is not None and page.status == 'partial'
         migrated = ok and 'origin' in json.loads(path.read_text())
-        self.checked[path] = (stat.st_mtime_ns, stat.st_size, ok, migrated)
+        self.checked[path] = (
+          stat.st_mtime_ns,
+          stat.st_size,
+          ok,
+          migrated,
+          incomplete,
+        )
       if ok:
         valid.add(int(path.stem))
+        if incomplete:
+          partial.add(int(path.stem))
         if not migrated:
           extracted.add(int(path.stem))
         latest = max(latest or 0, stat.st_mtime)
@@ -158,7 +170,9 @@ class Inventory:
       if first
       else None
     )
-    return CachedPages(valid, invalid, latest, title, cache.key, extracted)
+    return CachedPages(
+      valid, invalid, latest, title, cache.key, extracted, partial
+    )
 
 
 def extraction_spec(payload: dict[str, object]) -> ExtractionSpec | None:
