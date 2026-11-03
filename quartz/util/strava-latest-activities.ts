@@ -39,8 +39,12 @@ declare global {
 }
 
 // The memo outlives bundle generations, so the key names the summary shape as well as the file.
-// Bump it when the filter or fields change.
-const MEMO_SCHEMA = 'swim-bike-run:1'
+// Bump it when the filter or fields change. The stored list is the full discipline filter; callers
+// slice it, so two notes can ask for different row counts from one parse.
+const MEMO_SCHEMA = 'swim-bike-run:2'
+
+const boundedLimit = (limit: number): number =>
+  Number.isInteger(limit) && limit > 0 ? limit : STRAVA_LATEST_ACTIVITIES_LIMIT
 
 const stampOf = (path: string): string => {
   try {
@@ -57,9 +61,7 @@ const cardKind = (sportType: string, name: string): StravaCardKind | null => {
   return kind === 'swim' || kind === 'bike' || kind === 'run' ? kind : null
 }
 
-// The raw cache is ~150 MB and takes ~1.5 s to parse. Keep only the summary, keyed by the file
-// stamp, and keep it across watch-mode bundle generations.
-export function latestStravaActivities(path = stravaCachePath): StravaLatestActivities | null {
+const loadLatest = (path: string): StravaLatestActivities | null => {
   const stamp = stampOf(path)
   const memo = globalThis.__quartzStravaLatestActivitiesMemo
   if (memo?.stamp === stamp) return memo.value
@@ -93,14 +95,23 @@ export function latestStravaActivities(path = stravaCachePath): StravaLatestActi
       sum.distanceM += activity.distanceM
       sum.movingTimeS += activity.movingTimeS
     }
-    value = {
-      athleteId: cache.athleteId,
-      syncedAt: cache.lastSync,
-      activities: activities.slice(0, STRAVA_LATEST_ACTIVITIES_LIMIT),
-      year,
-      totals,
-    }
+    value = { athleteId: cache.athleteId, syncedAt: cache.lastSync, activities, year, totals }
   }
   globalThis.__quartzStravaLatestActivitiesMemo = { stamp, value }
   return value
+}
+
+// The raw cache is ~150 MB and takes ~1.5 s to parse. Keep only the summary, keyed by the file
+// stamp, and keep it across watch-mode bundle generations. `limit` is the row count for this
+// call; omit it for the card default. A numeric first argument is that limit against the
+// default cache, so a note can ask for a count without naming the file.
+export function latestStravaActivities(
+  pathOrLimit: string | number = stravaCachePath,
+  limit = STRAVA_LATEST_ACTIVITIES_LIMIT,
+): StravaLatestActivities | null {
+  const path = typeof pathOrLimit === 'number' ? stravaCachePath : pathOrLimit
+  const requested = typeof pathOrLimit === 'number' ? pathOrLimit : limit
+  const summary = loadLatest(path)
+  if (!summary) return null
+  return { ...summary, activities: summary.activities.slice(0, boundedLimit(requested)) }
 }

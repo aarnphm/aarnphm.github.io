@@ -3,6 +3,7 @@ import fs from 'node:fs/promises'
 import { homedir } from 'node:os'
 import { resolve } from 'node:path'
 import readline from 'node:readline'
+import { setTimeout } from 'node:timers/promises'
 import { pathToFileURL } from 'node:url'
 import {
   aggregateAppleRecords,
@@ -142,9 +143,42 @@ async function parseXmlFile(path: string): Promise<AppleEntries> {
   }
 }
 
+export function isRetryableAppleReadError(
+  error: unknown,
+  platform: NodeJS.Platform = process.platform,
+): boolean {
+  if (typeof error !== 'object' || error === null) return false
+  if ('code' in error && ['EDEADLK', 'EAGAIN', 'EBUSY', 'ETIMEDOUT'].includes(String(error.code))) {
+    return true
+  }
+  // libuv can expose Darwin's EDEADLK as an unmapped raw errno.
+  return platform === 'darwin' && 'errno' in error && error.errno === -11
+}
+
 async function loadEntries(path: string): Promise<AppleEntries> {
-  if (path.endsWith('.json')) return parseAppleJson(JSON.parse(await fs.readFile(path, 'utf8')))
-  return parseXmlFile(path)
+  const delays = [1000, 2000, 4000, 8000]
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      if (path.endsWith('.json')) return parseAppleJson(JSON.parse(await fs.readFile(path, 'utf8')))
+      return await parseXmlFile(path)
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : String(error)
+      const delay = delays[attempt]
+      if (!isRetryableAppleReadError(error) || delay === undefined) {
+        throw new Error(
+          `Cannot read Apple Health import ${path}: ${detail}.` +
+            (isRetryableAppleReadError(error)
+              ? ' If this file is in iCloud, use Download Now in Finder, then rerun apple:sync. The previous cache has been preserved.'
+              : ''),
+          { cause: error },
+        )
+      }
+      console.warn(
+        `[apple] import temporarily unavailable: ${path} (${detail}); retry ${attempt + 1}/${delays.length} in ${delay / 1000}s`,
+      )
+      await setTimeout(delay)
+    }
+  }
 }
 
 export function mergeAppleSwims(

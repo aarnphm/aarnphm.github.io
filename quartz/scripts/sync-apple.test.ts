@@ -1,7 +1,12 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import type { AppleSwim } from '../plugins/stores/apple'
-import { appleImportCandidates, expandAppleHealthPath, mergeAppleSwims } from './sync-apple'
+import {
+  appleImportCandidates,
+  expandAppleHealthPath,
+  isRetryableAppleReadError,
+  mergeAppleSwims,
+} from './sync-apple'
 
 const home = '/Users/aarnphm'
 const iCloudFile =
@@ -92,4 +97,22 @@ test('mergeAppleSwims retains legacy history outside dates upgraded to session r
     mergeAppleSwims({ '2026-05-17': older, '2026-06-19': legacyCurrent }, [morning]),
     { '2026-05-17': older, morning },
   )
+})
+
+// Kernel deadlocks cannot be reproduced reliably through an on-disk fixture.
+// Check raw Darwin errno, named retryable errors, and permanent/parse failures.
+test('Apple import retries only transient filesystem errors', () => {
+  assert.equal(isRetryableAppleReadError({ errno: -11 }, 'darwin'), true)
+  assert.equal(isRetryableAppleReadError({ errno: -11 }, 'linux'), false)
+  for (const code of ['EDEADLK', 'EAGAIN', 'EBUSY', 'ETIMEDOUT']) {
+    assert.equal(isRetryableAppleReadError({ code }), true)
+  }
+  for (const error of [
+    null,
+    new SyntaxError('invalid JSON'),
+    { code: 'EACCES' },
+    { code: 'ENOENT' },
+  ]) {
+    assert.equal(isRetryableAppleReadError(error), false)
+  }
 })

@@ -5,6 +5,7 @@ import { localIsoDay } from '../util/local-date'
 import { joinSegments, pathToRoot, type FullSlug } from '../util/path'
 import {
   latestStravaActivities,
+  STRAVA_LATEST_ACTIVITIES_LIMIT,
   type StravaCardActivity,
   type StravaCardKind,
 } from '../util/strava-latest-activities'
@@ -73,6 +74,14 @@ const activityRow = (activity: StravaCardActivity, currentYear: string, root: st
   ])
 }
 
+const activityCount = (properties: Element['properties']): number => {
+  const value = properties.dataTriathlonActivities ?? properties['data-triathlon-activities']
+  const raw = Array.isArray(value) ? value[0] : value
+  const text = typeof raw === 'number' ? String(raw) : typeof raw === 'string' ? raw.trim() : ''
+  if (!/^[1-9]\d*$/.test(text)) return STRAVA_LATEST_ACTIVITIES_LIMIT
+  return Number(text)
+}
+
 // Fills each `<div data-triathlon-latest>` marker in a note. HTML has no self-closing div, so a
 // marker written as `<div data-triathlon-latest />` swallows the content after it; that content
 // moves back out beside the card. Without synced data the marker links to the training log.
@@ -82,9 +91,12 @@ export function renderStravaActivities(root: Root, slug: FullSlug): void {
     if (parent && index !== undefined && node.children.length > 0) {
       parent.children.splice(index + 1, 0, ...node.children)
     }
+    const count = activityCount(node.properties)
     delete node.properties.dataTriathlonLatest
+    delete node.properties.dataTriathlonActivities
+    delete node.properties['data-triathlon-activities']
 
-    const summary = latestStravaActivities()
+    const summary = latestStravaActivities(count)
     if (!summary || summary.activities.length === 0) {
       node.children = [
         h(
