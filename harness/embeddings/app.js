@@ -354,7 +354,9 @@ function health() {
   if (data?.totals.invalidPages)
     messages.push(`${count(data.totals.invalidPages)} invalid OCR pages excluded`)
   if (data?.queue?.failed)
-    messages.push(`${count(data.queue.failed)} PDFs failed · retry from the paper row`)
+    messages.push(
+      `${count(data.queue.failed)} PDF${data.queue.failed === 1 ? '' : 's'} failed · retry from the paper row`,
+    )
   if (data?.issues.length) messages.push(...data.issues)
   put('notice', messages.join(' · '))
   byId('notice').hidden = messages.length === 0
