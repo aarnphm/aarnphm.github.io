@@ -135,7 +135,6 @@ function setFocus(rt: Runtime, row: number, options: { push?: boolean } = {}): v
   rt.focus = row
   rt.open = docOfRow(rt, row).d
   rt.root.dataset.latentFocus = String(row)
-  if (rt.root.dataset.latentDoc !== String(rt.open)) setReaderHead(rt)
   rt.root.dataset.latentDoc = String(rt.open)
   for (const chunk of rt.reader.querySelectorAll<HTMLElement>('.lat-chunk[data-focus]'))
     delete chunk.dataset.focus
@@ -156,14 +155,39 @@ function readerHead(rt: Runtime): HTMLElement | null {
   return rt.reader.querySelector<HTMLElement>(':scope > .lat-reader-head')
 }
 
-/** Retitle the frozen head for the open document; it never moves, only its text changes. */
-function setReaderHead(rt: Runtime): void {
-  const doc = rt.docs[rt.open]
+/** Retitle the frozen head for a document; it never moves, only its text changes. */
+function setReaderHead(rt: Runtime, d = rt.open): void {
+  const doc = rt.docs[d]
   if (!doc) return
   const html = toHtml(docHead(doc, true) as never)
   const head = readerHead(rt)
   if (head) head.outerHTML = html
   else rt.reader.insertAdjacentHTML('afterbegin', html)
+  readerHead(rt)?.setAttribute('data-doc', String(d))
+}
+
+/**
+ * The document the frozen head names: the last one whose own head has reached it. The reading
+ * line sits at 38%, so it enters the next document while the tail of the one before still fills
+ * the top band; titling by the reading line put the next title over the previous text.
+ */
+function docAtHead(rt: Runtime, frozen: HTMLElement): number {
+  const line = frozen.getBoundingClientRect().top + 1
+  let at = rt.open
+  for (const head of rt.reader.querySelectorAll<HTMLElement>(
+    ':scope > .lat-doc > .lat-doc-head',
+  )) {
+    if (head.getBoundingClientRect().top > line) break
+    at = Number(head.parentElement!.dataset.doc)
+  }
+  return at
+}
+
+function syncReaderHead(rt: Runtime): void {
+  const frozen = readerHead(rt)
+  if (!frozen) return
+  const d = docAtHead(rt, frozen)
+  if (frozen.dataset.doc !== String(d)) setReaderHead(rt, d)
 }
 
 /** Put a document before the current reader contents (after the frozen head). */
@@ -282,7 +306,10 @@ export function bindReader(rt: Runtime): void {
   const update = () => {
     frame = 0
     const chunk = chunkUnderLine(rt)
-    if (!chunk) return
+    if (!chunk) {
+      syncReaderHead(rt)
+      return
+    }
     if (chunk !== steady.el) anchorTo(chunk)
     const row = Number(chunk.dataset.row)
     if (row !== rt.focus) {
@@ -292,6 +319,7 @@ export function bindReader(rt: Runtime): void {
       // this the reader runs out of page above a document mounted from its stub
       if (rt.open !== open) ensureStubs(rt)
     }
+    syncReaderHead(rt)
     const near = (el: HTMLElement) => {
       const rect = el.getBoundingClientRect()
       return rect.top < window.innerHeight * 1.5 && rect.bottom > -window.innerHeight * 0.5

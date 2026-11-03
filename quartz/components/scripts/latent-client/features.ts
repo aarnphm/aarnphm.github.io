@@ -8,6 +8,7 @@ import {
   docOfRow,
   fetchBytes,
   fetchJson,
+  knnOf,
   metaOf,
   previewOf,
   requestVec,
@@ -24,6 +25,13 @@ import { renderLinks, renderRail } from './search'
  * along a feature's decoder direction and asks for its neighbours there, and a typed query is
  * encoded into features in the browser. The tag probes (`feat/tags.json`) add the tags a document
  * reads as but does not carry. Nothing here loads until the tab opens or the search box is used.
+ *
+ * Steering is score fusion (docs/latent-steering.md): a row ranks by its cosine to the base plus
+ * Σ weight × channel, where a feature's channel is its detector (relu of the encoder
+ * pre-activation over the max, which finds rows that fire the feature far better than the decoder
+ * direction) and a tag's or an axis's is the projection on its difference-in-means direction. The
+ * worker keeps the channels, so a slider drag is one pass over cached arrays. A term's unit comes
+ * from `feat/steer.json`: the weight at which half the steered links carry it.
  */
 
 interface FeatureDictMeta {
@@ -95,6 +103,36 @@ interface TagProbes {
   pred: [number, [number, number][]][]
 }
 
+/** feat/steer.json (quartz/scripts/latent/steering.py) */
+interface SteerTables {
+  topn: number
+  grid: number
+  /** per dictionary, per feature: [unit, share of links that fire it at one unit, weak] */
+  dicts: Record<string, [number, number, number][]>
+  tags: {
+    t: string
+    dir: number[]
+    unit: number
+    p: number
+    weak: number
+    /** the 5-feature sparse probe: [text feature, coefficient] */
+    explain: [number, number][]
+    auc5: number
+    auc: number
+  }[]
+  axes: { id: string; name: string; unit: number }[]
+}
+
+/** feat/text/words.json (quartz/scripts/latent/words.py): words that make a feature fire */
+interface WordTable {
+  features: Record<string, { w: [string, number][]; r: [number, [string, number][]][] }>
+}
+
+type SteerTerm =
+  | { kind: 'feature'; dict: string; f: number; w: number }
+  | { kind: 'tag'; id: string; w: number }
+  | { kind: 'axis'; id: string; w: number }
+
 interface FeatureState {
   names: string[]
   dicts: Map<string, Promise<FeatureDict>>
@@ -102,11 +140,25 @@ interface FeatureState {
   selected: { dict: string; f: number } | null
   query: { text: string; vector: Float32Array } | null
   needle: string
-  /** the steering set: dictionary:feature → signed units */
-  steer: Map<string, { dict: string; f: number; w: number }>
+  /** the steering set: term key (`text:12`, `tag:philosophy`, `axis:fm1`) → signed units */
+  steer: Map<string, SteerTerm>
   steerSeq: number
+  tables: Promise<SteerTables | null> | null
+  tablesNow: SteerTables | null
+  words: Promise<WordTable | null> | null
+  /** channel keys the worker holds for the rows matrix */
+  channels: Set<string>
+  /** the "why these links" group is open */
+  explain: boolean
+  /** the rows steering last pinned to the links pane, which "why these links" explains */
+  pinned: number[] | null
+  dragFrame: number | null
   panel: HTMLElement
 }
+
+/** units when feat/steer.json is missing: the medians of the first calibration */
+const DEFAULT_UNIT = { feature: 0.45, tag: 0.6, axis: 1 }
+const RANGE = 2
 
 const KIND_ORDER: LatentKind[] = ['note', 'pdf', 'image', 'base']
 const states = new WeakMap<Runtime, FeatureState>()
@@ -189,6 +241,18 @@ function tagsOf(rt: Runtime, st: FeatureState): Promise<Map<number, [string, num
   return st.tags
 }
 
+function steerTables(rt: Runtime, st: FeatureState): Promise<SteerTables | null> {
+  st.tables ??= fetchJson<SteerTables>(rt, `${rt.base}/feat/steer.json`)
+    .then(t => (st.tablesNow = t))
+    .catch(() => null)
+  return st.tables
+}
+
+function wordsOf(rt: Runtime, st: FeatureState): Promise<WordTable | null> {
+  st.words ??= fetchJson<WordTable>(rt, `${rt.base}/feat/text/words.json`).catch(() => null)
+  return st.words
+}
+
 /** Encode a unit 256-d vector into the dictionary's features, as the build did: top-k of z. */
 async function encodeVector(
   rt: Runtime,
@@ -224,7 +288,14 @@ function share(dict: FeatureDict, row: FeatureRow): string {
   return pct >= 1 ? `${pct.toFixed(1)} %` : `${pct.toFixed(2)} %`
 }
 
-function featureItem(dict: FeatureDict, f: number, a: number, selected: boolean, w = 0): Element {
+function featureItem(
+  dict: FeatureDict,
+  f: number,
+  a: number,
+  selected: boolean,
+  w = 0,
+  weak = false,
+): Element {
   const row = dict.table[f]
   return h(
     'li.lat-feat',
@@ -233,6 +304,7 @@ function featureItem(dict: FeatureDict, f: number, a: number, selected: boolean,
       dataF: String(f),
       dataSelected: selected ? '' : undefined,
       dataSteered: w > 0 ? 'up' : w < 0 ? 'down' : undefined,
+      dataWeak: weak ? '' : undefined,
     },
     [
       h('span.lat-feat-bar', { ariaHidden: 'true' }, [h('i', { style: `--a:${a.toFixed(3)}` })]),
@@ -246,12 +318,21 @@ function featureItem(dict: FeatureDict, f: number, a: number, selected: boolean,
         { dataLevel: row.level === undefined ? undefined : String(row.level) },
         `${dict.meta.name === 'text' ? '' : `${dict.meta.name} `}#${f}`,
       ),
-      h('span.lat-feat-steer', [
-        h('button', { type: 'button', dataSteer: '1', title: 'more of this feature' }, '+'),
-        h('button', { type: 'button', dataSteer: '-1', title: 'less of this feature' }, '−'),
-      ]),
+      steerPair(weak),
     ],
   )
+}
+
+function steerPair(weak: boolean): Element {
+  const note = weak ? ' (a weak steerer: under half the links carry it at full strength)' : ''
+  return h('span.lat-feat-steer', [
+    h('button', { type: 'button', dataSteer: '1', title: `steer toward it${note}` }, '+'),
+    h('button', { type: 'button', dataSteer: '-1', title: `steer away from it${note}` }, '−'),
+  ])
+}
+
+function isWeak(st: FeatureState, dict: string, f: number): boolean {
+  return Boolean(st.tablesNow?.dicts[dict]?.[f]?.[2])
 }
 
 function featureList(
@@ -267,6 +348,7 @@ function featureList(
         a,
         st.selected?.dict === dict.meta.name && st.selected.f === f,
         st.steer.get(steerKey(dict.meta.name, f))?.w ?? 0,
+        isWeak(st, dict.meta.name, f),
       ),
     ),
   )
@@ -354,11 +436,24 @@ function timeline(dict: FeatureDict, row: FeatureRow): Element | null {
   ])
 }
 
-async function featureCard(rt: Runtime, dict: FeatureDict, f: number): Promise<Element> {
+async function featureCard(
+  rt: Runtime,
+  st: FeatureState,
+  dict: FeatureDict,
+  f: number,
+): Promise<Element> {
   const row = dict.table[f]
   const up = ancestry(dict, f)
   const kids = dict.children.get(f) ?? []
-  const cross = await Promise.all(row.cross.slice(0, 4).map(([r]) => previewOf(rt, r)))
+  const [cross, words] = await Promise.all([
+    Promise.all(row.cross.slice(0, 4).map(([r]) => previewOf(rt, r))),
+    dict.meta.name === 'text' ? wordsOf(rt, st) : Promise.resolve(null),
+  ])
+  const unit = st.tablesNow?.dicts[dict.meta.name]?.[f]
+  const said = words?.features[String(f)]
+  const inTags = (dict.meta.name === 'text' ? (st.tablesNow?.tags ?? []) : []).filter(t =>
+    t.explain.some(([g]) => g === f),
+  )
   const kinds = KIND_ORDER.map((kind, i) =>
     row.kinds[i] ? h('span', [mark(kind), ` ${row.kinds[i].toLocaleString('en-US')}`]) : null,
   ).filter(Boolean) as Element[]
@@ -400,8 +495,62 @@ async function featureCard(rt: Runtime, dict: FeatureDict, f: number): Promise<E
             ` · label ${row.score.toFixed(2)}`,
           ),
     ]),
+    said?.w.length
+      ? h(
+          'p.lat-feat-near.lat-feat-words',
+          {
+            dataTip:
+              'integrated gradients from the encoder’s input tokens to this feature, on its strongest rows: the words that make it fire, with their share of the attribution',
+            dataTipAt: 'up',
+            tabIndex: 0,
+          },
+          [
+            h('span', 'words'),
+            ...said.w.map(([w, s]) =>
+              h('span.lat-feat-word', { style: `--a:${Math.min(1, s * 4).toFixed(2)}` }, w),
+            ),
+          ],
+        )
+      : null,
     h('p.lat-feat-kinds', kinds),
     timeline(dict, row),
+    unit
+      ? h(
+          'p.lat-feat-near.lat-feat-unit',
+          {
+            dataTip:
+              'steering ranks rows by cosine plus weight × this feature’s detector; one unit is the weight at which half of a focus’s links fire it',
+            dataTipAt: 'up',
+            tabIndex: 0,
+          },
+          [
+            h('span', 'steers'),
+            h(
+              'span',
+              unit[2]
+                ? `weakly: under half the links fire it at ${st.tablesNow!.grid}`
+                : `1 unit = ${unit[0]} · ${Math.round(unit[1] * 100)} % of links fire it`,
+            ),
+          ],
+        )
+      : null,
+    inTags.length
+      ? h('p.lat-feat-near', [
+          h('span', 'explains'),
+          ...inTags.map(t =>
+            h(
+              'button.lat-feat-chip',
+              {
+                type: 'button',
+                dataTerm: `tag:${t.t}`,
+                dataSteer: '1',
+                title: `one of the 5 features of the #${t.t} sparse probe; click to steer toward #${t.t}`,
+              },
+              `#${t.t}`,
+            ),
+          ),
+        ])
+      : null,
     kids.length
       ? h('p.lat-feat-near', [
           h('span', 'finer'),
@@ -435,7 +584,10 @@ async function featureCard(rt: Runtime, dict: FeatureDict, f: number): Promise<E
 }
 
 async function renderPanel(rt: Runtime, st: FeatureState): Promise<void> {
-  const dicts = await Promise.all(st.names.map(name => loadDict(rt, st, name)))
+  const [dicts] = await Promise.all([
+    Promise.all(st.names.map(name => loadDict(rt, st, name))),
+    steerTables(rt, st),
+  ])
   if (rt.signal.aborted) return
   const focus = rt.focus
   const groups: Element[] = []
@@ -469,7 +621,9 @@ async function renderPanel(rt: Runtime, st: FeatureState): Promise<void> {
               },
               [
                 h('span', 'reads as'),
-                ...read.map(([t, p]) => h('span.lat-feat-tag', `#${t} ${p}`)),
+                ...read.map(([t, p]) =>
+                  h('span.lat-feat-tag', { title: tagGloss(st, dicts, t) }, `#${t} ${p}`),
+                ),
               ],
             ),
           ]
@@ -493,8 +647,14 @@ async function renderPanel(rt: Runtime, st: FeatureState): Promise<void> {
       section(`query · ${truncate(st.query.text, 28)}`, `${rows.length}`, [featureList(rows, st)]),
     )
   }
+  const why = await whySection(rt, st, dicts)
+  if (rt.signal.aborted) return
+  if (why) groups.splice(1, 0, why)
   if (st.needle) {
     const hits = findFeatures(dicts, st.needle)
+    const terms = await findTerms(rt, st, st.needle)
+    if (terms.length)
+      groups.unshift(section('tags & axes', `${terms.length}`, [termList(st, dicts, terms)]))
     groups.unshift(
       section(`# ${st.needle}`, hits.length ? `${hits.length}` : 'no feature', [
         featureList(
@@ -506,9 +666,9 @@ async function renderPanel(rt: Runtime, st: FeatureState): Promise<void> {
   }
   if (st.selected) {
     const dict = dicts.find(d => d.meta.name === st.selected!.dict)
-    if (dict) groups.unshift(await featureCard(rt, dict, st.selected.f))
+    if (dict) groups.unshift(await featureCard(rt, st, dict, st.selected.f))
   }
-  const steering = steeringSection(st, dicts)
+  const steering = await steeringSection(rt, st, dicts)
   if (steering) groups.unshift(steering)
   // variance rebuilt by the coarsest prefix → the whole dictionary
   const fvu = dicts
@@ -647,39 +807,177 @@ async function selectFeature(
 }
 
 /**
- * Embedding arithmetic, stacked (Prism's edit without a decoder). Each + or − adds one unit of a
- * feature to the steering set; the base vector (the typed query when there is one, else the
- * focused chunk) moves along every feature's decoder direction by its weight, is renormalised,
- * and every row is scored again. + adds the feature's largest activation per unit; − takes out
- * what the base already has of it plus half its largest activation per unit, so a base that
- * barely fires it still moves.
+ * Steering, stacked, as score fusion. Each term is a feature, a tag or an axis with a signed
+ * strength in its own unit; a row ranks by its cosine to the base (the typed query when there is
+ * one, else the focused chunk) plus Σ strength × unit × channel. Renormalising a steered vector
+ * never reorders a dot product, so this is the same ranking embedding arithmetic gives along the
+ * channel's direction, and a slider only re-mixes arrays the worker already holds. A feature's
+ * channel is its detector, relu((x − mean) / norm · enc_f + b_f) / max_f: 75–96 % of the links
+ * fire the feature where the decoder direction stalls near 64 %. A negative strength excludes the
+ * feature's rows and also pushes away along its decoder direction, so −2 goes further than −1.
  */
 function steerKey(name: string, f: number): string {
   return `${name}:${f}`
 }
 
-function steerBump(st: FeatureState, name: string, f: number, sign: number): void {
-  const key = steerKey(name, f)
-  const w = (st.steer.get(key)?.w ?? 0) + sign
-  if (w === 0) st.steer.delete(key)
-  else st.steer.set(key, { dict: name, f, w })
+function termOf(key: string, w: number): SteerTerm {
+  if (key.startsWith('tag:')) return { kind: 'tag', id: key.slice(4), w }
+  if (key.startsWith('axis:')) return { kind: 'axis', id: key.slice(5), w }
+  const at = key.lastIndexOf(':')
+  return { kind: 'feature', dict: key.slice(0, at), f: Number(key.slice(at + 1)), w }
 }
 
-function steerLabel(st: FeatureState, dicts: Map<string, FeatureDict>): string {
-  return [...st.steer.values()]
-    .map(({ dict, f, w }) => {
-      const d = dicts.get(dict)
-      const name = d ? featureName(d.table[f]) : `#${f}`
-      return `${w > 0 ? '+' : '−'}${Math.abs(w) > 1 ? Math.abs(w) : ''} ${name}`
+function steerBump(st: FeatureState, key: string, sign: number): void {
+  const old = st.steer.get(key)?.w ?? 0
+  const w = Math.max(-RANGE, Math.min(RANGE, old + sign))
+  // zero is skipped: − at +1 goes to −1 (contrastive, pushes away), + at −1 back to +1; × removes it
+  st.steer.set(key, termOf(key, Math.abs(w) < 1e-6 ? sign : w))
+}
+
+function unitOf(term: SteerTerm, tables: SteerTables | null): number {
+  if (term.kind === 'feature')
+    return tables?.dicts[term.dict]?.[term.f]?.[0] ?? DEFAULT_UNIT.feature
+  if (term.kind === 'tag') return tables?.tags.find(t => t.t === term.id)?.unit ?? DEFAULT_UNIT.tag
+  return tables?.axes.find(a => a.id === term.id)?.unit ?? DEFAULT_UNIT.axis
+}
+
+async function termName(
+  rt: Runtime,
+  term: SteerTerm,
+  dicts: Map<string, FeatureDict>,
+): Promise<string> {
+  if (term.kind === 'tag') return `#${term.id}`
+  if (term.kind === 'axis') {
+    const axis = (await metaOf(rt)).axes.find(a => a.id === term.id)
+    return axis ? axis.name : term.id
+  }
+  const d = dicts.get(term.dict)
+  const name = d ? featureName(d.table[term.f]) : `#${term.f}`
+  return term.dict === 'text' ? name : `${name} · ${term.dict}`
+}
+
+function amount(w: number): string {
+  return `${w > 0 ? '+' : w < 0 ? '−' : ''}${Math.abs(w).toFixed(Math.abs(w) % 1 ? 2 : 0)}`
+}
+
+async function steerLabel(rt: Runtime, st: FeatureState, dicts: Map<string, FeatureDict>) {
+  const parts = await Promise.all(
+    [...st.steer.values()]
+      .filter(t => t.w !== 0)
+      .map(async t => `${amount(t.w)} ${await termName(rt, t, dicts)}`),
+  )
+  return parts.join(' ')
+}
+
+/** The worker's channel for a term, computed on first use. Returns its key. */
+async function ensureChannel(
+  rt: Runtime,
+  st: FeatureState,
+  url: string,
+  scale: number,
+  key: string,
+  make: () => Promise<{ vector: Float32Array; offset: number; gain: number; relu: boolean } | null>,
+): Promise<string | null> {
+  if (st.channels.has(key)) return key
+  const spec = await make()
+  if (!spec) return null
+  await requestVec(rt, { type: 'channel', url, key, scale, ...spec }, [spec.vector.buffer])
+  st.channels.add(key)
+  return key
+}
+
+async function termChannel(
+  rt: Runtime,
+  st: FeatureState,
+  url: string,
+  scale: number,
+  term: SteerTerm,
+): Promise<string | null> {
+  if (term.kind === 'feature') {
+    return ensureChannel(rt, st, url, scale, `det:${term.dict}:${term.f}`, async () => {
+      const dict = await loadDict(rt, st, term.dict)
+      const enc = await weights(rt, dict, 'enc')
+      const { dims: D, norm, mean, bias, encScale } = dict.meta
+      const vector = new Float32Array(D)
+      let offset = bias[term.f]
+      for (let d = 0; d < D; d++) {
+        vector[d] = (enc[term.f * D + d] * encScale[term.f]) / norm
+        offset -= vector[d] * mean[d]
+      }
+      return { vector, offset, gain: 1 / (dict.table[term.f].max || 1), relu: true }
     })
-    .join(' ')
+  }
+  if (term.kind === 'tag') {
+    return ensureChannel(rt, st, url, scale, `tag:${term.id}`, async () => {
+      const tag = (await steerTables(rt, st))?.tags.find(t => t.t === term.id)
+      return tag ? { vector: Float32Array.from(tag.dir), offset: 0, gain: 1, relu: false } : null
+    })
+  }
+  return ensureChannel(rt, st, url, scale, `axis:${term.id}`, async () => {
+    const axis = (await metaOf(rt)).axes.find(a => a.id === term.id)
+    if (!axis) return null
+    const vector = Float32Array.from(axis.dir)
+    let length = 0
+    for (const v of vector) length += v * v
+    length = Math.sqrt(length) || 1
+    for (let d = 0; d < vector.length; d++) vector[d] /= length
+    return { vector, offset: 0, gain: 1, relu: false }
+  })
 }
 
-async function applySteer(rt: Runtime, st: FeatureState): Promise<void> {
+/**
+ * A feature's decoder direction as a channel, scaled so one unit is the feature's largest
+ * activation (the old embedding-arithmetic step): ⟨x, norm · max_f · d_f⟩.
+ */
+async function decoderChannel(
+  rt: Runtime,
+  st: FeatureState,
+  url: string,
+  scale: number,
+  name: string,
+  f: number,
+): Promise<string | null> {
+  return ensureChannel(rt, st, url, scale, `dec:${name}:${f}`, async () => {
+    const dict = await loadDict(rt, st, name)
+    const dec = await weights(rt, dict, 'dec')
+    const { dims: D, norm, decScale } = dict.meta
+    const vector = new Float32Array(D)
+    const gain = norm * decScale[f] * dict.table[f].max
+    for (let d = 0; d < D; d++) vector[d] = dec[f * D + d] * gain
+    return { vector, offset: 0, gain: 1, relu: false }
+  })
+}
+
+/** The base: the typed query's cosine, else the focused row's. */
+async function baseChannel(
+  rt: Runtime,
+  st: FeatureState,
+  url: string,
+  scale: number,
+): Promise<string | null> {
+  if (st.query) {
+    const vector = st.query.vector.slice()
+    return ensureChannel(rt, st, url, scale, `query:${st.query.text}`, async () => ({
+      vector,
+      offset: 0,
+      gain: 1,
+      relu: false,
+    }))
+  }
+  const focus = rt.focus
+  return ensureChannel(rt, st, url, scale, `row:${focus}`, async () => {
+    const got = await requestVec(rt, { type: 'row', url, row: focus, scale })
+    return got.type === 'row' ? { vector: got.vector, offset: 0, gain: 1, relu: false } : null
+  })
+}
+
+async function applySteer(rt: Runtime, st: FeatureState, drag = false, retry = true) {
   const seq = ++st.steerSeq
-  if (st.steer.size === 0 && !st.query) {
+  const live = [...st.steer.values()].filter(t => t.w !== 0)
+  if (live.length === 0 && !st.query) {
     // nothing left to steer: back to the focus's own links (a query re-scores unsteered below)
-    void renderPanel(rt, st)
+    st.pinned = null
+    if (!drag) void renderPanel(rt, st)
     rt.query = null
     delete rt.links.dataset.query
     void renderLinks(rt, rt.focus)
@@ -688,70 +986,355 @@ async function applySteer(rt: Runtime, st: FeatureState): Promise<void> {
   const meta = await metaOf(rt)
   const url = `${rt.base}/vec/rows-256-int8.bin`
   await requestVec(rt, { type: 'load', url, rows: meta.rows, dims: 256 })
-  let v: Float32Array
-  const base = st.query ? 'query' : 'focus'
-  if (st.query) v = st.query.vector.slice()
-  else {
-    const got = await requestVec(rt, { type: 'row', url, row: rt.focus, scale: meta.scale })
-    if (got.type !== 'row') return
-    v = got.vector
+  const tables = await steerTables(rt, st)
+  let result
+  try {
+    const base = await baseChannel(rt, st, url, meta.scale)
+    if (!base) return
+    const terms = [{ key: base, weight: 1 }]
+    for (const term of live) {
+      const key = await termChannel(rt, st, url, meta.scale, term)
+      if (key) terms.push({ key, weight: term.w * unitOf(term, tables) })
+      // a negative feature also pushes away along its decoder direction: the detector alone only
+      // drops the rows that fire it, which is done by −1 and leaves −2 looking like −1
+      if (term.kind === 'feature' && term.w < 0) {
+        const away = await decoderChannel(rt, st, url, meta.scale, term.dict, term.f)
+        if (away) terms.push({ key: away, weight: term.w })
+      }
+    }
+    result = await requestVec(rt, {
+      type: 'fuse',
+      url,
+      terms,
+      report: base,
+      skip: st.query ? [] : [rt.focus],
+      k: rt.k,
+    })
+  } catch (error) {
+    // the worker dropped a channel (its cache is bounded): rebuild them once
+    if (!retry) throw error
+    st.channels.clear()
+    return applySteer(rt, st, drag, false)
   }
-  const used = new Map<string, FeatureDict>()
-  for (const { dict: name, f, w } of st.steer.values()) {
-    const dict = await loadDict(rt, st, name)
-    used.set(name, dict)
-    const dec = await weights(rt, dict, 'dec')
-    const { dims: D, norm, decScale } = dict.meta
-    const row = dict.table[f]
-    const now = st.query
-      ? ((await encodeVector(rt, dict, st.query.vector)).find(([g]) => g === f)?.[1] ?? 0)
-      : ((await codesOf(rt, dict, rt.focus)).find(([g]) => g === f)?.[1] ?? 0)
-    // in the dictionary's units, then into the 256-d space through the input scale
-    const amount = w > 0 ? w * row.max : -(now * row.max + -w * 0.5 * row.max)
-    const step = amount * norm * decScale[f]
-    for (let d = 0; d < D; d++) v[d] += step * dec[f * D + d]
-  }
-  let length = 0
-  for (let d = 0; d < v.length; d++) length += v[d] * v[d]
-  length = Math.sqrt(length) || 1
-  for (let d = 0; d < v.length; d++) v[d] /= length
-  const result = await requestVec(
-    rt,
-    { type: 'query', url, vector: v, scale: meta.scale, k: rt.k + 1 },
-    [v.buffer],
-  )
-  if (result.type !== 'queried' || rt.signal.aborted || seq !== st.steerSeq) return
+  if (result.type !== 'fused' || rt.signal.aborted || seq !== st.steerSeq) return
   const rows: [number, number][] = []
-  result.hits.forEach((r, i) => {
-    if ((st.query || r !== rt.focus) && rows.length < rt.k)
-      rows.push([r, Math.round(Math.max(0, result.scores[i]) * 255)])
-  })
-  void renderPanel(rt, st)
-  await pinLinks(rt, st.steer.size ? `${base} ${steerLabel(st, used)}` : st.query!.text, rows)
+  result.hits.forEach((r, i) => rows.push([r, Math.round(Math.max(0, result.scores[i]) * 255)]))
+  const dicts = new Map(
+    (await Promise.all(st.names.map(n => loadDict(rt, st, n)))).map(d => [d.meta.name, d]),
+  )
+  const label = live.length
+    ? `${st.query ? 'query' : 'focus'} ${await steerLabel(rt, st, dicts)}`
+    : st.query!.text
+  if (seq !== st.steerSeq) return
+  st.pinned = rows.map(([r]) => r)
+  await pinLinks(rt, label, rows)
+  // after the pin, so "why these links" explains the steered list
+  if (!drag) void renderPanel(rt, st)
 }
 
-function steeringSection(st: FeatureState, dicts: FeatureDict[]): Element | null {
+async function steeringSection(
+  rt: Runtime,
+  st: FeatureState,
+  dicts: FeatureDict[],
+): Promise<Element | null> {
   if (st.steer.size === 0) return null
   const byName = new Map(dicts.map(d => [d.meta.name, d]))
+  const tables = st.tablesNow
+  // one row per term: [strength slider] label ×; the last row adds another term
+  const rows = await Promise.all(
+    [...st.steer.entries()].map(async ([key, term]) => {
+      const name = await termName(rt, term, byName)
+      const unit = unitOf(term, tables)
+      const weak =
+        term.kind === 'feature'
+          ? isWeak(st, term.dict, term.f)
+          : term.kind === 'tag' && Boolean(tables?.tags.find(t => t.t === term.id)?.weak)
+      const about =
+        term.kind === 'feature'
+          ? byName.get(term.dict)?.table[term.f]?.about
+          : term.kind === 'tag'
+            ? tagGloss(st, dicts, term.id)
+            : 'difference-in-means direction between the axis poles; + leans toward the second pole'
+      return h(
+        'li.lat-steer-row',
+        {
+          dataTerm: key,
+          dataKind: term.kind,
+          dataW: term.w.toFixed(2),
+          dataWeak: weak ? '' : undefined,
+        },
+        [
+          h('span.lat-steer-amount', [
+            h('input', {
+              type: 'range',
+              min: String(-RANGE),
+              max: String(RANGE),
+              step: '0.05',
+              value: String(term.w),
+              ariaLabel: `strength of ${name}`,
+              dataSteerRange: '',
+            }),
+            h('output', amount(term.w)),
+          ]),
+          h(
+            'span.lat-steer-name',
+            {
+              title: `${about ? `${about}\n` : ''}1 unit = ${unit} × ${term.kind === 'feature' ? 'detector' : 'projection'}${weak ? ' · weak: under half the links carry it at full strength' : ''}`,
+            },
+            name,
+          ),
+          h('button', { type: 'button', dataSteerDrop: '', title: 'stop steering by it' }, '×'),
+        ],
+      )
+    }),
+  )
+  rows.push(
+    h('li.lat-steer-row.lat-steer-add', [
+      h('span.lat-steer-amount', { ariaHidden: 'true' }),
+      h('span.lat-steer-name', 'add: # a feature, tag or axis, or ± below'),
+      h(
+        'button',
+        { type: 'button', dataSteerAdd: '', title: 'search a feature, tag or axis to add' },
+        '+',
+      ),
+    ]),
+  )
   return h('section.lat-feat-group.lat-feat-steering', [
     h('header', [
-      h('span.lat-feat-head', `steering ${st.query ? 'the query' : 'the focus'}`),
+      h('span.lat-feat-head', 'steering'),
       h('button.lat-feat-clear', { type: 'button', dataSteerClear: '' }, 'clear'),
     ]),
-    h(
-      'p.lat-feat-near',
-      [...st.steer.values()].map(({ dict, f, w }) => {
-        const d = byName.get(dict)
-        return h('span.lat-feat-pin', { dataDict: dict, dataF: String(f), dataW: String(w) }, [
-          h('button', { type: 'button', dataSteer: '-1', title: 'one unit less' }, '−'),
-          h(
-            'span',
-            `${w > 0 ? '+' : '−'}${Math.abs(w) > 1 ? Math.abs(w) : ''} ${d ? featureName(d.table[f]) : `#${f}`}`,
-          ),
-          h('button', { type: 'button', dataSteer: '1', title: 'one unit more' }, '+'),
-          h('button', { type: 'button', dataSteerDrop: '', title: 'remove' }, '×'),
-        ])
+    h('ol.lat-steer-rows', rows),
+  ])
+}
+
+// ---- tags and axes as steering terms ---------------------------------------------------------
+
+/** "#philosophy ≈ metaphysics + aesthetics + …": the tag's 5-feature sparse probe, in words. */
+function tagGloss(st: FeatureState, dicts: FeatureDict[], t: string): string | undefined {
+  const tag = st.tablesNow?.tags.find(x => x.t === t)
+  const text = dicts.find(d => d.meta.name === 'text')
+  if (!tag || !text) return undefined
+  const names = tag.explain.filter(([, c]) => c > 0).map(([f]) => featureName(text.table[f]))
+  return `#${t} ≈ ${names.join(' + ')} (5-feature probe AUC ${tag.auc5.toFixed(2)}, full ${tag.auc.toFixed(2)})`
+}
+
+type TermHit = { key: string; name: string; kind: 'tag' | 'axis'; score: number }
+
+async function findTerms(rt: Runtime, st: FeatureState, needle: string): Promise<TermHit[]> {
+  const tables = await steerTables(rt, st)
+  const words = needle.split(/\s+/).filter(Boolean)
+  const hit = (name: string) =>
+    words.every(w =>
+      name
+        .toLowerCase()
+        .split(/[^a-z0-9]+/)
+        .some(p => p.startsWith(w)),
+    )
+  const out: TermHit[] = []
+  for (const tag of tables?.tags ?? [])
+    if (hit(tag.t))
+      out.push({ key: `tag:${tag.t}`, name: `#${tag.t}`, kind: 'tag', score: tag.auc })
+  const axes = (await metaOf(rt)).axes.filter(a => !a.id.startsWith('pc'))
+  for (const axis of axes)
+    if (hit(axis.name))
+      out.push({ key: `axis:${axis.id}`, name: axis.name, kind: 'axis', score: 1 })
+  return out.slice(0, 8)
+}
+
+function termList(st: FeatureState, dicts: FeatureDict[], hits: TermHit[]): Element {
+  const text = dicts.find(d => d.meta.name === 'text')
+  return h(
+    'ol.lat-feat-list',
+    hits.flatMap(hit => {
+      const w = st.steer.get(hit.key)?.w ?? 0
+      const tag =
+        hit.kind === 'tag' ? st.tablesNow?.tags.find(t => `tag:${t.t}` === hit.key) : undefined
+      const item = h(
+        'li.lat-feat.lat-term',
+        {
+          dataTerm: hit.key,
+          dataSteered: w > 0 ? 'up' : w < 0 ? 'down' : undefined,
+          dataWeak: tag?.weak ? '' : undefined,
+        },
+        [
+          h('span.lat-feat-bar', { ariaHidden: 'true' }, [
+            h('i', { style: `--a:${hit.score.toFixed(3)}` }),
+          ]),
+          h('span.lat-feat-name', hit.name),
+          h('span.lat-feat-meta', tag ? `auc ${tag.auc.toFixed(2)}` : 'axis'),
+          steerPair(Boolean(tag?.weak)),
+        ],
+      )
+      if (!tag || !text) return [item]
+      // the sparse probe under the tag: its features, clickable like any chip
+      return [
+        item,
+        h(
+          'li.lat-term-explain',
+          {
+            title: `a 5-feature logistic probe on document codes: held-out AUC ${tag.auc5.toFixed(2)} against ${tag.auc.toFixed(2)} for the full probe`,
+          },
+          [
+            h('span', '≈'),
+            ...tag.explain
+              .filter(([, c]) => c > 0)
+              .map(([f, c]) => chip(text, f, `coefficient ${c.toFixed(2)}`)),
+          ],
+        ),
+      ]
+    }),
+  )
+}
+
+// ---- why these links -------------------------------------------------------------------------
+
+/**
+ * A link's cosine as an attribution graph. Each row is mean + norm · Σ a_f d_f + error in its
+ * family's dictionary, so ⟨q, x⟩ splits into the dictionaries' mean terms (the space's shared
+ * baseline), one edge per pair of active features (norm_q · norm_x · a_f · a_g · ⟨d_f, d_g⟩), and
+ * error. Over the corpus the edges carry 86 % of what is above the baseline and the top three
+ * edges 63 % of the edge mass, so three edges and the error share say why a link is there.
+ */
+interface WhyLink {
+  r: number
+  cos: number
+  share: number
+  edges: { q: [FeatureDict, number]; x: [FeatureDict, number]; v: number }[]
+}
+
+function dictFor(dicts: FeatureDict[], kind: LatentKind | undefined): FeatureDict | undefined {
+  return (
+    dicts.find(d => kind && d.meta.kinds.includes(kind)) ?? dicts.find(d => d.meta.name === 'text')
+  )
+}
+
+async function reconstruct(
+  rt: Runtime,
+  dict: FeatureDict,
+  codes: [number, number][],
+): Promise<{ codes: [number, number][]; dirs: Float32Array[] }> {
+  const dec = await weights(rt, dict, 'dec')
+  const { dims: D, decScale } = dict.meta
+  return {
+    codes: codes.map(([f, a]) => [f, a * dict.table[f].max]),
+    dirs: codes.map(([f]) => {
+      const v = new Float32Array(D)
+      for (let d = 0; d < D; d++) v[d] = dec[f * D + d] * decScale[f]
+      return v
+    }),
+  }
+}
+
+const dot = (a: ArrayLike<number>, b: ArrayLike<number>) => {
+  let s = 0
+  for (let d = 0; d < a.length; d++) s += a[d] * b[d]
+  return s
+}
+
+async function explainLinks(
+  rt: Runtime,
+  st: FeatureState,
+  dicts: FeatureDict[],
+): Promise<WhyLink[]> {
+  const meta = await metaOf(rt)
+  const url = `${rt.base}/vec/rows-256-int8.bin`
+  await requestVec(rt, { type: 'load', url, rows: meta.rows, dims: 256 })
+  const rowVec = async (r: number) => {
+    const got = await requestVec(rt, { type: 'row', url, row: r, scale: meta.scale })
+    return got.type === 'row' ? got.vector : new Float32Array(256)
+  }
+  // the list on screen: steering's pin, a typed query's or a feature's pin, else the focus's links
+  const steered = st.pinned && [...st.steer.values()].some(t => t.w !== 0)
+  const links = steered
+    ? st.pinned!.slice(0, 5)
+    : rt.query
+      ? rt.query.items.slice(0, 5).map(i => i.preview.r)
+      : (await knnOf(rt, rt.focus)).neighbours.slice(0, 5).map(n => n.r)
+  const qDict = st.query
+    ? dicts.find(d => d.meta.name === 'text')!
+    : dictFor(dicts, docOfRow(rt, rt.focus)?.s)!
+  const q = st.query ? st.query.vector : await rowVec(rt.focus)
+  const qCodes = st.query ? await encodeVector(rt, qDict, q) : await codesOf(rt, qDict, rt.focus)
+  const qr = await reconstruct(rt, qDict, qCodes)
+  const out: WhyLink[] = []
+  for (const r of links) {
+    const xDict = dictFor(dicts, docOfRow(rt, r)?.s)!
+    const [x, xCodes] = await Promise.all([rowVec(r), codesOf(rt, xDict, r)])
+    const xr = await reconstruct(rt, xDict, xCodes)
+    const cos = dot(q, x)
+    const baseline =
+      dot(qDict.meta.mean, x) + dot(q, xDict.meta.mean) - dot(qDict.meta.mean, xDict.meta.mean)
+    const edges: WhyLink['edges'] = []
+    let total = 0
+    qr.codes.forEach(([f, a], i) =>
+      xr.codes.forEach(([g, b], j) => {
+        const v = qDict.meta.norm * xDict.meta.norm * a * b * dot(qr.dirs[i], xr.dirs[j])
+        total += v
+        edges.push({ q: [qDict, f], x: [xDict, g], v })
       }),
+    )
+    edges.sort((a, b) => Math.abs(b.v) - Math.abs(a.v))
+    const above = cos - baseline
+    out.push({
+      r,
+      cos,
+      share: above > 1e-6 ? Math.max(0, Math.min(1, total / above)) : 0,
+      edges: edges.slice(0, 3),
+    })
+  }
+  return out
+}
+
+async function whySection(rt: Runtime, st: FeatureState, dicts: FeatureDict[]): Promise<Element> {
+  const head = h('header', [
+    h('span.lat-feat-head', 'why these links'),
+    h(
+      'button.lat-feat-clear',
+      { type: 'button', dataWhy: '', ariaExpanded: st.explain ? 'true' : 'false' },
+      st.explain ? 'hide' : 'explain',
+    ),
+  ])
+  if (!st.explain) return h('section.lat-feat-group.lat-why', [head])
+  const links = await explainLinks(rt, st, dicts)
+  const previews = await Promise.all(links.map(l => previewOf(rt, l.r)))
+  return h('section.lat-feat-group.lat-why', [
+    head,
+    h(
+      'ol.lat-why-links',
+      links.map((link, i) =>
+        h('li', [
+          h('p.lat-why-head', [
+            mark(previews[i].s),
+            h(
+              'a',
+              { href: `?focus=${link.r}`, dataLatFocus: String(link.r) },
+              truncate(previews[i].t, 34),
+            ),
+            h(
+              'span.lat-why-share',
+              {
+                style: `--a:${link.share.toFixed(3)}`,
+                title: `cosine ${link.cos.toFixed(3)}; feature pairs carry ${Math.round(link.share * 100)} % of what is above the shared baseline, the rest is the dictionaries' error`,
+              },
+              `${link.cos.toFixed(2)} · ${Math.round(link.share * 100)} %`,
+            ),
+          ]),
+          h(
+            'ol.lat-why-edges',
+            link.edges.map(({ q: [qd, f], x: [xd, g], v }) =>
+              h('li', { dataBoth: qd === xd && f === g ? '' : undefined }, [
+                h('span.lat-why-pair', [
+                  chip(qd, f, qd === xd && f === g ? 'both rows fire it' : 'fires in the focus'),
+                  qd === xd && f === g ? null : h('span.lat-why-to', '⟷'),
+                  qd === xd && f === g ? null : chip(xd, g, 'fires in the link'),
+                ]),
+                h('span.lat-why-v', `${v >= 0 ? '+' : '−'}${Math.abs(v).toFixed(3)}`),
+              ]),
+            ),
+          ),
+        ]),
+      ),
     ),
   ])
 }
@@ -772,6 +1355,13 @@ export function bindFeatures(rt: Runtime): void {
     needle: '',
     steer: new Map(),
     steerSeq: 0,
+    tables: null,
+    tablesNow: null,
+    words: null,
+    channels: new Set(),
+    explain: false,
+    pinned: null,
+    dragFrame: null,
     panel,
   }
   states.set(rt, st)
@@ -788,25 +1378,85 @@ export function bindFeatures(rt: Runtime): void {
         setTimeout(refresh, 0)
         return
       }
+      if (target.closest('.lat-steer-add') && panel.contains(target)) {
+        // the add row: start a `#` feature search in the box; its results carry ±
+        const box = rt.links.querySelector<HTMLInputElement>('form.lat-search input')
+        if (box) {
+          if (!box.value.trim().startsWith('#')) box.value = '#'
+          box.focus()
+        }
+        return
+      }
       if (target.closest('button[data-steer-clear]') && panel.contains(target)) {
         st.steer.clear()
         void applySteer(rt, st)
         return
       }
+      if (target.closest('button[data-why]') && panel.contains(target)) {
+        st.explain = !st.explain
+        refresh()
+        return
+      }
+      if (target.closest('input[data-steer-range]')) return
       const steerButton = target.closest<HTMLButtonElement>('button[data-steer]')
+      // a steering row, a tag or axis row, or a chip that steers: all carry the term key
+      const term = target.closest<HTMLElement>('[data-term]')
+      if (
+        term &&
+        panel.contains(term) &&
+        (steerButton || target.closest('button[data-steer-drop]'))
+      ) {
+        event.preventDefault()
+        const key = term.dataset.term!
+        if (target.closest('button[data-steer-drop]')) st.steer.delete(key)
+        else steerBump(st, key, Number(steerButton!.dataset.steer))
+        void applySteer(rt, st)
+        return
+      }
       const item = target.closest<HTMLElement>('[data-dict][data-f]')
       if (!item || !panel.contains(item)) return
       event.preventDefault()
       const name = item.dataset.dict!
       const f = Number(item.dataset.f)
-      if (target.closest('button[data-steer-drop]')) {
-        st.steer.delete(steerKey(name, f))
-        void applySteer(rt, st)
-      } else if (steerButton) {
-        steerBump(st, name, f, Number(steerButton.dataset.steer))
+      if (steerButton) {
+        steerBump(st, steerKey(name, f), Number(steerButton.dataset.steer))
         if (!st.steer.size || !st.selected) st.selected = { dict: name, f }
         void applySteer(rt, st)
       } else if (target.closest('button')) void selectFeature(rt, st, name, f)
+    },
+    { signal: rt.signal },
+  )
+  // a strength slider: the links follow the drag (one fused pass a frame, the panel stays put so
+  // the drag is not cut), and the panel re-renders on release
+  panel.addEventListener(
+    'input',
+    event => {
+      const input = (event.target as HTMLElement).closest<HTMLInputElement>(
+        'input[data-steer-range]',
+      )
+      const row = input?.closest<HTMLElement>('[data-term]')
+      if (!input || !row) return
+      const key = row.dataset.term!
+      const w = Number(input.value)
+      st.steer.set(key, termOf(key, w))
+      row.dataset.w = w.toFixed(2)
+      const out = row.querySelector('output')
+      if (out) out.textContent = amount(w)
+      if (st.dragFrame !== null) return
+      st.dragFrame = requestAnimationFrame(() => {
+        st.dragFrame = null
+        void applySteer(rt, st, true)
+      })
+    },
+    { signal: rt.signal },
+  )
+  panel.addEventListener(
+    'change',
+    event => {
+      if (!(event.target as HTMLElement).closest('input[data-steer-range]')) return
+      if (st.dragFrame !== null) cancelAnimationFrame(st.dragFrame)
+      st.dragFrame = null
+      void applySteer(rt, st)
     },
     { signal: rt.signal },
   )

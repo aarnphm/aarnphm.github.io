@@ -1214,6 +1214,27 @@
     font-size: 0.88em;
   }
 
+  // a `pseudo` fence: the note page's algorithm block (components/styles/pseudocode.scss), its
+  // rules on the reader's ink so they survive the dark theme, set at the meta size
+  .ps-root {
+    font-size: var(--text-meta);
+    line-height: 1.35;
+
+    .ps-algorithm {
+      margin: 0;
+      border-top-color: currentColor;
+      border-bottom-color: currentColor;
+
+      &.with-caption > .ps-line:first-child {
+        border-bottom-color: currentColor;
+      }
+    }
+
+    .ps-line {
+      margin: 0;
+    }
+  }
+
   sup,
   sub {
     line-height: 0;

@@ -1190,6 +1190,13 @@ def write_features(
   (side / 'index.json').write_text(
     json.dumps(index, indent=1), encoding='utf-8'
   )
+  # steering units, tag directions and their sparse explanations (steering.py, about 80 s)
+  try:
+    from steering import write_steer
+
+    write_steer(side, content)
+  except Exception as err:  # the explorer falls back to default units without steer.json
+    log(f'steer.json skipped: {err}')
   return dicts
 
 

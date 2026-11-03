@@ -1,6 +1,9 @@
 /**
  * Projections for the 3-d bench of `layout: latent`. Holds one int8 matrix (document-level or
- * chunk-level, 256-d MRL) and projects every row onto three unit directions on request.
+ * chunk-level, 256-d MRL) and projects every row onto three unit directions on request. It also
+ * keeps per-row channels for the features tab's steering, which ranks rows by a weighted sum of
+ * channels (docs/latent-steering.md: renormalising a steered vector never reorders a dot product,
+ * so steering is score fusion and a slider drag is one pass over cached arrays).
  */
 export type LatentWorkerRequest =
   | { type: 'load'; seq: number; url: string; rows: number; dims: number }
@@ -16,12 +19,43 @@ export type LatentWorkerRequest =
   | { type: 'query'; seq: number; url: string; vector: Float32Array; scale: number; k: number }
   /** One row of the matrix as a unit float vector (the features tab steers from it). */
   | { type: 'row'; seq: number; url: string; row: number; scale: number }
+  /**
+   * A per-row channel kept in the worker under `key`: (row · vector + offset) × gain, clamped at
+   * zero when `relu`. The features tab's base cosine, a feature's detector and a tag or axis
+   * projection are all channels; steering fuses them.
+   */
+  | {
+      type: 'channel'
+      seq: number
+      url: string
+      key: string
+      vector: Float32Array
+      offset: number
+      gain: number
+      relu: boolean
+      scale: number
+    }
+  /**
+   * Top-k rows by Σ weight × channel (score fusion). `report` names the channel whose value is
+   * returned per hit (the base cosine, so a bar still reads as similarity); `skip` rows never rank.
+   */
+  | {
+      type: 'fuse'
+      seq: number
+      url: string
+      terms: { key: string; weight: number }[]
+      report: string
+      skip: number[]
+      k: number
+    }
 
 export type LatentWorkerResponse =
   | { type: 'loaded'; seq: number; rows: number }
   | { type: 'projected'; seq: number; coords: Float32Array; extent: number }
   | { type: 'queried'; seq: number; hits: Uint32Array; scores: Float32Array }
   | { type: 'row'; seq: number; vector: Float32Array }
+  | { type: 'channel'; seq: number; key: string }
+  | { type: 'fused'; seq: number; hits: Uint32Array; scores: Float32Array; fused: Float32Array }
   | { type: 'error'; seq: number; message: string }
 
 interface Matrix {
@@ -41,6 +75,83 @@ async function load(url: string, expectRows: number, expectDims: number): Promis
   if (bytes.length !== expectRows * expectDims) throw new Error('vector sidecar has the wrong size')
   matrices.set(url, { matrix: bytes, rows: expectRows, dims: expectDims })
   return expectRows
+}
+
+/** channels per matrix url, least recently used first; each is rows × 4 bytes (228 KB at 57k) */
+const channels = new Map<string, Float32Array>()
+const CHANNELS = 48
+
+function channelKey(url: string, key: string): string {
+  return `${url}\u0000${key}`
+}
+
+function makeChannel(
+  url: string,
+  key: string,
+  vector: Float32Array,
+  offset: number,
+  gain: number,
+  relu: boolean,
+  scale: number,
+): void {
+  const { matrix, rows, dims } = matrixAt(url)
+  const out = new Float32Array(rows)
+  const inv = scale / 127
+  for (let r = 0; r < rows; r++) {
+    const base = r * dims
+    let s = 0
+    for (let d = 0; d < dims; d++) s += matrix[base + d] * vector[d]
+    const v = (s * inv + offset) * gain
+    out[r] = relu && v < 0 ? 0 : v
+  }
+  const id = channelKey(url, key)
+  channels.delete(id)
+  channels.set(id, out)
+  while (channels.size > CHANNELS) channels.delete(channels.keys().next().value!)
+}
+
+function channelAt(url: string, key: string): Float32Array {
+  const id = channelKey(url, key)
+  const c = channels.get(id)
+  if (!c) throw new Error(`channel not computed: ${key}`)
+  channels.delete(id)
+  channels.set(id, c)
+  return c
+}
+
+function fuse(
+  url: string,
+  terms: { key: string; weight: number }[],
+  report: string,
+  skip: number[],
+  k: number,
+): { hits: Uint32Array; scores: Float32Array; fused: Float32Array } {
+  const { rows } = matrixAt(url)
+  const live = terms
+    .filter(t => t.weight !== 0)
+    .map(t => ({ c: channelAt(url, t.key), w: t.weight }))
+  const shown = channelAt(url, report)
+  const total = new Float32Array(rows)
+  for (const { c, w } of live) for (let r = 0; r < rows; r++) total[r] += w * c[r]
+  for (const r of skip) if (r >= 0 && r < rows) total[r] = -Infinity
+  const n = Math.min(k, rows)
+  const hits = new Uint32Array(n)
+  const best = new Float32Array(n).fill(-Infinity)
+  for (let r = 0; r < rows; r++) {
+    const v = total[r]
+    if (v <= best[n - 1]) continue
+    let i = n - 1
+    while (i > 0 && best[i - 1] < v) {
+      best[i] = best[i - 1]
+      hits[i] = hits[i - 1]
+      i--
+    }
+    best[i] = v
+    hits[i] = r
+  }
+  const scores = new Float32Array(n)
+  for (let i = 0; i < n; i++) scores[i] = shown[hits[i]]
+  return { hits, scores, fused: best }
 }
 
 function matrixAt(url: string): Matrix {
@@ -142,6 +253,22 @@ self.onmessage = async (event: MessageEvent<LatentWorkerRequest>) => {
       ;(self as unknown as Worker).postMessage(
         { type: 'row', seq: request.seq, vector } satisfies LatentWorkerResponse,
         [vector.buffer],
+      )
+    } else if (request.type === 'channel') {
+      const { url, key, vector, offset, gain, relu, scale } = request
+      makeChannel(url, key, vector, offset, gain, relu, scale)
+      self.postMessage({ type: 'channel', seq: request.seq, key } satisfies LatentWorkerResponse)
+    } else if (request.type === 'fuse') {
+      const { hits, scores, fused } = fuse(
+        request.url,
+        request.terms,
+        request.report,
+        request.skip,
+        request.k,
+      )
+      ;(self as unknown as Worker).postMessage(
+        { type: 'fused', seq: request.seq, hits, scores, fused } satisfies LatentWorkerResponse,
+        [hits.buffer, scores.buffer, fused.buffer],
       )
     } else if (request.type === 'query') {
       const { hits, scores } = query(request.url, request.vector, request.scale, request.k)

@@ -84,16 +84,31 @@ def squash(text: str) -> str:
   return re.sub(r'\s+', ' ', text).strip()
 
 
+def loads_lax(s: str):
+  """json.loads, then again with TeX backslashes (\\mathbb, \\{) escaped: maths features answer in
+  LaTeX, which is not valid JSON."""
+  for t in (s, re.sub(r'\\(?!["\\/bfnrtu])', r'\\\\', s)):
+    try:
+      return json.loads(t, strict=False)
+    except ValueError:
+      continue
+  return None
+
+
 def first_json(text: str):
   text = re.sub(r'<\|channel\>.*?<channel\|>', '', text, flags=re.S)
-  for pat in (r'\{.*?\}', r'\[.*?\]'):
+  text = re.sub(r'```(?:json)?', '', text)
+  # greedy first: TeX braces inside a description end the lazy match early
+  for pat in (r'\{.*\}', r'\{.*?\}', r'\[.*?\]'):
     m = re.search(pat, text, flags=re.S)
-    if m:
-      try:
-        return json.loads(m.group(0))
-      except ValueError:
-        continue
-  return None
+    if m and (got := loads_lax(m.group(0))) is not None:
+      return got
+  # cut off at max_tokens: keep the label, and as much of the description as arrived
+  m = re.search(r'"label"\s*:\s*"((?:[^"\\]|\\.)+)"', text)
+  if not m:
+    return None
+  d = re.search(r'"description"\s*:\s*"((?:[^"\\]|\\.)*)', text)
+  return {'label': m.group(1), 'description': d.group(1).rstrip('\\') + '…' if d else ''}
 
 
 def resolve(model: str, revision: str | None) -> str:

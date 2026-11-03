@@ -22,6 +22,7 @@ import {
   repairCuts,
 } from './html'
 import { type MdHooks, mdBlocks, mdInline } from './md'
+import { pseudocodeBlock } from './pseudo'
 import {
   LABEL_ROW,
   LABEL_X,
@@ -152,7 +153,8 @@ const ANSI = new RegExp(`${String.fromCharCode(27)}\\[[0-?]*[ -/]*[@-~]`, 'g')
 /**
  * A fence in a note's markdown slice. Garden components render as the page shows them: `quotes`
  * is a quote whose last paragraph is its attribution, `poetry` and `poem` keep their line breaks,
- * `sms` is a message, `tracking` (the triathlon log) one metadata line. Anything else is code, as
+ * `sms` is a message, `tracking` (the triathlon log) one metadata line, `pseudo` an algorithm
+ * the way the note page sets it. Anything else is code, as
  * is every fence outside a markdown slice.
  */
 function fenceView(body: string, info: string | undefined, options: PassageOptions): Element {
@@ -164,6 +166,11 @@ function fenceView(body: string, info: string | undefined, options: PassageOptio
     return h('pre.lat-code.lat-output', { dataOutputName: name || undefined }, [
       h('samp', decodeEntities(body.replace(/\n+$/, ''))),
     ])
+  // the note page's pseudocode block (`.ps-root`); source the library cannot parse stays code
+  if (kind === 'pseudo') {
+    const algorithm = pseudocodeBlock(decodeEntities(body), info)
+    if (algorithm) return algorithm
+  }
   const hooks = mdHooks(options)
   const stanzas = body
     .replace(/^\n+|\s+$/g, '')

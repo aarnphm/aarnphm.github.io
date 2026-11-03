@@ -111,3 +111,54 @@
     }
   }
 }
+
+// the live notes (latent-client/tips.ts): one fixed box on the root, drawn over pane borders and
+// kept inside the viewport; the ::after notes above stand down once it binds
+[data-layout='latent'] :where(#quartz-root) {
+  [data-tips-live] [data-tip]::after {
+    display: none;
+  }
+
+  .lat-tip {
+    position: fixed;
+    z-index: 20;
+    box-sizing: border-box;
+    width: max-content;
+    max-width: min(16rem, calc(100vw - 16px));
+    padding: 0.3rem 0.45rem;
+    border: 1px solid color-mix(in srgb, var(--gray) 30%, transparent);
+    background: var(--light);
+    color: var(--darkgray);
+    font-family: var(--lat-mono);
+    font-size: var(--lat-micro);
+    line-height: 1.4;
+    text-align: left;
+    white-space: normal;
+    text-wrap: pretty;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(-0.14rem) scale(0.98);
+    transform-origin: left top;
+    transition:
+      opacity 100ms ease 70ms,
+      transform 100ms cubic-bezier(0.23, 1, 0.32, 1) 70ms;
+
+    &[data-up] {
+      transform: translateY(0.14rem) scale(0.98);
+      transform-origin: left bottom;
+    }
+
+    &[data-open] {
+      opacity: 1;
+      transform: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transform: none;
+
+      &[data-up] {
+        transform: none;
+      }
+    }
+  }
+}
