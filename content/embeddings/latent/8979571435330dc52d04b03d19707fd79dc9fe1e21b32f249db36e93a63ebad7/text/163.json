@@ -1,0 +1,1 @@
+{"d":163,"id":"thoughts/university/twenty-three-twenty-four/sfwr-4hc3/Interactive-cycle","store":"note","title":"Interactive cycle","date":"2023-10-10","prec":"day","total":1,"part":48,"chunks":[{"r":6034,"c":0,"text":"\n\nflowchart TD\n1[Computer] --&gt; 2[Interaction] --&gt; 3[User]\n\n4[Input] --&gt; 5[Interface] --&gt; 6[Output]\n\n1 --&gt; 6 --&gt; 3 --&gt; 4 --&gt; 1\n"}]}

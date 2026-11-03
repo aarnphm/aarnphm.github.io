@@ -1,0 +1,1 @@
+{"d":2299,"id":"projects/llmfile","store":"base","title":"llmfile","date":null,"prec":null,"total":2,"part":48,"chunks":[{"r":589,"c":0,"text":""},{"r":590,"c":0,"text":"dockerfile for llm workloads\n\ninspired by ollama’s modelfile\na BuildKit frontend for LLM workloads that produces OCI-compliant images\nideally staying away from docker as a product.\n"}]}

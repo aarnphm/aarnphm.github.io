@@ -1,0 +1,1 @@
+{"d":391,"id":"thoughts/university/twenty-four-twenty-five/sfwr-3db3/tut/t1","store":"note","title":"/squeel/","date":"2024-09-13","prec":"day","total":1,"part":48,"chunks":[{"r":5306,"c":0,"text":"TA: Jongjun Park\n\ndb2\n \nconnect to se3db3\n\nscp /path/to/.ddl macid@se3db3.cas.mcmaster.ca:/home/macid/workspace/.dll\n \n# on server\ndb2 -tnf .ddl"}]}
