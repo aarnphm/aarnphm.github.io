@@ -184,7 +184,7 @@ export function mountActivityViews(s: AnalyticsSession) {
       'aria-hidden': 'true',
       'data-site-cursor-icon': '',
     })
-    copyIcon.appendChild(svg('use', { href: '#github-copy' }))
+    copyIcon.appendChild(svg('use', { href: '#github-copy', width: '16', height: '16' }))
     const checkIcon = svg('svg', {
       class: 'check-icon',
       width: '16',
@@ -194,7 +194,7 @@ export function mountActivityViews(s: AnalyticsSession) {
       'aria-hidden': 'true',
       'data-site-cursor-icon': '',
     })
-    checkIcon.appendChild(svg('use', { href: '#github-check' }))
+    checkIcon.appendChild(svg('use', { href: '#github-check', width: '16', height: '16' }))
     copy.append(copyIcon, checkIcon)
     // The copy sits in the bar beside the compare toggle, which turns into the back arrow.
     if (s.compareToggle) s.compareToggle.before(copy)

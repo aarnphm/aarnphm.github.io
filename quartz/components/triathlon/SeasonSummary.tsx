@@ -14,7 +14,10 @@ interface SummaryTotal {
   count: number
   distanceKm: number | null
   movingTimeS: number
+  extra?: boolean
 }
+
+const MORE_ARROW_ICON: readonly string[] = ['M5 12h14', 'M13 6l6 6-6 6']
 
 export const SeasonSummary = ({ totals, strengthTotal, activities }: SeasonSummaryProps) => {
   const summaries: SummaryTotal[] = SPORT_ORDER.map(sport => ({
@@ -25,7 +28,7 @@ export const SeasonSummary = ({ totals, strengthTotal, activities }: SeasonSumma
     ...totals.find(total => total.sport === sport),
   }))
   if (strengthTotal.count > 0)
-    summaries.push({ sport: 'strength', distanceKm: null, ...strengthTotal })
+    summaries.push({ sport: 'strength', distanceKm: null, extra: true, ...strengthTotal })
 
   for (const sport of ['walk', 'hike', 'sauna', 'treatment'] satisfies ActivityKind[]) {
     const matching = activities.filter(activity => activity.sport === sport)
@@ -38,15 +41,18 @@ export const SeasonSummary = ({ totals, strengthTotal, activities }: SeasonSumma
           ? matching.reduce((sum, activity) => sum + activity.distanceKm, 0)
           : null,
       movingTimeS: matching.reduce((sum, activity) => sum + activity.movingTimeS, 0),
+      extra: true,
     })
   }
 
+  const hasExtras = summaries.some(summary => summary.extra)
+
   return (
-    <div class="tri-foot">
-      {summaries.map(({ sport, count, distanceKm, movingTimeS }) => {
+    <div class="tri-foot" data-expanded={hasExtras ? 'false' : undefined}>
+      {summaries.map(({ sport, count, distanceKm, movingTimeS, extra }) => {
         const label = sport === 'treatment' ? 'physiotherapy' : sport
         return (
-          <span class="tri-leg" key={sport}>
+          <span class="tri-leg" key={sport} data-tri-extra={extra ? 'true' : undefined}>
             <svg class="tri-ico tri-leg-ico" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               {SPORT_ICON[sport].map(d => (
                 <path d={d} />
@@ -77,6 +83,26 @@ export const SeasonSummary = ({ totals, strengthTotal, activities }: SeasonSumma
           </span>
         )
       })}
+      {hasExtras && (
+        <button
+          class="tri-foot-more"
+          type="button"
+          aria-expanded="false"
+          aria-label="more activities"
+          data-i18n-aria-label="more activities"
+        >
+          <svg
+            class="tri-ico tri-leg-ico tri-foot-more-ico"
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden="true"
+          >
+            {MORE_ARROW_ICON.map(d => (
+              <path d={d} />
+            ))}
+          </svg>
+        </button>
+      )}
     </div>
   )
 }

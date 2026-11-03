@@ -460,6 +460,7 @@
 }
 
 .tri-foot {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -467,6 +468,15 @@
   font-family: var(--codeFont);
   font-size: 0.72rem;
   color: var(--darkgray);
+}
+
+.tri-foot[data-expanded='false']:not([data-collapsing='true']) .tri-leg[data-tri-extra='true'] {
+  display: none;
+}
+
+.tri-foot[data-collapsing='true'] .tri-leg[data-tri-extra='true'] {
+  position: absolute;
+  pointer-events: none;
 }
 
 .tri-leg {
@@ -483,6 +493,72 @@
 
   path {
     stroke: var(--darkgray);
+  }
+}
+
+.tri-foot-more {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin-block: -0.4rem;
+  margin-inline-start: -0.5rem;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: var(--radius-none);
+  color: var(--darkgray);
+  cursor: pointer;
+
+  .tri-foot-more-ico {
+    transition:
+      transform 220ms cubic-bezier(0.23, 1, 0.32, 1),
+      opacity 120ms ease;
+
+    path {
+      stroke: currentColor;
+      transition: stroke 120ms ease;
+    }
+  }
+
+  &[aria-expanded='true'] .tri-foot-more-ico {
+    transform: rotate(180deg);
+  }
+
+  &:focus-visible {
+    color: var(--dark);
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+
+    .tri-foot-more-ico {
+      opacity: 1;
+    }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: var(--dark);
+
+      .tri-foot-more-ico {
+        opacity: 1;
+      }
+    }
+  }
+
+  @media (pointer: coarse) {
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -10px;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tri-foot-more .tri-foot-more-ico {
+    transition: none;
   }
 }
 

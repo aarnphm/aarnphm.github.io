@@ -6,8 +6,8 @@
   --tri-be-control-height: calc(var(--tri-pred-control-height, 1.55rem) + 4px);
   --tri-be-focus: color-mix(in srgb, var(--tri-accent) 58%, var(--dark));
   // arena.scss line and surface; its tokens are scoped to the arena pages.
-  --tri-be-line: color-mix(in srgb, var(--gray) 55%, transparent);
-  --tri-be-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  --tri-be-line: var(--ledger-line);
+  --tri-be-surface: var(--ledger-surface);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;

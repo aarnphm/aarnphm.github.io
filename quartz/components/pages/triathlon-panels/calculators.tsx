@@ -22,7 +22,7 @@ const CalcCopyButton = () => (
       aria-hidden="true"
       data-site-cursor-icon
     >
-      <use href="#github-copy" />
+      <use href="#github-copy" width="16" height="16" />
     </svg>
     <svg
       class="check-icon"
@@ -33,7 +33,7 @@ const CalcCopyButton = () => (
       aria-hidden="true"
       data-site-cursor-icon
     >
-      <use href="#github-check" />
+      <use href="#github-check" width="16" height="16" />
     </svg>
   </button>
 )

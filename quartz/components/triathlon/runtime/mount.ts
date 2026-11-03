@@ -20,7 +20,12 @@ import { setupCommandPalette } from '../shell/command-palette'
 import { setupDropdown } from '../shell/dropdown'
 import { setupFeed } from '../shell/feed'
 import { setupGloss } from '../shell/glossary'
-import { setupDistanceUnits, setupI18n, setupPaceUnit } from '../shell/presentation'
+import {
+  setupDistanceUnits,
+  setupI18n,
+  setupPaceUnit,
+  setupSeasonSummary,
+} from '../shell/presentation'
 import { setupShortcuts } from '../shell/shortcuts'
 import { setup } from '../shell/timeline'
 import { setupCalc } from '../tools/calculator-controller'
@@ -63,6 +68,7 @@ export const mountTriathlon = (signal: AbortSignal): MountedTriathlon => {
   if (root) {
     addCleanup(setupI18n(root, context))
     addCleanup(setupDistanceUnits(root, context))
+    addCleanup(setupSeasonSummary(root, context))
     addCleanup(setupTirePressure(root))
     addCleanup(setupCommandPalette(root, context))
     addCleanup(setup(root, context))
