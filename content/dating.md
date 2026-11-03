@@ -9,7 +9,7 @@ description: or i might be that fish in the sea, for you.
 dropcap: goudy
 id: dating
 layout: newspaper
-modified: 2026-11-02 14:15:18 GMT-05:00
+modified: 2026-11-02 20:48:32 GMT-05:00
 readonly: true
 separator: grapevine
 slides: true
@@ -158,7 +158,7 @@ I have the attention-span of a three-year-old, but an old soul (some said). So I
 
 ### triathlon
 
-- <div data-triathlon-latest />
+- <div data-triathlon-latest data-triathlon-activities="10" />
 - I'm training for IRONMAN Lanzarote 2027. Feel free to check out progress in [daily stream](https://stream.aarnphm.xyz) or the [feed](https://t.aarnphm.xyz/feed)/[calendar](https://t.aarnphm.xyz/calendar)
 - More/less an excuse for me to travel. Here is a random picture of me on a backpacking trip with my colleague at Yosemite Fall
 
