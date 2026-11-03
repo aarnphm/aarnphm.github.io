@@ -5,6 +5,7 @@ import { once } from 'node:events'
 import { stat } from 'node:fs/promises'
 import path from 'path'
 import { styleText } from 'util'
+import { devFeatureEnabled, isCourseContentPath, omitDisabledCourseContent } from '../dev-features'
 import { AGENT_SKILLS_SOURCE_DIRECTORY } from '../plugins/emitters/agent-skills'
 import { removeWritten } from '../plugins/emitters/helpers'
 import { ProcessedContent } from '../plugins/vfile'
@@ -161,6 +162,7 @@ async function createIgnoredFilter(ctx: BuildCtx): Promise<GlobbyFilterFunction>
       path.isAbsolute(rawPath) ? path.relative(argv.directory, rawPath) : rawPath,
     )
     if (pathStr.startsWith('.git/')) return true
+    if (!devFeatureEnabled(argv, 'courses') && isCourseContentPath(pathStr)) return true
     if (isTestPath(pathStr)) return true
     if (gitIgnoredMatcher(pathStr)) return true
     for (const pattern of cfg.configuration.ignorePatterns) {
@@ -305,7 +307,10 @@ async function rebuild(clientRefresh: () => void, buildData: BuildData) {
       [...pending.values()].every(type => type === 'change')
     const allFiles = fileSetIsStable
       ? ctx.allFiles
-      : await glob('**', argv.directory, ctx.cfg.configuration.ignorePatterns)
+      : omitDisabledCourseContent(
+          argv,
+          await glob('**', argv.directory, ctx.cfg.configuration.ignorePatterns),
+        )
     const { markdown: markdownPaths, files: filePaths } = derivePaths(argv, allFiles)
     console.log(
       `Found ${markdownPaths.length} input files from \`${argv.directory}\` in ${perf.timeSince('glob')}`,

@@ -523,11 +523,14 @@ export async function handleBuild(argv) {
   const build = async (clientRefresh, takePaths = () => []) => {
     const release = await buildMutex.acquire()
     try {
-      const changedPaths = takePaths()
-
       const buildReason = activeBuild ? 'source' : 'initial'
       const bundle = await rebuildQuartzBundle()
-      if (!bundle) return false
+      // Take paths after the bundle rebuild so edits during that rebuild join this reset.
+      if (!bundle) {
+        takePaths()
+        return false
+      }
+      const changedPaths = takePaths()
 
       const deletedSource = (
         await Promise.all(
@@ -603,7 +606,10 @@ export async function handleBuild(argv) {
   let initialBuild = () => build(clientRefresh)
   if (argv.watch) {
     const sourceRebuildQueue = createSourceRebuildQueue({
-      build: takePaths => build(clientRefresh, takePaths),
+      build: takePaths =>
+        build(() => {
+          if (sourceRebuildQueue.pending === 0) clientRefresh()
+        }, takePaths),
       onError: error => console.error(`Source rebuild failed: ${formatErrorReason(error)}`),
       onReceipt: receipt => console.log(`__QUARTZ_SOURCE_QUEUE__${JSON.stringify(receipt)}`),
     })

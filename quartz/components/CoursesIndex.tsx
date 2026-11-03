@@ -1,3 +1,4 @@
+import { gateCourseComponent } from '../dev-features'
 import {
   QuartzComponent,
   QuartzComponentConstructor,
@@ -113,5 +114,5 @@ export default (() => {
   }
   CoursesIndex.css = style
   CoursesIndex.afterDOMLoaded = script
-  return CoursesIndex
+  return gateCourseComponent(CoursesIndex)
 }) satisfies QuartzComponentConstructor

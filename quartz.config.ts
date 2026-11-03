@@ -1,9 +1,9 @@
 import { GlobalConfiguration, QuartzConfig, customMacros, katexOptions } from './quartz/cfg'
 import * as Component from './quartz/components'
+import { devFeatures } from './quartz/dev-features'
 import * as Plugin from './quartz/plugins'
 
-const arena = false
-const slides = false
+const { arena, slides, courses } = devFeatures
 
 const configuration: GlobalConfiguration = {
   pageTitle: "Aaron's notes",
@@ -165,7 +165,7 @@ const config: QuartzConfig = {
           ],
         }),
         Plugin.Sidenotes(),
-        Plugin.CourseStatements(),
+        { plugin: Plugin.CourseStatements(), dev: courses },
         Plugin.Speech(),
         Plugin.TableOfContents({ maxDepth: 5 }),
         Plugin.LLM(),
@@ -186,7 +186,11 @@ const config: QuartzConfig = {
           scripts: [
             { name: 'triathlon', entry: 'components/triathlon/runtime/mount.ts' },
             { name: 'pdf-reader', entry: 'components/pdf-reader/app.tsx' },
-            { name: 'course-workspace', entry: 'components/course-workspace/app.tsx' },
+            {
+              name: 'course-workspace',
+              entry: 'components/course-workspace/app.tsx',
+              devFeature: 'courses',
+            },
             { name: 'fr-notes', entry: 'components/scripts/fr-notes.client.ts' },
             { name: 'course-calendar', entry: 'components/course-calendar/app.tsx' },
             { name: 'base-query', entry: 'components/scripts/base-query.ts' },
@@ -291,7 +295,16 @@ const config: QuartzConfig = {
           }),
         },
         Plugin.FlashcardsPage(),
-        Plugin.CourseReviewPage(),
+        {
+          plugin: Plugin.CourseReviewPage(),
+          dev: courses,
+          fallback: Plugin.DisabledPage({
+            label: 'courses',
+            source: () => true,
+            routes: ['courses/index', 'courses/review'],
+            setting: 'courses',
+          }),
+        },
         Plugin.FrReviewPage(),
         Plugin.PageRankPage(),
         {

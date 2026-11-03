@@ -1,3 +1,5 @@
+import { argvFromProcess, devFeatureEnabled } from '../../../dev-features'
+
 export type SourceRebuildScope =
   | { kind: 'full' }
   | { kind: 'partial'; staticFiles: boolean; styles: boolean; scripts: boolean }
@@ -65,6 +67,12 @@ export function sourceRebuildScope(
     return { kind: 'emitters', emitters: [...emitters].sort() }
   }
   // The course rebuild regenerates the client bundles, but not the static files.
-  if (courses) return scope.staticFiles ? { kind: 'full' } : { kind: 'courses' }
+  if (courses) {
+    if (scope.staticFiles) return { kind: 'full' }
+    if (!devFeatureEnabled(argvFromProcess(), 'courses')) {
+      return { kind: 'partial', staticFiles: false, styles: false, scripts: false }
+    }
+    return { kind: 'courses' }
+  }
   return scope
 }

@@ -1,5 +1,6 @@
 import type { Element } from 'hast'
 import { EXIT, visit } from 'unist-util-visit'
+import { coursesBundleEnabled } from '../../dev-features'
 import {
   QuartzComponent,
   QuartzComponentConstructor,
@@ -21,7 +22,8 @@ import frMarginsStyle from '../styles/fr-margins.scss'
 
 export default (() => {
   const SeeAlso = SeeAlsoComponent()
-  const Workspace = CourseUnitWorkspace()
+  const coursesOn = coursesBundleEnabled()
+  const Workspace = coursesOn ? CourseUnitWorkspace() : undefined
 
   const Content: QuartzComponent = (props: QuartzComponentProps) => {
     const { fileData, tree } = props
@@ -39,7 +41,8 @@ export default (() => {
     const classes: string[] = fileData.frontmatter?.cssclasses ?? []
     const unitKind = unitOf(fileData.slug ?? '')?.kind
     // authored and converted lecture notes and problem sets open the workspace
-    const isLecture = unitKind === 'lectures' || unitKind === 'notes' || unitKind === 'psets'
+    const isLecture =
+      coursesOn && (unitKind === 'lectures' || unitKind === 'notes' || unitKind === 'psets')
     const classString = [
       'popover-hint',
       'main-col',
@@ -58,7 +61,7 @@ export default (() => {
     )
     return (
       <>
-        {isLecture ? (
+        {isLecture && Workspace ? (
           <div class="course-reading-split">
             {article}
             <Workspace {...props} />
@@ -74,10 +77,13 @@ export default (() => {
   Content.afterDOMLoaded = concatenateResources(
     frMarginsScript,
     unbadgeScript,
-    Workspace.afterDOMLoaded,
+    Workspace?.afterDOMLoaded,
   )
-  Content.css = concatenateResources(SeeAlso.css, Workspace.css, frMarginsStyle, apparatusStyle)
-  Content.sourceNames = inheritComponentSourceNames('Content', [SeeAlso, Workspace])
+  Content.css = concatenateResources(SeeAlso.css, Workspace?.css, frMarginsStyle, apparatusStyle)
+  Content.sourceNames = inheritComponentSourceNames(
+    'Content',
+    Workspace ? [SeeAlso, Workspace] : [SeeAlso],
+  )
 
   return Content
 }) satisfies QuartzComponentConstructor

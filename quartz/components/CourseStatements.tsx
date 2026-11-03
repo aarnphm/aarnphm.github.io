@@ -1,3 +1,4 @@
+import { gateCourseComponent } from '../dev-features'
 import { QuartzPluginData } from '../plugins/vfile'
 import {
   QuartzComponent,
@@ -221,5 +222,5 @@ export default (() => {
     )
   }
   CourseStatements.css = concatenateResources(style, studyStyle)
-  return CourseStatements
+  return gateCourseComponent(CourseStatements)
 }) satisfies QuartzComponentConstructor

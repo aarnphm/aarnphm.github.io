@@ -1,12 +1,16 @@
 import { setTimeout as delay } from 'node:timers/promises'
 
-/** Own source paths until the build takes them under its mutex; retain failed batches for repair. */
+/**
+ * Own source paths until one rebuild takes the whole set. Paths that arrive during a rebuild stay
+ * in the set; the next rebuild waits until that set goes quiet, measured from when the queue is
+ * free to build, so a burst cannot start one rebuild per path.
+ */
 export function createSourceRebuildQueue({
   build,
   onError,
   onReceipt = () => {},
-  quietMs = 100,
-  maxWaitMs = 500,
+  quietMs = 1000,
+  maxWaitMs = 5000,
 }) {
   const pending = new Set()
   const failed = new Set()
@@ -17,8 +21,11 @@ export function createSourceRebuildQueue({
   let sequence = 0
 
   async function settle() {
+    const openedAt = performance.now()
     while (pending.size > 0) {
-      const remaining = Math.min(lastAt + quietMs, firstAt + maxWaitMs) - performance.now()
+      const now = performance.now()
+      const readyAt = Math.min(Math.max(lastAt, openedAt) + quietMs, openedAt + maxWaitMs)
+      const remaining = readyAt - now
       if (remaining <= 0) return
       await delay(remaining)
     }
@@ -83,6 +90,9 @@ export function createSourceRebuildQueue({
   }
 
   return {
+    get pending() {
+      return pending.size
+    },
     add(fp) {
       const now = performance.now()
       if (pending.size === 0) firstAt = now

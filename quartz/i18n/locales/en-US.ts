@@ -6,7 +6,7 @@ export default {
     disabledPlugin: {
       message: 'This plugin is disabled during development.',
       enablePlugin: 'Set dev: true for this plugin in quartz.config.ts to enable it.',
-      enableSetting: ({ setting }) => `Set ${setting} to true in quartz.config.ts to enable it.`,
+      enableSetting: ({ setting }) => `Set ${setting} to true in quartz/dev-features.ts to enable it.`,
       returnHome: 'Return home',
     },
     callout: {

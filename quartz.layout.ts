@@ -1,7 +1,10 @@
 import { PageLayout, SharedLayout } from './quartz/cfg'
 import * as Component from './quartz/components'
+import { coursesBundleEnabled } from './quartz/dev-features'
 import { usesApparatus } from './quartz/util/apparatus'
 import { unitOf } from './quartz/util/course'
+
+const coursesOn = coursesBundleEnabled()
 
 // /fr and the course pages carry their own head; the description and meta line stay off them
 const hidesPageMeta = ({ fileData }: { fileData: { slug?: string } }) => {
@@ -31,7 +34,7 @@ export const sharedPageComponents: SharedLayout = {
     Component.CodeCopy(),
   ],
   afterBody: [
-    Component.CourseUnitFoot(),
+    ...(coursesOn ? [Component.CourseUnitFoot()] : []),
     Component.FrUnitFoot(),
     Component.InquiryMap(),
     Component.License(),
@@ -54,7 +57,7 @@ export const defaultContentPageLayout: PageLayout = {
   beforeBody: [
     Component.NotebookRuntimeLoader(),
     // the course crumb is the trail on unit pages (the site breadcrumbs stay off them)
-    Component.CourseUnitBar(),
+    ...(coursesOn ? [Component.CourseUnitBar()] : []),
     Component.FrUnitBar(),
     // the university course trail on notes and notebooks inside a course folder
     Component.UniversityCrumbBar(),
@@ -74,7 +77,9 @@ export const defaultContentPageLayout: PageLayout = {
           // OCW notes add a `your notes` cell under the tags
           components: [
             { Component: Component.TagList(), align: 'start' },
-            { Component: Component.CourseUnitNotes(), align: 'start' },
+            ...(coursesOn
+              ? [{ Component: Component.CourseUnitNotes(), align: 'start' as const }]
+              : []),
           ],
           direction: 'column',
           gap: '0.5rem',
@@ -94,7 +99,7 @@ export const defaultContentPageLayout: PageLayout = {
         )
       },
     }),
-    Component.CoursePsetDesk(),
+    ...(coursesOn ? [Component.CoursePsetDesk()] : []),
   ],
   sidebar: [Component.DesktopOnly(Component.TableOfContents()), Component.Reader()],
 }

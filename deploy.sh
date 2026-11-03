@@ -40,6 +40,11 @@ deploy() {
 
   export GITHUB_SHA="$(git rev-parse HEAD)"
 
+  # before the build: training and labelling rewrite content/embeddings/latent/<hash>/feat, which
+  # the build copies into public/. A sidecar already archived trains nothing, labels nothing new,
+  # and publishes nothing, so an unchanged deploy spends a few seconds here.
+  run_stage latent-model pnpm model:latent || echo "latent model refresh failed; deploying site without model update"
+
   EMAIL_EMITTER_ENABLED=1 NODE_ENV=production run_stage quartz-build pnpm exec quartz/bootstrap-cli.mjs build --concurrency 16 --bundleInfo --verbose
   run_stage output-assets node quartz/scripts/validate-deployment-assets.mjs public
 
@@ -54,15 +59,15 @@ deploy() {
 
 if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
   case "${1:-}" in
-    "" | deploy)
-      if [[ "${GARDEN_DEPLOY_LOG_ACTIVE:-}" != 1 ]]; then
-        exec node quartz/scripts/deploy-log.mjs -- bash "$0" "$@"
-      fi
-      deploy
-      ;;
-    *)
-      echo "usage: $0 [deploy]" >&2
-      exit 2
-      ;;
+  "" | deploy)
+    if [[ "${GARDEN_DEPLOY_LOG_ACTIVE:-}" != 1 ]]; then
+      exec node quartz/scripts/deploy-log.mjs -- bash "$0" "$@"
+    fi
+    deploy
+    ;;
+  *)
+    echo "usage: $0 [deploy]" >&2
+    exit 2
+    ;;
   esac
 fi

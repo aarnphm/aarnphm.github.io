@@ -6,7 +6,7 @@ export default {
     disabledPlugin: {
       message: 'Plugin này bị tắt trong quá trình phát triển.',
       enablePlugin: 'Đặt dev: true cho plugin này trong quartz.config.ts để bật.',
-      enableSetting: ({ setting }) => `Đặt ${setting} thành true trong quartz.config.ts để bật.`,
+      enableSetting: ({ setting }) => `Đặt ${setting} thành true trong quartz/dev-features.ts để bật.`,
       returnHome: 'Về trang chủ',
     },
     callout: {

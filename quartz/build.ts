@@ -19,6 +19,7 @@ import {
   type BuildScope,
 } from './build/emission'
 import { startWatching, type WatchRuntime } from './build/watch'
+import { omitDisabledCourseContent } from './dev-features'
 import { ProcessedContent } from './plugins/vfile'
 import { emitPartialEmitter } from './processors/emit'
 import { filterContentResult } from './processors/filter'
@@ -112,7 +113,13 @@ export async function buildQuartz(
     if (argv.watch) watching = await startWatching(ctx, mut, clientRefresh, initialContent)
     logBuildStage(argv, ctx.buildId, 'build.watchers', perf.elapsedMs('watchers'))
     perf.addEvent('glob')
-    const allFiles = await glob('**', argv.directory, config.configuration.ignorePatterns)
+    const discovered = await glob('**', argv.directory, config.configuration.ignorePatterns)
+    const allFiles = omitDisabledCourseContent(argv, discovered)
+    if (reason === 'initial' && allFiles.length !== discovered.length) {
+      console.log(
+        `Courses are off in dev (${discovered.length - allFiles.length} files skipped). Set courses to true in quartz/dev-features.ts, or pass --force.`,
+      )
+    }
     const markdownPaths = allFiles.filter(isMarkdownPath).sort()
     console.log(
       `Found ${markdownPaths.length} input files from \`${argv.directory}\` in ${perf.timeSince('glob')}`,
@@ -239,9 +246,25 @@ export async function buildSourceResources(
   const perf = new PerfTimer()
   const release = await mut.acquire()
   try {
+    if (!scope.staticFiles && !scope.styles && !scope.scripts) {
+      emitQuartzDevEvent({ type: 'build:start', epoch: ctx.buildId, reason: 'source' })
+      emitQuartzDevEvent({
+        type: 'build:ready',
+        epoch: ctx.buildId,
+        files: 0,
+        elapsedMs: perf.elapsedMs(),
+      })
+      return true
+    }
     globalThis.__quartzSourceEmissionSnapshot = undefined
     emitQuartzDevEvent({ type: 'build:start', epoch: ctx.buildId, reason: 'source' })
-    syncCtxFiles(ctx, await glob('**', argv.directory, cfg.configuration.ignorePatterns))
+    syncCtxFiles(
+      ctx,
+      omitDisabledCourseContent(
+        argv,
+        await glob('**', argv.directory, cfg.configuration.ignorePatterns),
+      ),
+    )
     const persistentInputs = await captureBuildInputs(ctx)
     const checkpoint = await resourceBuildCheckpoint(ctx, persistentInputs)
     const changeEvents: ChangeEvent[] = await Promise.all(

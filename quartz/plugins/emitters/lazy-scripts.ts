@@ -1,4 +1,5 @@
 import { build } from 'esbuild'
+import { devFeatureEnabled, type DevFeature } from '../../dev-features'
 import type { QuartzEmitterPlugin } from '../../types/plugin'
 import { FullSlug, joinSegments, QUARTZ } from '../../util/path'
 import { staticScriptsDir } from './component-resources/asset-paths'
@@ -10,6 +11,7 @@ export type LazyScript = {
   name: string
   /** entry point, relative to the `quartz` folder */
   entry: string
+  devFeature?: DevFeature
 }
 
 export type Options = { scripts: LazyScript[] }
@@ -24,8 +26,11 @@ export const LazyScripts: QuartzEmitterPlugin<Options> = opts => {
   return {
     name: 'LazyScripts',
     async *emit(ctx) {
+      const active = scripts.filter(
+        script => !script.devFeature || devFeatureEnabled(ctx.argv, script.devFeature),
+      )
       yield* await Promise.all(
-        scripts.map(async ({ name, entry }) => {
+        active.map(async ({ name, entry }) => {
           const result = await build({
             entryPoints: [joinSegments(QUARTZ, entry)],
             bundle: true,

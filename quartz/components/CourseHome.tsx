@@ -1,4 +1,5 @@
 import { JSX } from 'preact'
+import { gateCourseComponent } from '../dev-features'
 import {
   QuartzComponent,
   QuartzComponentConstructor,
@@ -350,5 +351,5 @@ export default (() => {
   }
   CourseHome.css = concatenateResources(style, studyStyle)
   CourseHome.afterDOMLoaded = script
-  return CourseHome
+  return gateCourseComponent(CourseHome)
 }) satisfies QuartzComponentConstructor

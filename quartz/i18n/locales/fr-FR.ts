@@ -7,7 +7,7 @@ export default {
       message: 'Ce plugin est désactivé en développement.',
       enablePlugin: 'Réglez dev: true pour ce plugin dans quartz.config.ts pour l’activer.',
       enableSetting: ({ setting }) =>
-        `Réglez ${setting} sur true dans quartz.config.ts pour l’activer.`,
+        `Réglez ${setting} sur true dans quartz/dev-features.ts pour l’activer.`,
       returnHome: 'Retour à l’accueil',
     },
     callout: {
