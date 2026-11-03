@@ -115,9 +115,11 @@ function initialNode(
   )
 }
 
-function specimenLabel(choice: DropcapChoice): string {
-  if (choice.face !== 'procedural') return choice.face
-  return choice.variant ? `procedural ${choice.variant}` : 'procedural'
+// A procedural specimen is captioned by its seed alone, in italics: the one the fence names,
+// or the preset the page seed lands on.
+function specimenLabel(choice: DropcapChoice, pageSeed: string): ElementContent {
+  if (choice.face !== 'procedural') return { type: 'text', value: choice.face }
+  return h('i', choice.variant ?? resolvePreset(pageSeed).id)
 }
 
 export function dropcapFences(tree: MdastRoot, pageSeed: string) {
@@ -128,7 +130,7 @@ export function dropcapFences(tree: MdastRoot, pageSeed: string) {
     const choice = choiceFromMeta(node.meta ?? '')
     const specimen = h('figure.dropcap-specimen', [
       initialNode(letter, choice, pageSeed, 'section'),
-      h('figcaption', specimenLabel(choice)),
+      h('figcaption', [specimenLabel(choice, pageSeed)]),
     ])
     parent.children[index] = { type: 'html', value: toHtml(specimen) }
     return SKIP
