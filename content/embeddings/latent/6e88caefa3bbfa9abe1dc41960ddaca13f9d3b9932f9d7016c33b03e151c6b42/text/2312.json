@@ -1,1 +1,0 @@
-{"d":2312,"id":"projects/rustkv","store":"base","title":"rust key-value store","date":null,"prec":null,"total":2,"part":48,"chunks":[{"r":601,"c":0,"text":""},{"r":602,"c":0,"text":"A [rust](/thoughts/Rust) key-value store\n\n- think mongodb with redis-like capabilities for in-memory operations and fast access patterns.","m":1}]}

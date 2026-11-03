@@ -1,1 +1,0 @@
-{"d":515,"id":"thoughts/annealing","store":"note","title":"annealing","date":"2024-12-23","prec":"day","total":1,"part":48,"chunks":[{"r":4366,"c":0,"text":"The idea is to approximate global optimum for a given function. It is usually used once the search space is discrete (think of traveling salesman problem.)","m":1}]}

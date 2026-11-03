@@ -1,0 +1,1 @@
+{"d":428,"id":"thoughts/university/twenty-four-twenty-five/sfwr-4aa4/w2","store":"note","title":"Fork and threads","date":"2024-09-13","prec":"day","total":1,"part":48,"chunks":[{"r":5417,"c":0,"text":"Q1: T\nQ2: T\nQ3: F\nQ4: User\nQ5: Save memory space\nQ6: Yes, but the modification can be only seen in child process, and value in parents process cannot be changed.","m":1}]}
