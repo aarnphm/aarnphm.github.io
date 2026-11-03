@@ -61,6 +61,7 @@ class PdfPipeline(Pipeline):
           with pymupdf.open(source.source) as pdf:
             page = pdf[source.number - 1]
             image = render_page(page, self.page_loader.pdf_dpi)
+            image.info['pdf_page'] = source
             loaded[index] = LoadedPage(
               source, image, page.get_label(), bool(page.get_text().strip())
             )

@@ -17,6 +17,7 @@ from streaming import PdfPage, PdfPipeline
 from recovery import (
   native_binary_text,
   native_region_text,
+  reviewed_region_text,
   reviewed_scan_artifact,
   vector_aside,
 )
@@ -58,9 +59,24 @@ class CheckedLayout(PPDocLayoutDetector):
     use_polygon: bool = False,
   ) -> tuple[list[list[dict]], dict]:
     try:
-      return super().process(
+      results, visualizations = super().process(
         images, save_visualization, global_start_idx, use_polygon
       )
+      for image, regions in zip(images, results, strict=True):
+        source = image.info.get('pdf_page')
+        if not isinstance(source, PdfPage):
+          continue
+        for region in regions:
+          if region.get('label') not in self.label_task_mapping['text']:
+            continue
+          reviewed = reviewed_region_text(
+            source.source, source.number, region['bbox_2d'], None
+          )
+          if reviewed is not None and reviewed.get('review_recognition') == (
+            'approved-transcription-before-ocr'
+          ):
+            region['task_type'] = 'skip'
+      return results, visualizations
     except Exception as error:
       # The SDK converts a failed layout batch into empty pages. Preserve the
       # failure so a scanned page cannot be committed as a successful blank.
@@ -106,6 +122,28 @@ class OcrClient:
         number, label = loaded.source.number, loaded.label
         recovered = False
         for region in raw[0]:
+          if region.get('label') in self.layout.label_task_mapping['text']:
+            reviewed = reviewed_region_text(
+              loaded.source.source,
+              number,
+              region['bbox_2d'],
+              region.get('content'),
+            )
+            if reviewed is not None:
+              region['original_content'] = region.get('content')
+              region.update(reviewed)
+              recovered = True
+              print(
+                json.dumps({
+                  'event': 'page-region-recovery',
+                  'source': str(loaded.source.source),
+                  'page': number,
+                  'region': region['index'],
+                  'method': reviewed['recovery'],
+                }),
+                flush=True,
+              )
+              continue
           if region.get('content') in (None, ''):
             native = None
             method = 'native-pdf-text-v1'
