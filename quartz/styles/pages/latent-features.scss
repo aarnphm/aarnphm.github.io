@@ -22,6 +22,11 @@
       gap: 0.5rem;
       margin: 0 0 0.3rem;
       padding: 0;
+
+      // document-defaults.scss pushes a header's second-to-last child right
+      & > :nth-last-child(2) {
+        margin-left: 0;
+      }
     }
   }
 
@@ -114,7 +119,12 @@
     display: flex;
     gap: 2px;
 
+    // the glyph sits in the middle of its box: the garden's button reset aligns text to the
+    // start, which pushed + and − against the left edge
     button {
+      display: inline-grid;
+      place-items: center;
+      text-align: center;
       font-family: var(--lat-mono);
       font-size: var(--lat-micro);
       line-height: 1.2;
@@ -199,6 +209,87 @@
     }
   }
 
+  // level 0 features carry a dot, level 1 a ring: the Matryoshka depth at a glance
+  .lat-feat-meta[data-level='0']::before,
+  .lat-feat-meta[data-level='1']::before {
+    content: '●';
+    margin-right: 0.2rem;
+    font-size: 0.7em;
+  }
+
+  .lat-feat-meta[data-level='1']::before {
+    content: '○';
+  }
+
+  .lat-feat-about {
+    font-size: var(--text-meta);
+    color: var(--dark);
+    line-height: 1.35;
+  }
+
+  .lat-feat-score {
+    font-style: normal;
+    font-family: var(--lat-mono);
+    font-size: var(--lat-micro);
+    color: var(--gray);
+  }
+
+  .lat-feat-path,
+  .lat-feat-tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem;
+
+    > span:first-child {
+      font-family: var(--lat-mono);
+      font-size: var(--lat-micro);
+      color: var(--gray);
+      margin-right: 0.15rem;
+    }
+  }
+
+  .lat-feat-tags {
+    margin: 0.3rem 0 0;
+  }
+
+  .lat-feat-tag {
+    font-family: var(--lat-mono);
+    font-size: var(--lat-micro);
+    color: var(--darkgray);
+    border: 1px dashed var(--ledger-line);
+    padding: 0 0.3rem;
+    white-space: nowrap;
+  }
+
+  .lat-feat-time {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.4rem;
+    margin: 0.3rem 0;
+
+    > span {
+      font-family: var(--lat-mono);
+      font-size: var(--lat-micro);
+      color: var(--gray);
+    }
+
+    svg {
+      display: block;
+      max-width: 100%;
+      height: 1.75rem;
+      overflow: visible;
+    }
+
+    rect {
+      fill: var(--dark);
+
+      &[data-empty] {
+        fill: var(--lat-hair);
+      }
+    }
+  }
+
   .lat-feat-cross {
     margin-top: 0.25rem;
 
@@ -233,6 +324,89 @@
     }
   }
 
+  // the steering set: one chip per feature with its signed units, ± to adjust, × to drop
+  .lat-feat-steering {
+    background: var(--ledger-surface);
+  }
+
+  .lat-feat-clear {
+    font-family: var(--lat-mono);
+    font-size: var(--lat-micro);
+    color: var(--gray);
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--dark);
+      text-decoration: underline;
+    }
+  }
+
+  .lat-feat-pin {
+    display: inline-flex;
+    align-items: stretch;
+    max-width: 100%;
+    font-family: var(--lat-mono);
+    font-size: var(--lat-micro);
+    color: var(--dark);
+    border: 1px solid var(--ledger-line);
+    background: var(--light);
+
+    &[data-w^='-'] {
+      color: var(--darkgray);
+      text-decoration: line-through;
+      text-decoration-color: var(--gray);
+    }
+
+    > span {
+      padding: 0 0.3rem;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    button {
+      font: inherit;
+      width: 1.2rem;
+      padding: 0;
+      color: var(--gray);
+      background: none;
+      border: 0;
+      border-left: 1px solid var(--ledger-line);
+      cursor: pointer;
+      display: inline-grid;
+      place-items: center;
+
+      &:first-child {
+        border-left: 0;
+        border-right: 1px solid var(--ledger-line);
+      }
+
+      &:hover {
+        color: var(--dark);
+        background: var(--ledger-surface);
+      }
+    }
+  }
+
+  // a feature in the steering set: its name carries the sign
+  .lat-feat[data-steered] .lat-feat-name::before {
+    font-family: var(--lat-mono);
+    margin-right: 0.25rem;
+    color: var(--gray);
+  }
+
+  .lat-feat[data-steered='up'] .lat-feat-name::before {
+    content: '+';
+  }
+
+  .lat-feat[data-steered='down'] .lat-feat-name::before {
+    content: '−';
+  }
+
   .lat-feat-note {
     margin: 0;
     padding: 0.4rem 0.75rem 0;
@@ -240,5 +414,102 @@
     font-family: var(--lat-mono);
     font-size: var(--lat-micro);
     color: var(--gray);
+  }
+}
+
+// The card as a two-column ledger: every row label (in, notes, rows, finer, near, also lights,
+// reads as) in one mono column of --lat-feat-label, and what it labels starting on one line to
+// its right, wrapped chips included. Rows of chips are inline so the label shares the first
+// chip's baseline and wrapped lines return to the content edge, not under the label.
+[data-layout='latent'] :where(#quartz-root) .lat-probe .lat-features {
+  --lat-feat-label: 5.25rem;
+
+  .lat-feat-card > :is(.lat-feat-path, .lat-feat-near, .lat-feat-kinds),
+  .lat-feat-tags {
+    display: block;
+    margin: 0.3rem 0 0;
+    padding-left: var(--lat-feat-label);
+    font-family: var(--lat-mono);
+    font-size: var(--lat-micro);
+    line-height: 1.95;
+
+    > * {
+      display: inline-block;
+      vertical-align: baseline;
+      max-width: 100%;
+      margin: 0 0.3rem 0 0;
+      line-height: 1.45;
+    }
+
+    > span:first-child {
+      width: var(--lat-feat-label);
+      margin: 0 0 0 calc(-1 * var(--lat-feat-label));
+      color: var(--gray);
+    }
+  }
+
+  // source counts on a two-column grid: the marks are one width, so the counts start on one
+  // line down each column
+  .lat-feat-card > .lat-feat-kinds {
+    display: grid;
+    grid-template-columns: var(--lat-feat-label) repeat(2, minmax(0, 1fr));
+    gap: 0.3rem 0;
+    padding-left: 0;
+    line-height: 1.45;
+
+    &::before {
+      content: 'rows';
+      grid-row: span 2;
+      color: var(--gray);
+    }
+
+    > span,
+    > span:first-child {
+      display: flex;
+      align-items: baseline;
+      gap: 0.4rem;
+      width: auto;
+      margin: 0;
+      color: var(--darkgray);
+      font-variant-numeric: tabular-nums;
+    }
+  }
+
+  .lat-feat-card > .lat-feat-time {
+    display: grid;
+    grid-template-columns: var(--lat-feat-label) auto minmax(0, 1fr);
+    align-items: end;
+    column-gap: 0;
+    margin: 0.4rem 0 0.1rem;
+
+    > .lat-feat-span {
+      margin-left: 0.5rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .lat-feat-card > .lat-feat-cross {
+    display: grid;
+    grid-template-columns: var(--lat-feat-label) minmax(0, 1fr);
+    align-items: baseline;
+    margin-top: 0.4rem;
+
+    ol {
+      margin: 0;
+    }
+  }
+}
+
+// the links pane's group bars use the probe's one mark width, so the counts line up too
+[data-layout='latent'] :where(#quartz-root) .lat-links .lat-group {
+  .lat-mark {
+    box-sizing: border-box;
+    min-width: calc(5ch + 5 * 0.08em + 0.85em + 0.6rem + 2px);
+  }
+
+  > span {
+    font-variant-numeric: tabular-nums;
   }
 }

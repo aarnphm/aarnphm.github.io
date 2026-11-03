@@ -108,7 +108,9 @@ function matchAxes(rt: Runtime, text: string): number {
       first ??= card
     } else delete card.dataset.match
   }
-  if (first) {
+  // an open features tab keeps the probe: it lists the features whose terms match
+  const features = rt.probe.querySelector<HTMLElement>('.lat-panel[data-panel="features"]')
+  if (first && (!features || features.hidden)) {
     for (const tab of rt.probe.querySelectorAll<HTMLButtonElement>('.lat-tab'))
       tab.setAttribute('aria-selected', String(tab.dataset.tab === 'axes'))
     for (const panel of rt.probe.querySelectorAll<HTMLElement>('.lat-panel'))
@@ -242,6 +244,9 @@ export function bindSearch(rt: Runtime): void {
     cancel()
     const text = input.value.trim()
     if (!text) clearQuery(rt)
+    // `#…` searches features (features.ts); Enter selects the best match now
+    else if (text.startsWith('#'))
+      rt.root.dispatchEvent(new CustomEvent('latent:feature-search', { detail: text }))
     else void runQuery(rt, text)
   }
   form.addEventListener(
@@ -273,6 +278,7 @@ export function bindSearch(rt: Runtime): void {
         clearQuery(rt)
         return
       }
+      if (text.startsWith('#')) return
       matchAxes(rt, text)
       timer = window.setTimeout(run, SEARCH_DEBOUNCE_MS)
     },

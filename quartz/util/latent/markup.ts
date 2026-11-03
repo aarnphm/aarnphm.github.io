@@ -146,6 +146,8 @@ const mdHooks = (options: PassageOptions): MdHooks => ({
 })
 
 const TRACK_LINE = /^[ \t]*([\w-]+):[ \t]*(.*)$/
+// eslint-disable-next-line no-control-regex
+const ANSI = new RegExp(`${String.fromCharCode(27)}\\[[0-?]*[ -/]*[@-~]`, 'g')
 
 /**
  * A fence in a note's markdown slice. Garden components render as the page shows them: `quotes`
@@ -154,8 +156,14 @@ const TRACK_LINE = /^[ \t]*([\w-]+):[ \t]*(.*)$/
  * is every fence outside a markdown slice.
  */
 function fenceView(body: string, info: string | undefined, options: PassageOptions): Element {
-  const kind = (info ?? '').split(/\s/)[0].toLowerCase()
+  const [kind = '', name = ''] = (info ?? '').toLowerCase().split(/\s+/)
   if (!options.markdown) return fenceBlock(body)
+  // a notebook cell's output (the builder writes `output stdout|stderr|result|error`), set as
+  // the notebook page sets it: mono on its own tint, the stream named above it
+  if (kind === 'output')
+    return h('pre.lat-code.lat-output', { dataOutputName: name || undefined }, [
+      h('samp', decodeEntities(body.replace(/\n+$/, ''))),
+    ])
   const hooks = mdHooks(options)
   const stanzas = body
     .replace(/^\n+|\s+$/g, '')
@@ -241,8 +249,8 @@ function prose(source: string, options: PassageOptions): Element[] {
  * through ./md.
  */
 function passageBlocks(raw: string, options: PassageOptions = {}): Element[] {
-  // pdf passages are cut by length, sometimes inside a tag
-  const text = options.code ? raw : repairCuts(raw)
+  // pdf passages are cut by length, sometimes inside a tag; notebook output keeps its ANSI colours
+  const text = (options.code ? raw : repairCuts(raw)).replace(ANSI, '')
   const blocks: Element[] = []
   let last = 0
   for (const span of blockSpans(text, options)) {

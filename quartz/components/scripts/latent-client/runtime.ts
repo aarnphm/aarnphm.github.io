@@ -2,6 +2,7 @@ import type { LinkItem } from '../../../util/latent/markup'
 import type { RailLayout } from '../../../util/latent/rail'
 import type { LatentWorkerRequest, LatentWorkerResponse } from '../../../workers/latent.worker'
 import type { ToastHandle } from '../toast'
+import type { BenchLinks } from './bench-links'
 import {
   blockName,
   blockOf,
@@ -75,9 +76,13 @@ export interface Bench {
   kinds: Uint8Array | null
   /** one bit per kind index (note, pdf, image, base); a set bit leaves that source undrawn */
   hidden: number
-  /** wikilinks as flat pairs of doc indices, fetched the first time they are shown */
-  links: Int32Array | null
-  showLinks: boolean
+  /** wikilink adjacency, built on the first hover or pick (bench-links.ts) */
+  links: BenchLinks | null
+  /**
+   * a point has been clicked on the bench; until then the marked point draws no edges. The
+   * content index (1.5 MB of json, ~2.6 MB of heap) waits for the first hover or click
+   */
+  picked: boolean
   axes: number[]
   meta: {
     scale: number

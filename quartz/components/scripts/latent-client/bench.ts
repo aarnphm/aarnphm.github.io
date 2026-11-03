@@ -2,7 +2,6 @@ import type { LatentKind } from '../../../util/latent/types'
 import { buildSelect } from '../../controls/select'
 import { BENCH_VIEW, bindBenchGestures } from '../latent-bench-gestures'
 import { axisBase, drawBench, fitBenchCanvas, hoverBench } from './bench-canvas'
-import { loadBenchLinks } from './bench-links'
 import { goTo } from './reader'
 import { metaOf, requestVec, vecWorker, type Bench, type Runtime } from './runtime'
 
@@ -35,7 +34,7 @@ export async function openBench(rt: Runtime): Promise<void> {
     kinds: null,
     hidden: 0,
     links: null,
-    showLinks: false,
+    picked: false,
     axes: [0, 1, 2],
     meta: null,
     frame: 0,
@@ -146,7 +145,7 @@ export async function openBench(rt: Runtime): Promise<void> {
     },
     { signal: rt.signal },
   )
-  bindLinksToggle(rt, status)
+  bindFoot(status)
   bindBenchPointer(rt, canvas)
   await loadBench(rt, 'docs')
 }
@@ -194,34 +193,12 @@ async function projectBench(rt: Runtime): Promise<void> {
   drawBench(rt)
 }
 
-// the links toggle sits at the end of the status line, under the canvas
-function bindLinksToggle(rt: Runtime, status: HTMLElement): void {
+// the status line sits in a foot under the canvas (latent.scss sets its spacing)
+function bindFoot(status: HTMLElement): void {
   const foot = document.createElement('div')
   foot.className = 'lat-bench-foot'
-  const button = document.createElement('button')
-  button.type = 'button'
-  button.className = 'lat-bench-links'
-  button.setAttribute('aria-pressed', 'false')
-  button.title = 'draw the wikilinks between points'
-  button.textContent = 'links'
   status.before(foot)
-  foot.append(status, button)
-  button.addEventListener(
-    'click',
-    async () => {
-      const bench = rt.bench
-      if (!bench) return
-      bench.showLinks = !bench.showLinks
-      button.setAttribute('aria-pressed', String(bench.showLinks))
-      if (bench.showLinks && !bench.links) {
-        status.textContent = 'loading links…'
-        bench.links = await loadBenchLinks(rt)
-        status.textContent = `${bench.links.length / 2} links`
-      }
-      drawBench(rt)
-    },
-    { signal: rt.signal },
-  )
+  foot.append(status)
 }
 
 function bindBenchPointer(rt: Runtime, canvas: HTMLCanvasElement): void {
@@ -233,6 +210,8 @@ function bindBenchPointer(rt: Runtime, canvas: HTMLCanvasElement): void {
     open: () => {
       const bench = rt.bench
       if (!bench || bench.hover < 0) return
+      bench.picked = true
+      drawBench(rt)
       const row = bench.level === 'docs' ? rt.docs[bench.hover].r0 : bench.hover
       void goTo(rt, row)
     },

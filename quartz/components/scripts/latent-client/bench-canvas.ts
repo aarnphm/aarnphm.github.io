@@ -42,11 +42,6 @@ export function fitBenchCanvas(rt: Runtime, canvas: HTMLCanvasElement): void {
   rt.signal.addEventListener('abort', () => observer.disconnect())
 }
 
-function projected(bench: Bench, i: number, w: number, h: number): [number, number, number] {
-  const c = bench.coords!
-  return projectPoint(bench, c[i * 3], c[i * 3 + 1], c[i * 3 + 2], w, h)
-}
-
 /** A point of the bench's space on the canvas: [x, y, depth in -1..1]. */
 function projectPoint(
   bench: Bench,
@@ -68,16 +63,115 @@ function projectPoint(
   return [w / 2 + bench.panX + rx * s, h / 2 + bench.panY - ry * s, depth / bench.extent]
 }
 
+type Screen = { coords: Float32Array; xs: Float32Array; ys: Float32Array; depth: Float32Array }
+
+// screen positions of the last frame, reused across frames (53k chunks would otherwise be three
+// fresh arrays every frame) and by hover hit-testing
+let screen: Screen | null = null
+
+/** Every point of the bench onto the canvas at once: the projectPoint math with the trig hoisted. */
+function projectAll(bench: Bench, w: number, h: number): Screen {
+  const c = bench.coords!
+  const n = c.length / 3
+  if (!screen || screen.xs.length !== n)
+    screen = {
+      coords: c,
+      xs: new Float32Array(n),
+      ys: new Float32Array(n),
+      depth: new Float32Array(n),
+    }
+  screen.coords = c
+  const { xs, ys, depth } = screen
+  const s = (Math.min(w, h) * 0.42 * bench.zoom) / bench.extent
+  const cy = Math.cos(bench.yaw)
+  const sy = Math.sin(bench.yaw)
+  const cp = Math.cos(bench.pitch)
+  const sp = Math.sin(bench.pitch)
+  const ox = w / 2 + bench.panX
+  const oy = h / 2 + bench.panY
+  const inv = 1 / bench.extent
+  for (let i = 0, j = 0; i < n; i++, j += 3) {
+    const x = c[j]
+    const y = c[j + 1]
+    const z = c[j + 2]
+    const rz = x * sy + z * cy
+    xs[i] = ox + (x * cy - z * sy) * s
+    ys[i] = oy - (y * cp - rz * sp) * s
+    depth[i] = (y * sp + rz * cp) * inv
+  }
+  return screen
+}
+
+// depth bands for the points: each band × source is one path and one fill, far bands first, so
+// a frame is at most 48 fills whatever the level (it was one fill per point, 53k at chunks)
+const BANDS = 12
+const KINDS = 4
+// within a band the many go under the few: pdf (44k chunks), bases, images, then notes, so the
+// notes read through the pdf cloud as they did when every point was sorted by depth
+const KIND_ORDER = [1, 3, 2, 0]
+
+function drawBenchPoints(
+  ctx: CanvasRenderingContext2D,
+  bench: Bench,
+  at: Screen,
+  shown: (i: number) => boolean,
+  colours: string[],
+): void {
+  const kinds = bench.kinds!
+  const n = kinds.length
+  const docs = bench.level === 'docs'
+  const radius = new Float32Array(BANDS)
+  for (let b = 0; b < BANDS; b++) {
+    const t = (b + 0.5) / BANDS
+    radius[b] = docs ? 1.2 + t * 2.2 : 0.6 + t * 1.4
+  }
+  // a chunk dot is 1 to 4 device px across, where an antialiased square reads as the disc
+  // does; squares raster in about a third of the time of 53k arcs
+  const square = !docs
+  const paths: (Path2D | undefined)[] = Array.from({ length: BANDS * KINDS })
+  const TAU = Math.PI * 2
+  for (let i = 0; i < n; i++) {
+    if (!shown(i)) continue
+    const t = (at.depth[i] + 1) / 2
+    const b = t <= 0 ? 0 : t >= 1 ? BANDS - 1 : (t * BANDS) | 0
+    const slot = b * KINDS + kinds[i]
+    const path = (paths[slot] ??= new Path2D())
+    const r = radius[b]
+    const x = at.xs[i]
+    const y = at.ys[i]
+    // same area as the disc: side r·√π
+    if (square) path.rect(x - r * 0.886, y - r * 0.886, r * 1.772, r * 1.772)
+    else {
+      path.moveTo(x + r, y)
+      path.arc(x, y, r, 0, TAU)
+    }
+  }
+  for (let b = 0; b < BANDS; b++) {
+    ctx.globalAlpha = 0.25 + ((b + 0.5) / BANDS) * 0.65
+    for (const k of KIND_ORDER) {
+      const path = paths[b * KINDS + k]
+      if (!path) continue
+      ctx.fillStyle = colours[k] ?? colours[0]
+      ctx.fill(path)
+    }
+  }
+}
+
 export function hoverBench(rt: Runtime, px: number, py: number): void {
   const bench = rt.bench
   if (!bench || !bench.coords) return
   const n = bench.coords.length / 3
+  // the last frame's screen positions hold while no frame is pending (every view change asks
+  // for one, so a settled view is exactly what was drawn); otherwise project afresh
+  const at =
+    screen && screen.coords === bench.coords && !bench.frame
+      ? screen
+      : projectAll(bench, bench.w, bench.h)
   let best = -1
   let bestDist = 36
   for (let i = 0; i < n; i++) {
     if (bench.kinds && (bench.hidden >> bench.kinds[i]) & 1) continue
-    const [x, y] = projected(bench, i, bench.w, bench.h)
-    const d = (x - px) ** 2 + (y - py) ** 2
+    const d = (at.xs[i] - px) ** 2 + (at.ys[i] - py) ** 2
     if (d < bestDist) {
       bestDist = d
       best = i
@@ -87,12 +181,19 @@ export function hoverBench(rt: Runtime, px: number, py: number): void {
     bench.hover = best
     drawBench(rt)
     const status = rt.probe.querySelector<HTMLElement>('.lat-bench-status')
-    if (status && best >= 0) {
-      const doc = bench.level === 'docs' ? rt.docs[best] : docOfRow(rt, best)
-      setBenchStatus(status, `${doc.s} · ${titleText(doc.t)}`)
-    }
+    hoverCounts = ''
+    if (status && best >= 0) setBenchStatus(status, hoverName(rt, bench, best))
   }
 }
+
+function hoverName(rt: Runtime, bench: Bench, i: number): string {
+  const doc = bench.level === 'docs' ? rt.docs[i] : docOfRow(rt, i)
+  return `${doc.s} · ${titleText(doc.t)}`
+}
+
+// what the status line last said about the hovered point's edges, so a redraw only touches the
+// line when a count lands
+let hoverCounts = ''
 
 /**
  * The hovered point's name on the status line's one line. A name wider than the line scrolls
@@ -138,47 +239,46 @@ export function drawBench(rt: Runtime): void {
     ctx.fillStyle = paper
     ctx.fillRect(0, 0, w, h)
     const n = bench.coords.length / 3
-    const order: number[] = Array.from({ length: n }, (_, i) => i)
-    const depth = new Float32Array(n)
-    const xs = new Float32Array(n)
-    const ys = new Float32Array(n)
-    for (let i = 0; i < n; i++) {
-      const [x, y, z] = projected(bench, i, w, h)
-      xs[i] = x
-      ys[i] = y
-      depth[i] = z
-      order[i] = i
-    }
-    order.sort((a, b) => depth[a] - depth[b])
+    const at = projectAll(bench, w, h)
     drawBenchAxes(ctx, bench, w, h, colours[3], style)
-    const openDoc = rt.open
-    const focusRow = rt.focus
     const shown = (i: number) => !((bench.hidden >> bench.kinds![i]) & 1)
-    drawBenchLinks(ctx, rt, bench, { xs, ys, depth }, shown, colours[3], ink)
-    for (const i of order) {
-      if (!shown(i)) continue
-      const t = (depth[i] + 1) / 2
-      const r = bench.level === 'docs' ? 1.2 + t * 2.2 : 0.6 + t * 1.4
-      ctx.globalAlpha = 0.25 + t * 0.65
-      ctx.fillStyle = colours[bench.kinds![i]] ?? ink
-      ctx.beginPath()
-      ctx.arc(xs[i], ys[i], r, 0, Math.PI * 2)
-      ctx.fill()
+    const mark = bench.level === 'docs' ? rt.open : rt.focus
+    const selected = mark >= 0 && mark < n ? mark : -1
+    drawBenchPoints(ctx, bench, at, shown, colours)
+    // edges are drawn for two points only (bench-links.ts): the marked one once a point has
+    // been clicked, and the hovered one, which also shows its nearest chunks
+    const redraw = () => drawBench(rt)
+    const edgeColours = { ink, near: colours[3] }
+    const hovered = bench.hover >= 0 && bench.hover < n ? bench.hover : -1
+    if (bench.picked && selected !== hovered)
+      drawBenchLinks(ctx, rt, bench, at, shown, selected, edgeColours, redraw)
+    const counts = drawBenchLinks(ctx, rt, bench, at, shown, hovered, edgeColours, redraw, true)
+    if (counts && hovered >= 0) {
+      const parts = [
+        counts.near === null ? null : `${counts.near} near`,
+        counts.out === null ? null : `${counts.out} out`,
+        counts.back === null ? null : `${counts.back} back`,
+      ].filter(Boolean)
+      const said = parts.join(' · ')
+      const status = rt.probe.querySelector<HTMLElement>('.lat-bench-status')
+      if (status && said !== hoverCounts) {
+        hoverCounts = said
+        setBenchStatus(status, [hoverName(rt, bench, hovered), ...parts].join(' · '))
+      }
     }
-    const mark = bench.level === 'docs' ? openDoc : focusRow
-    if (mark >= 0 && mark < n && shown(mark)) {
+    if (selected >= 0 && shown(selected)) {
       ctx.globalAlpha = 1
       ctx.strokeStyle = ink
       ctx.lineWidth = 1.5
       ctx.beginPath()
-      ctx.arc(xs[mark], ys[mark], 6, 0, Math.PI * 2)
+      ctx.arc(at.xs[selected], at.ys[selected], 6, 0, Math.PI * 2)
       ctx.stroke()
     }
     if (bench.hover >= 0 && bench.hover < n && shown(bench.hover)) {
       ctx.globalAlpha = 1
       ctx.strokeStyle = colours[1]
       ctx.beginPath()
-      ctx.arc(xs[bench.hover], ys[bench.hover], 5, 0, Math.PI * 2)
+      ctx.arc(at.xs[bench.hover], at.ys[bench.hover], 5, 0, Math.PI * 2)
       ctx.stroke()
     }
     // the three axis names on one line along the floor, in the page's mono face (the canvas

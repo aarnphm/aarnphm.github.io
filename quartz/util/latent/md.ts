@@ -42,6 +42,7 @@ const INLINE = new RegExp(
     String.raw`(\*|_)(?![\s*_])([^\n]+?)(?<![\s*_])\9`, // 9 delimiter, 10 em
     String.raw`~~(?!\s)([^\n]+?)(?<!\s)~~`, // 11 del
     String.raw`==(?!\s)([^\n]+?)(?<!\s)==`, // 12 mark
+    String.raw`(\`+)(?!\`)([^\n]*?[^\`\n])\13(?!\`)`, // 13 ticks, 14 code span
   ].join('|'),
   'g',
 )
@@ -103,6 +104,9 @@ function convert(
   if (m[5] !== undefined)
     return [h('a.external', { href: m[5], rel: 'noopener noreferrer', target: '_blank' }, m[5])]
   if (m[6] !== undefined) return [h('sup.lat-fn', m[6])]
+  if (m[14] !== undefined)
+    // one space each side is padding, as in CommonMark
+    return [h('code', /^ [\s\S]* $/.test(m[14]) && m[14].trim() ? m[14].slice(1, -1) : m[14])]
   const delimiter = m[7] ?? m[9]
   const body = m[8] ?? m[10] ?? m[11] ?? m[12]
   if (body === undefined || !dollarsBalanced(body)) return null

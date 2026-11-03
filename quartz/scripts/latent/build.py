@@ -449,7 +449,8 @@ def note_markdown(
   starts: list[tuple[dict, int]] = [(order[0], 0)]
   cursor = 0
   for r in order[1:]:
-    ct = MD_WORD.findall((r['text'] or '').lower())
+    # a notebook output's text keeps its ANSI colours (`\x1b[31merror`); the markdown does not
+    ct = MD_WORD.findall(ANSI.sub('', r['text'] or '').lower())
     n = min(GRAM, len(ct))
     if n < 2:
       continue
@@ -691,12 +692,131 @@ def generated_text(chunks: list[dict]) -> int:
 
 
 def note_sources(content: Path) -> dict[str, Path]:
-  """slug → markdown file, for the slugs Quartz derives from paths (spaces become dashes)."""
+  """slug → markdown file (or notebook), for the slugs Quartz derives from paths (spaces become
+  dashes). A markdown file wins over a notebook of the same slug."""
   out: dict[str, Path] = {}
-  for path in content.rglob('*.md'):
-    rel = path.relative_to(content).with_suffix('').as_posix()
-    out.setdefault(rel.replace(' ', '-'), path)
+  for pattern in ('*.md', '*.ipynb'):
+    for path in content.rglob(pattern):
+      if '.ipynb_checkpoints' in path.parts:
+        continue
+      rel = path.relative_to(content).with_suffix('').as_posix()
+      out.setdefault(rel.replace(' ', '-'), path)
   return out
+
+
+# A notebook note's page text is its cells: markdown, code, and outputs (mypy's colours included).
+# Read as markdown, a code cell is a fence (`python cell`) and each output a fence (`output
+# stdout`, `output error`), so note_markdown finds chunks in it like in any note and the reader
+# sets code and outputs the way the notebook page does. ANSI escapes drop, as on the page.
+ANSI = re.compile(chr(27) + r'\[[0-?]*[ -/]*[@-~]')
+
+
+def cell_text(value: object) -> str:
+  return ''.join(value) if isinstance(value, list) else str(value or '')
+
+
+def fence(info: str, body: str) -> str:
+  tick = '`' * max(
+    3, max((len(m) for m in re.findall(r'`{3,}', body)), default=0) + 1
+  )
+  return f'{tick}{info}\n{body.rstrip()}\n{tick}'
+
+
+NB_ITEM = re.compile(r'^ {0,3}(?:[-*+]|\d{1,9}[.)])[ \t]')
+NB_FENCE = re.compile(r'^[ \t]*(`{3,}|~{3,})')
+
+
+def indented_fences(source: str) -> str:
+  """A markdown cell's indented code blocks (grammars, listings) as fences, which the reader styles as code.
+
+  Garden notes indent list continuations and sidenote bodies, so only notebook cells get this."""
+  lines = source.split('\n')
+  out: list[str] = []
+  i, inlist, fenced = 0, False, None
+  while i < len(lines):
+    line = lines[i]
+    m = NB_FENCE.match(line)
+    if fenced:
+      if m and m.group(1)[0] == fenced[0] and len(m.group(1)) >= len(fenced):
+        fenced = None
+      out.append(line)
+      i += 1
+      continue
+    if m:
+      fenced = m.group(1)
+    indent = len(line.expandtabs(4)) - len(line.expandtabs(4).lstrip(' '))
+    if (
+      line.strip()
+      and indent >= 4
+      and not inlist
+      and not fenced
+      and (not out or not out[-1].strip())
+    ):
+      body = []
+      while i < len(lines) and (
+        not lines[i].strip()
+        or len(lines[i].expandtabs(4))
+        - len(lines[i].expandtabs(4).lstrip(' '))
+        >= 4
+      ):
+        body.append(lines[i].expandtabs(4)[4:])
+        i += 1
+      blank = 0
+      while body and not body[-1].strip():
+        body.pop()
+        blank += 1
+      out.append(fence('text', '\n'.join(body)))
+      out.extend([''] * blank)
+      continue
+    if NB_ITEM.match(line):
+      inlist = True
+    elif line.strip() and indent == 0:
+      inlist = False
+    out.append(line)
+    i += 1
+  return '\n'.join(out)
+
+
+def notebook_markdown(path: Path) -> str:
+  try:
+    nb = json.loads(path.read_text(encoding='utf-8', errors='replace'))
+  except ValueError:
+    return ''
+  meta = nb.get('metadata') or {}
+  lang = (
+    (meta.get('kernelspec') or {}).get('language')
+    or (meta.get('language_info') or {}).get('name')
+    or 'python'
+  )
+  blocks: list[str] = []
+  for cell in nb.get('cells') or []:
+    source = cell_text(cell.get('source')).strip('\n')
+    kind = cell.get('cell_type')
+    if kind == 'markdown' and source.strip():
+      blocks.append(indented_fences(source))
+    elif kind == 'code':
+      if source.strip():
+        blocks.append(fence(f'{lang} cell', source))
+      for out in cell.get('outputs') or []:
+        otype = out.get('output_type')
+        if otype == 'stream':
+          text, name = cell_text(out.get('text')), out.get('name') or 'stdout'
+        elif otype == 'error':
+          text = '\n'.join(out.get('traceback') or []) or (
+            f'{out.get("ename", "")}: {out.get("evalue", "")}'
+          )
+          name = 'error'
+        else:
+          text, name = (
+            cell_text((out.get('data') or {}).get('text/plain')),
+            'result',
+          )
+        text = ANSI.sub('', text).strip('\n')
+        if text.strip():
+          blocks.append(fence(f'output {name}', text))
+    elif kind == 'raw' and source.strip():
+      blocks.append(fence('text', source))
+  return '\n\n'.join(blocks) + '\n'
 
 
 def load_rows(
@@ -749,7 +869,11 @@ def load_rows(
     for doc, chunks in by_doc.items():
       source = sources.get(doc)
       if source is not None:
-        md = source.read_text(encoding='utf-8', errors='replace')
+        md = (
+          notebook_markdown(source)
+          if source.suffix == '.ipynb'
+          else source.read_text(encoding='utf-8', errors='replace')
+        )
         restored += restore_math(chunks, md)
         marked += note_markdown(chunks, md, by_name, bib)
       generated += generated_text(chunks)
@@ -1544,10 +1668,16 @@ def main() -> None:
   with open(out / 'index.json', 'w', encoding='utf-8') as fh:
     json.dump(index, fh, indent=1)
   if not args.no_features:
-    # sparse dictionaries over the rows just written; adds `features` to index.json
+    # sparse dictionaries and tag probes over the rows just written; adds `features` and `tags`
+    # to index.json and archives each dictionary under .models-archive/latent-<name>/
     from features import write_features
 
-    write_features(out, Path('quartz/.quartz-cache').resolve())
+    write_features(
+      out,
+      Path('quartz/.quartz-cache').resolve(),
+      archive=Path('.models-archive').resolve(),
+      content=content,
+    )
   with open(out_root / 'index.json', 'w', encoding='utf-8') as fh:
     json.dump(
       dict(version=VERSION, hash=sidecar_hash, directory=args.directory),
