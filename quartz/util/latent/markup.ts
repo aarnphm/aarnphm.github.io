@@ -23,6 +23,7 @@ import {
 } from './html'
 import { type MdHooks, mdBlocks, mdInline } from './md'
 import { pseudocodeBlock } from './pseudo'
+import { displayTex } from './tex'
 import {
   LABEL_ROW,
   LABEL_X,
@@ -39,6 +40,7 @@ import {
   thinYears,
   truncate,
 } from './rail'
+import { svgDrawings } from './svg'
 import { titleRuns, titleText } from './title'
 import { KIND_ORDER, inScope, rowHref } from './types'
 
@@ -111,13 +113,14 @@ function extractRuns(x: string): ElementContent[] {
 // text between tags: entities decoded (hast escapes again on output), then math and strong
 const leaf = (text: string) => inlineRuns(decodeEntities(text))
 
-// a table cell is one line, so display math folds inline there
+// a table cell is one line, so display math folds inline there; OCR pads a cell's math as
+// `$ \|F\|_{F}$`, which the inline rule reads as a price, so a dollar followed by space and a
+// control word opens math
 const cellLeaf = (text: string) =>
   inlineRuns(
-    decodeEntities(text).replace(
-      DISPLAY_MATH,
-      (_, tex: string) => `$${tex.trim().replace(/\s+/g, ' ')}$`,
-    ),
+    decodeEntities(text)
+      .replace(DISPLAY_MATH, (_, tex: string) => `$${tex.trim().replace(/\s+/g, ' ')}$`)
+      .replace(/(^|[^\\$])\$\s+(?=\\[a-zA-Z|{])/g, '$1$$'),
   )
 
 interface PassageOptions extends HtmlOptions {
@@ -132,19 +135,93 @@ const mathSpan = (tex: string, display: boolean) =>
 const mdLeaf = (text: string) => mdInline(decodeEntities(text), mathSpan)
 const mdCellLeaf = (text: string) => mdInline(decodeEntities(text), tex => mathSpan(tex, false))
 
-// Raw html figures in notes (an inline svg pictogram, a figure wrapper) are pictures, not text;
+// An inline svg pictogram inside a sentence is a picture, not text (a drawing on its own lines is
+// a figure block, see `figure` below); nested svgs count, so a drop never stops at an inner close.
 // `{{phrase}}` marks a phrase to hear in the French notes and reads as the phrase (TeX's `{{` sits
 // after a letter, `^`, `_` or a backslash, and holds no `$`, so it is left alone).
-const SVG = /<svg\b[\s\S]*?(?:<\/svg>|$)/g
+const SVG_TAG = /<(\/?)svg\b[^>]*?(\/?)>/g
 const MARKED = /(?<![\\\w^_{])\{\{([^{}\n$\\]+)\}\}(?!\})/g
-const gardenText = (text: string) => text.replace(SVG, '').replace(MARKED, '$1')
+function dropSvg(text: string): string {
+  let out = ''
+  let depth = 0
+  let last = 0
+  for (const m of text.matchAll(SVG_TAG)) {
+    if (depth === 0) out += text.slice(last, m.index)
+    if (m[1]) depth = Math.max(0, depth - 1)
+    else if (!m[2]) depth++
+    last = m.index + m[0].length
+  }
+  return depth === 0 ? out + text.slice(last) : out
+}
+const gardenText = (text: string) => dropSvg(text).replace(MARKED, '$1')
 
-const mdHooks = (options: PassageOptions): MdHooks => ({
-  inline: text => htmlRuns(gardenText(text), mdLeaf, options),
-  pipe: block => pipeTable(block, cell => htmlRuns(gardenText(cell), mdCellLeaf, options)),
-  display: tex => h('div.math.math-display', decodeEntities(tex)),
-  fence: (body, info) => fenceView(body, info, options),
-})
+// Backtick spans in a markdown slice are code, but they sit inside emphasis
+// (`**Parse tree for `x`:**`), so they are held out as placeholders while the html allowlist and
+// mdInline run over the rest, and put back as `code` after: html inside code stays text and the
+// strong run still spans the code.
+const CODE_SPAN = /(`+)(?!`)([^\n]*?[^`\n])\1(?!`)/g
+const HELD = /\uE000(\d+)\uE001/g
+function withCode(text: string, runs: (masked: string) => ElementContent[]): ElementContent[] {
+  const held: string[] = []
+  const masked = text.replace(CODE_SPAN, (_, _ticks: string, body: string) => {
+    held.push(body)
+    return `\uE000${held.length - 1}\uE001`
+  })
+  if (!held.length) return runs(text)
+  const code = (body: string) =>
+    // one space each side is padding, as in CommonMark
+    h('code', decodeEntities(/^ [\s\S]* $/.test(body) && body.trim() ? body.slice(1, -1) : body))
+  const restore = (nodes: ElementContent[]): ElementContent[] =>
+    nodes.flatMap(node => {
+      if (node.type === 'element') {
+        node.children = restore(node.children as ElementContent[])
+        return [node]
+      }
+      if (node.type !== 'text' || !node.value.includes('\uE000')) return [node]
+      const out: ElementContent[] = []
+      let last = 0
+      for (const m of node.value.matchAll(HELD)) {
+        if (m.index > last) out.push({ type: 'text', value: node.value.slice(last, m.index) })
+        out.push(code(held[Number(m[1])] ?? ''))
+        last = m.index + m[0].length
+      }
+      if (last < node.value.length) out.push({ type: 'text', value: node.value.slice(last) })
+      return out
+    })
+  return restore(runs(masked))
+}
+
+/**
+ * A drawing a note writes as html (nltk parse trees under `<figure class="svg-diagram">`): the
+ * svg rebuilt through ./svg's allowlist, labelled like the note page's figure. A block with no
+ * drawing in it (a figure around an image) drops, as images do.
+ */
+function figureBlock(html: string): Element[] {
+  const drawings = svgDrawings(html)
+  if (!drawings.length) return []
+  const label = /<figure\b[^>]*?\baria-label\s*=\s*"([^"]*)"/.exec(html)?.[1]
+  return [
+    h(
+      'figure.lat-figure',
+      { role: 'img', ariaLabel: label ? decodeEntities(label) : undefined },
+      drawings,
+    ),
+  ]
+}
+
+const mdHooks = (options: PassageOptions): MdHooks => {
+  const runs = { ...options, code: false }
+  return {
+    inline: text => withCode(gardenText(text), masked => htmlRuns(masked, mdLeaf, runs)),
+    pipe: block =>
+      pipeTable(block, cell =>
+        withCode(gardenText(cell), masked => htmlRuns(masked, mdCellLeaf, runs)),
+      ),
+    display: tex => h('div.math.math-display', decodeEntities(tex)),
+    fence: (body, info) => fenceView(body, info, options),
+    figure: figureBlock,
+  }
+}
 
 const TRACK_LINE = /^[ \t]*([\w-]+):[ \t]*(.*)$/
 // eslint-disable-next-line no-control-regex
@@ -241,7 +318,7 @@ function prose(source: string, options: PassageOptions): Element[] {
   for (const match of source.matchAll(DISPLAY_MATH)) {
     blocks.push(...paragraphs(source.slice(last, match.index), options))
     const tex = decodeEntities(match[1]).trim()
-    if (tex) blocks.push(h('div.math.math-display', tex))
+    if (tex) blocks.push(h('div.math.math-display', displayTex(tex)))
     last = match.index + match[0].length
   }
   blocks.push(...paragraphs(source.slice(last), options))
@@ -292,50 +369,154 @@ function samePointer(same: NonNullable<LatentChunk['same']>): Element {
   ])
 }
 
-/** `article.lat-chunk` for each chunk; `chunk.c` is its index in the document. */
+// OCR sets each line of a display equation as a paragraph, and the pdf store cuts passages at
+// paragraphs, so one equation can arrive as several rows: `$$`, the array in pieces, `\tag …
+// \end{array}`, `$$`. A row that leaves `$$` open reads together with the rows up to the one that
+// closes it. JOIN_MAX bounds the run; past it, the dollars were text.
+const JOIN_MAX = 8
+const fences = (text: string) => text.split('$$').length - 1
+
+/** Index of the last chunk read with `chunks[i]`; `i` when it stands alone. */
+function joinedRun(chunks: LatentChunk[], texts: string[], i: number): number {
+  let open = fences(texts[i])
+  if (chunks[i].same || open % 2 === 0) return i
+  let j = i
+  while (open % 2 === 1) {
+    j += 1
+    const next = chunks[j]
+    if (!next || j - i >= JOIN_MAX || next.same || next.r !== chunks[j - 1].r + 1) return i
+    open += fences(texts[j])
+  }
+  // a lone `$`, a table or a heading inside any of the run's display math means the dollars
+  // pair up wrong (text that happens to use them), so the run stays as rows
+  for (const [, tex] of texts.slice(i, j + 1).join('\n\n').matchAll(DISPLAY_MATH))
+    if (/(?<!\\)\$|<t[dhr]\b|\n#/.test(tex)) return i
+  return j
+}
+
+// The pdf chunker carries the end of a passage into the start of the next (a heading, a line, or
+// half an equation row), so two rows read in order repeat that seam. OVERLAP_MIN keeps a shared
+// `$$` or a word from counting.
+const OVERLAP_MIN = 12
+
+/** A pdf row's text without the start it repeats from the row before. */
+function ownText(prev: LatentChunk | undefined, chunk: LatentChunk): string {
+  const text = chunk.text ?? ''
+  const before = prev?.text ?? ''
+  if (!prev || prev.same || chunk.same || prev.r + 1 !== chunk.r || text.length < OVERLAP_MIN)
+    return text
+  const probe = text.slice(0, OVERLAP_MIN)
+  // the earliest place the row's start recurs in the tail of the one before is the longest seam
+  for (
+    let at = before.indexOf(probe, Math.max(0, before.length - text.length));
+    at >= 0;
+    at = before.indexOf(probe, at + 1)
+  ) {
+    if (text.startsWith(before.slice(at))) {
+      const own = text.slice(before.length - at)
+      return own.trim() ? own.replace(/^\s+/, '') : text
+    }
+  }
+  return text
+}
+
+/** The page box around a run's rows on its first page (a lone `$$` row has none). */
+function runBox(run: LatentChunk[]): LatentChunk['box'] {
+  const boxes = run.filter(c => c.box && c.p === run[0].p).map(c => c.box!)
+  if (boxes.length === 0) return undefined
+  return [
+    Math.min(...boxes.map(b => b[0])),
+    Math.min(...boxes.map(b => b[1])),
+    Math.max(...boxes.map(b => b[2])),
+    Math.max(...boxes.map(b => b[3])),
+  ]
+}
+
+function chunkLocus(
+  meta: Pick<LatentText, 'store'>,
+  doc: Pick<LatentDoc, 'id' | 's'>,
+  chunk: LatentChunk,
+  last: LatentChunk,
+): Element {
+  if (meta.store === 'pdf' && chunk.p) {
+    const to =
+      last === chunk
+        ? ''
+        : last.p === chunk.p
+          ? `\u2013${last.c + 1}`
+          : `\u2013p. ${pageLabel(last.l, last.p ?? chunk.p)} ¶${last.c + 1}`
+    return h('span.lat-locus', [
+      h(
+        'a',
+        { href: rowHref(doc, chunk.p), dataNoPopover: true },
+        `p. ${pageLabel(chunk.l, chunk.p)} ¶${chunk.c + 1}${to}`,
+      ),
+    ])
+  }
+  return h('span.lat-locus', [
+    h(
+      'a',
+      { href: `?focus=${chunk.r}`, dataLatFocus: String(chunk.r), dataNoPopover: true },
+      `§${chunk.c + 1}`,
+    ),
+  ])
+}
+
+/**
+ * `article.lat-chunk` for each chunk; `chunk.c` is its index in the document. A run of pdf rows
+ * holding one display equation (see `joinedRun`) is one article on its first row; each row after
+ * it keeps an empty `article.lat-joined` marker (`data-joined` names the first row), so focus,
+ * the rail and goTo still find every row.
+ */
 export function chunkArticles(
   meta: Pick<LatentText, 'store'>,
   doc: Pick<LatentDoc, 'id' | 's'>,
   chunks: LatentChunk[],
   focus: number,
 ): Element[] {
-  return chunks.map(chunk =>
-    h(
-      'article.lat-chunk',
-      {
-        id: `lat-r${chunk.r}`,
-        dataRow: String(chunk.r),
-        dataPage: chunk.p ? String(chunk.p) : undefined,
-        dataBox: chunk.box ? chunk.box.join(',') : undefined,
-        dataFocus: chunk.r === focus ? '' : undefined,
-      },
-      [
-        h('span.lat-locus', [
-          meta.store === 'pdf' && chunk.p
-            ? h(
-                'a',
-                { href: rowHref(doc, chunk.p), dataNoPopover: true },
-                `p. ${pageLabel(chunk.l, chunk.p)} ¶${chunk.c + 1}`,
-              )
-            : h(
-                'a',
-                { href: `?focus=${chunk.r}`, dataLatFocus: String(chunk.r), dataNoPopover: true },
-                `§${chunk.c + 1}`,
-              ),
-        ]),
-        // an image row is the image: its embedding has no text to show
-        ...(meta.store === 'image'
-          ? [imageFrame(doc)]
-          : chunk.same
-            ? [samePointer(chunk.same)]
-            : passageBlocks(chunk.text ?? '', {
-                code: meta.store === 'note',
-                markdown: chunk.m === 1,
-                lines: meta.store === 'note' && chunk.m !== 1,
-              })),
-      ],
-    ),
-  )
+  const pdf = meta.store === 'pdf'
+  const texts = chunks.map((chunk, i) => (pdf ? ownText(chunks[i - 1], chunk) : (chunk.text ?? '')))
+  const out: Element[] = []
+  for (let i = 0; i < chunks.length; i++) {
+    const chunk = chunks[i]
+    const j = pdf ? joinedRun(chunks, texts, i) : i
+    const run = chunks.slice(i, j + 1)
+    out.push(
+      h(
+        'article.lat-chunk',
+        {
+          id: `lat-r${chunk.r}`,
+          dataRow: String(chunk.r),
+          dataPage: chunk.p ? String(chunk.p) : undefined,
+          dataBox: runBox(run)?.join(','),
+          dataFocus: run.some(c => c.r === focus) ? '' : undefined,
+        },
+        [
+          chunkLocus(meta, doc, chunk, run[run.length - 1]),
+          // an image row is the image: its embedding has no text to show
+          ...(meta.store === 'image'
+            ? [imageFrame(doc)]
+            : chunk.same
+              ? [samePointer(chunk.same)]
+              : passageBlocks(texts.slice(i, j + 1).join('\n\n'), {
+                  code: meta.store === 'note',
+                  markdown: chunk.m === 1,
+                  lines: meta.store === 'note' && chunk.m !== 1,
+                })),
+        ],
+      ),
+      ...run.slice(1).map(c =>
+        h('article.lat-chunk.lat-joined', {
+          id: `lat-r${c.r}`,
+          dataRow: String(c.r),
+          dataPage: c.p ? String(c.p) : undefined,
+          dataJoined: String(chunk.r),
+        }),
+      ),
+    )
+    i = j
+  }
+  return out
 }
 
 /**

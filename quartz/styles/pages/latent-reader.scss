@@ -182,6 +182,13 @@
       &[data-focus] .lat-locus {
         color: var(--dark);
       }
+
+      // a row read with the one before it (one equation over several rows): an empty marker
+      &.lat-joined {
+        padding: 0;
+        margin: 0;
+        border: 0;
+      }
     }
 
     .lat-more {

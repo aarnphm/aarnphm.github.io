@@ -21,6 +21,8 @@ export interface MdHooks {
    * names garden components (`quotes`, `poetry`, `sms`, `tracking`) the caller renders as such
    */
   fence: (body: string, info: string) => Element
+  /** an html figure or svg block (`<figure>…</figure>`, `<svg>…</svg>`), whole or cut off */
+  figure: (html: string) => Element[]
 }
 
 // Obsidian block ids (`text ^ava-writing`, or `^id` on its own line) are anchors, not text
@@ -131,6 +133,22 @@ const FOOTNOTE = /^\[\^([^\]\s]+)\]:[ \t]?(.*)$/
 const FENCE = /^[ \t]*(`{3,}|~{3,})/
 const DISPLAY_OPEN = /^[ \t]*\$\$/
 const META = /^([ \t]*)[-*+][ \t]+\[meta\]:[ \t]*$/
+const FIGURE = /^ {0,3}<(figure|svg)\b/
+
+/**
+ * Where the html block opening `source` ends: after the close that balances its first tag
+ * (nested svgs inside an svg count), or at the end when the chunk cut it off.
+ */
+function figureEnd(source: string, tag: string): number {
+  const re = new RegExp(`<(\\/?)${tag}\\b[^>]*?(\\/?)>`, 'g')
+  let depth = 0
+  for (const m of source.matchAll(re)) {
+    if (m[1]) depth--
+    else if (!m[2]) depth++
+    if (depth <= 0) return m.index + m[0].length
+  }
+  return source.length
+}
 
 const indentOf = (line: string) => /^[ \t]*/.exec(line)![0].replace(/\t/g, '    ').length
 const startsBlock = (line: string) =>
@@ -140,7 +158,8 @@ const startsBlock = (line: string) =>
   ITEM.test(line) ||
   FOOTNOTE.test(line) ||
   FENCE.test(line) ||
-  DISPLAY_OPEN.test(line)
+  DISPLAY_OPEN.test(line) ||
+  FIGURE.test(line)
 
 function dedent(lines: string[], by: number): string[] {
   return lines.map(line => {
@@ -222,6 +241,16 @@ export function mdBlocks(source: string, hooks: MdHooks): Element[] {
       while (i < lines.length && lines[i].trim() && indentOf(lines[i]) >= 2)
         body.push(lines[i++].trim())
       out.push(h('p.lat-fn-def', [h('sup.lat-fn', id), ' ', ...hooks.inline(body.join(' '))]))
+    } else if (FIGURE.test(line)) {
+      // a drawing is one block however many lines (and blank lines) it spans; text after its
+      // close on the same line carries on as markdown
+      const rest = lines
+        .slice(i)
+        .join('\n')
+        .replace(/^ {0,3}/, '')
+      const end = figureEnd(rest, FIGURE.exec(line)![1])
+      out.push(...hooks.figure(rest.slice(0, end)), ...mdBlocks(rest.slice(end), hooks))
+      break
     } else if (META.test(line)) {
       i = meta(lines, i, out)
     } else if (ITEM.test(line)) {

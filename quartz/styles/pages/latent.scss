@@ -1336,6 +1336,22 @@
     }
   }
 
+  // a drawing the note writes as svg (nltk parse trees): its own size, never wider than the
+  // column, ink from the theme
+  .lat-figure {
+    margin: 0.4em 0;
+    color: var(--dark);
+    overflow-x: auto;
+
+    & > svg {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      margin-inline: auto;
+      overflow: visible;
+    }
+  }
+
   .lat-sms {
     width: fit-content;
     max-width: min(34rem, 100%);

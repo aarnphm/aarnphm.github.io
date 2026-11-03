@@ -115,7 +115,10 @@ export function chunkUnderLine(rt: Runtime): HTMLElement | null {
   const y = readingLineY()
   let best: HTMLElement | null = null
   let bestDist = Infinity
-  for (const chunk of rt.reader.querySelectorAll<HTMLElement>('.lat-chunk[data-row]')) {
+  // a row joined to the one before it (`chunkArticles`) has no height of its own
+  for (const chunk of rt.reader.querySelectorAll<HTMLElement>(
+    '.lat-chunk[data-row]:not([data-joined])',
+  )) {
     const rect = chunk.getBoundingClientRect()
     if (rect.bottom < y - 1 || rect.top > y + 1) {
       const dist = rect.top > y ? rect.top - y : y - rect.bottom
@@ -130,6 +133,15 @@ export function chunkUnderLine(rt: Runtime): HTMLElement | null {
   return best
 }
 
+/** A row's article; a row joined to an earlier one (one equation over several rows) is that one. */
+function rowChunk(rt: Runtime, row: number): HTMLElement | null {
+  const chunk = rt.reader.querySelector<HTMLElement>(`.lat-chunk[data-row="${row}"]`)
+  const first = chunk?.dataset.joined
+  return (
+    (first && rt.reader.querySelector<HTMLElement>(`.lat-chunk[data-row="${first}"]`)) || chunk
+  )
+}
+
 function setFocus(rt: Runtime, row: number, options: { push?: boolean } = {}): void {
   if (rt.focus === row) return
   rt.focus = row
@@ -138,7 +150,7 @@ function setFocus(rt: Runtime, row: number, options: { push?: boolean } = {}): v
   rt.root.dataset.latentDoc = String(rt.open)
   for (const chunk of rt.reader.querySelectorAll<HTMLElement>('.lat-chunk[data-focus]'))
     delete chunk.dataset.focus
-  const chunk = rt.reader.querySelector<HTMLElement>(`.lat-chunk[data-row="${row}"]`)
+  const chunk = rowChunk(rt, row)
   if (chunk) chunk.dataset.focus = ''
   if (options.push !== false) {
     const url = new URL(window.location.href)
@@ -274,7 +286,7 @@ function ensureStubs(rt: Runtime): void {
 /** Open a row's document in the reader and put that row under the reading line. */
 export async function goTo(rt: Runtime, row: number): Promise<void> {
   const doc = docOfRow(rt, row)
-  let chunk = rt.reader.querySelector<HTMLElement>(`.lat-chunk[data-row="${row}"]`)
+  let chunk = rowChunk(rt, row)
   if (!chunk) {
     const head = await textOf(rt, doc.d)
     if (rt.signal.aborted) return
@@ -288,7 +300,7 @@ export async function goTo(rt: Runtime, row: number): Promise<void> {
     const frozen = readerHead(rt)
     rt.reader.innerHTML = [prev ? stub(prev) : '', html, next ? stub(next) : ''].join('')
     if (frozen) rt.reader.prepend(frozen)
-    chunk = rt.reader.querySelector<HTMLElement>(`.lat-chunk[data-row="${row}"]`)
+    chunk = rowChunk(rt, row)
   }
   if (!chunk) return
   const top = chunk.getBoundingClientRect().top + window.scrollY - readingLineY() + 8
