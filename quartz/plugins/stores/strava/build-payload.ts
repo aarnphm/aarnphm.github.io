@@ -183,6 +183,7 @@ export function buildPayload(
     items.push({
       id: a.id,
       sport,
+      ...(a.sportType === 'EBikeRide' && { electric: true }),
       distanceKm: round(a.distance / 1000, 1),
       durationS: a.movingTime,
     })

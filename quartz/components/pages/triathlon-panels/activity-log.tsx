@@ -48,7 +48,7 @@ export const OnTreePanel = ({ tree, root }: { tree: TriathlonTreeYear[]; root: s
         <input
           class="tri-ana-search tri-feed-search"
           type="search"
-          placeholder="search (filter:bike|run|swim|walk|hike|strength|yoga|sauna, sort:distance|cadence|pace)"
+          placeholder="search (filter:bike|ebike|run|swim|walk|hike|strength|yoga|sauna, sort:distance|cadence|pace)"
           aria-label="search activities"
           aria-controls="tri-feed-results"
           aria-expanded="false"

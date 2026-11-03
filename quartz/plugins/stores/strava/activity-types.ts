@@ -54,6 +54,7 @@ export interface StravaSportTotals {
 export interface StravaDayItem {
   id: number
   sport: ActivityKind
+  electric?: boolean
   distanceKm: number
   durationS: number
 }

@@ -7,6 +7,7 @@ import { setActivityExpanded } from '../activity/comparison'
 import { buildIcon, buildRecovery } from '../activity/primitives'
 import { renderDetail } from '../activity/render'
 import { activityCommandHints } from '../analytics/search'
+import { activityFilterKind } from '../analytics/search'
 import { activityQueryTokens } from '../analytics/search'
 import { activityResultItems } from '../analytics/search'
 import { marqueeCtl } from '../analytics/search'
@@ -166,7 +167,7 @@ export const setupFeed = (root: HTMLElement, context: TriathlonContext): (() => 
         })
         head.append(
           buildIcon(context.presentation, a.sport, a.electric),
-          el('span', 'tri-feed-name', a.name || a.sport),
+          el('span', 'tri-feed-name', a.name || activityFilterKind(a)),
           buildSub(a),
         )
         row.appendChild(head)

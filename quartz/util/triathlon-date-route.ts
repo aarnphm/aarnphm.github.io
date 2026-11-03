@@ -155,7 +155,11 @@ export interface TriathlonTreeYear {
   months: TriathlonTreeMonth[]
 }
 
-const SPORT_ORDER = ['swim', 'bike', 'run', 'walk', 'hike']
+const SPORT_ORDER = ['swim', 'bike', 'ebike', 'run', 'walk', 'hike']
+
+// The log names an e-bike ride apart from a bike ride.
+const treeSport = (row: { sport: string; electric?: boolean }): string =>
+  row.electric && row.sport === 'bike' ? 'ebike' : row.sport
 
 const sortSports = (sports: Iterable<string>): string[] =>
   [...sports].sort((left, right) => {
@@ -168,7 +172,7 @@ const sortSports = (sports: Iterable<string>): string[] =>
 
 type TriathlonDateTreeDetail = Pick<
   StravaActivityDetail,
-  'date' | 'sport' | 'distanceKm' | 'movingTimeS'
+  'date' | 'sport' | 'electric' | 'distanceKm' | 'movingTimeS'
 >
 type TriathlonDateTreeDay = Pick<StravaDay, 'date' | 'durationS' | 'items'>
 
@@ -198,14 +202,14 @@ export const triathlonDateTree = (
       } else {
         for (const item of detail.items) {
           entry.count += 1
-          entry.sports.add(item.sport)
+          entry.sports.add(treeSport(item))
           entry.km += item.distanceKm
           entry.timeS += item.durationS
         }
       }
     } else {
       entry.count += 1
-      entry.sports.add(detail.sport)
+      entry.sports.add(treeSport(detail))
       entry.km += detail.distanceKm
       entry.timeS += detail.movingTimeS
     }

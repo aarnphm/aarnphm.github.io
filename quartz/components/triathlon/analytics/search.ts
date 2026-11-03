@@ -38,8 +38,16 @@ export const setActivityResultSelection = (results: HTMLElement | null, index: n
   return selected
 }
 
-export const ACTIVITY_FILTER_SPORTS: readonly ActivityKind[] = [
+// An e-bike ride is its own category in search; the stores still count it as bike.
+export type ActivityFilterKind = ActivityKind | 'ebike'
+
+export const activityFilterKind = (
+  activity: Pick<ActivitySummary, 'sport' | 'electric'>,
+): ActivityFilterKind => (activity.electric && activity.sport === 'bike' ? 'ebike' : activity.sport)
+
+export const ACTIVITY_FILTER_SPORTS: readonly ActivityFilterKind[] = [
   'bike',
+  'ebike',
   'run',
   'swim',
   'walk',
@@ -49,7 +57,9 @@ export const ACTIVITY_FILTER_SPORTS: readonly ActivityKind[] = [
   'sauna',
 ]
 
-export const ACTIVITY_FILTER_ALIASES: Readonly<Record<string, ActivityKind>> = {
+export const ACTIVITY_FILTER_ALIASES: Readonly<Record<string, ActivityFilterKind>> = {
+  'e-bike': 'ebike',
+  electric: 'ebike',
   weight: 'strength',
   gym: 'strength',
   pilates: 'yoga',
@@ -114,17 +124,26 @@ export const dateFilterSpan = (value: string): DateSpan | null => {
   return daySpan(unit.startsWith('w') ? n * 7 : n)
 }
 
-export const resolveActivityFilterSport = (value: string): ActivityKind | null =>
+export const resolveActivityFilterSport = (value: string): ActivityFilterKind | null =>
   ACTIVITY_FILTER_ALIASES[value] ?? ACTIVITY_FILTER_SPORTS.find(sport => sport === value) ?? null
 
-export const aliasesForActivityFilterSport = (sport: ActivityKind): string[] =>
+export const aliasesForActivityFilterSport = (sport: ActivityFilterKind): string[] =>
   Object.entries(ACTIVITY_FILTER_ALIASES).flatMap(([alias, canonical]) =>
     canonical === sport ? [alias] : [],
   )
 
-export const isActivityFilterSport = (value: string, sports: readonly ActivityKind[]): boolean => {
+// A surface that lists bike rides also lists e-bike rides.
+const withEbike = (sports: readonly ActivityFilterKind[]): readonly ActivityFilterKind[] =>
+  sports.includes('bike') && !sports.includes('ebike')
+    ? sports.flatMap(sport => (sport === 'bike' ? ['bike', 'ebike'] : [sport]))
+    : sports
+
+export const isActivityFilterSport = (
+  value: string,
+  sports: readonly ActivityFilterKind[],
+): boolean => {
   const sport = resolveActivityFilterSport(value)
-  return sport !== null && sports.includes(sport)
+  return sport !== null && withEbike(sports).includes(sport)
 }
 
 export const parseActivityQuery = (rawTokens: string[]): ActivityQuery => {
@@ -162,10 +181,11 @@ export const activityQueryTokens = (query: string): string[] => {
 }
 
 export const matchesActivityQuery = (
-  activity: Pick<ActivitySummary, 'sport' | 'virtual' | 'treadmill' | 'date' | 'name'>,
+  activity: Pick<ActivitySummary, 'sport' | 'electric' | 'virtual' | 'treadmill' | 'date' | 'name'>,
   query: ActivityQuery,
 ): boolean => {
-  if (query.filterSport && activity.sport !== query.filterSport) return false
+  const kind = activityFilterKind(activity)
+  if (query.filterSport && kind !== query.filterSport) return false
   if (
     query.filterEnvironment === 'virtual' &&
     (!activity.virtual || (activity.sport !== 'bike' && activity.sport !== 'run'))
@@ -181,10 +201,9 @@ export const matchesActivityQuery = (
     (activity.date < query.filterDate.start || activity.date > query.filterDate.end)
   )
     return false
-  return matchesActivityTokens(
-    `${activity.name} ${activity.sport} ${activity.date}`.toLowerCase(),
-    query.tokens,
-  )
+  // The category matches by prefix, so "bike" stops matching inside "ebike".
+  const text = `${activity.name} ${activity.date}`.toLowerCase()
+  return query.tokens.every(token => text.includes(token) || kind.startsWith(token))
 }
 
 export const sortActivitiesBy = <
@@ -210,8 +229,9 @@ export const sortActivitiesBy = <
 export const activityCommandHints = (
   lastToken: string,
   noun: string,
-  filterSports: readonly ActivityKind[] = ACTIVITY_FILTER_SPORTS,
+  surfaceSports: readonly ActivityFilterKind[] = ACTIVITY_FILTER_SPORTS,
 ): HTMLElement[] => {
+  const filterSports = withEbike(surfaceSports)
   const hints: HTMLElement[] = []
   const filterValue = lastToken.startsWith('filter:') ? lastToken.slice(7) : null
   const sortValue = lastToken.startsWith('sort:') ? lastToken.slice(5) : null

@@ -66,7 +66,11 @@ export const buildMapSearchView = (
   const rawTokens = activityQueryTokens(query)
   const parsed = parseActivityQuery(rawTokens)
   const { filterSport, sortKey } = parsed
-  const sport = ROUTE_SPORTS.find(candidate => candidate === filterSport) ?? null
+  // filter:ebike draws its rides on the bike map
+  const sport =
+    ROUTE_SPORTS.find(
+      candidate => candidate === (filterSport === 'ebike' ? 'bike' : filterSport),
+    ) ?? null
   const lastToken = rawTokens[rawTokens.length - 1] ?? ''
   const hints = activityCommandHints(lastToken, 'routes', ROUTE_SPORTS)
   const ids = drawableActivityIds(details)
