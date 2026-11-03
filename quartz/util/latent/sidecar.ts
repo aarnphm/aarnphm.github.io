@@ -16,8 +16,10 @@ import { blockName, blockOf, decodeKnnBlock, decodeTrack, inScope, partName } fr
 
 /**
  * Build-time access to the latent sidecar. The sidecar is pinned to a hash over every included
- * manifest under the directory (quartz/scripts/latent/build.py); the same walk runs here so a
- * regenerated store makes the page fall back to prose plus ledger instead of serving stale rows.
+ * manifest under the directory (quartz/scripts/latent/build.py), and the same walk runs here. A
+ * sidecar is self-contained (its own text, neighbours and vectors), so a store regenerated after
+ * it (the pdf store grows as papers are embedded) leaves it behind, not wrong: the page serves it
+ * and the build warns until the builder runs again.
  */
 
 const SHA = /^[a-f0-9]{64}$/
@@ -102,29 +104,39 @@ export interface Sidecar {
   textPart(doc: number, part: number): LatentChunk[]
 }
 
+// keyed by the pointer's hash too: a rebuild during `--watch` prunes the old hash directory, and a
+// cached reader would keep reading files that are gone
 const cache = new Map<string, Sidecar | null>()
 
+function pointerHash(content: string, directory: string): string | null {
+  const pointer = path.join(content, directory, 'latent', 'index.json')
+  if (!existsSync(pointer)) return null
+  try {
+    const { hash } = JSON.parse(readFileSync(pointer, 'utf8')) as { hash?: unknown }
+    return typeof hash === 'string' && SHA.test(hash) ? hash : null
+  } catch {
+    return null
+  }
+}
+
 export function openSidecar(content: string, directory: string): Sidecar | null {
-  const key = `${content}::${directory}`
+  const hash = pointerHash(content, directory)
+  if (!hash) return null
+  const key = `${content}::${directory}::${hash}`
   if (cache.has(key)) return cache.get(key)!
-  const sidecar = load(content, directory)
+  const sidecar = load(content, directory, hash)
   cache.set(key, sidecar)
   return sidecar
 }
 
-function load(content: string, directory: string): Sidecar | null {
-  const root = path.join(content, directory, 'latent')
-  const pointer = path.join(root, 'index.json')
-  if (!existsSync(pointer)) return null
-  const { hash } = JSON.parse(readFileSync(pointer, 'utf8')) as { hash: string }
-  const dir = path.join(root, hash)
+function load(content: string, directory: string, hash: string): Sidecar | null {
+  const dir = path.join(content, directory, 'latent', hash)
   if (!existsSync(path.join(dir, 'index.json'))) return null
   const expected = expectedHash(content, directory)
   if (expected !== hash) {
     console.warn(
-      `[latent] sidecar ${hash.slice(0, 8)} is stale for ${directory} (stores hash ${expected?.slice(0, 8)}); rendering without it`,
+      `[latent] sidecar ${hash.slice(0, 8)} is behind the stores under ${directory} (now ${expected?.slice(0, 8)}); serving it until \`uv run quartz/scripts/latent/build.py\` runs again`,
     )
-    return null
   }
   const index = JSON.parse(readFileSync(path.join(dir, 'index.json'), 'utf8')) as LatentIndex
   const docs = JSON.parse(readFileSync(path.join(dir, 'docs.json'), 'utf8')) as LatentDoc[]
