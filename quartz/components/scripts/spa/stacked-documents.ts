@@ -75,7 +75,11 @@ export class StackedDocumentStore {
     const title = document.querySelector<HTMLElement>('main h1')?.textContent || document.title
     const html = parseHtml(this.serializeElements(contents))
     normalizeStackedNoteURLs(html, new URL(`/${slug}`, url))
-    return { slug, title, hash: url.hash, bodyHtml: html.body.innerHTML, state: 'ready' }
+    const layout = html.createElement('div')
+    layout.className = 'note-layout'
+    layout.dataset.layout = document.body.dataset.layout ?? 'default'
+    layout.append(...html.body.childNodes)
+    return { slug, title, hash: url.hash, bodyHtml: layout.outerHTML, state: 'ready' }
   }
 
   private payloadDocument(payload: StackedNotePayload, target: URL, slug: string, hash: string) {

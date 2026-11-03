@@ -173,7 +173,15 @@ async function noteDataFromHtml(slug: string, html: string): Promise<StackedNote
     return protectedNoteData(slug, title)
   }
 
-  const content = await extractPopoverHintContent(html)
+  let pageLayout = 'default'
+  await new HTMLRewriter().on('body', {
+    element(el) {
+      pageLayout = el.getAttribute('data-layout') ?? 'default'
+    },
+  }).transform(new Response(html)).text()
+  const fragments = await extractPopoverHintContent(html)
+  const layout = pageLayout.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')
+  const content = fragments ? `<div class="note-layout" data-layout="${layout}">${fragments}</div>` : ''
 
   if (!content) return failedNoteData(slug, title)
 
