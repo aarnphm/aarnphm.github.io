@@ -3,7 +3,7 @@ date: '2024-12-10'
 description: nobby designer word for "the design of the current site"
 id: colophon
 lang: en
-modified: 2026-10-25 18:48:44 GMT-04:00
+modified: 2026-11-03 11:04:21 GMT-05:00
 socials:
   twitter: https://x.com/aarnphm/status/1861550609834402129
 tags:
@@ -12,7 +12,7 @@ tags:
 title: colophon
 ---
 
-**#technical** -- a [heavily modified fork](https://en.wikipedia.org/wiki/Ship_of_Theseus) of [Quartz](https://quartz.jzhao.xyz/), hosted with Cloudflare Workers, with support for arXiv file pulling, [telescopic](https://github.com/jackyzha0/telescopic-text) [[friends#^telexample|text]], [[/|custom homepage]], a [note view](https://notes.aarnphm.xyz/notes?stackedNotes=bm90ZXM), [[/singularity|JSON Canvas support]], [[cinematheque.base|Obsidian Bases support]] hierarchical grid layout, comment room support, reader view with custom [[/thoughts|folder]] and [[/tags|tags]] view, nested [[/index.xml|rss]] [[/posts/index.xml|feed]], [[queries|Jupyter]] [[thoughts/university/twenty-five-twenty-six/sfwr-4tb3/10 Generalized Parsing/00 Generalized Parsing|Notebooks]] support for client-side interaction, [[thoughts/Sets.fc|flashcards]], [[triathlon|a bunch of triathlon/tracking/analytics/health stuff]], {{sidenotes[tufte]: This is a tiny sidenote, supporting dynamic view size. Very much along the lines of [Tufte CSS](https://edwardtufte.github.io/tufte-css/)}} sidenotes, sidepanels [^sidepanel], custom popover, modified [Flexoki](https://stephango.com/flexoki). I also host all of the LFS on Cloudflare R2, and have a middleware as a proxy client. There are also [[courses/index|course workspaces]], a PDF reader with marks and notes, a saved-link reading queue, browser semantic search, pronunciation tools, and a little mascot wandering around the page edges. The [[/index|homepage]] has local weather and a shared walking trail. Also custom [[/404|404 page]] because why not. Oh, there's also a [[personal canon|Tractatus-specific]] layout, [[thoughts/LLMs|technical docs]] layout, [[fr|french-specific]] layout, and {{sidenotes[more.]: Thanks to Opus and Astra for prototyping a lot of the mocks/ideas I have for these.}}
+**#technical** -- a [heavily modified fork](https://en.wikipedia.org/wiki/Ship_of_Theseus) of [Quartz](https://quartz.jzhao.xyz/), hosted with Cloudflare Workers, with support for arXiv file pulling, [telescopic](https://github.com/jackyzha0/telescopic-text) [[friends#^telexample|text]], [[/|custom homepage]], a [note view](https://notes.aarnphm.xyz/notes?stackedNotes=bm90ZXM), [[/singularity|JSON Canvas support]], [[cinematheque.base|Obsidian Bases support]] hierarchical grid layout, comment room support, reader view with custom [[/thoughts|folder]] and [[/tags|tags]] view, nested [[/index.xml|rss]] [[/posts/index.xml|feed]], [[queries|Jupyter]] [[thoughts/university/twenty-five-twenty-six/sfwr-4tb3/10 Generalized Parsing/00 Generalized Parsing|Notebooks]] support for client-side interaction, [[thoughts/Sets.fc|flashcards]], [[triathlon|a bunch of triathlon/tracking/analytics/health stuff]], {{sidenotes[tufte]: This is a tiny sidenote, supporting dynamic view size. Very much along the lines of [Tufte CSS](https://edwardtufte.github.io/tufte-css/)}} sidenotes, sidepanels [^sidepanel], custom popover, modified [Flexoki](https://stephango.com/flexoki). I also host all of the LFS on Cloudflare R2, and have a middleware as a proxy client. There are also [[courses/index|course workspaces]], a PDF reader with marks and notes, a saved-link reading queue, browser semantic search, pronunciation tools, and a little mascot wandering around the page edges. The [[/index|homepage]] has local weather and a shared walking trail. Also custom [[/404|404 page]] because why not. Oh, there's also a [[personal canon|Tractatus-specific]] layout, [[thoughts/LLMs|technical docs]] layout, [[fr|french-specific]] layout, [[thoughts/university|some of my undergrad note]] layout, [[embeddings|embeddings]] layout, and {{sidenotes[more.]: Thanks to Opus and Astra for prototyping a lot of the mocks/ideas I have for these.}}
 
 [^sidepanel]: <kbd>Alt</kbd>, <kbd>Cmd</kbd>, or <kbd>Ctrl</kbd> + click an internal link to [popover](https://x.com/aarnphm/status/1884954569341272345) a side panel 😃
 
@@ -136,8 +136,6 @@ Support a small subsets of the features, with wikilinks parsing
 > ````
 
 ### drop caps
-
-A note opens on a face by setting `dropcap:` (`garamond`, `ebgaramond`, `goudy`, `yinit`, `dezs`, `procedural`, or `procedural-<seed>`). A fence draws one letter on its own. `type` is the face. `seed` picks which procedural picture, and any other seed still lands on one of them.
 
 ```dropcap type=garamond
 G

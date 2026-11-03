@@ -6,7 +6,7 @@ date: '2026-01-17'
 description: my name is Aaron, and on the virtue of friendship
 id: friends
 layout: technical
-modified: 2026-11-01 13:42:25 GMT-05:00
+modified: 2026-11-03 11:12:44 GMT-05:00
 tags:
   - evergreen
   - friend
@@ -18,7 +18,9 @@ bonjour.
 
 this document details information about me as a _friend_. There is [[dating|a date-me]] {{sidenotes[doc]: i wrote this one in january/february 2025; i'm not actively dating, but decide to leave this up as it was still, an _important document_ to me.}}, though I wanted to have a friend-equivalent document 🧊 🍧 .
 
-quick tl/dr: i used to live in sf for a bit for work, and moved abroad to vancouver since high school, studied and lived in hamilton, and now in toronto. anyhow, will be in toronto for a while, (i have gotten to know a lot more people in toronto now but wouldn't mind expanding my tribe's, circa [[thoughts/images/bcccdd2e-95e6-4023-9c93-9b72b9a0c26b_178356259078.avif|Dunbar's number]]). i'm pretty well-positioned, i.e. having a decent career prospect and determined on what [[triathlon|to]] [[research|do]]. i want to build towards a joyful-[[thoughts/Roko's Basilisk|amicable]]-[[thoughts/AGI#superintelligence|superintelligence]] systems 🧗 and have a _decent life_ (we only get one chance, might as well make the most out of it.)
+quick tl/dr: i used to live in sf for a bit for work, and moved abroad to vancouver since high school, studied and lived in hamilton, and now in toronto. anyhow, will be in toronto for a while, (i have gotten to know a lot more people in toronto now but wouldn't mind [[thoughts/images/bcccdd2e-95e6-4023-9c93-9b72b9a0c26b_178356259078.avif|meeting more people]]. i'm well-positioned, enjoy my work and have [[triathlon|goals]] [[research|to achieve]]. I want to live a joyful life with [[thoughts/Roko's Basilisk|amicable]]-[[thoughts/AGI#superintelligence|superintelligence]] systems 🧗 (we only get one chance, might as well make the most out of it.)
+
+<div data-triathlon-latest data-triathlon-activities="20" />
 
 ```telescopic id="thoughts" marks="telexample"
 * I try to be
@@ -85,8 +87,6 @@ quick tl/dr: i used to live in sf for a bit for work, and moved abroad to vancou
 > i collect [[watch|watches]] as well!
 >
 > i also don't enjoy the taste of alcohol anymore 😸
->
-> <div data-triathlon-latest />
 
 ```quotes
 friends are still our first and sometimes best model of someone who chooses to be always on your side.
