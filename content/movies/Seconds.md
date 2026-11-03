@@ -1,14 +1,14 @@
 ---
 date: '2026-11-02'
 director:
-  - "John Frankenheimer"
-id: "Seconds"
+  - 'John Frankenheimer'
+id: 'Seconds'
 modified: '2026-11-02'
 posters: '[[movies/posters/seconds.jpg]]'
 status: to watch
 tags:
   - cinematography
-title: "Seconds"
+title: 'Seconds'
 year: 1966
 ---
 
