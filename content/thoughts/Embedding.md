@@ -2,11 +2,12 @@
 date: '2024-02-25'
 description: token lookup, position, masking, and image–text representations
 id: Embedding
-modified: 2026-10-12
+modified: 2026-11-03 14:03:39 GMT-05:00
 seealso:
   - '[[thoughts/Transformers|Transformers]]'
   - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/LLMs|LLMs]]'
+  - '[[embeddings|embeddings]]'
 tags:
   - ml
   - llm
