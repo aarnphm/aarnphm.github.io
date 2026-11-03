@@ -55,6 +55,13 @@ ul.content-meta {
     display: inline-flex;
     align-items: center;
     gap: 0.5em;
+
+    // The sprite draws a 16-unit glyph in a 24-unit viewBox; the 24-unit <use> in ContentMeta
+    // makes the glyph fill this box, so the grid centres the ink on the text.
+    .clipboard-button > svg {
+      width: 11px;
+      height: 11px;
+    }
   }
 
   @media (hover: hover) and (pointer: fine) {
