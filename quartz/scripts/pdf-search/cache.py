@@ -45,6 +45,8 @@ class ExtractedPage:
 
   @property
   def status(self) -> str:
+    if any('[unreadable:' in region.text for region in self.regions):
+      return 'partial'
     return 'ok' if self.regions else 'no-text'
 
 

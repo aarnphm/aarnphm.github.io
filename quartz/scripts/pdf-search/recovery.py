@@ -39,6 +39,81 @@ def reviewed_region_text(
     )
     text = 'abcdefghi jklmnopqr\ntuvwxyz ÿ'
     models = 'gemini-4-argon-high'
+  elif number == 97 and bounds in (
+    [0, 269, 82, 414],
+    [0, 397, 101, 469],
+    [0, 435, 103, 490],
+    [0, 501, 190, 615],
+    [4, 548, 218, 672],
+    [13, 596, 243, 728],
+    [163, 152, 543, 401],
+    [155, 440, 365, 640],
+    [347, 432, 391, 453],
+    [316, 441, 458, 605],
+    [410, 399, 676, 548],
+  ):
+    if content not in (None, ''):
+      return None
+    expected = (
+      '728e6d0ca3809d504f12f3302ef5303238a7324cf2824b303d64781d597dba7d'
+    )
+    text = (
+      '[unreadable: photographed German specimen; recognition unresolved '
+      'in this region]'
+    )
+    models = 'gemini-4-argon-high'
+  elif number == 57 and bounds in ([114, 301, 286, 641], [292, 304, 464, 642]):
+    if content not in (None, ''):
+      return None
+    expected = (
+      'cf49bbbb18ec9a1928d32530e9676b16c34d696394579b177ab38dbadc368534'
+    )
+    text = '[unreadable: dense German typography specimen; complete literal transcription remains unresolved]'
+    models = 'gemini-4-argon-high'
+  elif bounds in {
+    58: [[190, 299, 538, 638]],
+    59: [[76, 275, 291, 691], [288, 276, 505, 687]],
+    60: [[165, 294, 516, 632], [585, 295, 938, 634]],
+    61: [[91, 301, 443, 642]],
+    63: [
+      [196, 386, 275, 455],
+      [196, 462, 276, 516],
+      [195, 540, 279, 611],
+      [106, 615, 274, 650],
+      [375, 387, 457, 453],
+      [376, 462, 459, 512],
+      [376, 539, 460, 607],
+      [287, 614, 457, 649],
+      [526, 610, 606, 643],
+      [614, 610, 696, 643],
+      [707, 457, 789, 525],
+      [798, 609, 879, 644],
+      [707, 609, 790, 643],
+    ],
+  }.get(number, []):
+    if content not in (None, ''):
+      return None
+    expected = (
+      'cf49bbbb18ec9a1928d32530e9676b16c34d696394579b177ab38dbadc368534'
+    )
+    text = '[unreadable: miniature typography specimen; complete literal transcription remains unresolved]'
+    models = 'gemini-4-argon-high'
+  elif number == 150 and bounds == [84, 465, 351, 853]:
+    if content not in (None, ''):
+      return None
+    expected = (
+      'dfc364b1cdc0e71f18a2f6a5bf4b4b5660fb4de2f93a155e4cae949f3e9ae991'
+    )
+    text = '[unreadable: miniature restaurant-guide specimen; complete literal transcription remains unresolved]'
+    models = 'gemini-4-argon-high'
+  elif number == 114 and bounds == [444, 203, 703, 817]:
+    if content not in (None, ''):
+      return None
+    expected = (
+      '728e6d0ca3809d504f12f3302ef5303238a7324cf2824b303d64781d597dba7d'
+    )
+    text = '[unreadable: blackletter Latin commentary; complete literal transcription remains unresolved]'
+    models = 'gemini-4-argon-high'
   elif number == 804 and bounds == [223, 818, 269, 827]:
     expected = (
       '13051c1e0401281930ccc533cbcdabcfec77a3eb69fd201e3bbd4796b4a91d07'
@@ -59,13 +134,27 @@ def reviewed_region_text(
     'review_approved_by': 'aarnphm',
     'review_date': '2026-11-02',
   }
-  if number in (12, 804):
+  if number in (12, 57, 58, 59, 60, 61, 63, 114, 150, 804) or (
+    number == 97 and bounds == [0, 269, 82, 414]
+  ):
     reviewed['review_recognition'] = 'approved-transcription-before-ocr'
   if number in (29, 804):
     reviewed['review_approved_by'] = (
       'Codex image review under aarnphm authorization'
     )
     reviewed['review_date'] = '2026-11-03'
+  if number == 97:
+    reviewed['review_status'] = 'reviewed-partial'
+    reviewed['review_date'] = '2026-11-03'
+    reviewed['review_reference'] = (
+      'docs/verification/ocr-aside-recovery/source-review.md#thinking-with-type-page-97-authorized-partial-ocr'
+    )
+  if number in (57, 58, 59, 60, 61, 63, 114, 150):
+    reviewed['review_status'] = 'reviewed-partial'
+    reviewed['review_date'] = '2026-11-03'
+    reviewed['review_reference'] = (
+      'docs/verification/ocr-aside-recovery/source-review.md#authorized-partial-ocr-for-remaining-blocked-specimens'
+    )
   return reviewed
 
 
