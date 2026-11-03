@@ -18,6 +18,12 @@ export interface ToastEventDetail extends ToastShowOptions {
   message: string
 }
 
+/** A shown toast: its element, for text that changes in place, and an early dismissal. */
+export interface ToastHandle {
+  element: HTMLDivElement
+  dismiss(afterMs?: number): void
+}
+
 const defaultContainerStyles: Partial<CSSStyleDeclaration> = {
   position: 'fixed',
   bottom: '1.25rem',
@@ -97,7 +103,8 @@ export class Toast {
     this.maxVisible = Math.max(1, config.maxVisible ?? MAX_VISIBLE_DEFAULT)
   }
 
-  show(message: string, options: ToastShowOptions = {}) {
+  /** `durationMs` of 0 or less keeps the toast until `dismiss` is called. */
+  show(message: string, options: ToastShowOptions = {}): ToastHandle {
     const container = this.ensureContainer(
       options.containerId,
       options.containerStyles,
@@ -164,7 +171,16 @@ export class Toast {
     })
 
     const duration = options.durationMs ?? this.defaultDurationMs
-    entry.hideTimer = window.setTimeout(() => this.fadeOut(entry), duration)
+    if (duration > 0) entry.hideTimer = window.setTimeout(() => this.fadeOut(entry), duration)
+    return {
+      element: toast,
+      dismiss: (afterMs = 0) => {
+        if (!this.toasts.includes(entry)) return
+        this.clearEntryHideTimer(entry)
+        if (afterMs > 0) entry.hideTimer = window.setTimeout(() => this.fadeOut(entry), afterMs)
+        else this.fadeOut(entry)
+      },
+    }
   }
 
   destroy() {
@@ -250,8 +266,6 @@ export class Toast {
 
     if (this.container) {
       this.container.style.width = `${baseWidthPx}px`
-      this.container.style.setProperty('--toast-visible-count', `${visible.length}`)
-      this.container.style.setProperty('--toast-base-width', `${baseWidthPx}px`)
     }
 
     for (let i = 0; i < hiddenCount; i++) {
@@ -268,7 +282,6 @@ export class Toast {
       const depth = visible.length - 1 - idx
       const el = entry.element
       el.style.display = 'inline-flex'
-      el.style.setProperty('--toast-depth', `${depth}`)
       el.dataset.toastDepth = `${depth}`
 
       const widthPx = Math.max(STACK_MIN_WIDTH, baseWidthPx - depth * STACK_WIDTH_STEP)
