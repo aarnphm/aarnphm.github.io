@@ -5,7 +5,12 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { after, before, test } from 'node:test'
 import { getPlatformProxy } from 'wrangler'
-import type { PdfManifest, PdfMark, PdfMarkInput } from '../quartz/util/pdf-marks'
+import {
+  parsePdfFragment,
+  type PdfManifest,
+  type PdfMark,
+  type PdfMarkInput,
+} from '../quartz/util/pdf-marks'
 import { handlePdfReaderRequest, type PdfReaderEnv } from './pdf-marks'
 
 interface TestEnv {
@@ -394,6 +399,44 @@ test('reader shell uses its dedicated asset and gets the document record injecte
     await markdownIndex.text(),
     /\[pset 1\]\(\/read\/courses\/18\.100B\/pset%201\) \(0\)/,
   )
+})
+
+test('page fragments accept #page=N and a bare page number', () => {
+  assert.deepEqual(parsePdfFragment('#page=13'), { page: 13 })
+  assert.deepEqual(parsePdfFragment('#13'), { page: 13 })
+  assert.deepEqual(parsePdfFragment('#0'), {})
+  assert.deepEqual(parsePdfFragment('#^abcdefghij'), { markId: 'abcdefghij' })
+})
+
+test('a .pdf reader url redirects to the canonical path and keeps the query', async () => {
+  const suffix = await call(`${VISITOR_ORIGIN}/read/thoughts/pdfs/holt.pdf`)
+  assert.equal(suffix.status, 301)
+  assert.equal(suffix.headers.get('Location'), '/read/thoughts/pdfs/holt')
+
+  const spaced = await call(`${VISITOR_ORIGIN}/read/courses/18.100B/pset%201.pdf`)
+  assert.equal(spaced.headers.get('Location'), '/read/courses/18.100B/pset%201')
+
+  const course = await call(
+    `${VISITOR_ORIGIN}/read/courses/18-156/static_resources/mit18_156_s25_lec07.pdf`,
+  )
+  assert.equal(course.headers.get('Location'), READ_C)
+
+  const embedded = await call(
+    `${VISITOR_ORIGIN}/read/courses/18-156/static_resources/mit18_156_s25_lec07.pdf?embed=course`,
+  )
+  assert.equal(
+    embedded.headers.get('Location'),
+    '/read/courses/18-156/static_resources/mit18_156_s25_lec07?embed=course',
+  )
+
+  const readerView = await call(`${VISITOR_ORIGIN}/read/thoughts/pdfs/holt.PDF?view=reader`)
+  assert.equal(readerView.headers.get('Location'), '/read/thoughts/pdfs/holt?view=reader')
+
+  const missing = await handlePdfReaderRequest(
+    new Request(`${VISITOR_ORIGIN}/read/not/a/file.pdf`),
+    env(),
+  )
+  assert.equal(missing, null)
 })
 
 test('unknown reader paths fall through to the 404 handling (F11)', async () => {

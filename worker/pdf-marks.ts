@@ -562,9 +562,17 @@ async function handleReaderRoute(
   } catch {
     return null
   }
-  const slug = entry.byReaderKey.get(decoded)
+  const canonicalKey = pdfReaderKey(decoded)
+  const slug = entry.byReaderKey.get(canonicalKey)
   const record = slug ? entry.manifest.documents[slug] : undefined
   if (!slug || !record) return null
+
+  if (decoded !== canonicalKey) {
+    const stayOnReader =
+      url.searchParams.get('embed') === 'course' || url.searchParams.get('view') === 'reader'
+    const path = stayOnReader ? pdfReaderPath(slug) : pdfOpenPath(slug, record)
+    return redirect(`${path}${url.search}`)
+  }
 
   if (wantsMarkdown(request)) {
     const marks = env.ARENA_READER ? await listMarks(env, record.doc, false) : []

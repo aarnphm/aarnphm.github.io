@@ -403,10 +403,10 @@ export function parsePdfManifest(value: unknown): PdfManifest | null {
   return { version: 1, documents }
 }
 
-/** Page-and-anchor fragment for links into a PDF, e.g. `#page=12` or `#^abcdefghij`. */
+/** Page-and-anchor fragment for links into a PDF, e.g. `#page=12`, `#12`, or `#^abcdefghij`. */
 export function parsePdfFragment(hash: string): { page?: number; markId?: string } {
   const value = hash.replace(/^#/, '')
-  const page = /^page=(\d{1,6})$/.exec(value)
+  const page = /^page=(\d{1,6})$/.exec(value) ?? /^(\d{1,6})$/.exec(value)
   if (page) {
     const number = Number.parseInt(page[1], 10)
     return isPage(number) ? { page: number } : {}
