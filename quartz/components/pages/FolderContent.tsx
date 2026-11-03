@@ -112,6 +112,7 @@ const Layout = {
   resource: 'RESOURCE',
   studyLog: 'STUDY-LOG',
   statements: 'STATEMENTS',
+  latent: 'LATENT',
 } as const
 
 type FolderLayout = (typeof Layout)[keyof typeof Layout]
@@ -528,6 +529,15 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     }
 
     switch (layout) {
+      // `layout: latent`: the embeddings explorer (quartz/plugins/transformers/latent.ts) is the
+      // listing; it takes the page's width, so no evergreen column and no file list
+      case Layout.latent:
+        return (
+          <div class="folder-layout folder-layout--latent" data-pagelist>
+            <article class="folder-layout--article">{content}</article>
+          </div>
+        )
+
       case Layout.etas:
         return (
           <div class="folder-layout folder-layout--et-a" data-pagelist>

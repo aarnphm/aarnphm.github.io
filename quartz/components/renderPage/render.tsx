@@ -297,6 +297,10 @@ export function renderPageWithMetadata(
     }
   }
 
+  if (componentData.fileData.frontmatter?.pageLayout === 'latent') {
+    components = { ...components, sidebar: [], afterBody: [] }
+  }
+
   if (componentData.fileData.frontmatter?.pageLayout === 'letter-poem') {
     components = { ...components, header: [], sidebar: [], afterBody: [], beforeBody: [] }
   }

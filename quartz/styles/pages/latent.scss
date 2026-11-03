@@ -1,0 +1,944 @@
+@use '../variables.scss' as *;
+
+// `layout: latent`: rail | reader | links | probe. Markup from quartz/util/latent/markup.ts.
+// Popovers mount on <body>, so every rule hangs off the page root through :where.
+[data-layout='latent'] :where(#quartz-root) {
+  --lat-pdf: #fdb2a2;
+  --lat-image: #cdd597;
+  --lat-hair: var(--lightgray);
+  --lat-rule: var(--dark);
+  // the serif the press kit uses; Source Serif 4 is not shipped, so it only resolved on
+  // machines that happened to have it installed
+  --lat-serif: 'Parclo Serif', Cambria, Georgia, serif;
+  --lat-mono: var(--codeFont);
+  --lat-ui: var(--bodyFont);
+  --lat-top: 0.5rem;
+  // three text sizes besides the reader: --text-ui, --text-meta, and this one for mono tags,
+  // loci, scores and chips
+  --lat-micro: 0.68rem;
+  // every pane head is this tall, so their rules sit on one line like a table's head row
+  --lat-head: 3.25rem;
+
+  // the explorer is the page; the site header gives it its row (as the pdf reader does)
+  & > .header {
+    display: none;
+  }
+
+  .folder-layout--latent {
+    display: contents;
+  }
+
+  .page-content > article,
+  .folder-layout--latent > .folder-layout--article {
+    grid-column: 2 / -2;
+    width: auto;
+    min-width: 0;
+    max-width: none;
+    margin: 0;
+    padding-inline: 0;
+  }
+
+  .page-footer > .graph,
+  .page-footer > .recommendations,
+  .page-footer > .backlinks {
+    display: none;
+  }
+}
+
+[data-layout='latent'] :where(#quartz-root) .latent {
+  --lat-rail: 200px;
+  --lat-links: 320px;
+  --lat-probe: 340px;
+  display: grid;
+  grid-template-columns: var(--lat-rail) minmax(0, 1fr) var(--lat-links) var(--lat-probe);
+  gap: 1rem;
+  align-items: start;
+  margin: 1rem 0 3rem;
+  font-family: var(--lat-ui);
+  font-size: var(--text-ui);
+  line-height: var(--line-height);
+
+  // the head rule, drawn once across the four columns and their gaps; it sticks where the pane
+  // heads stick, and the heads keep their own border under it for the stacked layouts
+  &::before {
+    content: '';
+    grid-row: 1;
+    grid-column: 1 / -1;
+    align-self: start;
+    position: sticky;
+    top: calc(var(--lat-top) + var(--lat-head) - 1px);
+    height: 1px;
+    margin-top: calc(var(--lat-head) - 1px);
+    background: var(--lat-rule);
+    pointer-events: none;
+    z-index: 3;
+  }
+
+  @media (max-width: 1399px) {
+    --lat-probe: 300px;
+    --lat-links: 280px;
+    --lat-rail: 160px;
+  }
+
+  @media (max-width: 1100px) {
+    grid-template-columns: var(--lat-rail) minmax(0, 1fr) var(--lat-links);
+
+    &::before {
+      display: none;
+    }
+
+    .lat-probe {
+      grid-column: 1 / -1;
+      position: static;
+    }
+  }
+
+  @media all and ($mobile) {
+    display: block;
+
+    .lat-rail,
+    .lat-links,
+    .lat-probe {
+      position: static;
+      height: auto;
+      max-height: none;
+    }
+
+    .lat-rail svg.lat-track {
+      height: 42vh;
+      width: 100%;
+    }
+
+    .lat-links {
+      margin-top: 2rem;
+    }
+
+    // the locus gutter costs a sixth of a phone's width; the locus sits above its passage
+    .lat-reader .lat-chunk,
+    .lat-reader .lat-more {
+      padding-left: 0.75rem;
+    }
+
+    .lat-reader .lat-locus {
+      position: static;
+      display: block;
+      width: auto;
+      margin-bottom: 0.2rem;
+    }
+  }
+}
+
+[data-layout='latent'] :where(#quartz-root) {
+  // the global `header` rule (document-defaults.scss) pads the element and pushes its
+  // second-last child right, which shoved each pane label against its count
+  .lat-pane-head,
+  .lat-probe .lat-axis > header {
+    padding: 0;
+
+    > * {
+      margin-left: 0;
+    }
+  }
+
+  .lat-pane-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding-bottom: 0.3rem;
+    margin-bottom: 0.6rem;
+    white-space: nowrap;
+
+    .lat-count {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    border-bottom: 1px solid var(--lat-rule);
+    font-family: var(--lat-mono);
+    font-size: var(--text-meta);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--dark);
+
+    & .lat-count {
+      letter-spacing: 0;
+      text-transform: none;
+      color: var(--gray);
+    }
+  }
+
+  .lat-mark {
+    display: inline-block;
+    font-family: var(--lat-mono);
+    font-size: var(--lat-micro);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    line-height: 1;
+    padding: 0.1rem 0.3rem;
+    border: 1px solid var(--lat-hair);
+    color: var(--darkgray);
+    vertical-align: 0.1em;
+    white-space: nowrap;
+
+    &::before {
+      content: '';
+      display: inline-block;
+      width: 0.5em;
+      height: 0.5em;
+      margin-right: 0.35em;
+      background: var(--dark);
+    }
+
+    &[data-kind='pdf']::before {
+      background: var(--lat-pdf);
+    }
+
+    &[data-kind='image']::before {
+      background: var(--lat-image);
+    }
+
+    &[data-kind='base']::before {
+      background: transparent;
+      outline: 1px solid var(--gray);
+      outline-offset: -1px;
+    }
+  }
+
+  // the head row: rail, reader, links and probe heads share one height and sit on its floor;
+  // links and probe scroll, so their heads stick to the top of the pane
+  .lat-rail > .lat-pane-head,
+  .lat-links > .lat-pane-head,
+  .lat-probe > .lat-pane-head {
+    box-sizing: border-box;
+    height: var(--lat-head);
+    align-items: flex-end;
+    align-items: last baseline;
+  }
+
+  .lat-links > .lat-pane-head,
+  .lat-probe > .lat-pane-head {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--light);
+  }
+
+  // ---- rail ---------------------------------------------------------------------------
+  .lat-rail {
+    position: sticky;
+    top: var(--lat-top);
+    max-height: calc(100vh - var(--lat-top) - 0.5rem);
+    overflow: hidden;
+
+    svg.lat-track {
+      display: block;
+      width: 100%;
+      height: calc(100vh - 4rem);
+      overflow: visible;
+      font-family: var(--lat-mono);
+    }
+
+    .lat-axis {
+      stroke: var(--lat-rule);
+      stroke-width: 0.6;
+    }
+
+    .lat-tick {
+      stroke: var(--gray);
+      stroke-width: 0.6;
+
+      &[data-band] {
+        stroke-dasharray: 1 2;
+      }
+    }
+
+    .lat-year {
+      font-size: 8px;
+      fill: var(--gray);
+      text-anchor: end;
+      dominant-baseline: middle;
+
+      &.lat-undated {
+        text-anchor: start;
+        font-size: 7px;
+        letter-spacing: 0.08em;
+      }
+    }
+
+    .lat-lane {
+      stroke: var(--dark);
+      stroke-width: 0.8;
+      opacity: 0.55;
+
+      &[data-kind='pdf'] {
+        stroke: var(--lat-pdf);
+        opacity: 0.9;
+      }
+
+      &[data-kind='image'] {
+        stroke: var(--lat-image);
+        opacity: 0.9;
+      }
+
+      &[data-kind='base'] {
+        stroke: var(--gray);
+        opacity: 0.6;
+      }
+    }
+
+    .lat-bracket {
+      fill: none;
+      stroke: var(--dark);
+      stroke-width: 0.6;
+    }
+
+    .lat-open {
+      stroke: var(--dark);
+      stroke-width: 1.4;
+      opacity: 0.35;
+
+      &[data-kind='pdf'] {
+        stroke: color-mix(in srgb, var(--lat-pdf) 70%, var(--dark));
+      }
+    }
+
+    .lat-cursor {
+      stroke: var(--dark);
+      stroke-width: 0.8;
+    }
+
+    .lat-open-title {
+      font-size: 8px;
+      fill: var(--dark);
+      font-weight: 600;
+    }
+
+    .lat-leader {
+      fill: none;
+      stroke: var(--gray);
+      stroke-width: 0.5;
+      opacity: 0.7;
+
+      &[data-kind='pdf'] {
+        stroke: color-mix(in srgb, var(--lat-pdf) 60%, var(--gray));
+      }
+
+      &[data-out] {
+        stroke-dasharray: 1.5 1.5;
+        opacity: 0.4;
+      }
+    }
+
+    .lat-label {
+      font-size: 8px;
+      fill: var(--dark);
+      cursor: pointer;
+
+      &[data-out] {
+        fill: var(--gray);
+      }
+
+      &:hover {
+        text-decoration: underline;
+      }
+
+      .lat-label-score {
+        fill: var(--gray);
+        font-size: 7px;
+      }
+    }
+  }
+
+  // ---- reader -------------------------------------------------------------------------
+  .lat-reader {
+    font-family: var(--lat-serif);
+    font-size: 1.05rem;
+    line-height: 1.55;
+    min-width: 0;
+
+    .lat-doc {
+      margin-bottom: 4rem;
+    }
+
+    .lat-doc-stub {
+      min-height: 40vh;
+      opacity: 0.55;
+    }
+
+    // the global `header` rule (document-defaults.scss) is flex with a right margin on the
+    // second-last child; the doc head stacks kicker over meta instead
+    .lat-doc-head {
+      box-sizing: border-box;
+      height: var(--lat-head);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      position: sticky;
+      top: var(--lat-top);
+      z-index: 2;
+      background: var(--light);
+      padding: 0 0 0.3rem;
+      line-height: 1.25;
+      // the global header rule's flex gap; kicker and meta sit as two lines
+      gap: 0;
+      // the passage scrolling past shows in the --lat-top band above the head; cover it
+      box-shadow: 0 calc(-1 * var(--lat-top)) 0 var(--light);
+      border-bottom: 1px solid var(--lat-rule);
+      margin-bottom: 1rem;
+      font-family: var(--lat-ui);
+      font-size: var(--text-ui);
+
+      > * {
+        margin-left: 0;
+      }
+    }
+
+    .lat-doc-kicker {
+      display: flex;
+      align-items: baseline;
+      gap: 0.6rem;
+      min-width: 0;
+    }
+
+    .lat-doc-title {
+      flex: 1 1 auto;
+      min-width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-family: var(--lat-serif);
+      font-weight: 600;
+      font-size: 1.25rem;
+      color: var(--dark);
+      text-decoration: none;
+    }
+
+    .lat-doc-date {
+      font-family: var(--lat-mono);
+      color: var(--gray);
+      font-size: var(--text-meta);
+    }
+
+    .lat-doc-meta {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.15rem;
+      font-family: var(--lat-mono);
+      font-size: var(--text-meta);
+      color: var(--gray);
+
+      > * + *::before {
+        content: '·';
+        margin-right: 0.5rem;
+      }
+
+      a {
+        color: var(--darkgray);
+        text-decoration: none;
+      }
+    }
+
+    .lat-chunk {
+      position: relative;
+      padding: 0.2rem 0 0.2rem 3.4rem;
+      margin: 0 0 0.9rem;
+      border-left: 2px solid transparent;
+
+      & > p,
+      & > .lat-h {
+        margin: 0;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+      }
+
+      & > * + * {
+        margin-top: 0.75em;
+      }
+
+      // the locus is absolutely placed (a block above the text on phones), not a paragraph
+      & > .lat-locus + * {
+        margin-top: 0;
+      }
+
+      .lat-h {
+        font: inherit;
+        font-weight: 600;
+        color: var(--dark);
+      }
+
+      // KaTeX at the reader's size; display math scrolls sideways rather than widening the column
+      .katex {
+        font-size: 1.08em;
+        white-space: normal;
+      }
+
+      .katex-display {
+        margin: 0;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 0.15em 0;
+      }
+
+      .lat-empty {
+        font-family: var(--lat-mono);
+        font-size: var(--text-meta);
+        color: var(--gray);
+      }
+
+      &[data-focus] {
+        border-left-color: var(--dark);
+      }
+
+      &[data-focus] .lat-locus {
+        color: var(--dark);
+      }
+    }
+
+    .lat-more {
+      padding: 0.4rem 0 0.4rem 3.4rem;
+      margin: 0 0 0.9rem;
+      font-family: var(--lat-mono);
+      font-size: var(--text-meta);
+      color: var(--gray);
+    }
+
+    .lat-locus {
+      position: absolute;
+      left: 0;
+      top: 0.35rem;
+      width: 3rem;
+      font-family: var(--lat-mono);
+      font-size: var(--lat-micro);
+      color: var(--gray);
+      line-height: 1.2;
+
+      a {
+        color: inherit;
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+
+  // the reading line: a hairline at 38% of the viewport. Sticky rather than fixed, so it spans
+  // the reader column only (fixed ran it across the rail, links and probe) and takes no space
+  .latent[data-latent-live] .lat-reader::before {
+    content: '';
+    display: block;
+    position: sticky;
+    top: 38vh;
+    height: 0;
+    margin-bottom: -1px;
+    border-top: 1px dashed var(--lightgray);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  // ---- links --------------------------------------------------------------------------
+  .lat-links {
+    position: sticky;
+    top: var(--lat-top);
+    max-height: calc(100vh - var(--lat-top) - 0.5rem);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    padding-right: 0.25rem;
+
+    .lat-group {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      margin: 1rem 0 0.4rem;
+      font-family: var(--lat-mono);
+      font-size: var(--text-meta);
+      color: var(--gray);
+      font-weight: 400;
+    }
+
+    .lat-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .lat-link {
+      position: relative;
+      padding: 0.45rem 0 0.55rem;
+      border-top: 1px solid var(--lat-hair);
+      font-size: var(--text-meta);
+
+      &[data-out] {
+        color: var(--gray);
+
+        .lat-link-title {
+          color: var(--gray);
+        }
+      }
+
+      &[data-same] .lat-link-title {
+        font-weight: 400;
+      }
+    }
+
+    .lat-score {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--lat-mono);
+      font-size: var(--lat-micro);
+      color: var(--gray);
+      margin-bottom: 0.15rem;
+
+      i {
+        flex: 0 0 auto;
+        display: block;
+        width: calc(var(--score) * 100%);
+        max-width: calc(100% - 3rem);
+        height: 1px;
+        background: var(--dark);
+      }
+    }
+
+    .lat-link-title {
+      font-family: var(--lat-serif);
+      font-weight: 600;
+      color: var(--dark);
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    .lat-link-locus {
+      display: block;
+      font-family: var(--lat-mono);
+      font-size: var(--lat-micro);
+      color: var(--gray);
+
+      em {
+        font-style: normal;
+        margin-left: 0.5rem;
+
+        &::before {
+          content: '· ';
+        }
+      }
+    }
+
+    .lat-extract {
+      margin: 0.25rem 0 0;
+      font-family: var(--lat-serif);
+      font-size: var(--text-meta);
+      line-height: 1.4;
+      color: var(--darkgray);
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+
+      .katex {
+        font-size: 1em;
+      }
+    }
+
+    .lat-link-read {
+      font-family: var(--lat-mono);
+      font-size: var(--lat-micro);
+      color: var(--darkgray);
+      margin-right: 0.4rem;
+    }
+
+    .lat-silhouette {
+      position: absolute;
+      right: 0;
+      top: 0.5rem;
+      width: 2.4rem;
+      height: 3.1rem;
+      border: 1px solid var(--lat-hair);
+      background: var(--light);
+      opacity: 0;
+      transition: opacity 120ms;
+
+      &[data-ready] {
+        opacity: 1;
+      }
+
+      svg {
+        width: 100%;
+        height: 100%;
+      }
+
+      rect {
+        fill: var(--lightgray);
+
+        &[data-hit] {
+          fill: var(--lat-pdf);
+        }
+      }
+    }
+
+    .lat-link:has(.lat-silhouette[data-ready]) .lat-extract {
+      padding-right: 2.8rem;
+    }
+  }
+
+  // ---- probe --------------------------------------------------------------------------
+  .lat-probe {
+    position: sticky;
+    top: var(--lat-top);
+    max-height: calc(100vh - var(--lat-top) - 0.5rem);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    font-size: var(--text-meta);
+
+    .lat-tabs {
+      display: flex;
+      gap: 0.25rem;
+    }
+
+    .lat-tab {
+      font: inherit;
+      font-family: var(--lat-mono);
+      font-size: var(--lat-micro);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: none;
+      border: 1px solid transparent;
+      padding: 0.1rem 0.4rem;
+      color: var(--gray);
+      cursor: pointer;
+
+      &[aria-selected='true'] {
+        color: var(--dark);
+        border-color: var(--dark);
+      }
+    }
+
+    .lat-axis {
+      padding: 0.5rem 0;
+      border-top: 1px solid var(--lat-hair);
+
+      // the head rule already sits above the first card
+      &:first-child {
+        border-top: 0;
+        padding-top: 0;
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 0.5rem;
+      }
+    }
+
+    .lat-axis-name {
+      font-family: var(--lat-serif);
+      font-weight: 600;
+    }
+
+    .lat-chip {
+      font-family: var(--lat-mono);
+      font-size: var(--lat-micro);
+      color: var(--gray);
+      border: 1px solid var(--lat-hair);
+      padding: 0 0.3rem;
+      white-space: nowrap;
+
+      &[data-flat] {
+        color: var(--darkgray);
+        border-style: dashed;
+      }
+    }
+
+    .lat-hist {
+      display: block;
+      width: 100%;
+      height: 18px;
+      margin: 0.35rem 0;
+
+      path {
+        stroke: var(--gray);
+        stroke-width: 2;
+        fill: none;
+      }
+
+      // salmon marks pdfs everywhere else on the page; the focus is ink
+      .lat-focus-tick {
+        stroke: var(--dark);
+        stroke-width: 2;
+      }
+    }
+
+    .lat-poles {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem;
+    }
+
+    .lat-pole {
+      min-width: 0;
+
+      &[data-side='b'] {
+        text-align: right;
+
+        ol li {
+          justify-content: flex-end;
+        }
+      }
+    }
+
+    .lat-pole-name {
+      display: block;
+      font-family: var(--lat-mono);
+      font-size: var(--lat-micro);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--dark);
+    }
+
+    .lat-pole-terms {
+      display: block;
+      font-style: italic;
+      color: var(--darkgray);
+      font-size: var(--text-meta);
+      margin-bottom: 0.2rem;
+    }
+
+    .lat-pole-rows {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      font-size: var(--text-meta);
+
+      li {
+        display: flex;
+        gap: 0.35rem;
+        align-items: baseline;
+        line-height: 1.3;
+        margin: 0.1rem 0;
+      }
+
+      a {
+        color: var(--darkgray);
+        text-decoration: none;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .lat-bench-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      font-family: var(--lat-mono);
+      font-size: var(--lat-micro);
+      margin-bottom: 0.4rem;
+
+      label {
+        display: flex;
+        gap: 0.25rem;
+        align-items: center;
+      }
+
+      select,
+      button {
+        font: inherit;
+        background: var(--light);
+        color: var(--dark);
+        border: 1px solid var(--lat-hair);
+        padding: 0.1rem 0.3rem;
+        max-width: 9rem;
+      }
+    }
+
+    .lat-bench-canvas {
+      display: block;
+      width: 100%;
+      aspect-ratio: 1;
+      height: auto;
+      border: 1px solid var(--lat-hair);
+      cursor: grab;
+      touch-action: none;
+    }
+
+    .lat-bench-status {
+      font-family: var(--lat-mono);
+      font-size: var(--lat-micro);
+      color: var(--gray);
+      min-height: 1.2em;
+      margin: 0.3rem 0 0;
+    }
+
+    .lat-ledger {
+      margin-top: 1.5rem;
+
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        font-family: var(--lat-mono);
+        font-size: var(--lat-micro);
+      }
+
+      // mark | store | rows, with a pdf store's coverage under the store name
+      li {
+        display: grid;
+        grid-template-columns: 4.6rem minmax(0, 1fr) auto;
+        align-items: baseline;
+        gap: 0.1rem 0.5rem;
+        padding: 0.3rem 0;
+        border-top: 1px solid var(--lat-hair);
+        color: var(--dark);
+
+        &:not([data-included]) {
+          color: var(--gray);
+        }
+
+        .lat-mark {
+          justify-self: start;
+        }
+      }
+
+      .lat-ledger-id {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .lat-ledger-rows {
+        font-variant-numeric: tabular-nums;
+        text-align: right;
+      }
+
+      .lat-ledger-detail {
+        grid-column: 2 / -1;
+        color: var(--gray);
+      }
+
+      .lat-ledger-note {
+        font-family: var(--lat-mono);
+        font-size: var(--lat-micro);
+        color: var(--gray);
+        margin: 0.5rem 0 0;
+        padding-top: 0.4rem;
+        border-top: 1px solid var(--lat-hair);
+      }
+    }
+  }
+
+  .lat-missing {
+    font-family: var(--lat-mono);
+    border: 1px dashed var(--gray);
+    padding: 0.75rem;
+  }
+}
