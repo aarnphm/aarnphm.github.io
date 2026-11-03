@@ -340,12 +340,8 @@ async function initializeMap(container: HTMLElement, state: BaseMapState): Promi
       source: 'markers',
       paint: {
         'circle-color': ['get', 'color'],
-        'circle-radius': dense
-          ? ['interpolate', ['linear'], ['zoom'], 9, 2.5, 12, 4, 15, 7]
-          : 7,
-        'circle-stroke-width': dense
-          ? ['interpolate', ['linear'], ['zoom'], 9, 0.75, 14, 2]
-          : 2,
+        'circle-radius': dense ? ['interpolate', ['linear'], ['zoom'], 9, 2.5, 12, 4, 15, 7] : 7,
+        'circle-stroke-width': dense ? ['interpolate', ['linear'], ['zoom'], 9, 0.75, 14, 2] : 2,
         'circle-stroke-color': theme() === 'dark' && !satellite ? '#100f0f' : '#fff9f3',
         'circle-opacity': [
           'case',

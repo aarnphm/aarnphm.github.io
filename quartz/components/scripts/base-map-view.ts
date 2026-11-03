@@ -111,12 +111,7 @@ export function mountBaseMapView(
       browser.hidden = false
       container.classList.remove('base-map--folded')
       container.querySelector('[data-map-control="list"]')?.setAttribute('aria-expanded', 'true')
-      browser.scrollTo({
-        top:
-          browser.offsetTop > 0
-            ? selection.offsetTop - browser.offsetTop
-            : 0,
-      })
+      browser.scrollTo({ top: browser.offsetTop > 0 ? selection.offsetTop - browser.offsetTop : 0 })
     }
     if (focus)
       selection
