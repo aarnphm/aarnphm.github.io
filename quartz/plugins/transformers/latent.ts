@@ -158,6 +158,7 @@ export const Latent: QuartzTransformerPlugin = () => {
             h('div.lat-links-body', linksInner.children),
           ])
 
+          const features = index.features ?? []
           const probeEl = h('aside.lat-probe', [
             h('header.lat-pane-head', [
               h('span', 'probe'),
@@ -172,6 +173,13 @@ export const Latent: QuartzTransformerPlugin = () => {
                   { type: 'button', dataTab: 'bench', ariaSelected: 'true' },
                   '3-d',
                 ),
+                features.length
+                  ? h(
+                      'button.lat-tab',
+                      { type: 'button', dataTab: 'features', ariaSelected: 'false' },
+                      'features',
+                    )
+                  : null,
               ]),
             ]),
             h(
@@ -185,6 +193,10 @@ export const Latent: QuartzTransformerPlugin = () => {
               h('canvas.lat-bench-canvas', { width: 320, height: 320 }),
               h('p.lat-bench-status'),
             ]),
+            // sparse features: the client fills the panel the first time the tab opens
+            features.length
+              ? h('div.lat-panel.lat-features', { dataPanel: 'features', hidden: true })
+              : null,
             ledger(index, prefixes),
           ])
 
@@ -203,6 +215,7 @@ export const Latent: QuartzTransformerPlugin = () => {
               dataLatentRows: String(index.rows),
               dataLatentDocs: String(index.docs),
               dataLatentModel: index.model,
+              dataLatentFeatures: features.map(d => d.name).join(',') || undefined,
               dataLatentMacros: JSON.stringify(customMacros),
             },
             [rail, reader, linksEl, probeEl],

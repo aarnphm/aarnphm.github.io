@@ -57,7 +57,7 @@
 [data-layout='latent'] :where(#quartz-root) .latent {
   --lat-rail: 200px;
   --lat-links: 320px;
-  --lat-probe: 340px;
+  --lat-probe: 360px;
   display: grid;
   grid-template-columns: var(--lat-rail) minmax(0, 1fr) var(--lat-links) var(--lat-probe);
   gap: 1rem;
@@ -96,7 +96,7 @@
   }
 
   @media (max-width: 1399px) {
-    --lat-probe: 300px;
+    --lat-probe: 320px;
     --lat-links: 280px;
     --lat-rail: 160px;
   }
@@ -107,6 +107,12 @@
     > .lat-probe {
       grid-area: 2 / 1 / 3 / -1;
       position: static;
+      height: auto;
+      overflow: visible;
+
+      > .lat-panel {
+        overflow: visible;
+      }
     }
   }
 
@@ -119,6 +125,11 @@
       position: static;
       height: auto;
       max-height: none;
+    }
+
+    .lat-probe,
+    .lat-probe > .lat-panel {
+      overflow: visible;
     }
 
     .lat-rail svg.lat-track {
@@ -416,8 +427,13 @@
       background: var(--light);
     }
 
-    // a kind's rows open under a sub-head on the surface, like a ledger section
+    // a kind's rows open under a sub-head on the surface, like a ledger section. The sub-head
+    // sticks under the search box while its rows scroll; the next kind's sub-head slides up over
+    // it (same z, later in the list), so the bar always names the rows under it
     .lat-group {
+      position: sticky;
+      top: calc(var(--lat-head) + 2rem);
+      z-index: 1;
       display: flex;
       align-items: center;
       gap: 0.5rem;
@@ -432,7 +448,11 @@
       font-weight: 400;
     }
 
+    // the rule above a later kind: stuck, the bar rises 1px so this rule replaces the search's
+    // bottom rule. The bar's opaque ground paints under its own border, so the two translucent
+    // rules never stack into one darker line
     .lat-list + .lat-group {
+      top: calc(var(--lat-head) + 2rem - 1px);
       border-top: 1px solid var(--ledger-line);
     }
 
@@ -590,13 +610,30 @@
   }
 
   // ---- probe --------------------------------------------------------------------------
+  // one viewport tall like the links; the open panel scrolls between the head and the sources,
+  // which stay pinned to the floor
   .lat-probe {
     position: sticky;
     top: var(--lat-top);
-    max-height: calc(100vh - var(--lat-top) - 0.5rem);
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    scrollbar-width: thin;
+    height: calc(100vh - 2 * var(--lat-top));
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    > .lat-pane-head,
+    > .lat-ledger {
+      flex: none;
+    }
+
+    // no display here: the closed panel keeps its [hidden]
+    > .lat-panel {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+    }
+
     font-size: var(--text-meta);
     --lat-mark-gap: 0.45rem;
 
@@ -874,7 +911,7 @@
     }
 
     .lat-bench-level + .lat-bench-level {
-      margin-left: 0.9rem;
+      margin-left: 0.6rem;
     }
 
     // both levels on the row's one line; the site's button rules would stack them
@@ -887,8 +924,10 @@
       line-height: 1.5;
     }
 
-    // the levels are set like their label (mono, the micro size), so the row reads as one line
-    .lat-bench-level {
+    // the levels are set like their label (mono, the micro size), so the row reads as one line;
+    // the links toggle under the canvas is set the same way
+    .lat-bench-level,
+    .lat-bench-links {
       display: inline-block;
       width: auto;
       min-width: 0;
@@ -908,6 +947,71 @@
         text-decoration: underline;
         text-underline-offset: 0.2em;
         cursor: default;
+      }
+
+      &:focus-visible {
+        outline: 1px solid var(--dark);
+        outline-offset: 2px;
+      }
+    }
+
+    // the source toggles follow the level on its line, past a rule of their own
+    .lat-bench-table td.lat-bench-sources {
+      align-self: stretch;
+      display: flex;
+      align-items: center;
+      margin-left: auto;
+      padding-left: 0.625rem;
+      border-left: 1px solid var(--ledger-line);
+    }
+
+    .lat-bench-source + .lat-bench-source {
+      margin-left: 0.5rem;
+    }
+
+    // set like the levels; the swatch is the point colour, so the row is also the legend
+    .lat-bench-source {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3em;
+      width: auto;
+      min-width: 0;
+      padding: 0;
+      border: 0;
+      background: none;
+      font-family: var(--lat-mono);
+      font-size: var(--lat-micro);
+      font-weight: 400;
+      line-height: inherit;
+      color: var(--gray);
+      cursor: pointer;
+
+      &::before {
+        content: '';
+        width: 0.5em;
+        height: 0.5em;
+        outline: 1px solid var(--lat-swatch, var(--dark));
+        outline-offset: -1px;
+      }
+
+      &[data-kind='pdf'] {
+        --lat-swatch: var(--lat-pdf);
+      }
+
+      &[data-kind='image'] {
+        --lat-swatch: var(--lat-image);
+      }
+
+      &[data-kind='base'] {
+        --lat-swatch: var(--gray);
+      }
+
+      &[aria-pressed='true'] {
+        color: var(--dark);
+
+        &::before {
+          background: var(--lat-swatch, var(--dark));
+        }
       }
 
       &:focus-visible {
@@ -937,6 +1041,31 @@
       // read by drawBench for the axis labels
       font-family: var(--lat-mono);
       font-size: var(--lat-micro);
+    }
+
+    // the status line with the links toggle at its end
+    .lat-bench-foot {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+      margin: 0.4rem 0 0;
+      padding: 0 0.75rem;
+
+      .lat-bench-status {
+        flex: 1 1 auto;
+        min-width: 0;
+        margin: 0;
+        padding: 0;
+      }
+
+      .lat-bench-links {
+        flex: none;
+        line-height: 1.5;
+      }
+
+      .lat-bench-links[aria-pressed='true'] {
+        cursor: pointer;
+      }
     }
 
     // one line: a hovered name wider than the pane scrolls to its end and back (setBenchStatus);

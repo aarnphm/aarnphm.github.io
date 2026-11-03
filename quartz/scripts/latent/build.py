@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["numpy", "pyyaml"]
+# dependencies = ["numpy", "pyyaml", "mlx; sys_platform == 'darwin' and platform_machine == 'arm64'"]
 # ///
 """Build the `layout: latent` sidecar for every embedding store under a directory.
 
@@ -1055,6 +1055,11 @@ def main() -> None:
   ap.add_argument(
     '--regions', default='embeddings/pdf-regions', help='relative to --content'
   )
+  ap.add_argument(
+    '--no-features',
+    action='store_true',
+    help='skip the sparse dictionaries (features.py)',
+  )
   args = ap.parse_args()
   content = Path(args.content).resolve()
   directory = content / args.directory
@@ -1538,6 +1543,11 @@ def main() -> None:
   )
   with open(out / 'index.json', 'w', encoding='utf-8') as fh:
     json.dump(index, fh, indent=1)
+  if not args.no_features:
+    # sparse dictionaries over the rows just written; adds `features` to index.json
+    from features import write_features
+
+    write_features(out, Path('quartz/.quartz-cache').resolve())
   with open(out_root / 'index.json', 'w', encoding='utf-8') as fh:
     json.dump(
       dict(version=VERSION, hash=sidecar_hash, directory=args.directory),

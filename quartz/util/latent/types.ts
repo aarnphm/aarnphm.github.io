@@ -42,6 +42,18 @@ export interface LatentIndex {
   kinds: LatentKind[]
   counts: Partial<Record<LatentKind, number>>
   stores: LatentStore[]
+  /** sparse dictionaries under `feat/<name>/` (quartz/scripts/latent/features.py) */
+  features?: LatentFeatureDict[]
+}
+
+export interface LatentFeatureDict {
+  name: string
+  kinds: LatentKind[]
+  features: number
+  k: number
+  rows: number
+  /** fraction of variance the k active features leave unexplained, on the family's own rows */
+  fvu: number
 }
 
 export interface LatentDoc {

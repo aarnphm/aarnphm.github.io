@@ -14,11 +14,14 @@ export type LatentWorkerRequest =
     }
   /** Top-k rows of the matrix at `url` by dot product with a unit query vector. */
   | { type: 'query'; seq: number; url: string; vector: Float32Array; scale: number; k: number }
+  /** One row of the matrix as a unit float vector (the features tab steers from it). */
+  | { type: 'row'; seq: number; url: string; row: number; scale: number }
 
 export type LatentWorkerResponse =
   | { type: 'loaded'; seq: number; rows: number }
   | { type: 'projected'; seq: number; coords: Float32Array; extent: number }
   | { type: 'queried'; seq: number; hits: Uint32Array; scores: Float32Array }
+  | { type: 'row'; seq: number; vector: Float32Array }
   | { type: 'error'; seq: number; message: string }
 
 interface Matrix {
@@ -124,6 +127,21 @@ self.onmessage = async (event: MessageEvent<LatentWorkerRequest>) => {
       ;(self as unknown as Worker).postMessage(
         { type: 'projected', seq: request.seq, coords, extent } satisfies LatentWorkerResponse,
         [coords.buffer],
+      )
+    } else if (request.type === 'row') {
+      const { matrix, rows, dims } = matrixAt(request.url)
+      if (request.row < 0 || request.row >= rows) throw new Error(`row ${request.row} out of range`)
+      const vector = new Float32Array(dims)
+      let length = 0
+      for (let d = 0; d < dims; d++) {
+        vector[d] = (matrix[request.row * dims + d] * request.scale) / 127
+        length += vector[d] * vector[d]
+      }
+      length = Math.sqrt(length) || 1
+      for (let d = 0; d < dims; d++) vector[d] /= length
+      ;(self as unknown as Worker).postMessage(
+        { type: 'row', seq: request.seq, vector } satisfies LatentWorkerResponse,
+        [vector.buffer],
       )
     } else if (request.type === 'query') {
       const { hits, scores } = query(request.url, request.vector, request.scale, request.k)

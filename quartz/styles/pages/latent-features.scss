@@ -1,0 +1,244 @@
+@use '../variables.scss' as *;
+
+// `layout: latent`: the probe's features tab (quartz/components/scripts/latent-client/features.ts).
+// Rows share the axis cards' grid: a hairline bar for the activation, the feature's terms, its id,
+// and the ± steering pair, all in the probe's mono micro type.
+[data-layout='latent'] :where(#quartz-root) .lat-probe .lat-features {
+  padding: 0 0 0.5rem;
+
+  .lat-feat-group,
+  .lat-feat-card {
+    padding: 0.5rem 0.75rem 0.4rem;
+    border-top: 1px solid var(--lat-hair);
+
+    &:first-child {
+      border-top: 0;
+    }
+
+    > header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.5rem;
+      margin: 0 0 0.3rem;
+      padding: 0;
+    }
+  }
+
+  .lat-feat-head {
+    font-family: var(--lat-text);
+    font-weight: var(--lat-strong);
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .lat-count {
+    font-family: var(--lat-mono);
+    font-size: var(--lat-micro);
+    color: var(--gray);
+    white-space: nowrap;
+  }
+
+  .lat-feat-where {
+    margin: 0 0 0.25rem;
+    font-family: var(--lat-mono);
+    font-size: var(--lat-micro);
+    color: var(--darkgray);
+  }
+
+  .lat-feat-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .lat-feat {
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 1fr) auto auto;
+    align-items: baseline;
+    column-gap: 0.45rem;
+    margin: 0;
+    padding: 0.12rem 0;
+    line-height: 1.3;
+
+    &[data-selected] .lat-feat-name {
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
+    }
+  }
+
+  .lat-feat-bar {
+    align-self: center;
+    display: block;
+    height: 1px;
+    background: var(--lat-hair);
+
+    i {
+      display: block;
+      width: calc(var(--a) * 100%);
+      height: 1px;
+      background: var(--dark);
+    }
+  }
+
+  .lat-feat-name {
+    font: inherit;
+    font-size: var(--text-meta);
+    text-align: left;
+    color: var(--dark);
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &:hover {
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
+    }
+  }
+
+  .lat-feat-meta {
+    font-family: var(--lat-mono);
+    font-size: var(--lat-micro);
+    color: var(--gray);
+    white-space: nowrap;
+  }
+
+  .lat-feat-steer {
+    display: flex;
+    gap: 2px;
+
+    button {
+      font-family: var(--lat-mono);
+      font-size: var(--lat-micro);
+      line-height: 1.2;
+      width: 1.3rem;
+      padding: 0;
+      color: var(--darkgray);
+      background: var(--light);
+      border: 1px solid var(--ledger-line);
+      border-radius: var(--radius-none);
+      cursor: pointer;
+
+      &:hover {
+        color: var(--dark);
+        background: var(--ledger-surface);
+      }
+    }
+  }
+
+  .lat-feat-card {
+    background: var(--ledger-surface);
+
+    .lat-chip {
+      font-family: var(--lat-mono);
+      font-size: var(--lat-micro);
+      color: var(--gray);
+      border: 1px solid var(--lat-hair);
+      background: var(--light);
+      padding: 0 0.3rem;
+      white-space: nowrap;
+    }
+
+    p {
+      margin: 0.2rem 0;
+    }
+  }
+
+  .lat-feat-terms {
+    font-style: italic;
+    color: var(--darkgray);
+    font-size: var(--text-meta);
+  }
+
+  .lat-feat-kinds {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    font-family: var(--lat-mono);
+    font-size: var(--lat-micro);
+    color: var(--darkgray);
+  }
+
+  .lat-feat-near {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem;
+
+    > span {
+      font-family: var(--lat-mono);
+      font-size: var(--lat-micro);
+      color: var(--gray);
+      margin-right: 0.15rem;
+    }
+  }
+
+  .lat-feat-chip {
+    font-family: var(--lat-mono);
+    font-size: var(--lat-micro);
+    color: var(--darkgray);
+    background: var(--light);
+    border: 1px solid var(--ledger-line);
+    border-radius: var(--radius-none);
+    padding: 0 0.3rem;
+    cursor: pointer;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &:hover {
+      color: var(--dark);
+    }
+  }
+
+  .lat-feat-cross {
+    margin-top: 0.25rem;
+
+    > span {
+      font-family: var(--lat-mono);
+      font-size: var(--lat-micro);
+      color: var(--gray);
+    }
+
+    ol {
+      list-style: none;
+      margin: 0.1rem 0 0;
+      padding: 0;
+      font-size: var(--text-meta);
+    }
+
+    li {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      column-gap: var(--lat-mark-gap);
+      align-items: baseline;
+      line-height: 1.3;
+      margin: 0.1rem 0;
+    }
+
+    a {
+      color: var(--dark);
+      text-decoration: none;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  .lat-feat-note {
+    margin: 0;
+    padding: 0.4rem 0.75rem 0;
+    border-top: 1px solid var(--lat-hair);
+    font-family: var(--lat-mono);
+    font-size: var(--lat-micro);
+    color: var(--gray);
+  }
+}

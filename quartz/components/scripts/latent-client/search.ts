@@ -43,6 +43,7 @@ export async function renderLinks(rt: Runtime, row: number): Promise<void> {
   void ticks
   renderRail(rt, rt.query ? rt.query.items : items)
   if (rt.bench) drawBench(rt)
+  rt.root.dispatchEvent(new CustomEvent('latent:focus', { detail: row }))
 }
 
 function linksBody(rt: Runtime): HTMLElement {
@@ -171,6 +172,8 @@ async function runQuery(rt: Runtime, text: string): Promise<void> {
     const url = `${rt.base}/vec/rows-256-int8.bin`
     const meta = await metaOf(rt)
     status.set(`scoring · ${meta.rows.toLocaleString('en-US')} chunks`)
+    // the worker takes the buffer; the features tab encodes its own copy
+    const kept = vector.slice()
     await requestVec(rt, { type: 'load', url, rows: meta.rows, dims: 256 })
     const t0 = performance.now()
     const result = await requestVec(
@@ -204,6 +207,7 @@ async function runQuery(rt: Runtime, text: string): Promise<void> {
       `${items.length} chunks · ${(performance.now() - t0).toFixed(0)} ms${axes ? ` · ${axes} ${axes === 1 ? 'axis' : 'axes'} match` : ''}`,
     )
     renderRail(rt, items)
+    rt.root.dispatchEvent(new CustomEvent('latent:query', { detail: { text, vector: kept } }))
   } catch (error) {
     if (!stale()) status.fail(error instanceof Error ? error.message : String(error))
   }
@@ -215,6 +219,7 @@ function clearQuery(rt: Runtime): void {
   rt.toast?.dismiss()
   rt.toast = null
   rt.wanted = ''
+  rt.root.dispatchEvent(new CustomEvent('latent:query', { detail: null }))
   if (!rt.query && !rt.links.dataset.query) return
   rt.query = null
   delete rt.links.dataset.query
