@@ -42,9 +42,9 @@ body[data-slug='arena/feed'] {
 }
 
 .arena-reader {
-  --arena-line: color-mix(in srgb, var(--gray) 55%, transparent);
-  --arena-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
-  --arena-selected: color-mix(in srgb, var(--secondary) 18%, var(--arena-surface));
+  --arena-line: var(--ledger-line);
+  --arena-surface: var(--ledger-surface);
+  --arena-selected: var(--ledger-selected);
   --arena-muted: var(--darkgray);
   --arena-width: 52rem;
   --arena-gutter: max(1rem, env(safe-area-inset-left), env(safe-area-inset-right));

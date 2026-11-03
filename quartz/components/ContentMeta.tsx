@@ -223,12 +223,12 @@ export default (() => {
               h(
                 'svg',
                 { ...svgOptions, viewbox: '0 0 16 16', class: 'copy-icon', 'aria-hidden': true },
-                [h('use', { href: '#github-copy', width: 24, height: 24 })],
+                [h('use', { href: '#github-copy' })],
               ),
               h(
                 'svg',
                 { ...svgOptions, viewbox: '0 0 16 16', class: 'check-icon', 'aria-hidden': true },
-                [h('use', { href: '#github-check', width: 24, height: 24 })],
+                [h('use', { href: '#github-check' })],
               ),
             ),
           ]),

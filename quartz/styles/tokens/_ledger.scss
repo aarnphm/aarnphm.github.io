@@ -1,0 +1,8 @@
+// The boxed-list language of curius, the arena reader and the triathlon feed: panels and rows
+// ruled at 1px, heads on a pale ground, the selected row in a secondary tint. Pages alias these
+// (--curius-line, --arena-line, ...) instead of mixing their own; mixin.scss builds boxes from them.
+:root {
+  --ledger-line: color-mix(in srgb, var(--gray) 55%, transparent);
+  --ledger-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  --ledger-selected: color-mix(in srgb, var(--secondary) 18%, var(--ledger-surface));
+}

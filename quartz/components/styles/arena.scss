@@ -19,9 +19,9 @@ body.arena-modal-open {
 }
 
 [data-slug*='arena'] {
-  --arena-line: color-mix(in srgb, var(--gray) 55%, transparent);
-  --arena-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
-  --arena-selected: color-mix(in srgb, var(--secondary) 18%, var(--arena-surface));
+  --arena-line: var(--ledger-line);
+  --arena-surface: var(--ledger-surface);
+  --arena-selected: var(--ledger-selected);
   --arena-control-height: 1.75rem;
 
   @media (pointer: coarse) {

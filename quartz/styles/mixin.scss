@@ -305,3 +305,77 @@
     position: absolute;
   }
 }
+
+// Ledger boxes (tokens/_ledger.scss), as curius draws them: a panel ruled at 1px, its head a mono
+// row on the surface, mono metadata in gray, and the square field and icon button of its toolbar.
+@mixin ledgerBox {
+  border: 1px solid var(--ledger-line);
+  background: var(--light);
+}
+
+@mixin ledgerHead {
+  margin: 0;
+  padding: 0.5rem 0.625rem;
+  border-bottom: 1px solid var(--ledger-line);
+  background: var(--ledger-surface);
+  color: var(--darkgray);
+  font: 0.7rem/1.5 var(--codeFont);
+}
+
+@mixin ledgerMeta {
+  color: var(--gray);
+  font: 0.64rem/1.5 var(--codeFont);
+}
+
+@mixin ledgerField($height: 1.75rem, $padding: 0.25rem 0.5rem) {
+  box-sizing: border-box;
+  height: $height;
+  padding: $padding;
+  border: 1px solid var(--ledger-line);
+  border-radius: var(--radius-none);
+  color: var(--dark);
+  background: var(--light);
+  font: 0.7rem/1.4 var(--codeFont);
+
+  &:focus {
+    border-color: var(--secondary);
+  }
+
+  &::placeholder {
+    color: var(--gray);
+  }
+
+  &::-webkit-search-cancel-button {
+    display: none;
+  }
+}
+
+@mixin ledgerIconButton($size: 1.75rem) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  width: $size;
+  height: $size;
+  min-height: 0;
+  padding: 0;
+  border: 1px solid var(--ledger-line);
+  border-radius: var(--radius-none);
+  color: var(--darkgray);
+  background: var(--light);
+  cursor: pointer;
+
+  &:hover:not(:disabled),
+  &[aria-expanded='true'],
+  &[aria-selected='true'],
+  &[aria-pressed='true'] {
+    color: var(--dark);
+    background: var(--ledger-selected);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+}
