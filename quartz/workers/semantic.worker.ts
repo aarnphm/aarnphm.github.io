@@ -8,6 +8,7 @@ import type {
   SemanticWorkerConfig,
   SemanticWorkerRequest,
   SemanticWorkerResponse,
+  SemanticEmbedRequest,
 } from '../util/semantic-protocol'
 import { imageManifestUrl, readImageManifest, validateImageVectorShard } from '../util/image-search'
 import { readPdfIndex, pdfSearchResults, validatePdfVectorShard } from '../util/pdf-search'
@@ -304,6 +305,19 @@ async function handleSearch(msg: SemanticSearchRequest) {
   post(result)
 }
 
+/** The unit query vector for a page that scores it against its own matrix. Needs no index. */
+async function handleEmbed(msg: SemanticEmbedRequest) {
+  if (!cfg && msg.queryDtype) cfg = { queryDtype: msg.queryDtype }
+  const loaded = await ensureEncoder(msg.model)
+  if (loaded.model !== msg.model)
+    throw new Error(`encoder ${loaded.model} is loaded; cannot embed for ${msg.model}`)
+  const vector = await loaded.embed(msg.text, msg.dims)
+  ;(self as unknown as Worker).postMessage(
+    { type: 'embedding', seq: msg.seq, vector } satisfies SemanticWorkerResponse,
+    [vector.buffer],
+  )
+}
+
 /** Stored image rows nearest to a stored seed row, seed excluded. Runs before or without init. */
 async function handleSimilar(msg: SemanticSimilarRequest) {
   const entry = await selectIndex(msg.manifestUrl)
@@ -357,6 +371,7 @@ self.onmessage = (event: MessageEvent<SemanticWorkerRequest>) => {
         const entry = await selectIndex(data.manifestUrl)
         post({ type: 'loaded', seq: data.seq, rows: entry.rows, ids: entry.ids })
       } else if (data.type === 'similar') await handleSimilar(data)
+      else if (data.type === 'embed') await handleEmbed(data)
       else if (data.type === 'pdf-search') await handlePdfSearch(data)
       else await handleSearch(data)
     })

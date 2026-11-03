@@ -130,9 +130,9 @@ export async function emitPartialEmitter(
   log.end(`Emitted ${emittedFiles} files to \`${ctx.argv.output}\` in ${perf.timeSince()}`)
 }
 
+// LazyScripts waits: its bundles point at the hashed worker files ComponentResources writes.
 const RESOURCE_INDEPENDENT_EMITTERS = new Set<string>([
   'CustomOgImages',
-  'LazyScripts',
   'LLMText',
   'Assets',
   'Static',

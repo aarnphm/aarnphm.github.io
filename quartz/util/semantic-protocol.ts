@@ -37,12 +37,25 @@ export type SemanticSimilarRequest = {
   seedId: string
   k: number
 }
+/**
+ * A query vector alone, for a page that scores against its own vectors (`layout: latent`). Loads
+ * the encoder without an index; `dims` keeps the leading Matryoshka dimensions.
+ */
+export type SemanticEmbedRequest = {
+  type: 'embed'
+  seq: number
+  text: string
+  model: string
+  dims: number
+  queryDtype?: SemanticQueryDType
+}
 export type SemanticWorkerRequest =
   | SemanticInitRequest
   | SemanticLoadRequest
   | SemanticSearchRequest
   | PdfSearchRequest
   | SemanticSimilarRequest
+  | SemanticEmbedRequest
 
 export type SemanticLoadedResult = {
   type: 'loaded'
@@ -77,8 +90,11 @@ export type ModelLoadProgress = {
   totalBytes: number
 }
 
+export type SemanticEmbeddingResult = { type: 'embedding'; seq: number; vector: Float32Array }
+
 export type SemanticWorkerResponse =
   | ({ type: 'model-progress' } & ModelLoadProgress)
+  | SemanticEmbeddingResult
   | { type: 'progress'; loadedRows: number; totalRows: number }
   | { type: 'ready' }
   | SemanticLoadedResult

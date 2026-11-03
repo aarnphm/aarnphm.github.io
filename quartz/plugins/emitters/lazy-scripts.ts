@@ -2,6 +2,7 @@ import { build } from 'esbuild'
 import type { QuartzEmitterPlugin } from '../../types/plugin'
 import { FullSlug, joinSegments, QUARTZ } from '../../util/path'
 import { staticScriptsDir } from './component-resources/asset-paths'
+import { applyScriptAssetReferences } from './component-resources/script-assets'
 import { write } from './helpers'
 
 export type LazyScript = {
@@ -38,7 +39,8 @@ export const LazyScripts: QuartzEmitterPlugin<Options> = opts => {
             ctx,
             slug: joinSegments(staticScriptsDir, name) as FullSlug,
             ext: '.js',
-            content: result.outputFiles[0].text,
+            // a lazy script may spawn the site's workers by their bare names
+            content: applyScriptAssetReferences(ctx, result.outputFiles[0].text),
           })
         }),
       )
