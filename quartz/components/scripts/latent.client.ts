@@ -21,7 +21,15 @@ import {
   railSvg,
   readerDocument,
 } from '../../util/latent/markup'
-import { RAIL_HEIGHT, RAIL_WIDTH, layoutRail, type RailLayout } from '../../util/latent/rail'
+import {
+  LABEL_X,
+  RAIL_HEIGHT,
+  RAIL_WIDTH,
+  TRACK_X,
+  layoutRail,
+  truncate,
+  type RailLayout,
+} from '../../util/latent/rail'
 import {
   blockName,
   blockOf,
@@ -29,6 +37,7 @@ import {
   decodeTrack,
   inScope,
   partName,
+  yearOfDay,
 } from '../../util/latent/types'
 import { buildSelect } from '../controls/select'
 import { loadPageStyles } from './page-styles'
@@ -84,6 +93,8 @@ interface Runtime {
   railItems: LinkItem[]
   /** the bottom-right toast that carries the search phases; one per page, text changes in place */
   toast: ToastHandle | null
+  /** the text the latest query was started for; older queries drop their results */
+  wanted: string
 }
 
 interface Bench {
@@ -439,26 +450,32 @@ const MB = new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFra
 const megabytes = (bytes: number) => MB.format(bytes / 1e6)
 
 /**
- * Search phases go to the links-pane hint and to the site's bottom-right toast. The toast is one
- * element whose text changes in place (status-flap motion), held open until the query settles.
+ * Search phases go to the site's bottom-right toast: one element whose text changes in place
+ * (status-flap motion), held open until the query settles.
  */
 function searchStatus(rt: Runtime): {
   set: (text: string) => void
   done: (text: string) => void
   fail: (text: string) => void
 } {
-  const hint = rt.links.querySelector<HTMLElement>('.lat-search-hint')
   const toast = (): ToastHandle | null => {
     if (rt.toast?.element.isConnected) return rt.toast
     rt.toast =
       window.quartzToast?.show('', {
         durationMs: 0,
-        styles: { fontFamily: 'var(--lat-mono, var(--codeFont))', fontWeight: '400' },
+        // the same type as the ledger's micro text, so it reads like the site's other status lines
+        styles: {
+          fontFamily: 'var(--lat-mono, var(--codeFont))',
+          fontSize: 'var(--lat-micro, 0.68rem)',
+          fontWeight: '400',
+          lineHeight: '1.4',
+          color: 'var(--gray)',
+          padding: '0.3rem 0.6rem',
+        },
       }) ?? null
     return rt.toast
   }
   const set = (text: string) => {
-    if (hint) hint.textContent = text
     const handle = toast()
     if (handle) setStatusText(handle.element, text)
   }
@@ -473,10 +490,13 @@ function searchStatus(rt: Runtime): {
 async function runQuery(rt: Runtime, text: string): Promise<void> {
   const status = searchStatus(rt)
   const axes = matchAxes(rt, text)
+  if (rt.wanted === text && rt.query?.text === text) return
+  rt.wanted = text
+  const stale = () => rt.signal.aborted || rt.wanted !== text
   status.set('embedding the query…')
   try {
     const vector = await embedQuery(rt, text, status.set)
-    if (rt.signal.aborted) return
+    if (stale()) return
     const url = `${rt.base}/vec/rows-256-int8.bin`
     const meta = await metaOf(rt)
     status.set(`scoring · ${meta.rows.toLocaleString('en-US')} chunks`)
@@ -487,8 +507,9 @@ async function runQuery(rt: Runtime, text: string): Promise<void> {
       { type: 'query', url, vector, scale: meta.scale, k: rt.k },
       [vector.buffer],
     )
-    if (result.type !== 'queried' || rt.signal.aborted) return
+    if (result.type !== 'queried' || stale()) return
     const previews = await Promise.all([...result.hits].map(r => previewOf(rt, r)))
+    if (stale()) return
     const items: LinkItem[] = previews.map((preview, i) => {
       const doc = rt.docs[preview.d]
       return {
@@ -513,17 +534,16 @@ async function runQuery(rt: Runtime, text: string): Promise<void> {
     )
     renderRail(rt, items)
   } catch (error) {
-    status.fail(error instanceof Error ? error.message : String(error))
+    if (!stale()) status.fail(error instanceof Error ? error.message : String(error))
   }
 }
 
 function clearQuery(rt: Runtime): void {
   for (const card of rt.probe.querySelectorAll<HTMLElement>('.lat-axis[data-match]'))
     delete card.dataset.match
-  const hint = rt.links.querySelector<HTMLElement>('.lat-search-hint')
-  if (hint) hint.textContent = ''
   rt.toast?.dismiss()
   rt.toast = null
+  rt.wanted = ''
   if (!rt.query && !rt.links.dataset.query) return
   rt.query = null
   delete rt.links.dataset.query
@@ -540,17 +560,29 @@ function metaOf(rt: Runtime): Promise<NonNullable<Bench['meta']>> {
   return meta
 }
 
+const SEARCH_DEBOUNCE_MS = 450
+
+/** The box searches as you type: axes match at once, the embedding query runs after a pause. */
 function bindSearch(rt: Runtime): void {
   const form = rt.links.querySelector<HTMLFormElement>('form.lat-search')
   const input = form?.querySelector<HTMLInputElement>('input')
   if (!form || !input) return
+  let timer: number | null = null
+  const cancel = () => {
+    if (timer !== null) window.clearTimeout(timer)
+    timer = null
+  }
+  const run = () => {
+    cancel()
+    const text = input.value.trim()
+    if (!text) clearQuery(rt)
+    else void runQuery(rt, text)
+  }
   form.addEventListener(
     'submit',
     event => {
       event.preventDefault()
-      const text = input.value.trim()
-      if (!text) clearQuery(rt)
-      else void runQuery(rt, text)
+      run()
     },
     { signal: rt.signal },
   )
@@ -558,6 +590,7 @@ function bindSearch(rt: Runtime): void {
     'keydown',
     event => {
       if (event.key === 'Escape') {
+        cancel()
         input.value = ''
         clearQuery(rt)
         input.blur()
@@ -568,7 +601,14 @@ function bindSearch(rt: Runtime): void {
   input.addEventListener(
     'input',
     () => {
-      if (!input.value.trim()) clearQuery(rt)
+      cancel()
+      const text = input.value.trim()
+      if (!text) {
+        clearQuery(rt)
+        return
+      }
+      matchAxes(rt, text)
+      timer = window.setTimeout(run, SEARCH_DEBOUNCE_MS)
     },
     { signal: rt.signal },
   )
@@ -635,6 +675,7 @@ function bindRail(rt: Runtime): void {
     },
     { signal: rt.signal },
   )
+  bindRailHover(rt, () => stepping)
   // the wheel over the rail steps through documents in time order instead of scrolling the page
   rt.rail.addEventListener(
     'wheel',
@@ -654,6 +695,100 @@ function bindRail(rt: Runtime): void {
     },
     { passive: false, signal: rt.signal },
   )
+}
+
+const HOVER_DWELL_MS = 260
+
+/**
+ * Hovering the dated track scrubs it: a probe line names the document under the pointer, and
+ * resting on one for a beat opens it. The undated band is one row per kind, so it has no probe.
+ */
+function bindRailHover(rt: Runtime, busy: () => boolean): void {
+  let hovered = -1
+  let dwell: number | null = null
+  let frame = 0
+  let pending: { x: number; y: number } | null = null
+  const svgOf = () => rt.rail.querySelector<SVGSVGElement>('svg.lat-track')
+  const clear = () => {
+    hovered = -1
+    pending = null
+    if (dwell !== null) window.clearTimeout(dwell)
+    dwell = null
+    svgOf()?.querySelector('.lat-probe')?.remove()
+  }
+  const probe = (d: number) => {
+    const svg = svgOf()
+    if (!svg) return
+    const layout = railLayoutOf(rt)
+    const y = layout.y[d]
+    let group = svg.querySelector<SVGGElement>('g.lat-probe')
+    if (!group) {
+      group = document.createElementNS('http://www.w3.org/2000/svg', 'g')
+      group.setAttribute('class', 'lat-probe')
+      group.innerHTML = '<line></line><text></text>'
+      svg.append(group)
+    }
+    const line = group.querySelector('line')!
+    line.setAttribute('x1', String(TRACK_X - 6))
+    line.setAttribute('x2', String(RAIL_WIDTH))
+    line.setAttribute('y1', y.toFixed(1))
+    line.setAttribute('y2', y.toFixed(1))
+    const text = group.querySelector('text')!
+    const year = yearOfDay(rt.track[d].day)
+    text.setAttribute('x', String(LABEL_X))
+    // the probe reads above the line near the bottom of the track, below it elsewhere
+    text.setAttribute('y', (y > rt.railHeight * 0.8 ? y - 4 : y + 10).toFixed(1))
+    text.textContent = `${truncate(rt.docs[d]?.t ?? '', 24)}${year ? ` · ${year}` : ''}`
+  }
+  const settle = () => {
+    frame = 0
+    const at = pending
+    pending = null
+    const svg = svgOf()
+    if (!at || !svg) return
+    const ctm = svg.getScreenCTM()
+    if (!ctm) return
+    const point = new DOMPoint(at.x, at.y).matrixTransform(ctm.inverse())
+    const layout = railLayoutOf(rt)
+    const floor = layout.datedCount < rt.track.length ? layout.undatedTop - 8 : rt.railHeight
+    if (point.y < 0 || point.y > floor) {
+      clear()
+      return
+    }
+    const d = docNearY(rt, point.y)
+    if (rt.track[d].day === 0) {
+      clear()
+      return
+    }
+    // a rail re-render (the dwell opening a document) drops the probe; draw it again in place
+    if (d === hovered && svg.querySelector('.lat-probe')) return
+    const same = d === hovered
+    hovered = d
+    probe(d)
+    if (same) return
+    if (dwell !== null) window.clearTimeout(dwell)
+    dwell = window.setTimeout(() => {
+      dwell = null
+      if (hovered !== d || d === rt.open || busy()) return
+      void goTo(rt, rt.docs[d].r0)
+    }, HOVER_DWELL_MS)
+  }
+  rt.rail.addEventListener(
+    'pointermove',
+    event => {
+      if (event.pointerType === 'touch') return
+      const target = event.target as Element | null
+      if (!target?.closest('svg.lat-track') || target.closest('text.lat-label')) {
+        clear()
+        return
+      }
+      pending = { x: event.clientX, y: event.clientY }
+      if (!frame) frame = requestAnimationFrame(settle)
+    },
+    { signal: rt.signal },
+  )
+  rt.rail.addEventListener('pointerleave', clear, { signal: rt.signal })
+  rt.signal.addEventListener('abort', clear)
 }
 
 function renderRail(rt: Runtime, items: LinkItem[]): void {
@@ -1639,6 +1774,7 @@ export function mountLatent(root: HTMLElement): void {
     railHeight: RAIL_HEIGHT,
     railItems: [],
     toast: null,
+    wanted: '',
   }
   bindSilhouettes(rt)
   watchMath(rt)
