@@ -114,6 +114,7 @@
   "dependencies": {
     "@ast-grep/wasm": "0.51.0",
     "@blobatar/react": "^2.7.0",
+    "@chenglou/pretext": "1.0.0",
     "@citation-js/core": "^0.7.21",
     "@citation-js/plugin-bibtex": "^0.7.21",
     "@citation-js/plugin-doi": "^0.7.21",

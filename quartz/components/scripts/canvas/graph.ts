@@ -1,20 +1,31 @@
 import { select } from 'd3'
 import type { CanvasMeta, LinkData, NodeData } from './data'
 import type { CanvasScene } from './scene'
-import { EDGE_LABEL_LINE_HEIGHT, fitSvgText, measureSvgText } from './labels'
+import { createGroupLabelFitter } from './group-label-layout'
+import { EDGE_LABEL_LINE_HEIGHT } from './labels'
+import { isCanvasActive } from './lifecycle'
 
 export function installGraph(s: CanvasScene) {
+  const fitter = createGroupLabelFitter()
+  const refreshFonts = () => {
+    if (!isCanvasActive(s.container, s.lifecycle)) return
+    fitter.clear()
+    s.groupLabelSize = 0
+    s.measureGroupLabels()
+  }
+  document.fonts.addEventListener('loadingdone', refreshFonts, { signal: s.signal })
+  void document.fonts.ready.then(refreshFonts)
   s.measureGroupLabels = function measureGroupLabels() {
     const size = Math.max(24, 13 / s.currentScale)
-    const quantized = 2 ** (Math.round(4 * Math.log2(size)) / 4)
+    // Whole-pixel fonts keep Canvas measurement and SVG text aligned across browsers.
+    const quantized = Math.round(2 ** (Math.round(4 * Math.log2(size)) / 4))
     if (quantized === s.groupLabelSize) return
     s.groupLabelSize = quantized
     for (const label of s.groupLabels) {
       label.element.setAttribute('font-size', `${quantized}px`)
       label.element.setAttribute('y', String(-quantized / 3))
-      const metrics = measureSvgText(label.element, label.text)
       label.fontSize = quantized
-      const shown = fitSvgText(label.text, metrics, label.group.width)
+      const shown = fitter.fit(label.element, label.text, quantized, label.group.width)
       if (label.element.textContent !== shown) label.element.textContent = shown
     }
   }

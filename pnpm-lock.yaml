@@ -19,6 +19,9 @@ importers:
       '@blobatar/react':
         specifier: ^2.7.0
         version: 2.7.0(blobatar@2.7.0(react@19.2.7))(react@19.2.7)
+      '@chenglou/pretext':
+        specifier: 1.0.0
+        version: 1.0.0
       '@citation-js/core':
         specifier: ^0.7.21
         version: 0.7.21
@@ -767,6 +770,9 @@ packages:
   '@chenglou/freerange@0.0.2':
     resolution: {integrity: sha512-xUsvKo4YyjuDqIqoOyxdXPPcd58GElU1Je/BX7gCG/DNtXAnRPq6QqivvwsycB0EFvYNsnWAXk7tOYfUzTnR1g==}
     hasBin: true
+
+  '@chenglou/pretext@1.0.0':
+    resolution: {integrity: sha512-BxKiDMxWJhyzL8asvcgg3T9YnUU7OUFsKO8oRaR2SYAPX4Sh2wM9gqTBjrBaZ4fnl84cEQ8czC0Q1M83z3chsA==}
 
   '@citation-js/core@0.7.21':
     resolution: {integrity: sha512-Vobv2/Yfnn6C6BVO/pvj7madQ7Mfzl83/jAWwixbemGF6ZThhGMz8++FD9hWHyHXDMYuLGa6fK68c2VsolZmTA==}
@@ -6845,6 +6851,8 @@ snapshots:
   '@chenglou/freerange@0.0.2':
     dependencies:
       typescript: 6.0.3
+
+  '@chenglou/pretext@1.0.0': {}
 
   '@citation-js/core@0.7.21':
     dependencies:
