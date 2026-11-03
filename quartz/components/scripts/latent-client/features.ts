@@ -158,7 +158,9 @@ interface FeatureState {
 
 /** units when feat/steer.json is missing: the medians of the first calibration */
 const DEFAULT_UNIT = { feature: 0.45, tag: 0.6, axis: 1 }
-const RANGE = 2
+/** the slider spans ±RANGE units, or the term's own strength when ± stepped past it (up to MAX) */
+const RANGE = 4
+const MAX = 12
 
 const KIND_ORDER: LatentKind[] = ['note', 'pdf', 'image', 'base']
 const states = new WeakMap<Runtime, FeatureState>()
@@ -829,7 +831,7 @@ function termOf(key: string, w: number): SteerTerm {
 
 function steerBump(st: FeatureState, key: string, sign: number): void {
   const old = st.steer.get(key)?.w ?? 0
-  const w = Math.max(-RANGE, Math.min(RANGE, old + sign))
+  const w = Math.max(-MAX, Math.min(MAX, old + sign))
   // zero is skipped: − at +1 goes to −1 (contrastive, pushes away), + at −1 back to +1; × removes it
   st.steer.set(key, termOf(key, Math.abs(w) < 1e-6 ? sign : w))
 }
@@ -1067,8 +1069,8 @@ async function steeringSection(
           h('span.lat-steer-amount', [
             h('input', {
               type: 'range',
-              min: String(-RANGE),
-              max: String(RANGE),
+              min: String(-Math.max(RANGE, Math.ceil(Math.abs(term.w)))),
+              max: String(Math.max(RANGE, Math.ceil(Math.abs(term.w)))),
               step: '0.05',
               value: String(term.w),
               ariaLabel: `strength of ${name}`,
