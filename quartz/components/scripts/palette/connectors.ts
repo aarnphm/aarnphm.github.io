@@ -74,14 +74,6 @@ export function connectorActions(currentSlug: FullSlug): Action[] {
       },
     },
     {
-      name: 'pets',
-      auxInnerHtml: '<kbd>↵</kbd> toggle on/off',
-      onClick: () => {
-        const event: CustomEventMap['petstoggle'] = new CustomEvent('petstoggle', { detail: {} })
-        document.dispatchEvent(event)
-      },
-    },
-    {
       name: 'are.na',
       auxInnerHtml: '<kbd>↵</kbd> a rundown version of are.na',
       onClick: () => {
