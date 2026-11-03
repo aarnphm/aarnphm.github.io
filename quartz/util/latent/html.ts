@@ -288,9 +288,11 @@ export interface Span {
   continued?: boolean
   /** a fence's body */
   body?: string
+  /** a fence's info string: `python`, `quotes`, `pseudo lineNumber=false` */
+  info?: string
 }
 
-const FENCE = /^[ \t]*(`{3,}|~{3,})[^\n]*\n?/gm
+const FENCE = /^[ \t]*(`{3,}|~{3,})([^\n]*)\n?/gm
 const TABLE_EDGE = /<(\/?)table\b[^>]*>/g
 
 /**
@@ -313,7 +315,13 @@ export function blockSpans(source: string, options: HtmlOptions = {}): Span[] {
     const open = table >= 0 ? bodyStart + table : source.length
     const stop = end ? bodyStart + end.index : open
     const after = end ? stop + end[0].length : open
-    fences.push({ start: m.index, end: after, kind: 'fence', body: source.slice(bodyStart, stop) })
+    fences.push({
+      start: m.index,
+      end: after,
+      kind: 'fence',
+      body: source.slice(bodyStart, stop),
+      info: m[2].trim(),
+    })
     FENCE.lastIndex = after
   }
   // tables in the stretches between fences; backtick spans masked so `<table>` in code is code

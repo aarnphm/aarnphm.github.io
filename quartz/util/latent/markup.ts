@@ -130,12 +130,72 @@ const mathSpan = (tex: string, display: boolean) =>
 const mdLeaf = (text: string) => mdInline(decodeEntities(text), mathSpan)
 const mdCellLeaf = (text: string) => mdInline(decodeEntities(text), tex => mathSpan(tex, false))
 
+// Raw html figures in notes (an inline svg pictogram, a figure wrapper) are pictures, not text;
+// `{{phrase}}` marks a phrase to hear in the French notes and reads as the phrase (TeX's `{{` sits
+// after a letter, `^`, `_` or a backslash, and holds no `$`, so it is left alone).
+const SVG = /<svg\b[\s\S]*?(?:<\/svg>|$)/g
+const MARKED = /(?<![\\\w^_{])\{\{([^{}\n$\\]+)\}\}(?!\})/g
+const gardenText = (text: string) => text.replace(SVG, '').replace(MARKED, '$1')
+
 const mdHooks = (options: PassageOptions): MdHooks => ({
-  inline: text => htmlRuns(text, mdLeaf, options),
-  pipe: block => pipeTable(block, cell => htmlRuns(cell, mdCellLeaf, options)),
+  inline: text => htmlRuns(gardenText(text), mdLeaf, options),
+  pipe: block => pipeTable(block, cell => htmlRuns(gardenText(cell), mdCellLeaf, options)),
   display: tex => h('div.math.math-display', decodeEntities(tex)),
-  fence: fenceBlock,
+  fence: (body, info) => fenceView(body, info, options),
 })
+
+const TRACK_LINE = /^[ \t]*([\w-]+):[ \t]*(.*)$/
+
+/**
+ * A fence in a note's markdown slice. Garden components render as the page shows them: `quotes`
+ * is a quote whose last paragraph is its attribution, `poetry` and `poem` keep their line breaks,
+ * `sms` is a message, `tracking` (the triathlon log) one metadata line. Anything else is code, as
+ * is every fence outside a markdown slice.
+ */
+function fenceView(body: string, info: string | undefined, options: PassageOptions): Element {
+  const kind = (info ?? '').split(/\s/)[0].toLowerCase()
+  if (!options.markdown) return fenceBlock(body)
+  const hooks = mdHooks(options)
+  const stanzas = body
+    .replace(/^\n+|\s+$/g, '')
+    .split(/\n[ \t]*\n+/)
+    .filter(s => s.trim())
+  if (kind === 'quotes' && stanzas.length > 0) {
+    const parts = stanzas.map(s => s.trim().replace(/--/g, '—'))
+    const cite = parts.length > 1 ? parts.pop()! : null
+    return h('blockquote.lat-quote.lat-quotes', [
+      ...mdBlocks(parts.join('\n\n'), hooks),
+      cite
+        ? h('p.lat-cite', ['\u2014\u2009', ...hooks.inline(cite.replace(/\s*\n\s*/g, ' '))])
+        : null,
+    ])
+  }
+  if (kind === 'poetry' || kind === 'poem')
+    return h(
+      'div.lat-verse',
+      stanzas.map(s => h('p', hooks.inline(s))),
+    )
+  if (kind === 'sms')
+    return h(
+      'div.lat-sms',
+      stanzas.map(s => h('p', hooks.inline(s.trim()))),
+    )
+  if (kind === 'tracking') {
+    const fields = body
+      .split('\n')
+      .map(line => TRACK_LINE.exec(line))
+      .filter((m): m is RegExpExecArray => m !== null)
+    const date = fields.find(m => m[1] === 'date')?.[2]
+    const rest = fields
+      .filter(m => m[1] !== 'date')
+      .map(m => (m[2] === 'true' ? m[1] : `${m[1]} ${m[2]}`))
+    return h('p.lat-meta', [
+      date ? h('time', { dateTime: date }, date) : null,
+      ...rest.flatMap((part, n) => (date || n > 0 ? [' · ', part] : [part])),
+    ])
+  }
+  return fenceBlock(body)
+}
 
 function paragraphs(text: string, options: PassageOptions): Element[] {
   const out: Element[] = []
@@ -188,7 +248,7 @@ function passageBlocks(raw: string, options: PassageOptions = {}): Element[] {
     blocks.push(...prose(text.slice(last, span.start), options))
     if (span.kind === 'table')
       blocks.push(htmlTable(text.slice(span.start, span.end), cellLeaf, span.continued ?? false))
-    else if (span.body?.trim()) blocks.push(fenceBlock(span.body))
+    else if (span.body?.trim()) blocks.push(fenceView(span.body, span.info, options))
     last = span.end
   }
   blocks.push(...prose(text.slice(last), options))
@@ -544,9 +604,12 @@ export function railSvg(model: RailModel): Element {
   // the open document: a bracket at its slot, its chunk rows fanned to the right. The fan and the
   // neighbour labels stay above the undated band, even when the open document sits in it.
   const floor = undated.size > 0 ? layout.undatedTop - 16 : height - 12
+  // undated documents share band rows with the kind counts, so brackets and leaders for them
+  // anchor just above the band header instead of crossing the counts
+  const anchorY = (i: number) => (model.docs[i].day === 0 ? layout.undatedTop - 8 : layout.y[i])
   const open = model.docs[model.open]
   if (open) {
-    const oy = layout.y[model.open]
+    const oy = anchorY(model.open)
     const rows = Math.min(open.n, 48)
     const rowH = 3
     const first = Math.max(0, Math.min(open.n - rows, model.focusChunkIndex - Math.floor(rows / 2)))
@@ -554,8 +617,8 @@ export function railSvg(model: RailModel): Element {
     // rest below it, and the fan leaves each group its rows
     const targets = [...model.neighbours.entries()]
       .filter(([d]) => d !== model.open)
-      .sort((a, b) => layout.y[a[0]] - layout.y[b[0]])
-    const aboveCount = targets.filter(([d]) => layout.y[d] < oy).length
+      .sort((a, b) => anchorY(a[0]) - anchorY(b[0]))
+    const aboveCount = targets.filter(([d]) => anchorY(d) < oy).length
     const belowCount = targets.length - aboveCount
     const top = Math.max(
       14 + (aboveCount > 0 ? 22 + (aboveCount - 1) * LABEL_ROW : 0),
@@ -591,7 +654,7 @@ export function railSvg(model: RailModel): Element {
     // document holds, opacity its best score against the others; labels de-overlapped
     const fanTop = top - 22
     const fanBottom = top + rows * rowH + 6
-    const sources = targets.map(([d]) => layout.y[d])
+    const sources = targets.map(([d]) => anchorY(d))
     const labelY = [
       ...placeLabels(sources.slice(0, aboveCount), LABEL_ROW, 12, fanTop),
       ...placeLabels(sources.slice(aboveCount), LABEL_ROW, fanBottom, floor),
@@ -604,7 +667,7 @@ export function railSvg(model: RailModel): Element {
     }
     targets.forEach(([d, score], i) => {
       const doc = model.docs[d]
-      const ty = layout.y[d]
+      const ty = anchorY(d)
       const ly = labelY[i]
       const out = model.scopeFlags && model.scopeFlags[d] === 0
       const count = model.weights?.get(d) ?? 1
@@ -788,7 +851,7 @@ export function ledger(index: LatentIndex, scope: string[]): Element {
     ]),
     h('ul', rows),
     h('p.lat-ledger-note', tipProps(modelNote(index, model, scope.length > 0), 'up'), [
-      `${model}, ${index.dims} dimensions, ${index.k} neighbours a passage`,
+      `${model}, ${index.dims} dimensions, ${index.k} neighbours/passage`,
       scope.length > 0 ? `; scoped to ${scope.join(', ')}` : '',
     ]),
   ])

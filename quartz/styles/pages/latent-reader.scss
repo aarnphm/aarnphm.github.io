@@ -98,7 +98,7 @@
     .lat-doc-date {
       font-family: var(--lat-mono);
       color: var(--gray);
-      font-size: var(--text-meta);
+      font-size: 0.7rem;
     }
 
     .lat-doc-meta {
@@ -107,7 +107,7 @@
       gap: 0.5rem;
       white-space: nowrap;
       font-family: var(--lat-mono);
-      font-size: var(--text-meta);
+      font-size: 0.7rem;
       color: var(--gray);
 
       > * + *::before {
@@ -167,10 +167,13 @@
         color: var(--gray);
       }
 
+      // the focus mark is the reader frame's own left rule turned dark: 1px, on the rule's x
+      // (the chunk's 2px transparent border, then the reader's 1px border, sit left of the
+      // padding box this offset is measured from)
       &[data-focus]::before {
         position: absolute;
         inset: 0 auto 0 -3px;
-        width: 2px;
+        width: 1px;
         background: var(--dark);
         pointer-events: none;
         content: '';

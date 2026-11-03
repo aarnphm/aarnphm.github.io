@@ -16,9 +16,18 @@ export interface MdHooks {
   pipe: (block: string) => { before: string; table: Element; after: string } | null
   /** display math */
   display: (tex: string) => Element
-  /** fenced code inside a quote or a list item (top-level fences are taken out earlier) */
-  fence: (body: string) => Element
+  /**
+   * fenced code inside a quote or a list item (top-level fences are taken out earlier); `info`
+   * names garden components (`quotes`, `poetry`, `sms`, `tracking`) the caller renders as such
+   */
+  fence: (body: string, info: string) => Element
 }
+
+// Obsidian block ids (`text ^ava-writing`, or `^id` on its own line) are anchors, not text
+const BLOCK_ID = /(?:^|[ \t]+)\^(?=[\w-]*[A-Za-z-])[A-Za-z0-9][\w-]*[ \t]*$/gm
+const unblock = (text: string) => text.replace(BLOCK_ID, '')
+// a task item's box: `- [ ] todo`, `- [x] done`
+const TASK = /^\[([ xX])\][ \t]+/
 
 const MATH = String.raw`\$\$([\s\S]+?)\$\$|\$(?![\s$])((?:\\.|[^\\$\n])+?)(?<!\s)\$(?!\d)`
 const HREF = String.raw`<?([^()\s<>]*(?:\([^()\s]*\)[^()\s<>]*)*)>?`
@@ -166,6 +175,7 @@ export function mdBlocks(source: string, hooks: MdHooks): Element[] {
       )
     } else if (FENCE.test(line)) {
       const marker = FENCE.exec(line)![1]
+      const info = line.replace(FENCE, '').trim()
       const body: string[] = []
       i++
       while (
@@ -174,7 +184,7 @@ export function mdBlocks(source: string, hooks: MdHooks): Element[] {
       )
         body.push(lines[i++])
       i++
-      if (body.join('').trim()) out.push(hooks.fence(body.join('\n')))
+      if (body.join('').trim()) out.push(hooks.fence(body.join('\n'), info))
     } else if (DISPLAY_OPEN.test(line)) {
       // `$$ … $$` on one line, or opening and closing lines around the TeX
       const first = line.replace(DISPLAY_OPEN, '')
@@ -191,7 +201,12 @@ export function mdBlocks(source: string, hooks: MdHooks): Element[] {
       }
       if (tex.join('').trim()) out.push(hooks.display(tex.join('\n').trim()))
     } else if (HEADING.test(line)) {
-      out.push(h('p.lat-h', hooks.inline(line.replace(HEADING, '').replace(/[ \t]+#+[ \t]*$/, ''))))
+      out.push(
+        h(
+          'p.lat-h',
+          hooks.inline(unblock(line.replace(HEADING, '').replace(/[ \t]+#+[ \t]*$/, ''))),
+        ),
+      )
       i++
     } else if (RULE.test(line)) {
       out.push(h('hr'))
@@ -222,6 +237,7 @@ export function mdBlocks(source: string, hooks: MdHooks): Element[] {
 
 /** Soft wraps join with a space; a line ending in two spaces or a backslash breaks. */
 function paragraph(text: string, hooks: MdHooks): Element[] {
+  text = unblock(text)
   if (!text.trim()) return []
   const joined = text
     .split('\n')
@@ -252,7 +268,10 @@ function list(lines: string[], start: number, out: Element[], hooks: MdHooks): n
     const m = ITEM.exec(lines[i])!
     // continuation lines sit under the item's text
     const content = indent + m[2].length + 1
-    const body = [m[3]]
+    const task = TASK.exec(m[3])
+    const body = [
+      task ? `${task[1] === ' ' ? '\u2610' : '\u2611'}\u00a0${m[3].slice(task[0].length)}` : m[3],
+    ]
     i++
     while (i < lines.length) {
       const line = lines[i]

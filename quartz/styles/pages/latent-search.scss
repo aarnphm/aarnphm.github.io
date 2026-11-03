@@ -54,20 +54,6 @@
         -webkit-appearance: none;
       }
     }
-
-    // only takes room while it has something to say
-    .lat-search-hint {
-      display: block;
-      padding: 0.3rem 0.75rem;
-      border-bottom: 1px solid var(--ledger-line);
-      font-family: var(--lat-mono);
-      font-size: var(--lat-micro, 0.68rem);
-      color: var(--gray);
-
-      &:empty {
-        display: none;
-      }
-    }
   }
 
   .lat-links[data-query] .lat-search input[type='search'] {
@@ -116,5 +102,25 @@
     text-anchor: start;
     letter-spacing: 0;
     font-size: 8px;
+  }
+}
+
+// the hover probe on the dated track: a hairline and a backed label that reads over the fan
+.lat-rail .lat-probe {
+  pointer-events: none;
+
+  line {
+    stroke: var(--dark);
+    stroke-width: 0.5;
+    opacity: 0.55;
+  }
+
+  text {
+    font-size: 8px;
+    fill: var(--dark);
+    paint-order: stroke;
+    stroke: var(--light);
+    stroke-width: 3px;
+    stroke-linejoin: round;
   }
 }

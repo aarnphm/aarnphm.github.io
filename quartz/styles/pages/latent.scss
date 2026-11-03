@@ -828,24 +828,13 @@
         font-family: var(--lat-mono);
         font-size: var(--lat-micro);
         font-weight: 400;
+        line-height: 1.5;
         color: var(--gray);
       }
 
       .lat-bench-pick {
         flex: 1 1 auto;
         min-width: 0;
-      }
-
-      .lat-bench-share {
-        flex: none;
-        font-family: var(--lat-mono);
-        font-size: var(--lat-micro);
-        font-variant-numeric: tabular-nums;
-        color: var(--gray);
-
-        &:empty {
-          display: none;
-        }
       }
 
       // the select reads as the cell's text: no box, the chevron at the cell's end
@@ -889,8 +878,13 @@
     }
 
     // both levels on the row's one line; the site's button rules would stack them
+    // the cell's line box matches the th beside it (same face, size, line-height), so the
+    // centred flex items put "level" and the buttons on one baseline
     .lat-bench-levels {
       white-space: nowrap;
+      font-family: var(--lat-mono);
+      font-size: var(--lat-micro);
+      line-height: 1.5;
     }
 
     // the levels are set like their label (mono, the micro size), so the row reads as one line
@@ -904,7 +898,8 @@
       font-family: var(--lat-mono);
       font-size: var(--lat-micro);
       font-weight: 400;
-      line-height: 1;
+      line-height: inherit;
+      vertical-align: baseline;
       color: var(--gray);
       cursor: pointer;
 
@@ -1132,6 +1127,41 @@
 
   .lat-callout-title {
     font-weight: var(--lat-strong);
+  }
+
+  // garden components in note passages: a ```quotes block's last paragraph is its attribution,
+  // verse keeps its line breaks, an sms reads as one message
+  .lat-cite {
+    font-family: var(--lat-mono);
+    font-size: var(--text-meta);
+    color: var(--gray);
+  }
+
+  .lat-verse {
+    & > p {
+      margin: 0;
+      white-space: pre-wrap;
+    }
+
+    & > p + p {
+      margin-top: 0.8em;
+    }
+  }
+
+  .lat-sms {
+    width: fit-content;
+    max-width: min(34rem, 100%);
+    padding: 0.45em 0.8em;
+    border: 1px solid var(--lat-hair);
+    border-radius: 0.9em;
+
+    & > p {
+      margin: 0;
+    }
+
+    & > p + p {
+      margin-top: 0.5em;
+    }
   }
 
   // a stream entry's date and tags

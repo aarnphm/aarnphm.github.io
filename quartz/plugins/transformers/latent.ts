@@ -146,12 +146,11 @@ export const Latent: QuartzTransformerPlugin = () => {
             h('input', {
               type: 'search',
               name: 'q',
-              placeholder: 'search text or a feature…',
+              placeholder: 'type to search text or a feature…',
               autocomplete: 'off',
               spellcheck: 'false',
               ariaLabel: 'search the latent space',
             }),
-            h('output.lat-search-hint', { ariaLive: 'polite' }),
           ])
           const linksInner = linksPane(focusPreview, items, index.kinds)
           const linksEl = h('section.lat-links', { dataFocus: String(focus) }, [
@@ -178,7 +177,7 @@ export const Latent: QuartzTransformerPlugin = () => {
             h(
               'div.lat-panel',
               { dataPanel: 'axes', hidden: true },
-              probe.axes.slice(0, 4).map((axis, i) => axisCard(axis, links.axes[i] ?? null)),
+              probe.axes.map((axis, i) => axisCard(axis, links.axes[i] ?? null)),
             ),
             // the probe opens on the 3-d bench; the client loads it once the page is idle
             h('div.lat-panel.lat-bench', { dataPanel: 'bench' }, [
