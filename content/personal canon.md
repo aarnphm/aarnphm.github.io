@@ -3,7 +3,7 @@ date: '2025-12-17'
 description: inspired by [David Cole's](http://davidcole.me/canon/), [Brendan Schlagel's](https://www.brendanschlagel.com/canon/#words-language), and [Marcelo Chaman Mallqui](https://www.marcelochaman.ca/s/heuristics)
 id: personal canon
 layout: technical-tractatus
-modified: 2026-10-23 01:08:03 GMT-04:00
+modified: 2026-11-03 17:13:50 GMT-05:00
 tags:
   - pattern
   - sapling
@@ -18,7 +18,7 @@ title: personal canon
   - _1.11_ [[library/Language, Truth & Logic|Language, Truth and Logic]] by A. J. Ayer asks whether a proposition is analytic or open to empirical verification. The test is severe enough to make the status of ethical and metaphysical claims itself contentious.
   - _1.12_ [On Denoting (1905)](https://users.drew.edu/~jlenz/br-on-denoting.html) and [Mathematical Logic as Based on the Theory of Types (1908)](https://upload.wikimedia.org/wikipedia/commons/1/1c/Mathematical_Logic_as_Based_on_the_Theory_of_Types_-_Bertrand_Russell_%281908%29.pdf) by Bertrand Russell ask how an expression works in a proposition when its grammatical form misleads us about its logical role.
 - _1.2_ Frank Ramsey
-  - _1.21_ _Truth and Probability_ (1926) connects degrees of belief to the odds a person would accept.
+  - _1.21_ [[thoughts/pdfs/TRUTH AND PROBABILITY (1926).pdf|_Truth and Probability_]] (1926) connects degrees of belief to the odds a person would accept.
   - _1.22_ _General Propositions and Causality_ (1929) calls belief “a map of neighbouring space by which we steer.” [[posts/2025|The 2025 notes]] extend that image: much of the map is water, and old beliefs leave marks after a revision.
 - _1.3_ [The Cluster Structure of Thingspace](https://www.lesswrong.com/posts/WBw8dDkAWohFjWQSk/the-cluster-structure-of-thingspace) by Eliezer Yudkowsky treats categories as clusters of correlated properties, a reason to examine a category's predictive use instead of searching for its essence.
 - _1.4_ [On Bounded Distrust](https://thezvi.substack.com/p/on-bounded-distrust) by Zvi Mowshowitz asks what signal can still be extracted from a source whose distortions are known. Distrust has to be calibrated to the claim and context.
@@ -39,7 +39,7 @@ title: personal canon
 - _3.1_ Henrik Karlsson's three essays make a sequence from private thought to public discovery to practical [[thoughts/Agency|agency]].
   - _3.11_ [Writing to Think](https://www.henrikkarlsson.xyz/p/writing-to-think) pins a vague claim to the page so that contradictions and counterexamples become visible. The friction is part of the method.
   - _3.12_ [A Blog Post Is a Very Long and Complex Search Query](https://www.henrikkarlsson.xyz/p/search-query) treats specific public writing as a way to find people who can answer, challenge, or extend an unusual interest.
-  - _3.13_ [Agentic Fragments](https://www.henrikkarlsson.xyz/p/agentic-fragments) uses a reknitted sweater to show agency as seeing more degrees of freedom in an object, then acting on them. The public excerpt ends before the paid essay's other fragments.
+  - _3.13_ [Agentic Fragments](https://www.henrikkarlsson.xyz/p/agentic-fragments) uses a reknitted sweater to show agency as seeing more degrees of freedom in an object, then acting on them.
 - _3.2_ [Impact, Agency, and Taste](https://www.benkuhn.net/impact/) by Ben Kuhn separates choosing consequential work from carrying it through. [Audience of One](https://jasmine.substack.com/p/audience-of-one) by Jasmine Sun belongs beside it as a prompt to examine whose judgment shapes [[thoughts/taste|taste]] and where the [[thoughts/Overton Window|Overton Window]] enters the room.
 - _3.3_ The tools-for-thought track asks how a computer can extend a person's working memory and agency.
   - _3.31_ [[library/As We May Think|As We May Think]] by Vannevar Bush imagines the memex and its associative trails; [[library/The Dream Machine|The Dream Machine]] by M. Mitchell Waldrop follows J. C. R. Licklider's later vision of human-computer symbiosis.
