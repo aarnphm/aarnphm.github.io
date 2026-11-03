@@ -4,6 +4,7 @@
 // that leaves a margin, each group folds under its paragraph and the label toggles it.
 
 import { mountClamps, type ClampFit } from './fr-margins-clamp'
+import { mountInteractions } from './fr-margins-interactions'
 import { layout, mountNotes, mountReview } from './fr-margins-review'
 import { rootNavSignal } from './root-lifecycle'
 
@@ -72,128 +73,25 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
     content.previousElementSibling?.querySelector<HTMLElement>('.sidenote-label') ?? null
   notes.forEach((content, i) => (content.dataset.frTone = String((i % 3) + 1)))
 
-  // folded, an open entry's body leaves the parenthesis before the text for a fold under the block
   const entries = Array.from(article.querySelectorAll<HTMLElement>('.fr-entry'))
   const bodies = new Map(
     entries.map(e => [e, e.querySelector<HTMLElement>(':scope > .fr-entry-body')!]),
   )
-  const settle = (entry: HTMLElement) => {
-    const body = bodies.get(entry)!
-    const group = entry.parentElement as HTMLElement
-    const anchor = anchors.get(group)!
-    const out =
-      article.dataset.frMode === 'inline' &&
-      entry.hasAttribute('data-open') &&
-      group.parentElement === anchor
-    if (out) {
-      let fold = anchor.querySelector<HTMLElement>(':scope > .fr-fold')
-      if (!fold) {
-        fold = document.createElement('span')
-        fold.className = 'fr-fold'
-        anchor.append(fold)
-      }
-      if (body.parentElement !== fold) fold.append(body)
-    } else {
-      if (body.parentElement !== entry) entry.append(body)
-      const fold = anchor.querySelector(':scope > .fr-fold')
-      if (fold && fold.childElementCount === 0) fold.remove()
-    }
-  }
-
-  for (const label of article.querySelectorAll<HTMLButtonElement>('.fr-entry-label')) {
-    label.addEventListener(
-      'click',
-      () => {
-        if (article.dataset.frMode !== 'inline') return
-        const entry = label.closest<HTMLElement>('.fr-entry')
-        if (!entry) return
-        const open = entry.toggleAttribute('data-open')
-        label.setAttribute('aria-expanded', String(open))
-        settle(entry)
-      },
-      { signal },
-    )
-  }
-
-  // the number is the cross-reference; pointing at either side lights the other
-  const siblings = new Map<HTMLElement, HTMLElement[]>()
-  const lights = new Map<HTMLElement, (on: boolean) => void>()
-  for (const group of groups) {
-    const anchor = anchors.get(group)!
-    siblings.set(anchor, [...(siblings.get(anchor) ?? []), group])
-  }
-  for (const [anchor, mine] of siblings) {
-    const light = (on: boolean) => {
-      anchor.classList.toggle('fr-hot', on)
-      for (const group of mine) {
-        group.classList.toggle('fr-hot', on)
-        for (const path of leaderOf.get(group) ?? []) path.classList.toggle('fr-hot', on)
-      }
-    }
-    for (const group of mine) lights.set(group, light)
-    for (const node of [anchor, ...mine]) {
-      node.addEventListener('pointerenter', () => light(true), { signal })
-      node.addEventListener('pointerleave', () => light(false), { signal })
-    }
-  }
-  for (const content of notes) {
-    const light = (on: boolean) => {
-      for (const path of leaderOf.get(content) ?? []) path.classList.toggle('fr-hot', on)
-    }
-    for (const node of [content, labelOf(content)]) {
-      node?.addEventListener('pointerenter', () => light(true), { signal })
-      node?.addEventListener('pointerleave', () => light(false), { signal })
-    }
-  }
-
-  // the article's own blocks: one that grows or shrinks (a figure leaving its intrinsic size, a
-  // fold, an image) moves every number below it, often without resizing the article, which the
-  // page grid may stretch. The last one's bottom is where the text ends
   const blocks = Array.from(article.children).filter(
     (child): child is HTMLElement =>
       child instanceof HTMLElement && !child.matches('.fr-group, .fr-leaders'),
   )
   const clamps = mountClamps(article, () => queue(), signal)
-
-  // a citation's reference sits in a margin bibliographie, which stands in for its popover; pointing
-  // at the citation lights the entry, its leader and number, and opens a cut entry until the pointer
-  // leaves both; an open entry stays as it is
-  for (const cite of article.querySelectorAll<HTMLAnchorElement>('a[data-bib]')) {
-    const id = decodeURIComponent(new URL(cite.href).hash.slice(1))
-    const entry = id
-      ? article
-          .querySelector<HTMLElement>(`.fr-gloss#${CSS.escape(id)}`)
-          ?.closest<HTMLElement>('.fr-entry')
-      : null
-    if (!entry) continue
-    const light = lights.get(entry.parentElement as HTMLElement)
-    let lit = false
-    let held = false
-    const release = (event: PointerEvent) => {
-      const to = event.relatedTarget as Node | null
-      if (!lit || (to && (cite.contains(to) || entry.contains(to)))) return
-      lit = false
-      entry.classList.remove('fr-hot')
-      light?.(false)
-      if (held) clamps.hold(entry, false)
-      held = false
-    }
-    cite.addEventListener(
-      'pointerenter',
-      () => {
-        if (article.dataset.frMode !== 'margin') return
-        // back from the entry, whose group just went dark on leaving
-        light?.(true)
-        if (lit) return
-        lit = true
-        entry.classList.add('fr-hot')
-        held = clamps.hold(entry, true)
-      },
-      { signal },
-    )
-    cite.addEventListener('pointerleave', release, { signal })
-    entry.addEventListener('pointerleave', release, { signal })
-  }
+  const settle = mountInteractions({
+    article,
+    signal,
+    groups,
+    anchors,
+    bodies,
+    notes,
+    leaderOf,
+    clamps,
+  })
   const measured = new WeakMap<Element, { width: number; height: number }>()
   const measureBox = (element: Element) => {
     const rect = element.getBoundingClientRect()
@@ -474,6 +372,7 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
 
   let frame = 0
   const queue = () => {
+    if (signal.aborted) return
     cancelAnimationFrame(frame)
     frame = requestAnimationFrame(paint)
   }
@@ -555,7 +454,9 @@ document.addEventListener('nav', () => {
   }
   hydrateArticles()
   const onContentDecrypted = () => hydrateArticles()
-  document.addEventListener('contentdecrypted', onContentDecrypted, { signal: navController.signal })
+  document.addEventListener('contentdecrypted', onContentDecrypted, {
+    signal: navController.signal,
+  })
 
   for (const preview of document.querySelectorAll<HTMLElement>('.preview-container')) {
     let previewController: AbortController | null = null
@@ -568,7 +469,7 @@ document.addEventListener('nav', () => {
       mountRoot(inner, previewController.signal)
     }
     const observer = new MutationObserver(syncPreview)
-    observer.observe(preview, { childList: true, subtree: true })
+    observer.observe(preview, { childList: true })
     navController.signal.addEventListener(
       'abort',
       () => {

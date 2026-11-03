@@ -232,6 +232,31 @@ a {
           margin: 0 auto;
           opacity: 1;
 
+          .note-layout {
+            min-width: 0;
+            container: profile-page / inline-size;
+
+            > article {
+              min-width: 0;
+              width: 100%;
+            }
+          }
+
+          .note-layout .collapse-rail {
+            width: var(--rail-width);
+            display: flex;
+
+            > .collapse-line {
+              width: 1px;
+            }
+          }
+
+          .note-layout .collapse-toggle[data-collapse-toggle] {
+            display: grid;
+            grid-template-columns: var(--rail-width) minmax(0, 1fr) auto;
+            cursor: pointer;
+          }
+
           .title-col:not(.popover *) {
             grid-column: 1 / -1;
           }
