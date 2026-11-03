@@ -1,11 +1,15 @@
-// CSS owns sticky placement and note layering. Reveal the running title once its chapter
-// heading passes the bar, without changing the space reserved for either heading.
-document.addEventListener('nav', () => {
-  if (document.body.dataset.layout !== 'newspaper') return
-  const controller = new AbortController()
+import { rootNavSignal } from './root-lifecycle'
+
+const hydrated = new WeakMap<HTMLElement, AbortSignal>()
+
+function hydrateArticle(article: HTMLElement) {
+  if (article.closest('[data-layout]')?.getAttribute('data-layout') !== 'newspaper') return
+  const signal = rootNavSignal(article)
+  if (hydrated.get(article) === signal) return
+  hydrated.set(article, signal)
   const chapters = [
-    ...document.querySelectorAll<HTMLElement>(
-      "article section.collapsible-header[data-level='2'] > .mag-running-head",
+    ...article.querySelectorAll<HTMLElement>(
+      "section.collapsible-header[data-level='2'] > .mag-running-head",
     ),
   ].map(head => ({ head, heading: head.parentElement?.querySelector('h2') ?? null }))
   let frame = 0
@@ -27,25 +31,18 @@ document.addEventListener('nav', () => {
   }
   scheduleHeads()
   void document.fonts?.ready.then(() => {
-    if (!controller.signal.aborted) scheduleHeads()
+    if (!signal.aborted) scheduleHeads()
   })
-  window.addEventListener('scroll', scheduleHeads, { passive: true, signal: controller.signal })
-  window.addEventListener('resize', scheduleHeads, { passive: true, signal: controller.signal })
-  window.addCleanup(() => {
-    controller.abort()
-    cancelAnimationFrame(frame)
-  })
-})
+  const scroller = article.closest('.stacked-note') ?? window
+  scroller.addEventListener('scroll', scheduleHeads, { passive: true, signal })
+  window.addEventListener('resize', scheduleHeads, { passive: true, signal: signal })
+  signal.addEventListener('abort', () => cancelAnimationFrame(frame), { once: true })
 
 // Below the rail width each note is folded under its paragraph (marginalia.scss); tapping the
 // mark (sidenote word or footnote square) opens or closes it. With the rail, a note already sits
 // beside its mark, so the mark keeps its usual behaviour.
-document.addEventListener('nav', () => {
-  if (document.body.dataset.layout !== 'newspaper') return
-  const controller = new AbortController()
-  const { signal } = controller
-  for (const mark of document.querySelectorAll<HTMLElement>('article [data-note]')) {
-    const note = document.getElementById(mark.dataset.note ?? '')
+  for (const mark of article.querySelectorAll<HTMLElement>('[data-note]')) {
+    const note = article.querySelector<HTMLElement>(`[id="${CSS.escape(mark.dataset.note ?? '')}"]`)
     if (!note || note.classList.contains('profile-note-boxed')) continue
     const link = mark instanceof HTMLAnchorElement
     mark.setAttribute('aria-controls', note.id)
@@ -67,10 +64,20 @@ document.addEventListener('nav', () => {
       mark.addEventListener(
         'keydown',
         event => {
-          if (event.key === 'Enter' || event.key === ' ') toggle(event)
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault()
+            toggle(event)
+          }
         },
         { signal },
       )
   }
-  window.addCleanup(() => controller.abort())
-})
+}
+
+function hydrate(root: Document | HTMLElement) {
+  if (root instanceof HTMLElement && root.matches('article')) hydrateArticle(root)
+  root.querySelectorAll<HTMLElement>('article').forEach(hydrateArticle)
+}
+
+document.addEventListener('nav', () => hydrate(document))
+document.addEventListener('contentdecrypted', event => hydrate(event.detail.content))

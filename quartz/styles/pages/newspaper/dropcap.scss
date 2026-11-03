@@ -248,7 +248,7 @@ $faces: (
 
 // Reading pages keep paragraphs apart, so a short opener has to grow around its initial.
 // Newspaper paragraphs share one grid and let the float run into the next line.
-body:not([data-layout='newspaper']) :where(#quartz-root) article :is(p, li):has(.mag-initial) {
+:is(body:not(.stack-mode, [data-layout='newspaper']) :where(#quartz-root), .note-layout:not([data-layout='newspaper'])) article :is(p, li):has(.mag-initial) {
   display: flow-root;
   line-height: var(--mag-line);
 }
@@ -282,12 +282,14 @@ body:not([data-layout='newspaper']) :where(#quartz-root) article :is(p, li):has(
       translate: 0 calc((var(--dc-top) - 1) * var(--dc-size));
     }
 
-    // The default face's ornament fills its em square (glyph bounds 0 to 1em, within 0.013em
-    // for every letter), about 1.23 times its letter's ink. The specimen fits the square, not
-    // the letter, to the block, so the ornament is as tall as the other faces' letters.
+    // The default face's ornament fills its em square (within 0.013em for every letter), about
+    // 1.23 times its letter's ink. The specimen fits the square, not the letter, to the block,
+    // so the ornament is as tall as the other faces' letters. In the line box that square runs
+    // from 1.139em down to 0.150em (measured in the browser), so the bounds say that: 1 and 0
+    // left the ornament 0.15em high, a gap above its caption.
     .mag-initial[data-letter]:not([data-face]) {
-      --dc-top: 1;
-      --dc-bottom: 0;
+      --dc-top: 1.139;
+      --dc-bottom: 0.15;
     }
 
     figcaption {

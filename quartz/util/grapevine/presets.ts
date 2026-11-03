@@ -19,8 +19,8 @@ const PRESETS: InitialPreset[] = [
       frame: 'none',
       fMargin: 9,
       seed: 621289,
-      oRegion: 'halo',
-      oHalo: 180,
+      // the whole tile, as the full-bleed presets grow; the share grew in a 180 halo round the letter
+      oRegion: 'field',
       oSeeds: 'letter',
       oSeedCount: 5,
       oDensity: 0.1,

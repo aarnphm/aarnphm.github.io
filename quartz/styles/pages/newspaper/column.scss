@@ -5,7 +5,7 @@
 // callouts.scss pins margin-left and padding with !important inside the base layer.
 // Keep these overrides in that layer so they win over the base declarations.
 @layer quartz-base {
-  [data-layout='newspaper'] :where(#quartz-root) article > blockquote.callout {
+  :is(body:not(.stack-mode)[data-layout='newspaper'] :where(#quartz-root), .note-layout[data-layout='newspaper']) article > blockquote.callout {
     margin-inline: auto !important;
     padding: 0 !important;
   }
@@ -13,7 +13,7 @@
 
 // Newspaper layout uses Profile markup (quartz/plugins/transformers/profile.ts); opt in with
 // layout: newspaper. Popovers mount on <body>, so rules use the page root via :where.
-[data-layout='newspaper'] :where(#quartz-root) {
+:is(body:not(.stack-mode)[data-layout='newspaper'] :where(#quartz-root), .note-layout[data-layout='newspaper']) {
   // Masthead and section titles stay Parclo; running text is Source Serif 4; initials, chapter
   // numerals and department heads take the ITC Garamond cut the menu already serves.
   --mag-serif: 'Parclo Serif', 'ITCGaramondStdLtCond', Georgia, 'Times New Roman', serif;
