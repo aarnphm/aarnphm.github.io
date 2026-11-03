@@ -5,6 +5,9 @@ directory: '[[embeddings]]'
 embeddings:
   - '[[thoughts/pdfs|pdfs]]'
   - '[[thoughts/papers|papers]]'
+pdfExclude:
+  - thoughts/pdfs/nytimes/sudoku-01-06-26.pdf
+  - thoughts/pdfs/nytimes/sudoku-01-09-26.pdf
 axes:
   - name: philosophy ↔ ml
     a: [philosophy, pattern, love]

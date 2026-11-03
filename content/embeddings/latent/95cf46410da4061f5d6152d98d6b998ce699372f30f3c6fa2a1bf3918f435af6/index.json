@@ -141,5 +141,38 @@
     "indexedPages": 23664
    }
   }
+ ],
+ "features": [
+  {
+   "name": "text",
+   "kinds": [
+    "note",
+    "pdf"
+   ],
+   "features": 2048,
+   "k": 8,
+   "rows": 51652,
+   "fvu": 0.3384
+  },
+  {
+   "name": "image",
+   "kinds": [
+    "image"
+   ],
+   "features": 128,
+   "k": 4,
+   "rows": 562,
+   "fvu": 0.4813
+  },
+  {
+   "name": "base",
+   "kinds": [
+    "base"
+   ],
+   "features": 128,
+   "k": 4,
+   "rows": 839,
+   "fvu": 0.4395
+  }
  ]
 }
