@@ -28,4 +28,3 @@ description: Three friends raised at an isolated English boarding school confron
 Source: [Lucia’s New York park reading reel](https://www.instagram.com/reel/DdkR7elpusn/), 00:08.
 
 Bibliography: [publisher](https://penguinrandomhouselibrary.com/book/?isbn=9781400044832).
-

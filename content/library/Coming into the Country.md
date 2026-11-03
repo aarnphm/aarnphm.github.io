@@ -27,4 +27,3 @@ description: Literary reportage on Alaska, its landscapes, and the settlers, pro
 Source: [Lucia’s New York park reading reel](https://www.instagram.com/reel/DdkR7elpusn/), 00:26.
 
 Bibliography: [publisher](https://us.macmillan.com/books/9780374126452/comingintothecountry/).
-

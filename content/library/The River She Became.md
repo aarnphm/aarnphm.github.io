@@ -27,4 +27,3 @@ description: A scholar and relic-hunter crosses into the fae world to recover an
 Source: [Lucia’s New York park reading reel](https://www.instagram.com/reel/DdkR7elpusn/), 00:18.
 
 Bibliography: [publisher](https://us.macmillan.com/books/9781250878694/therivershebecame/).
-
