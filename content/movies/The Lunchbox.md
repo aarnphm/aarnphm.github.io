@@ -1,12 +1,12 @@
 ---
 date: '2026-11-03'
 director:
-  - "Ritesh Batra"
-id: "The Lunchbox"
+  - 'Ritesh Batra'
+id: 'The Lunchbox'
 modified: '2026-11-03'
-posters: "[[movies/posters/the-lunchbox.jpg]]"
+posters: '[[movies/posters/the-lunchbox.jpg]]'
 status: to watch
-title: "The Lunchbox"
+title: 'The Lunchbox'
 year: 2013
 ---
 

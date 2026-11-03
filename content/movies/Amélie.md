@@ -1,12 +1,12 @@
 ---
 date: '2026-11-03'
 director:
-  - "Jean-Pierre Jeunet"
-id: "Amélie"
+  - 'Jean-Pierre Jeunet'
+id: 'Amélie'
 modified: '2026-11-03'
-posters: "[[movies/posters/amelie.jpg]]"
+posters: '[[movies/posters/amelie.jpg]]'
 status: to watch
-title: "Amélie"
+title: 'Amélie'
 year: 2001
 ---
 
