@@ -5390,6 +5390,14 @@ title: are.na
 
 ## places
 
+- https://aisle3bar.ca/ -- Aisle 3 Bar
+  - [meta]:
+    - date: 11/02/2026
+    - tags: [restaurant, bar]
+    - coord: [43.6616056, -79.45530169999999]
+    - address: 2535 Dundas St W, Toronto, ON M6P 1H7, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfNXHdXtwDE/
 - https://www.google.com/maps?cid=12644599170170829385 -- Copains Covent Garden
   - [meta]:
     - date: 11/02/2026
