@@ -52,6 +52,8 @@ class Document:
   lastPage: int | None
   lastProgressAt: str | None
   status: str
+  partialPages: list[int]
+  fullyTranscribedPages: int
 
 
 class Observer:
@@ -225,7 +227,7 @@ class Observer:
       )
       status = (
         'complete'
-        if indexed_count == source.total
+        if indexed_count == source.total and not observation.partial
         else 'ready'
         if len(cached) > indexed_count
         else 'partial'
@@ -289,6 +291,8 @@ class Observer:
           if observation.updated_at is not None
           else None,
           status,
+          sorted(observation.partial),
+          len(cached - observation.partial),
         )
       )
     total = sum(d.totalPages for d in documents)
@@ -346,6 +350,10 @@ class Observer:
         'remainingDocuments': len(documents) - complete,
         'totalPages': total,
         'ocrPages': cached_count,
+        'partialPages': sum(len(d.partialPages) for d in documents),
+        'fullyTranscribedPages': sum(
+          d.fullyTranscribedPages for d in documents
+        ),
         'indexedPages': indexed_count,
         'servedPages': served_pages,
         'remainingOcrPages': remaining,
