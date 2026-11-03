@@ -10,6 +10,7 @@ import pymupdf
 def reviewed_region_text(
   source: Path, number: int, bounds: list[float], content: str | None
 ) -> dict[str, str] | None:
+  expected = '0caa6b96a86bb319a6a577500705cb8072da1b96341d46f35624ea48d8a80a49'
   if number == 96 and bounds == [155, 514, 222, 534]:
     if content not in (None, ''):
       return None
@@ -22,12 +23,32 @@ def reviewed_region_text(
       "  bop min ←'new a,b. if a<b then a else b';"
     )
     models = 'gemini-4-argon-high'
+  elif number == 29 and bounds == [80, 227, 239, 390]:
+    if content not in (None, ''):
+      return None
+    expected = (
+      '728e6d0ca3809d504f12f3302ef5303238a7324cf2824b303d64781d597dba7d'
+    )
+    text = 'a'
+    models = 'gemini-4-argon-high'
+  elif number == 29 and bounds == [280, 305, 866, 397]:
+    if content is None:
+      return None
+    expected = (
+      '728e6d0ca3809d504f12f3302ef5303238a7324cf2824b303d64781d597dba7d'
+    )
+    text = 'abcdefghi jklmnopqr\ntuvwxyz ÿ'
+    models = 'gemini-4-argon-high'
+  elif number == 804 and bounds == [223, 818, 269, 827]:
+    expected = (
+      '13051c1e0401281930ccc533cbcdabcfec77a3eb69fd201e3bbd4796b4a91d07'
+    )
+    text = '. . . .'
+    models = 'gemini-4-argon-high'
   else:
     return None
   source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
-  if source_hash != (
-    '0caa6b96a86bb319a6a577500705cb8072da1b96341d46f35624ea48d8a80a49'
-  ):
+  if source_hash != expected:
     return None
   reviewed = {
     'content': text,
@@ -38,8 +59,13 @@ def reviewed_region_text(
     'review_approved_by': 'aarnphm',
     'review_date': '2026-11-02',
   }
-  if number == 12:
+  if number in (12, 804):
     reviewed['review_recognition'] = 'approved-transcription-before-ocr'
+  if number in (29, 804):
+    reviewed['review_approved_by'] = (
+      'Codex image review under aarnphm authorization'
+    )
+    reviewed['review_date'] = '2026-11-03'
   return reviewed
 
 

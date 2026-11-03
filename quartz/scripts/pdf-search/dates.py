@@ -24,7 +24,9 @@ FRONTMATTER = re.compile(r'\A---\s*\n(.*?)\n---\s*\n', re.S)
 FRONTMATTER_DATE = re.compile(
   r'^(?:date|created|published)\s*:\s*["\']?(\d{4}-\d{2}-\d{2})', re.M
 )
-PDF_REFERENCE = re.compile(r'(?:\[\[|\(|[\'"/])([^\[\]()|#\'"\n/]+?\.pdf)\b', re.I)
+PDF_REFERENCE = re.compile(
+  r'(?:\[\[|\(|[\'"/])([^\[\]()|#\'"\n/]+?\.pdf)\b', re.I
+)
 FILENAME_YEAR = re.compile(r'(?:^|[-_ (,])((?:19|20)\d{2})(?=$|[-_ ),.])')
 FLOOR = date(1990, 1, 1)
 CATALOGUE = 12
@@ -105,9 +107,7 @@ def metadata_date(source: Path) -> str | None:
   for key in ('creationDate', 'modDate'):
     match = PDF_DATE.match(str(metadata.get(key) or '').strip())
     if match:
-      found = plausible(
-        int(match[1]), int(match[2] or 1), int(match[3] or 1)
-      )
+      found = plausible(int(match[1]), int(match[2] or 1), int(match[3] or 1))
       if found:
         return found
   return raw_metadata_date(source)
