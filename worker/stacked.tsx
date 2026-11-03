@@ -5,6 +5,7 @@ import {
   stackedNoteSlugs,
   stackedNotesUrl,
 } from '../quartz/util/stacked-notes'
+import { protectedStackedNote, STACKED_PROTECTED_SELECTOR } from '../quartz/util/stacked-protection'
 
 export interface StackedNoteData {
   slug: string
@@ -22,6 +23,8 @@ interface HtmlRewriterElement {
   after(content: string, options?: { html?: boolean }): void
   append(content: string, options?: { html?: boolean }): void
   setAttribute(name: string, value: string): void
+  onEndTag(handler: () => void): void
+  remove(): void
   getAttribute(name: string): string | null
 }
 
@@ -88,8 +91,16 @@ function stripHtmlTags(html: string): string {
   return text
 }
 
-async function extractHtmlFragments(html: string, selectors: string[]): Promise<string[]> {
-  let rewriter = new HTMLRewriter()
+async function extractHtmlFragments(
+  html: string,
+  selectors: string[],
+  hiddenEntries: Set<string>,
+): Promise<string[]> {
+  let rewriter = new HTMLRewriter().on('.stream-entry', {
+    element(el) {
+      if (hiddenEntries.has(el.getAttribute('id') ?? '')) el.remove()
+    },
+  })
   const handler: HtmlRewriterHandlers = {
     element(el) {
       el.before(STACKED_NOTE_START, { html: true })
@@ -122,8 +133,11 @@ async function extractHtmlFragments(html: string, selectors: string[]): Promise<
   return chunks
 }
 
-async function extractPopoverHintContent(html: string): Promise<string> {
-  const chunks = await extractHtmlFragments(html, ['main .popover-hint'])
+async function extractPopoverHintContent(
+  html: string,
+  hiddenEntries: Set<string>,
+): Promise<string> {
+  const chunks = await extractHtmlFragments(html, ['main .popover-hint'], hiddenEntries)
   return chunks
     .filter(chunk => !(chunk.includes('page-footer') && stripHtmlTags(chunk).trim().length === 0))
     .join('\n')
@@ -135,22 +149,6 @@ export function failedNoteData(slug: string, title: string = slug): StackedNoteD
     title,
     content: `<div class="stacked-note-status stacked-note-status-failed"><p>Impossible de charger cette note.</p>${STACKED_NOTE_RETRY_BUTTON_HTML}</div>`,
     state: 'failed',
-  }
-}
-
-function protectedNoteData(slug: string, title: string): StackedNoteData {
-  return {
-    slug,
-    title,
-    content: `<div class="protected-stacked-note">
-  <div class="protected-overlay">
-    <div class="protected-message">
-      <p>ce contenu est protégé</p>
-      <p class="protected-hint">visitez la page principale pour y accéder</p>
-    </div>
-  </div>
-</div>`,
-    state: 'protected',
   }
 }
 
@@ -169,19 +167,44 @@ export function shouldIncludeServerBody(index: number): boolean {
 
 async function noteDataFromHtml(slug: string, html: string): Promise<StackedNoteData> {
   const title = extractTitle(html) || slug
-  if (/<article\b[^>]*\bdata-protected=["']true["']/i.test(html)) {
-    return protectedNoteData(slug, title)
-  }
-
   let pageLayout = 'default'
-  await new HTMLRewriter().on('body', {
-    element(el) {
-      pageLayout = el.getAttribute('data-layout') ?? 'default'
-    },
-  }).transform(new Response(html)).text()
-  const fragments = await extractPopoverHintContent(html)
+  let protectedPage = false
+  let streamEntry: string | null = null
+  const hiddenEntries = new Set<string>()
+  const cleanHtml = await new HTMLRewriter()
+    .on('body', {
+      element(el) {
+        pageLayout = el.getAttribute('data-layout') ?? 'default'
+        protectedPage = el.getAttribute('data-protected') === 'true'
+      },
+    })
+    .on('main > article[data-protected="true"], .page-content > article[data-protected="true"]', {
+      element() {
+        protectedPage = true
+      },
+    })
+    .on('.stream-entry', {
+      element(el) {
+        streamEntry = el.getAttribute('id')
+        el.onEndTag(() => {
+          streamEntry = null
+        })
+      },
+    })
+    .on(STACKED_PROTECTED_SELECTOR, {
+      element(el) {
+        if (streamEntry) hiddenEntries.add(streamEntry)
+        el.remove()
+      },
+    })
+    .transform(new Response(html))
+    .text()
+  if (protectedPage) return protectedStackedNote(slug)
+  const fragments = await extractPopoverHintContent(cleanHtml, hiddenEntries)
   const layout = pageLayout.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')
-  const content = fragments ? `<div class="note-layout" data-layout="${layout}">${fragments}</div>` : ''
+  const content = fragments
+    ? `<div class="note-layout" data-layout="${layout}">${fragments}</div>`
+    : ''
 
   if (!content) return failedNoteData(slug, title)
 

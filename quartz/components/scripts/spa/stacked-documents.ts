@@ -8,6 +8,7 @@ import {
   type NoteDocument,
   type StackedNotePayload,
 } from '../../../util/stacked-notes'
+import { protectedStackedNote, STACKED_PROTECTED_SELECTOR } from '../../../util/stacked-protection'
 import { parseHtml } from './html-parser'
 import { transformHostInternalLinks } from './link-policy'
 
@@ -21,6 +22,9 @@ const STACKED_NOTE_RETRY_BUTTON_HTML = `<button type="button" data-stacked-retry
 </button>`
 
 function normalizeStackedNoteURLs(html: Document, url: URL) {
+  html.querySelectorAll(STACKED_PROTECTED_SELECTOR).forEach(element => {
+    ;(element.closest('.stream-entry') ?? element).remove()
+  })
   normalizeRelativeURLs(html, url)
   for (const attribute of ['data-href', 'poster']) {
     html.querySelectorAll(`[${attribute}]`).forEach(element => {
@@ -59,6 +63,11 @@ export class StackedDocumentStore {
     url: URL,
     hash: string,
   ) {
+    if (state === 'protected') {
+      const note = protectedStackedNote(slug)
+      markup = note.content
+      title = note.title
+    }
     const html = parseHtml(markup)
     normalizeStackedNoteURLs(html, new URL(`/${slug}`, url))
     this.cacheDocument(slug, { slug, title, bodyHtml: html.body.innerHTML, state, hash })
@@ -69,9 +78,17 @@ export class StackedDocumentStore {
   }
 
   private currentDocument(slug: string, url: URL): NoteDocument {
+    if (document.body.dataset.protected === 'true') {
+      const note = protectedStackedNote(slug)
+      return { slug, title: note.title, state: note.state, bodyHtml: note.content, hash: url.hash }
+    }
     const contents = Array.from(
       document.querySelectorAll<HTMLElement>('main .popover-hint'),
-    ).filter(element => !element.closest('#stacked-notes-container'))
+    ).filter(
+      element =>
+        !element.closest('#stacked-notes-container') &&
+        !element.closest(STACKED_PROTECTED_SELECTOR),
+    )
     const title = document.querySelector<HTMLElement>('main h1')?.textContent || document.title
     const html = parseHtml(this.serializeElements(contents))
     normalizeStackedNoteURLs(html, new URL(`/${slug}`, url))
@@ -83,6 +100,7 @@ export class StackedDocumentStore {
   }
 
   private payloadDocument(payload: StackedNotePayload, target: URL, slug: string, hash: string) {
+    if (payload.state === 'protected') payload = protectedStackedNote(slug)
     const html = parseHtml(payload.content)
     normalizeStackedNoteURLs(html, target)
     transformHostInternalLinks(html)
