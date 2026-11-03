@@ -29,12 +29,19 @@ export function dropcapOf(value: unknown): Dropcap {
 }
 
 /** Wrap the lede and chapter openers in `span.mag-initial`; `::first-letter` cannot carry an
- * ornament. Chapters opening a testimonial band stay plain.
+ * ornament. Chapters opening a testimonial band stay plain. The lede is the paragraph after a
+ * callout (the dating page's tl;dr) or, on a page without one, its first paragraph before any
+ * chapter head (an essay that opens straight into prose, its breaks marked by rules).
  */
 export function initials(tree: Root, face: Dropcap, seed: string) {
   if (face === 'none') return
   let n = 0
   const els = tree.children.filter((c): c is Element => c.type === 'element')
+  const firstHead = els.findIndex(el => el.tagName === 'h2')
+  const head = firstHead === -1 ? els : els.slice(0, firstHead)
+  const callout = head.some(el => el.tagName === 'blockquote' && classes(el).includes('callout'))
+  const opening = callout ? undefined : head.find(el => el.tagName === 'p')
+  if (opening) wrapInitial(opening, 'lede', face, `${seed}:${n++}`)
   let seenHeading = false
   els.forEach((el, i) => {
     // A float between head and text leaves that paragraph the opener.
