@@ -68,18 +68,29 @@ function path(polys: Pt[][], closed = true, tol = TOL): string {
 const circles = (dots: number[][]) =>
   dots.map(([x, y, r]) => s('circle', { cx: f(x), cy: f(y), r: f(Math.max(0.6, r)) }))
 
-/** `tol` is the outline simplification in field units; the rules print smaller than the tile. */
-export function drawItems(items: Items, detailW: number, tol = TOL): Element[] {
+/** `tol` is the outline simplification in field units; the rules print smaller than the tile.
+ * `contrast` is initialis's broad-nib thick/thin (0 leaves the stem width alone). */
+export function drawItems(
+  items: Items,
+  detailW: number,
+  tol = TOL,
+  paint: { contrast?: number; cells?: Pt[][] } = {},
+): Element[] {
   const grapes: Shape[] = []
   const flowers: Shape[] = []
   for (const fl of items.flowers)
     ((fl as Shape & { kind?: string }).kind === 'grapes' ? grapes : flowers).push(fl)
   const lines = [...items.leaves, ...flowers].flatMap(sh => sh.lines).filter(l => l.length > 1)
+  const contrast = paint.contrast ?? 0
+  const cells = paint.cells?.length
+    ? [s('g', { class: 'gv-cells' }, [s('path', { d: path(paint.cells, true, tol) })])]
+    : []
   return [
+    ...cells,
     s('g', { class: 'gv-stem' }, [
       s('path', {
         d: path(
-          items.stems.map(st => stemPoly(st)),
+          items.stems.map(st => stemPoly(st, contrast, (35 * Math.PI) / 180)),
           true,
           tol,
         ),

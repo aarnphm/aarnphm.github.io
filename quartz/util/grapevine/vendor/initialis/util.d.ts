@@ -6,6 +6,7 @@ export const lerp: (a: number, b: number, t: number) => number
 export const TAU: number
 export function resample(pts: number[][], step: number, closed?: boolean): number[][]
 export function signedArea(pts: number[][]): number
+export function offsetPolygon(pts: number[][], d: number): number[][]
 export function bbox(contours: number[][][]): {
   x0: number
   y0: number

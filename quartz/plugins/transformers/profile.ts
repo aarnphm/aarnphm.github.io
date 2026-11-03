@@ -102,7 +102,11 @@ export const Profile: QuartzTransformerPlugin = () => {
         () => (tree: Root, file) => {
           const slug = file.data.slug
           const frontmatter = file.data.frontmatter
-          if (!slug || frontmatter?.pageLayout !== NEWSPAPER) return
+          if (!slug || !frontmatter) return
+          if (frontmatter.pageLayout !== NEWSPAPER) {
+            if (frontmatter.dropcap != null) initials(tree, dropcapOf(frontmatter.dropcap), slug)
+            return
+          }
           file.data.profile = true
 
           const prefix = rootPrefix(slug)
