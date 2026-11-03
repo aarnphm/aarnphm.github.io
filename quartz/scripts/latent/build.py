@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["numpy"]
+# dependencies = ["numpy", "pyyaml"]
 # ///
 """Build the `layout: latent` sidecar for every embedding store under a directory.
 
@@ -16,6 +16,9 @@ hash over every included manifest, so a regenerated store fails closed until thi
 
 Output: <directory>/latent/<hash>/ (see quartz/util/latent/sidecar.ts for the file contract) and
 <directory>/latent/index.json pointing at it. Older hashes are pruned.
+
+Probe axes: notes ↔ passages, then the `axes:` of the `layout: latent` page for this directory
+(each pole a list of tags, or {tags, paths}), then principal directions of what those leave.
 """
 
 from __future__ import annotations
@@ -35,11 +38,20 @@ from collections import Counter
 from pathlib import Path
 
 import numpy as np
+import yaml
 
 SHA = re.compile(r'^[a-f0-9]{64}$')
 VERSION = 1
 BLOCK = 64
 PREVIEW = 200
+# OCR'd pdf passages carry html tables; a link extract cut at 200 characters of `<td>` tags holds a
+# few words, so pdf previews drop the allowlisted tags first (quartz/util/latent/html.ts renders
+# the same set; cells and rows leave a space)
+PREVIEW_BREAK = re.compile(r'</?(?:td|th|tr|br|table|caption|p|div)\b[^<>]*>')
+PREVIEW_DROP = re.compile(
+  r'</?(?:thead|tbody|tfoot|sup|sub|u|i|em|b|strong|code|s|del|small|mark|kbd|span|font|a|center'
+  r'|figure|figcaption|section|blockquote|img|wbr|hr|col|colgroup)\b[^<>]*>'
+)
 PART = 48  # chunks per text part; a 2,800-passage book must not be one 5 MB file
 SAME_DOC = 4  # neighbours a row may keep inside its own document before cross-document ones win
 AXES = 8
@@ -138,6 +150,12 @@ def days_since_epoch(date: str | None) -> int:
   if d.year < 1900 or d > dt.date.today() + dt.timedelta(days=366):
     return 0
   return (d - EPOCH).days + 1
+
+
+def preview(text: str, store: str) -> str:
+  if store == 'pdf' and '<' in text:
+    text = re.sub(r'[ \t]{2,}', ' ', PREVIEW_DROP.sub('', PREVIEW_BREAK.sub(' ', text)))
+  return text[:PREVIEW]
 
 
 def clean_title(title: str | None, slug: str) -> str:
@@ -241,6 +259,153 @@ def restore_math(chunks: list[dict], md: str) -> int:
   return len(wraps)
 
 
+# Note passages reach the embeddings as rendered html's text: paragraphs joined by single
+# newlines, table cells one per line, emphasis and links gone. The reader wants the note as the
+# garden shows it, so each note chunk also gets its markdown slice (`md`): chunk starts are found
+# again in the source by word n-grams (the text may be a few edits behind the markdown) and snapped
+# to the start of their line. Wikilinks resolve to site paths, citations to author-year, sidenotes
+# to an inline aside; embeds and comments drop. A note where any chunk start is lost keeps text.
+MD_COMMENT = re.compile(r'<!--[\s\S]*?-->|%%[\s\S]*?%%')
+MD_EMBED = re.compile(r'!\[\[[^\]\n]*\]\]')
+MD_WIKILINK = re.compile(r'\[\[([^\]|#\n]*)(#[^\]|\n]*)?(?:\|([^\]\n]*))?\]\]')
+MD_CITE = re.compile(r'\[([^\[\]\n]*?-?@[\w:.#$%&+?<>~/-]+[^\[\]\n]*)\](?!\()')
+MD_CITE_KEY = re.compile(r'-?@([\w:.#$%&+?<>~/-]+)')
+MD_WORD = re.compile(r'[a-z0-9]+')
+GRAM = 5
+
+
+def load_bib(path: Path) -> dict[str, str]:
+  """citation key → `Author, year` the way the garden's citations render (APA-ish)."""
+  if not path.exists():
+    return {}
+  text = path.read_text(encoding='utf-8', errors='replace')
+  out: dict[str, str] = {}
+  heads = list(re.finditer(r'^@\w+\s*\{\s*([^,\s]+)\s*,', text, re.M))
+  for i, m in enumerate(heads):
+    body = text[m.end() : heads[i + 1].start() if i + 1 < len(heads) else len(text)]
+    a = re.search(r'^\s*author\s*=\s*\{(.*)\},?\s*$', body, re.M)
+    y = re.search(r'^\s*(?:year|date)\s*=\s*\{?\s*(\d{4})', body, re.M)
+    names = []
+    for part in re.split(r'\s+and\s+', a.group(1)) if a else []:
+      part = part.replace('{', '').replace('}', '').strip()
+      if not part or part == 'others':
+        continue
+      names.append(part.split(',')[0].strip() if ',' in part else part.split()[-1])
+    if not names:
+      continue
+    who = names[0] if len(names) == 1 else f'{names[0]} & {names[1]}' if len(names) == 2 else f'{names[0]} et al.'
+    out[m.group(1)] = f'{who}, {y.group(1)}' if y else who
+  return out
+
+
+def sidenotes(md: str) -> str:
+  """`{{sidenotes[label]: body}}` → `label <small>(body)</small>`; braces in the body nest."""
+  out: list[str] = []
+  pos = 0
+  while True:
+    i = md.find('{{sidenotes', pos)
+    if i < 0:
+      break
+    lb = md.find('[', i)
+    rb = md.find(']', lb)
+    colon = md.find(':', rb)
+    if lb < 0 or rb < 0 or colon < 0 or md[rb + 1 : colon].strip():
+      out.append(md[pos : i + 2])
+      pos = i + 2
+      continue
+    depth, j = 2, colon + 1
+    while j < len(md) and depth > 0:
+      depth += {'{': 1, '}': -1}.get(md[j], 0)
+      j += 1
+    if depth > 0:
+      out.append(md[pos : i + 2])
+      pos = i + 2
+      continue
+    out.append(md[pos:i])
+    out.append(f'{md[lb + 1 : rb]} <small>({md[colon + 1 : j - 2].strip()})</small>')
+    pos = j
+  out.append(md[pos:])
+  return ''.join(out)
+
+
+def slug_anchor(anchor: str) -> str:
+  return '#' + re.sub(r'[^\w-]+', '-', anchor.lstrip('#').strip().lower()).strip('-') if anchor else ''
+
+
+def reader_markdown(md: str, doc: str, by_name: dict[str, str], bib: dict[str, str]) -> str:
+  md = MD_EMBED.sub('', MD_COMMENT.sub('', md))
+  md = sidenotes(md)
+
+  def wikilink(m: re.Match[str]) -> str:
+    target = m.group(1).strip().rstrip('\\')
+    anchor = (m.group(2) or '').rstrip('\\')
+    alias = m.group(3)
+    slug = target.replace(' ', '-') if '/' in target else by_name.get(target.lower(), target.replace(' ', '-'))
+    href = f'/{slug or doc}{slug_anchor(anchor)}'
+    shown = alias or (target.rsplit('/', 1)[-1] if target else anchor.lstrip('#'))
+    return f'[{shown}]({href.replace(" ", "-")})'
+
+  def cite(m: re.Match[str]) -> str:
+    keys = MD_CITE_KEY.findall(m.group(1))
+    return '(' + '; '.join(bib.get(k, k) for k in keys) + ')'
+
+  return MD_CITE.sub(cite, MD_WIKILINK.sub(wikilink, md))
+
+
+def find_gram(words: list[str], gram: list[str], start: int) -> int | None:
+  n = len(gram)
+  first = gram[0]
+  for j in range(start, len(words) - n + 1):
+    if words[j] == first and words[j : j + n] == gram:
+      return j
+  return None
+
+
+def note_markdown(chunks: list[dict], md: str, by_name: dict[str, str], bib: dict[str, str]) -> bool:
+  """Set `md` on the chunks of one note found in its source; False (nothing set) when most are lost.
+
+  A chunk whose start is not in the source is generated text (a bibliography, a transclusion,
+  KaTeX's doubled rendering) and keeps its plain text; the slice before it runs on to the next
+  chunk that was found.
+  """
+  body = FRONTMATTER.sub('', md)
+  order = sorted(chunks, key=lambda r: r['chunk'])
+  toks = [(m.start(), m.group()) for m in MD_WORD.finditer(body.lower())]
+  words = [w for _, w in toks]
+  starts: list[tuple[dict, int]] = [(order[0], 0)]
+  cursor = 0
+  for r in order[1:]:
+    ct = MD_WORD.findall((r['text'] or '').lower())
+    n = min(GRAM, len(ct))
+    if n < 2:
+      continue
+    found = None
+    for k in range(0, min(60, len(ct) - n + 1)):
+      j = find_gram(words, ct[k : k + n], cursor)
+      if j is not None:
+        found = j
+        break
+    if found is None:
+      continue
+    line = body.rfind('\n', 0, toks[found][0]) + 1
+    # back to the start of the block (after a blank line), so a list or paragraph stays whole
+    block = body.rfind('\n\n', 0, line)
+    block = block + 2 if block >= 0 else 0
+    if block > starts[-1][1]:
+      line = block
+    if line <= starts[-1][1]:
+      continue
+    starts.append((r, line))
+    cursor = found + 1
+  if 2 * len(starts) < len(order):
+    return False
+  doc = order[0]['doc']
+  for i, (r, line) in enumerate(starts):
+    end = starts[i + 1][1] if i + 1 < len(starts) else len(body)
+    r['md'] = reader_markdown(body[line:end].strip('\n'), doc, by_name, bib)
+  return True
+
+
 def note_sources(content: Path) -> dict[str, Path]:
   """slug → markdown file, for the slugs Quartz derives from paths (spaces become dashes)."""
   out: dict[str, Path] = {}
@@ -282,12 +447,21 @@ def load_rows(content: Path, store: dict, offset: int) -> tuple[list[dict], np.n
     for r in rows:
       by_doc.setdefault(r['doc'], []).append(r)
     sources = note_sources(content)
+    by_name: dict[str, str] = {}
+    for slug, path in sources.items():
+      by_name.setdefault(path.stem.lower(), slug)
+      by_name.setdefault(slug.rsplit('/', 1)[-1].lower(), slug)
+    bib = load_bib(content / 'References.bib')
     restored = 0
+    marked = 0
     for doc, chunks in by_doc.items():
       source = sources.get(doc)
       if source is not None:
-        restored += restore_math(chunks, source.read_text(encoding='utf-8', errors='replace'))
+        md = source.read_text(encoding='utf-8', errors='replace')
+        restored += restore_math(chunks, md)
+        marked += note_markdown(chunks, md, by_name, bib)
     log('note math spans restored', restored)
+    log('notes read from markdown', marked, 'of', len(by_doc))
   elif kind == 'pdf':
     passages = read_shard_json(content, m['passages']['shards'])
     if len(passages) != m['rows']:
@@ -394,6 +568,127 @@ def top_terms(rows: list[dict], order: np.ndarray, rest: np.ndarray, n: int = 5)
   return [w for w, _ in sorted(scored.items(), key=lambda kv: -kv[1])[:n]]
 
 
+# Frontmatter axes. The `layout: latent` page names its probe axes by their poles:
+#
+#   axes:
+#     - name: philosophy ↔ ml
+#       a: [philosophy, pattern]          # tags (a tag also matches its children, `math` → `math/linalg`)
+#       b: { tags: [ml], paths: [thoughts/papers] }  # or tags and path prefixes of document ids
+#
+# A pole's direction is the mean of its documents' mean vectors, so a 2,800-passage book counts
+# once, like a note; a document in both poles counts in neither. The normalised spec is folded
+# into the sidecar hash (quartz/util/latent/sidecar.ts `axesSpec` builds the same JSON), so a
+# page whose axes changed reads the sidecar as behind and a browser never mixes two axis sets.
+MIN_POLE = 8
+
+
+def read_frontmatter(path: Path) -> dict:
+  try:
+    text = path.read_text(encoding='utf-8', errors='replace')
+  except OSError:
+    return {}
+  m = FRONTMATTER.match(text)
+  if not m:
+    return {}
+  try:
+    data = yaml.safe_load(m.group(0)[3:-4]) or {}
+  except yaml.YAMLError:
+    return {}
+  return data if isinstance(data, dict) else {}
+
+
+def link_target(value: object) -> str:
+  """`[[embeddings]]`, `[[thoughts/LLMs|LLMs]]`, `embeddings/` → the bare path."""
+  if not isinstance(value, str):
+    return ''
+  inner = re.sub(r'^\[\[|\]\]$', '', value.strip())
+  return inner.split('|')[0].split('#')[0].strip().strip('/')
+
+
+def tag_key(tag: object) -> str:
+  # Quartz's slugTag turns spaces into dashes; matching ignores case
+  return re.sub(r'\s', '-', str(tag).strip().lstrip('#')).lower()
+
+
+def pole_spec(value: object) -> dict:
+  tags: object = []
+  paths: object = []
+  if isinstance(value, (str, list)):
+    tags = value
+  elif isinstance(value, dict):
+    tags, paths = value.get('tags') or [], value.get('paths') or []
+  tags = [tags] if isinstance(tags, str) else tags if isinstance(tags, list) else []
+  paths = [paths] if isinstance(paths, str) else paths if isinstance(paths, list) else []
+  return dict(
+    paths=sorted({link_target(p) for p in paths if link_target(p)}),
+    tags=sorted({tag_key(t) for t in tags if tag_key(t)}),
+  )
+
+
+def axes_spec(raw: object) -> list[dict]:
+  out: list[dict] = []
+  for ax in raw if isinstance(raw, list) else []:
+    if not isinstance(ax, dict):
+      continue
+    a, b = pole_spec(ax.get('a')), pole_spec(ax.get('b'))
+    if not (a['tags'] or a['paths']) or not (b['tags'] or b['paths']):
+      log('axis without two poles skipped', ax)
+      continue
+    name = ax.get('name')
+    out.append(dict(a=a, b=b, name=str(name).strip() if name else None))
+  return out[: AXES - 2]  # the store contrast and at least one principal direction stay
+
+
+def spec_json(spec: list[dict]) -> str:
+  return json.dumps(spec, ensure_ascii=False, separators=(',', ':'), sort_keys=True)
+
+
+def latent_page(content: Path, directory: str) -> tuple[Path | None, dict]:
+  """The `layout: latent` page reading this directory; its folder index wins a tie."""
+  want = directory.strip('/')
+  hits: list[tuple[Path, dict]] = []
+  for path in sorted(content.rglob('*.md')):
+    if 'latent' in path.relative_to(content).parts[:-1]:
+      continue
+    try:
+      with open(path, encoding='utf-8', errors='replace') as fh:
+        head = fh.read(2048)
+    except OSError:
+      continue
+    if not head.startswith('---') or not re.search(r'^layout:\s*[\'"]?latent\b', head, re.M):
+      continue
+    fm = read_frontmatter(path)
+    if (link_target(fm.get('directory')) or 'embeddings') == want:
+      hits.append((path, fm))
+  if not hits:
+    return None, {}
+  hits.sort(key=lambda h: h[0] != content / want / 'index.md')
+  if len(hits) > 1:
+    log('several latent pages read', want, '; axes from', hits[0][0].relative_to(content))
+  return hits[0]
+
+
+def pole_members(docs: list[dict], spec: dict, tags_of: dict[str, set[str]]) -> set[int]:
+  out: set[int] = set()
+  for di, d in enumerate(docs):
+    doc_id = d['id']
+    if any(doc_id == p or doc_id.startswith(p + '/') for p in spec['paths']):
+      out.add(di)
+      continue
+    have = tags_of.get(doc_id)
+    if have and any(t == want or t.startswith(want + '/') for t in have for want in spec['tags']):
+      out.add(di)
+  return out
+
+
+def held_out_auc(doc_vecs: np.ndarray, a: list[int], b: list[int]) -> float:
+  """Direction from every other document of each pole, AUC on the rest: does the axis generalise."""
+  fa, ta, fb, tb = a[::2], a[1::2], b[::2], b[1::2]
+  w = doc_vecs[fb].mean(0) - doc_vecs[fa].mean(0)
+  pa, pb = doc_vecs[ta] @ w, doc_vecs[tb] @ w
+  return float((pb[:, None] > pa[None, :]).mean() + 0.5 * (pb[:, None] == pa[None, :]).mean())
+
+
 def main() -> None:
   ap = argparse.ArgumentParser()
   ap.add_argument('--content', default='content')
@@ -425,6 +720,11 @@ def main() -> None:
     )
   included = [s for s in stores if s['included']]
   digest_lines = sorted(f'{s["path"]}\t{s["digest"]}' for s in included)
+  page, page_fm = latent_page(content, args.directory)
+  spec = axes_spec(page_fm.get('axes'))
+  if spec:
+    digest_lines.append(f'axes\t{sha256(spec_json(spec).encode())}')
+  log('axes from', page.relative_to(content) if page else None, spec_json(spec))
   sidecar_hash = sha256('\n'.join(digest_lines).encode())
   log('stores', [(s['id'], s['kind'], s['rows'], s['included']) for s in stores])
   log('hash', sidecar_hash)
@@ -527,9 +827,6 @@ def main() -> None:
   mean = V256.mean(0)
   centred = V256 - mean
   cov = centred.T @ centred / N
-  evals, evecs = np.linalg.eigh(cov)
-  pcs = evecs[:, ::-1][:, :AXES].T.astype(np.float32)  # AXES x 256
-  explained = (evals[::-1][:AXES] / evals.sum()).astype(np.float32)
   scale = float(np.abs(V256).max())
   q = np.clip(np.round(V256 / scale * 127), -127, 127).astype(np.int8)
   q.tofile(out / 'vec' / 'rows-256-int8.bin')
@@ -538,14 +835,14 @@ def main() -> None:
   np.clip(np.round(doc_vecs / scale * 127), -127, 127).astype(np.int8).tofile(out / 'vec' / 'docs-256-int8.bin')
   log('vectors', f'{time.time() - t0:.0f}s')
 
-  # axes: store contrasts first, then principal directions
+  # axes: the store contrast, the page's frontmatter axes, then principal directions of the rest
   store_arr = np.array([r['store'] for r in rows])
   axes: list[dict] = []
 
-  def add_axis(aid: str, name: str, direction: np.ndarray, a: str, b: str) -> None:
+  def add_axis(aid: str, name: str, direction: np.ndarray, a: str, b: str, **extra: object) -> None:
     direction = direction / (np.linalg.norm(direction) + 1e-9)
     proj = centred @ direction
-    axes.append(dict(id=aid, name=name, a=a, b=b, dir=direction.astype(np.float32), proj=proj))
+    axes.append(dict(id=aid, name=name, a=a, b=b, dir=direction.astype(np.float32), proj=proj, extra=extra))
 
   kinds = [k for k in ('note', 'pdf', 'image', 'base') if (store_arr == k).any()]
   if 'note' in kinds and 'pdf' in kinds:
@@ -556,15 +853,47 @@ def main() -> None:
       'notes',
       'pdf passages',
     )
-  fr = np.array([r['doc'].startswith('fr/') for r in rows])
-  if fr.sum() >= 20 and (~fr & (store_arr == 'note')).sum() >= 20:
-    add_axis(
-      'lang',
-      'français ↔ english',
-      V256[~fr & (store_arr == 'note')].mean(0) - V256[fr].mean(0),
-      'fr/',
-      'english notes',
-    )
+  if spec:
+    sources = note_sources(content)
+    tags_of: dict[str, set[str]] = {}
+    for d in docs:
+      if d['store'] == 'note' and d['id'] in sources:
+        t = read_frontmatter(sources[d['id']]).get('tags') or []
+        tags_of[d['id']] = {tag_key(x) for x in ([t] if isinstance(t, str) else t if isinstance(t, list) else [])}
+    doc_centred = doc_vecs - mean
+    for ai, ax in enumerate(spec):
+      ma, mb = pole_members(docs, ax['a'], tags_of), pole_members(docs, ax['b'], tags_of)
+      a, b = sorted(ma - mb), sorted(mb - ma)
+      label_a = ' · '.join(ax['a']['tags'] + [p + '/' for p in ax['a']['paths']])
+      label_b = ' · '.join(ax['b']['tags'] + [p + '/' for p in ax['b']['paths']])
+      if len(a) < MIN_POLE or len(b) < MIN_POLE:
+        log(f'axis {label_a} ↔ {label_b} skipped: poles hold {len(a)} and {len(b)} documents')
+        continue
+      sep = held_out_auc(doc_centred, a, b)
+      log(f'axis {label_a} ↔ {label_b}', len(a), len(b), f'held-out auc {sep:.3f}')
+      add_axis(
+        f'fm{ai + 1}',
+        ax['name'] or f'{label_a} ↔ {label_b}',
+        doc_vecs[b].mean(0) - doc_vecs[a].mean(0),
+        label_a,
+        label_b,
+        source='frontmatter',
+        spec=dict(a=ax['a'], b=ax['b']),
+        docs=dict(a=len(a), b=len(b)),
+        sep=round(sep, 3),
+      )
+  # principal directions of the variance the named axes leave: the store contrast and a
+  # philosophy ↔ ml axis both lie close to the raw pc1, which would show the same split twice
+  named = np.stack([ax['dir'] for ax in axes]).T if axes else np.zeros((256, 0), dtype=np.float32)
+  if named.shape[1]:
+    Q, _ = np.linalg.qr(named.astype(np.float64))
+    P = np.eye(256) - Q @ Q.T
+    cov_rest = P @ cov @ P
+  else:
+    cov_rest = cov
+  evals, evecs = np.linalg.eigh(cov_rest)
+  pcs = evecs[:, ::-1][:, :AXES].T.astype(np.float32)  # AXES x 256
+  explained = (evals[::-1][:AXES] / np.trace(cov)).astype(np.float32)
   for i in range(AXES):
     if len(axes) >= AXES:
       break
@@ -586,6 +915,7 @@ def main() -> None:
         name=ax['name'],
         a=ax['a'],
         b=ax['b'],
+        **ax['extra'],
         bc=round(bimodality(proj), 3),
         scale=lim,
         hist=hist.astype(int).tolist(),
@@ -638,7 +968,7 @@ def main() -> None:
         c=r['chunk'],
         p=r['page'],
         l=r['label'],
-        x=r['text'][:PREVIEW],
+        x=preview(r['text'], r['store']),
       )
       for r in rows[b : b + BLOCK]
     ]
@@ -649,6 +979,10 @@ def main() -> None:
     for r in d['rows']:
       row = rows[r]
       chunk = dict(r=r, c=row['chunk'], text=row['text'])
+      if 'md' in row:
+        # the note's markdown slice; `m` tells the reader to parse it as markdown
+        chunk['text'] = row['md']
+        chunk['m'] = 1
       if row['page']:
         chunk['p'] = row['page']
         chunk['l'] = row['label']
@@ -725,6 +1059,8 @@ def main() -> None:
     docs=len(docs),
     datedDocs=dated,
     kinds=kinds,
+    axesPage=page.relative_to(content).as_posix() if page else None,
+    axesSpec=spec,
     counts=dict(counts),
     stores=[
       dict(

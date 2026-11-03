@@ -77,6 +77,8 @@ export interface LatentChunk {
   l?: string
   /** Page box in permille of the page, resolved from pdf-regions at build. */
   box?: [number, number, number, number]
+  /** 1 when `text` is the note's markdown slice rather than its rendered text */
+  m?: 1
 }
 
 export interface LatentText {
@@ -130,6 +132,18 @@ export interface LatentAxis {
   hist: number[]
   terms: { a: string[]; b: string[] }
   poles: { a: LatentAxisPole[]; b: LatentAxisPole[] }
+  /** Set on an axis the page's `axes:` frontmatter names (build.py `axes_spec`). */
+  source?: 'frontmatter'
+  spec?: { a: LatentAxisSpecPole; b: LatentAxisSpecPole }
+  /** documents in each pole (one in both counts in neither) */
+  docs?: { a: number; b: number }
+  /** held-out AUC: direction from half of each pole, scored on the other half */
+  sep?: number
+}
+
+export interface LatentAxisSpecPole {
+  tags: string[]
+  paths: string[]
 }
 
 export interface LatentProbe {

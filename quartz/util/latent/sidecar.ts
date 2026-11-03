@@ -42,8 +42,62 @@ function* walk(dir: string): Generator<string> {
   }
 }
 
+function linkTarget(value: unknown): string {
+  if (typeof value !== 'string') return ''
+  return value
+    .trim()
+    .replace(/^\[\[|\]\]$/g, '')
+    .split('|')[0]
+    .split('#')[0]
+    .trim()
+    .replace(/^\/+|\/+$/g, '')
+}
+
+function tagKey(tag: unknown): string {
+  return String(tag).trim().replace(/^#+/, '').replace(/\s/g, '-').toLowerCase()
+}
+
+function listOf(value: unknown): unknown[] {
+  return typeof value === 'string' ? [value] : Array.isArray(value) ? value : []
+}
+
+function poleSpec(value: unknown): { paths: string[]; tags: string[] } {
+  let tags: unknown = []
+  let paths: unknown = []
+  if (typeof value === 'string' || Array.isArray(value)) tags = value
+  else if (value && typeof value === 'object') {
+    const v = value as Record<string, unknown>
+    tags = v.tags || []
+    paths = v.paths || []
+  }
+  const sorted = (xs: string[]) => [...new Set(xs.filter(Boolean))].sort()
+  return {
+    paths: sorted(listOf(paths).map(linkTarget)),
+    tags: sorted(listOf(tags).map(tagKey)),
+  }
+}
+
+/**
+ * The page's `axes:` frontmatter as the builder normalises it (build.py `axes_spec` +
+ * `spec_json`: sorted keys, sorted deduplicated poles, at most six axes), or '' for none. The
+ * builder folds it into the sidecar hash, so a page whose axes changed reads its sidecar as behind.
+ */
+export function axesSpec(raw: unknown): string {
+  if (!Array.isArray(raw)) return ''
+  const out: { a: ReturnType<typeof poleSpec>; b: ReturnType<typeof poleSpec>; name: string | null }[] = []
+  for (const ax of raw) {
+    if (!ax || typeof ax !== 'object' || Array.isArray(ax)) continue
+    const { a: rawA, b: rawB, name } = ax as Record<string, unknown>
+    const a = poleSpec(rawA)
+    const b = poleSpec(rawB)
+    if (!(a.tags.length || a.paths.length) || !(b.tags.length || b.paths.length)) continue
+    out.push({ a, b, name: name ? String(name).trim() : null })
+  }
+  return out.length ? JSON.stringify(out.slice(0, 6)) : ''
+}
+
 /** The hash the builder would compute for the stores under `directory` right now. */
-export function expectedHash(content: string, directory: string): string | null {
+export function expectedHash(content: string, directory: string, spec = ''): string | null {
   const root = path.join(content, directory)
   if (!existsSync(root) || !statSync(root).isDirectory()) return null
   const lines: string[] = []
@@ -85,6 +139,7 @@ export function expectedHash(content: string, directory: string): string | null 
       lines.push(`${f.rel}\t${f.digest}`)
   }
   lines.sort()
+  if (spec) lines.push(`axes\t${createHash('sha256').update(spec).digest('hex')}`)
   return createHash('sha256').update(lines.join('\n')).digest('hex')
 }
 
@@ -119,23 +174,24 @@ function pointerHash(content: string, directory: string): string | null {
   }
 }
 
-export function openSidecar(content: string, directory: string): Sidecar | null {
+/** `spec` is the page's {@link axesSpec}; a sidecar built for other axes is served with a warning. */
+export function openSidecar(content: string, directory: string, spec = ''): Sidecar | null {
   const hash = pointerHash(content, directory)
   if (!hash) return null
-  const key = `${content}::${directory}::${hash}`
+  const key = `${content}::${directory}::${hash}::${spec}`
   if (cache.has(key)) return cache.get(key)!
-  const sidecar = load(content, directory, hash)
+  const sidecar = load(content, directory, hash, spec)
   cache.set(key, sidecar)
   return sidecar
 }
 
-function load(content: string, directory: string, hash: string): Sidecar | null {
+function load(content: string, directory: string, hash: string, spec: string): Sidecar | null {
   const dir = path.join(content, directory, 'latent', hash)
   if (!existsSync(path.join(dir, 'index.json'))) return null
-  const expected = expectedHash(content, directory)
+  const expected = expectedHash(content, directory, spec)
   if (expected !== hash) {
     console.warn(
-      `[latent] sidecar ${hash.slice(0, 8)} is behind the stores under ${directory} (now ${expected?.slice(0, 8)}); serving it until \`uv run quartz/scripts/latent/build.py\` runs again`,
+      `[latent] sidecar ${hash.slice(0, 8)} is behind the stores or the axes: frontmatter under ${directory} (now ${expected?.slice(0, 8)}); serving it until \`uv run quartz/scripts/latent/build.py\` runs again`,
     )
   }
   const index = JSON.parse(readFileSync(path.join(dir, 'index.json'), 'utf8')) as LatentIndex
@@ -210,16 +266,40 @@ function load(content: string, directory: string, hash: string): Sidecar | null 
  * collection, and within the nearest few the row with the widest in-scope reach, then the widest
  * reach, then the highest degree, opens the page. Front and back matter are skipped.
  */
-export function defaultFocus(sidecar: Sidecar, prefixes: string[]): number {
+export function defaultFocus(sidecar: Sidecar, prefixes: string[], focus?: unknown): number {
   const docOf = new Uint32Array(sidecar.index.rows)
   for (const doc of sidecar.docs) docOf.fill(doc.d, doc.r0, doc.r0 + doc.n)
   const scopedDoc = new Uint8Array(sidecar.docs.length)
   for (const doc of sidecar.docs) scopedDoc[doc.d] = inScope(doc.id, prefixes) ? 1 : 0
+  // `focus: [[thoughts/LLMs]]` names the document; its row with the widest reach into the scope
+  // opens the page, whether or not the document itself is in the scope
+  const named = focusDoc(sidecar, focus)
+  if (named) return bestRow(sidecar, [named], docOf, scopedDoc) ?? named.r0
   const scoped = sidecar.docs.filter(
     d => scopedDoc[d.d] && (d.s === 'note' || d.s === 'pdf') && d.n >= 3,
   )
   if (scoped.length === 0) return 0
-  const candidates = centralDocs(sidecar, scoped, 12)
+  return bestRow(sidecar, centralDocs(sidecar, scoped, 12), docOf, scopedDoc) ?? scoped[0].r0
+}
+
+function focusDoc(sidecar: Sidecar, focus: unknown): LatentDoc | null {
+  const target = linkTarget(focus).replace(/\.md$/, '')
+  if (!target) return null
+  const want = target.replace(/\s/g, '-').toLowerCase()
+  const doc =
+    sidecar.docs.find(d => d.id === target) ??
+    sidecar.docs.find(d => d.id.toLowerCase() === want) ??
+    sidecar.docs.find(d => d.id.toLowerCase().endsWith(`/${want}`))
+  if (!doc) console.warn(`[latent] focus: ${target} is not a document of the sidecar`)
+  return doc ?? null
+}
+
+function bestRow(
+  sidecar: Sidecar,
+  candidates: LatentDoc[],
+  docOf: Uint32Array,
+  scopedDoc: Uint8Array,
+): number | null {
   let best = -1
   let bestKey: [number, number, number] = [-1, -1, -1]
   for (const doc of candidates) {
@@ -249,7 +329,7 @@ export function defaultFocus(sidecar: Sidecar, prefixes: string[]): number {
       }
     }
   }
-  return best >= 0 ? best : scoped[0].r0
+  return best >= 0 ? best : null
 }
 
 /** The `count` documents nearest the centroid of `docs`, by the int8 document vectors. */

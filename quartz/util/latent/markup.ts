@@ -11,6 +11,18 @@ import type {
   LatentTrackDoc,
 } from './types'
 import {
+  type HtmlOptions,
+  blockSpans,
+  decodeEntities,
+  fenceBlock,
+  flattenHtml,
+  htmlRuns,
+  htmlTable,
+  pipeTable,
+  repairCuts,
+} from './html'
+import { type MdHooks, mdBlocks, mdInline } from './md'
+import {
   LABEL_ROW,
   LABEL_X,
   LANE_X,
@@ -19,12 +31,14 @@ import {
   RAIL_HEIGHT,
   RAIL_WIDTH,
   TRACK_X,
+  UNDATED_FIRST,
+  UNDATED_ROW,
   layoutRail,
   placeLabels,
   thinYears,
   truncate,
 } from './rail'
-import { inScope, rowHref } from './types'
+import { KIND_ORDER, inScope, rowHref } from './types'
 
 /**
  * hast builders for every pane. The transformer renders them into the page at build time; the
@@ -42,20 +56,17 @@ export function mark(kind: LatentKind): Element {
   return h('span.lat-mark', { dataKind: kind, title: KIND_LABEL[kind] }, KIND_LABEL[kind])
 }
 
+/** A pdf page's printed label; some stores carry it with its own "p." already. */
+function pageLabel(label: string | undefined, page: number): string {
+  return (label || String(page)).replace(/^p(?:p|age)?\.?\s*/i, '')
+}
+
 export function locus(preview: Pick<LatentPreview, 'c' | 'p' | 'l' | 's'>, total?: number): string {
   // `c` counts from 0 (per page for pdfs, per document for notes); both read from 1
   if (preview.s === 'pdf' && preview.p)
-    return `p. ${preview.l || preview.p}${total ? ` of ${total}` : ''} ¶${preview.c + 1}`
+    return `p. ${pageLabel(preview.l, preview.p)}${total ? ` of ${total}` : ''} ¶${preview.c + 1}`
   if (preview.s === 'note') return total ? `§${preview.c + 1} of ${total}` : `§${preview.c + 1}`
   return ''
-}
-
-// the embedding text keeps markdown headings and html-escaped entities from the source; hast
-// escapes again on output, so decode the five xml entities and drop heading hashes for display
-const ENTITY: Record<string, string> = { amp: '&', lt: '<', gt: '>', quot: '"', '#39': "'" }
-
-function decodeEntities(text: string): string {
-  return text.replace(/&(amp|lt|gt|quot|#39);/g, (_, name: string) => ENTITY[name])
 }
 
 // Math follows the notes' syntax: `$$…$$` is display, `$…$` is inline under pandoc's rule (no
@@ -86,7 +97,7 @@ function inlineRuns(text: string): ElementContent[] {
  * ellipsis rather than shown as raw TeX.
  */
 function extractRuns(x: string): ElementContent[] {
-  let text = decodeEntities(x).replace(/(^|\s)#{1,6}\s+/g, '$1')
+  let text = decodeEntities(flattenHtml(x)).replace(/(^|\s)#{1,6}\s+/g, '$1')
   const display = text.split('$$').length - 1
   if (display % 2 === 1) text = `${text.slice(0, text.lastIndexOf('$$')).trimEnd()} …`
   text = text.replace(DISPLAY_MATH, (_, tex: string) => `$${tex.trim().replace(/\s+/g, ' ')}$`)
@@ -95,34 +106,92 @@ function extractRuns(x: string): ElementContent[] {
   return inlineRuns(text)
 }
 
-function paragraphs(text: string): Element[] {
-  return text
-    .split(/\n[ \t]*\n+/)
-    .map(block => block.trim())
-    .filter(Boolean)
-    .map(block => {
-      const heading = /^#{1,6}\s+(.+)$/.exec(block)
-      return heading && !block.includes('\n')
-        ? h('p.lat-h', inlineRuns(heading[1]))
-        : h('p', inlineRuns(block))
-    })
+// text between tags: entities decoded (hast escapes again on output), then math and strong
+const leaf = (text: string) => inlineRuns(decodeEntities(text))
+
+// a table cell is one line, so display math folds inline there
+const cellLeaf = (text: string) =>
+  inlineRuns(
+    decodeEntities(text).replace(
+      DISPLAY_MATH,
+      (_, tex: string) => `$${tex.trim().replace(/\s+/g, ' ')}$`,
+    ),
+  )
+
+interface PassageOptions extends HtmlOptions {
+  /** the chunk is the note's markdown slice (`m` in the text sidecar) */
+  markdown?: boolean
+  /** the chunk is a note's rendered text: every line is a paragraph */
+  lines?: boolean
 }
 
-/**
- * A passage as blocks: display math on its own, blank lines split the rest into paragraphs, and
- * a one-line `# heading` becomes a bold paragraph (a p, so the heading plugins and the toc never
- * pick it up).
- */
-function passageBlocks(text: string): Element[] {
-  const source = decodeEntities(text)
+const mathSpan = (tex: string, display: boolean) =>
+  h(display ? 'span.math.math-display' : 'span.math.math-inline', tex)
+const mdLeaf = (text: string) => mdInline(decodeEntities(text), mathSpan)
+const mdCellLeaf = (text: string) => mdInline(decodeEntities(text), tex => mathSpan(tex, false))
+
+const mdHooks = (options: PassageOptions): MdHooks => ({
+  inline: text => htmlRuns(text, mdLeaf, options),
+  pipe: block => pipeTable(block, cell => htmlRuns(cell, mdCellLeaf, options)),
+  display: tex => h('div.math.math-display', decodeEntities(tex)),
+  fence: fenceBlock,
+})
+
+function paragraphs(text: string, options: PassageOptions): Element[] {
+  const out: Element[] = []
+  for (const raw of text.split(options.lines ? /\n+/ : /\n[ \t]*\n+/)) {
+    const block = raw.trim()
+    if (!block) continue
+    const pipe = pipeTable(block, cell => htmlRuns(cell, cellLeaf, options))
+    if (pipe) {
+      out.push(...paragraphs(pipe.before, options), pipe.table, ...paragraphs(pipe.after, options))
+      continue
+    }
+    const heading = /^#{1,6}\s+(.+)$/.exec(block)
+    out.push(
+      heading && !block.includes('\n')
+        ? h('p.lat-h', htmlRuns(heading[1], leaf, options))
+        : h('p', htmlRuns(block, leaf, options)),
+    )
+  }
+  return out
+}
+
+/** display math on its own, blank lines split the rest into paragraphs */
+function prose(source: string, options: PassageOptions): Element[] {
+  if (options.markdown) return mdBlocks(source, mdHooks(options))
   const blocks: Element[] = []
   let last = 0
   for (const match of source.matchAll(DISPLAY_MATH)) {
-    blocks.push(...paragraphs(source.slice(last, match.index)))
-    if (match[1].trim()) blocks.push(h('div.math.math-display', match[1].trim()))
+    blocks.push(...paragraphs(source.slice(last, match.index), options))
+    const tex = decodeEntities(match[1]).trim()
+    if (tex) blocks.push(h('div.math.math-display', tex))
     last = match.index + match[0].length
   }
-  blocks.push(...paragraphs(source.slice(last)))
+  blocks.push(...paragraphs(source.slice(last), options))
+  return blocks
+}
+
+/**
+ * A passage as blocks: fenced code and html tables first (both stay whole across blank lines),
+ * then display math, paragraphs and pipe tables. A one-line `# heading` becomes a bold paragraph
+ * (a p, so the heading plugins and the toc never pick it up). Inline html is allowlisted by
+ * ./html; `code` turns backtick spans into code (notes only); a note's markdown slice goes
+ * through ./md.
+ */
+function passageBlocks(raw: string, options: PassageOptions = {}): Element[] {
+  // pdf passages are cut by length, sometimes inside a tag
+  const text = options.code ? raw : repairCuts(raw)
+  const blocks: Element[] = []
+  let last = 0
+  for (const span of blockSpans(text, options)) {
+    blocks.push(...prose(text.slice(last, span.start), options))
+    if (span.kind === 'table')
+      blocks.push(htmlTable(text.slice(span.start, span.end), cellLeaf, span.continued ?? false))
+    else if (span.body?.trim()) blocks.push(fenceBlock(span.body))
+    last = span.end
+  }
+  blocks.push(...prose(text.slice(last), options))
   return blocks.length > 0 ? blocks : [h('p.lat-empty', 'no text for this row')]
 }
 
@@ -151,11 +220,15 @@ export function chunkArticles(
             ? h(
                 'a',
                 { href: rowHref(doc, chunk.p), dataNoPopover: true },
-                `p. ${chunk.l || chunk.p} ¶${chunk.c + 1}`,
+                `p. ${pageLabel(chunk.l, chunk.p)} ¶${chunk.c + 1}`,
               )
             : `§${chunk.c + 1}`,
         ]),
-        ...passageBlocks(chunk.text ?? ''),
+        ...passageBlocks(chunk.text ?? '', {
+          code: meta.store === 'note',
+          markdown: chunk.m === 1,
+          lines: meta.store === 'note' && chunk.m !== 1,
+        }),
       ],
     ),
   )
@@ -179,20 +252,13 @@ export function moreSentinel(
   )
 }
 
-/**
- * One document in the reader: a sticky head and a run of chunk articles. `window` is the loaded
- * run (`chunks` starting at chunk index `offset`); a stub renders the head only. The run is a
- * whole number of parts so the client can grow it part by part.
- */
-export function readerDocument(
-  text: LatentText,
-  doc: Pick<LatentDoc, 'id' | 's' | 't' | 'date' | 'n' | 'pages'>,
-  focus: number,
-  options: { stub?: boolean; offset?: number } = {},
-): Element {
+type HeadDoc = Pick<LatentDoc, 'id' | 's' | 't' | 'date' | 'n' | 'pages'>
+
+/** A document's head line. `mirror` is the reader's sticky copy that holds the head row. */
+export function docHead(doc: HeadDoc, mirror = false): Element {
   const href = rowHref(doc)
   const unit = doc.s === 'pdf' ? 'passages' : doc.s === 'note' ? 'chunks' : 'rows'
-  const head = h('header.lat-doc-head', [
+  return h(mirror ? 'header.lat-doc-head.lat-reader-head' : 'header.lat-doc-head', [
     h('div.lat-doc-kicker', [
       mark(doc.s),
       h('a.lat-doc-title', { href, dataNoPopover: true, title: doc.t }, doc.t),
@@ -204,6 +270,20 @@ export function readerDocument(
       h('a.lat-doc-open', { href, dataNoPopover: true }, doc.s === 'pdf' ? '/read →' : 'note →'),
     ]),
   ])
+}
+
+/**
+ * One document in the reader: its head and a run of chunk articles. `window` is the loaded
+ * run (`chunks` starting at chunk index `offset`); a stub renders the head only. The run is a
+ * whole number of parts so the client can grow it part by part.
+ */
+export function readerDocument(
+  text: LatentText,
+  doc: HeadDoc,
+  focus: number,
+  options: { stub?: boolean; offset?: number } = {},
+): Element {
+  const head = docHead(doc)
   if (options.stub) return h('section.lat-doc.lat-doc-stub', { dataDoc: String(text.d) }, [head])
   const offset = options.offset ?? 0
   const part = text.part || Math.max(1, text.total)
@@ -226,7 +306,12 @@ export interface LinkItem {
   inScope: boolean
 }
 
-export function linksPane(focus: LatentPreview, items: LinkItem[], kinds: LatentKind[]): Element {
+export function linksPane(
+  focus: LatentPreview,
+  items: LinkItem[],
+  kinds: LatentKind[],
+  label = 'links',
+): Element {
   const docs = new Set(items.map(i => i.doc.d))
   const groups: ElementContent[] = []
   for (const kind of kinds) {
@@ -284,7 +369,7 @@ export function linksPane(focus: LatentPreview, items: LinkItem[], kinds: Latent
   }
   return h('section.lat-links', { dataFocus: String(focus.r) }, [
     h('header.lat-pane-head', [
-      h('span', 'links'),
+      h('span', label),
       h('span.lat-count', `${items.length} from ${docs.size} documents`),
     ]),
     ...groups,
@@ -298,25 +383,23 @@ export interface RailModel {
   focus: number
   /** neighbour doc → best score */
   neighbours: Map<number, number>
+  /** neighbour doc → how many of the focus row's neighbours it holds; ribbon width */
+  weights?: Map<number, number>
   focusChunkIndex: number
   scopeFlags?: Uint8Array
+  /** viewBox height in rail units; RAIL_HEIGHT unless the client has measured its pane */
+  height?: number
 }
 
 /** The rail as an inline SVG. Collapsed documents are one path per store. */
+export const RAIL_BIN = 4
+const BAND_WIDTH = 7
+
 export function railSvg(model: RailModel): Element {
-  const layout = layoutRail(model.docs)
-  const lanes = new Map<LatentKind, string[]>()
-  for (let i = 0; i < model.docs.length; i++) {
-    if (i === model.open) continue
-    const doc = model.docs[i]
-    const x = LANE_X[doc.kind]
-    const y = layout.y[i].toFixed(1)
-    const list = lanes.get(doc.kind) ?? []
-    list.push(`M${x - 4} ${y}h8`)
-    lanes.set(doc.kind, list)
-  }
+  const height = model.height ?? RAIL_HEIGHT
+  const layout = layoutRail(model.docs, height)
   const children: ElementContent[] = []
-  children.push(h('line.lat-axis', { x1: TRACK_X, x2: TRACK_X, y1: 10, y2: RAIL_HEIGHT - 8 }))
+  children.push(h('line.lat-axis', { x1: TRACK_X, x2: TRACK_X, y1: 10, y2: height - 8 }))
   for (const tick of thinYears(layout.years)) {
     children.push(
       h('text.lat-year', { x: TRACK_X - 5, y: tick.y.toFixed(1) }, String(tick.year)),
@@ -328,35 +411,102 @@ export function railSvg(model: RailModel): Element {
       }),
     )
   }
-  if (layout.datedCount < model.docs.length) {
+  // dated documents: y is rank, so time density is already in the year ticks' spacing; the band
+  // shows which kinds a slice of time holds, one thin stacked segment per 4-unit bin
+  const bins = Math.ceil(height / RAIL_BIN)
+  const counts = new Map<LatentKind, Uint16Array>()
+  const undated = new Map<LatentKind, number>()
+  const totals = new Uint16Array(bins)
+  for (let i = 0; i < model.docs.length; i++) {
+    const doc = model.docs[i]
+    if (doc.day === 0) {
+      undated.set(doc.kind, (undated.get(doc.kind) ?? 0) + 1)
+      continue
+    }
+    let row = counts.get(doc.kind)
+    if (!row) {
+      row = new Uint16Array(bins)
+      counts.set(doc.kind, row)
+    }
+    const b = Math.min(bins - 1, Math.floor(layout.y[i] / RAIL_BIN))
+    row[b]++
+    totals[b]++
+  }
+  const segments = new Map<LatentKind, string[]>()
+  for (let b = 0; b < bins; b++) {
+    if (!totals[b]) continue
+    let x = TRACK_X + 3
+    for (const kind of KIND_ORDER) {
+      const count = counts.get(kind)?.[b] ?? 0
+      if (!count) continue
+      const w = (BAND_WIDTH * count) / totals[b]
+      const list = segments.get(kind) ?? []
+      list.push(`M${x.toFixed(1)} ${b * RAIL_BIN}h${w.toFixed(1)}v${RAIL_BIN}h-${w.toFixed(1)}z`)
+      segments.set(kind, list)
+      x += w
+    }
+  }
+  for (const [kind, list] of segments) {
+    children.push(h('path.lat-density', { dataKind: kind, d: list.join('') }))
+  }
+  // undated documents: one row per kind, a bar as long as its share and the count
+  if (undated.size > 0) {
+    const total = [...undated.values()].reduce((a, b) => a + b, 0)
     children.push(
-      h(
-        'text.lat-year.lat-undated',
-        { x: TRACK_X - 5, y: (layout.undatedTop + 10).toFixed(1) },
-        'undated',
-      ),
       h('line.lat-tick', {
         x1: TRACK_X - 3,
-        x2: RAIL_WIDTH,
+        x2: TRACK_X + 3,
         y1: layout.undatedTop.toFixed(1),
         y2: layout.undatedTop.toFixed(1),
-        dataBand: '',
       }),
+      h(
+        'text.lat-year.lat-undated',
+        { x: TRACK_X + 6, y: layout.undatedTop.toFixed(1) },
+        `undated · ${total.toLocaleString('en-US')}`,
+      ),
     )
+    for (const kind of layout.undatedKinds) {
+      const count = undated.get(kind) ?? 0
+      const y = layout.undatedTop + UNDATED_FIRST + layout.undatedKinds.indexOf(kind) * UNDATED_ROW
+      const w = Math.max(2, (count / total) * 36)
+      children.push(
+        h('rect.lat-density', {
+          dataKind: kind,
+          x: TRACK_X + 3,
+          y: (y - 2.5).toFixed(1),
+          width: w.toFixed(1),
+          height: 5,
+        }),
+        h(
+          'text.lat-undated-count',
+          { x: (TRACK_X + 3 + w + 4).toFixed(1), y: y.toFixed(1) },
+          `${kind} ${count.toLocaleString('en-US')}`,
+        ),
+      )
+    }
   }
-  for (const [kind, segments] of lanes) {
-    children.push(h('path.lat-lane', { dataKind: kind, d: segments.join('') }))
-  }
-  // the open document: a bracket at its slot, its chunk rows fanned to the right
+  // the open document: a bracket at its slot, its chunk rows fanned to the right. The fan and the
+  // neighbour labels stay above the undated band, even when the open document sits in it.
+  const floor = undated.size > 0 ? layout.undatedTop - 16 : height - 12
   const open = model.docs[model.open]
   if (open) {
     const oy = layout.y[model.open]
     const rows = Math.min(open.n, 48)
     const rowH = 3
     const first = Math.max(0, Math.min(open.n - rows, model.focusChunkIndex - Math.floor(rows / 2)))
+    // neighbour labels share the fan's column: those above the open slot go above the fan, the
+    // rest below it, and the fan leaves each group its rows
+    const targets = [...model.neighbours.entries()]
+      .filter(([d]) => d !== model.open)
+      .sort((a, b) => layout.y[a[0]] - layout.y[b[0]])
+    const aboveCount = targets.filter(([d]) => layout.y[d] < oy).length
+    const belowCount = targets.length - aboveCount
     const top = Math.max(
-      14,
-      Math.min(RAIL_HEIGHT - 20 - rows * rowH, oy - (model.focusChunkIndex - first) * rowH),
+      14 + (aboveCount > 0 ? 22 + (aboveCount - 1) * LABEL_ROW : 0),
+      Math.min(
+        floor - 6 - rows * rowH - (belowCount > 0 ? belowCount * LABEL_ROW : 0),
+        oy - (model.focusChunkIndex - first) * rowH,
+      ),
     )
     const chunkMarks: string[] = []
     for (let i = 0; i < rows; i++) {
@@ -381,21 +531,36 @@ export function railSvg(model: RailModel): Element {
         truncate(model.titles(model.open), 26),
       ),
     )
-    // leaders to neighbour documents, labels de-overlapped
-    const targets = [...model.neighbours.entries()]
-      .filter(([d]) => d !== model.open)
-      .sort((a, b) => layout.y[a[0]] - layout.y[b[0]])
+    // ribbons to neighbour documents: width is how many of the focus row's neighbours the
+    // document holds, opacity its best score against the others; labels de-overlapped
+    const fanTop = top - 22
+    const fanBottom = top + rows * rowH + 6
     const sources = targets.map(([d]) => layout.y[d])
-    const labelY = placeLabels(sources, LABEL_ROW, 12, RAIL_HEIGHT - 12)
+    const labelY = [
+      ...placeLabels(sources.slice(0, aboveCount), LABEL_ROW, 12, fanTop),
+      ...placeLabels(sources.slice(aboveCount), LABEL_ROW, fanBottom, floor),
+    ]
+    let lo = 255
+    let hi = 0
+    for (const [, score] of targets) {
+      lo = Math.min(lo, score)
+      hi = Math.max(hi, score)
+    }
     targets.forEach(([d, score], i) => {
       const doc = model.docs[d]
       const ty = layout.y[d]
       const ly = labelY[i]
       const out = model.scopeFlags && model.scopeFlags[d] === 0
+      const count = model.weights?.get(d) ?? 1
+      const width = Math.min(5, 0.6 + 0.9 * (count - 1))
+      const opacity = 0.35 + 0.55 * (hi > lo ? (score - lo) / (hi - lo) : 1)
+      const title = model.titles(d)
       children.push(
         h('path.lat-leader', {
           dataKind: doc.kind,
           dataOut: out ? '' : undefined,
+          strokeWidth: width.toFixed(1),
+          opacity: (out ? opacity * 0.5 : opacity).toFixed(2),
           d: `M${LANE_X[doc.kind] + 4} ${ty.toFixed(1)}C${LEADER_X - 20} ${ty.toFixed(1)} ${LEADER_X - 20} ${ly.toFixed(1)} ${LABEL_X - 4} ${ly.toFixed(1)}`,
         }),
         h(
@@ -408,8 +573,12 @@ export function railSvg(model: RailModel): Element {
             dataOut: out ? '' : undefined,
           },
           [
-            truncate(model.titles(d), 22),
-            h('tspan.lat-label-score', { dx: 4 }, (score / 255).toFixed(2)),
+            h(
+              'title',
+              `${title} · ${(score / 255).toFixed(2)}${count > 1 ? ` · ${count} passages` : ''}`,
+            ),
+            truncate(title, count > 1 ? 21 : 25),
+            ...(count > 1 ? [h('tspan.lat-label-count', { dx: 3 }, `×${count}`)] : []),
           ],
         ),
       )
@@ -418,7 +587,7 @@ export function railSvg(model: RailModel): Element {
   return h(
     'svg.lat-track',
     {
-      viewBox: `0 0 ${RAIL_WIDTH} ${RAIL_HEIGHT}`,
+      viewBox: `0 0 ${RAIL_WIDTH} ${height}`,
       preserveAspectRatio: 'xMinYMin meet',
       role: 'img',
       ariaLabel: 'documents in time order',
@@ -427,12 +596,82 @@ export function railSvg(model: RailModel): Element {
   )
 }
 
+/**
+ * Hover and focus notes for the probe's terms. The text rides in data-tip and latent-tips.scss
+ * draws it from attr(), so it stays out of textContent (the axis search, the page text) and
+ * costs no layout until shown; aria-description hands it to screen readers.
+ */
+function tipProps(note: string | null, at?: 'end' | 'up'): Record<string, string | number> {
+  if (!note) return {}
+  const props: Record<string, string | number> = {
+    tabIndex: 0,
+    dataTip: note,
+    'aria-description': note,
+  }
+  if (at) props.dataTipAt = at
+  return props
+}
+
+function axisNote(axis: LatentAxis): string | null {
+  const pc = /^pc(\d+) · ([\d.]+) %$/.exec(axis.name)
+  if (pc) {
+    const n = Number(pc[1])
+    const share = Number(pc[2])
+    const spread =
+      n === 1
+        ? 'the direction of widest spread in the 256-d space'
+        : `the widest spread left at right angles to ${n === 2 ? 'pc1' : n === 3 ? 'pc1 and pc2' : `pc1–pc${n - 1}`}`
+    // an even split over 256 dimensions gives each 1/256 of the variance
+    const ratio = Math.round(share / (100 / 256))
+    return `principal component ${n}: ${spread}. it holds ${share} % of the variance, ${ratio}× the share of an average dimension. the sign is arbitrary.`
+  }
+  if (axis.id === 'store')
+    return 'the line from the average note vector to the average pdf-passage vector: whether a passage reads more like a note or like a book.'
+  if (axis.id === 'lang')
+    return 'the line from the average fr/ note to the average english note: how french a passage reads.'
+  return null
+}
+
+function bcNote(bc: number, shape: string): string {
+  const reading =
+    shape === 'flat'
+      ? 'one hump, so the axis ranks passages without splitting them'
+      : shape === 'skewed'
+        ? 'one hump with a heavy tail or shoulder'
+        : 'two humps, so the axis splits the space in two'
+  return `bimodality coefficient, (skew² + 1) / kurtosis, of where every passage falls on this axis. a bell scores 0.33, an even spread 0.555, two clusters more. ${bc.toFixed(2)}: ${reading}.`
+}
+
+function poleNote(axis: LatentAxis, side: 'a' | 'b'): string {
+  const end = /^pc\d+$/.test(axis.id)
+    ? `the ${side === 'a' ? 'low' : 'high'} end of ${axis.id}`
+    : `the ${side === 'a' ? axis.a : axis.b} end`
+  return `${end}. italics: the words most over-represented among the 200 passages furthest this way. rows: the three furthest; click one to read it.`
+}
+
+const SOURCES_NOTE =
+  'every store, embedded by one encoder into one space. counts are rows, one vector each: a note chunk, a pdf passage, an image, a base entry. documents count the wholes.'
+
+const COVERAGE_NOTE =
+  'pdfs embedded so far out of those eligible, and the pages they span. the rest are not in the space yet.'
+
+function modelNote(index: LatentIndex, model: string, scoped: boolean): string {
+  const scope = scoped
+    ? ' the scope picks the opening passage and greys links that leave it; nothing outside is dropped.'
+    : ''
+  return `${model} wrote every vector at ${index.dims} dimensions; the probe and the 3-d view read the first 256 (matryoshka). each passage keeps its ${index.k} nearest by cosine, at most 4 from its own document.${scope}`
+}
+
 export function axisCard(axis: LatentAxis, focusValue: number | null): Element {
   const flat = axis.bc < 0.45 ? 'flat' : axis.bc < 0.555 ? 'skewed' : 'two modes'
   const pole = (side: 'a' | 'b') =>
     h('div.lat-pole', { dataSide: side }, [
-      h('span.lat-pole-name', side === 'a' ? axis.a : axis.b),
-      h('span.lat-pole-terms', axis.terms[side].slice(0, 4).join(' · ')),
+      h(
+        'span.lat-pole-name',
+        tipProps(poleNote(axis, side), side === 'b' ? 'end' : undefined),
+        side === 'a' ? axis.a : axis.b,
+      ),
+      h('span.lat-pole-terms', axis.terms[side].slice(0, 4).join('\u00a0· ')),
       h(
         'ol.lat-pole-rows',
         axis.poles[side]
@@ -451,13 +690,10 @@ export function axisCard(axis: LatentAxis, focusValue: number | null): Element {
     .join('')
   return h('section.lat-axis', { dataAxis: axis.id }, [
     h('header', [
-      h('span.lat-axis-name', axis.name),
+      h('span.lat-axis-name', tipProps(axisNote(axis)), axis.name),
       h(
         'span.lat-chip',
-        {
-          dataFlat: flat === 'flat' ? '' : undefined,
-          title: 'bimodality coefficient: above 0.555 the axis splits the space in two',
-        },
+        { dataFlat: flat === 'flat' ? '' : undefined, ...tipProps(bcNote(axis.bc, flat), 'end') },
         `bc ${axis.bc.toFixed(2)} · ${flat}`,
       ),
     ]),
@@ -493,6 +729,7 @@ export function ledger(index: LatentIndex, scope: string[]): Element {
       coverage
         ? h(
             'span.lat-ledger-detail',
+            tipProps(COVERAGE_NOTE, 'end'),
             `${count(coverage.indexedDocuments)} of ${count(coverage.eligibleDocuments)} pdfs, ${count(coverage.indexedPages)} pages`,
           )
         : store.included
@@ -503,11 +740,11 @@ export function ledger(index: LatentIndex, scope: string[]): Element {
   const model = index.model.replace(/^[^/]+\//, '')
   return h('section.lat-ledger', [
     h('header.lat-pane-head', [
-      h('span', 'ledger'),
+      h('span', tipProps(SOURCES_NOTE), 'sources'),
       h('span.lat-count', `${count(index.docs)} documents`),
     ]),
     h('ul', rows),
-    h('p.lat-ledger-note', [
+    h('p.lat-ledger-note', tipProps(modelNote(index, model, scope.length > 0), 'up'), [
       `${model}, ${index.dims} dimensions, ${index.k} neighbours a passage`,
       scope.length > 0 ? `; scoped to ${scope.join(', ')}` : '',
     ]),
