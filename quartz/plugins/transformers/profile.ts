@@ -1,4 +1,5 @@
 import type { Element, ElementContent, Root } from 'hast'
+import type { Root as MdastRoot } from 'mdast'
 import { toString } from 'hast-util-to-string'
 import { h } from 'hastscript'
 import { imageSize } from 'image-size'
@@ -9,9 +10,11 @@ import path from 'node:path'
 import { SKIP, visit } from 'unist-util-visit'
 import type { RuleKind } from '../../util/grapevine'
 // @ts-ignore
+import proceduralInitial from '../../components/scripts/procedural-initial.inline'
+// @ts-ignore
 import script from '../../components/scripts/profile-notes.inline'
 import { QuartzTransformerPlugin } from '../../types/plugin'
-import { dropcapOf, initials, separatorOf } from './profile/initials'
+import { dropcapFences, dropcapOf, initials, separatorOf } from './profile/initials'
 
 export const NEWSPAPER = 'newspaper' as const
 
@@ -97,6 +100,13 @@ function hasStyledImage(node: Element): boolean {
 export const Profile: QuartzTransformerPlugin = () => {
   return {
     name: 'Profile',
+    markdownPlugins() {
+      return [
+        () => (tree: MdastRoot, file) => {
+          dropcapFences(tree, file.data.slug ?? 'dropcap')
+        },
+      ]
+    },
     htmlPlugins(ctx) {
       return [
         () => (tree: Root, file) => {
@@ -264,7 +274,12 @@ export const Profile: QuartzTransformerPlugin = () => {
       ]
     },
     externalResources() {
-      return { js: [{ script, contentType: 'inline', loadTime: 'afterDOMReady' }] }
+      return {
+        js: [
+          { script, contentType: 'inline', loadTime: 'afterDOMReady' },
+          { script: proceduralInitial, contentType: 'inline', loadTime: 'afterDOMReady' },
+        ],
+      }
     },
   }
 }

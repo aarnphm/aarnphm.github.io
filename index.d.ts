@@ -60,6 +60,7 @@ interface CustomEventMap {
   presskitopen: CustomEvent<{
     tab?: import('./quartz/components/scripts/press-kit.inline').PressKitTab
   }>
+  proceduralinitialstop: CustomEvent<void>
 }
 
 type ContentIndex = Record<FullSlug, ContentDetails>

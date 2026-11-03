@@ -1,8 +1,7 @@
 import type { Element } from 'hast'
 import { fromHtml } from 'hast-util-from-html'
 import { s } from 'hastscript'
-import { cellPebbles } from './cells'
-import { letterTips, placeLetter, type Pt } from './glyph'
+import type { Pt } from './glyph'
 import { GRAPES } from './grapes'
 import { blockedMask } from './raster'
 import { drawItems } from './svg'
@@ -89,53 +88,6 @@ const VINE: OrnOptions = {
   settings: {},
 }
 
-// The procedural drop cap, from one initialis share (halo, stems off the letter, lance and bud,
-// cell texture, no frame). https://github.com/azlen/initialis — the share's `oLeafer` is leaf width.
-const HALO = 180
-const INITIAL_GAP = 10
-const INITIAL_INSET = 9
-const EMBOLDEN = 3
-const INITIAL: OrnOptions = {
-  margin: 6,
-  stemW: 3,
-  taper: 0.5,
-  curl: 0.84,
-  turns: 1.6,
-  undulate: 0,
-  wander: 0.23,
-  thin: 0.51,
-  branch: 0.4,
-  maxDepth: 2,
-  branchAngle: (40 * Math.PI) / 180,
-  length: 0.75,
-  leaf: 'lance',
-  leafSize: 0.55,
-  leafEvery: 0.5,
-  leafW: 0.58,
-  lobes: 4,
-  lobeDepth: 0.42,
-  serr: 0.04,
-  leafCurl: 0.42,
-  leafAngle: (45 * Math.PI) / 180,
-  leafSide: 'alt',
-  flower: 'bud',
-  flowerChance: 0.3,
-  flowerSize: 0.75,
-  petals: 6,
-  berries: 0.26,
-  berrySize: 0.25,
-  dots: 0.08,
-  beads: 0,
-  terminal: 'ball',
-  density: 0.1,
-  sprout: 0.17,
-  mains: 5,
-  fillLeaves: true,
-  detail: 'none',
-  budget: 4000,
-  settings: {},
-}
-
 // The separator vine: two canes from one root in the middle, undulating (depth-0 stems do not
 // curl) and tapering to their ends; branches curl into tendrils and end in a leaf or a bunch. No
 // gap filling, dots or beads, so every mark hangs from the cane.
@@ -179,44 +131,6 @@ function field(
   const f = new Field(width, height, CELL, ornSizes(o).cap)
   f.setBlocked(blockedMask(width, height, grid, inset, blocked, gap))
   return f
-}
-
-/**
- * The initial: a square tile, 1 em a side. Stems start at the letter and stay inside the halo.
- */
-export function vineInitial(letter: string, seed: string): Element | null {
-  const placed = placeLetter(letter, TILE, 0.736)
-  if (!placed) return null
-  const h = hash(seed, letter)
-  const R = rng(h)
-  const grid = { nx: Math.ceil(TILE / CELL) + 1, ny: Math.ceil(TILE / CELL) + 1, cell: CELL }
-  const f = new Field(TILE, TILE, CELL, ornSizes(INITIAL).cap)
-  f.setBlocked(
-    blockedMask(TILE, TILE, grid, INITIAL_INSET, placed.rings, INITIAL_GAP, {
-      halo: HALO,
-      embolden: EMBOLDEN,
-    }),
-  )
-  const seeds = letterTips(placed.rings, INITIAL.mains, R).flatMap(t => {
-    let d = INITIAL_GAP + EMBOLDEN + INITIAL.margin + INITIAL.stemW / 2 + 2
-    while (
-      d < INITIAL_GAP + 90 &&
-      f.at(t.x + t.nx * d, t.y + t.ny * d) < INITIAL.margin + INITIAL.stemW / 2 + 1
-    )
-      d += 3
-    const x = t.x + t.nx * d
-    const y = t.y + t.ny * d
-    return f.at(x, y) > INITIAL.margin * 0.5
-      ? [{ x, y, dir: Math.atan2(t.ny, t.nx), grace: 0 }]
-      : []
-  })
-  const items = grow(f, INITIAL, R, makeNoise(h ^ 0x5bd1e995), seeds)
-  const cells = cellPebbles(TILE, TILE, (x, y) => f.at(x, y), rng(h ^ 0x2545), 20, 6, 2)
-  const glyph = s('path', { class: 'gv-letter', d: placed.d, transform: placed.transform })
-  return s('svg', { ...SVG, class: 'gv-initial', viewBox: `0 0 ${TILE} ${TILE}` }, [
-    ...drawItems(items, DETAIL_W, 2, { contrast: 0.75, cells }),
-    glyph,
-  ])
 }
 
 /** The lens the separator vine grows in, as the two blocked regions outside it. */
