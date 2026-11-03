@@ -169,10 +169,10 @@ export default ((opts?: Options) => {
           </p>
           <figcaption>
             Each dot represents a note, placed by its score <Tex source="x = N\cdot\mathrm{PR}" />{' '}
-            via log-scaled axis. notes nobody links to all share the lowest score, so they wait in
-            the block on the left, off the axis. <br />A solid dot denotes backlinks, a ring denotes
-            forward linkage, a solid dot within a ring denotes bidirectional linkage. You can use
-            arrow keys to walk between the ranking.
+            via log-scaled axis.
+            <br />A solid dot denotes backlinks, a ring denotes forward linkage, a solid dot within
+            a ring denotes bidirectional linkage. You can use arrow keys to walk between the
+            ranking.
           </figcaption>
         </figure>
 
@@ -181,12 +181,6 @@ export default ((opts?: Options) => {
             {model && <RankSizePlot model={model} selected={selected} pointer={null} />}
           </div>
           <figcaption>
-            <p>
-              The line is log-scaled, and they trace the score of every available notes within the
-              garden. The dashed line <Tex source="x \propto r^{-\alpha}" /> proposed a linear
-              trend.
-            </p>
-            <br />
             <p class="pagerank-chart-readout" data-pr-chart-readout aria-live="polite">
               {describeNode('is selected', selected)}
             </p>

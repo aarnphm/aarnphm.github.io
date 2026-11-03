@@ -136,10 +136,22 @@
   }
 
   thead th {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky);
     block-size: 2rem;
     background: var(--pr-surface);
     font-weight: 400;
     text-transform: lowercase;
+
+    // Collapsed table borders scroll away; keep the header rule on the sticky cell.
+    &::after {
+      content: '';
+      position: absolute;
+      inset: auto 0 0;
+      block-size: 1px;
+      background: var(--pr-line);
+    }
   }
 
   // One line per link, so rows run shorter than the ranking's title-and-slug rows.
