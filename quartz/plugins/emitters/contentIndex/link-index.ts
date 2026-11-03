@@ -31,6 +31,7 @@ export type ContentLayout =
   | 'flashcards'
   | 'resource'
   | 'newspaper'
+  | 'latent'
   | 'study-log'
   | 'statements'
 export type ContentDetails = {
