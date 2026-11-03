@@ -105,6 +105,8 @@ export class SemanticRuntime {
           const pending = this.pending.get(msg.seq)
           this.pending.delete(msg.seq)
           pending?.resolve(msg)
+        } else if (msg.type === 'embedding') {
+          // only `layout: latent` asks for bare vectors, on its own worker
         } else if (typeof msg.seq === 'number') {
           const pending = this.pending.get(msg.seq)
           this.pending.delete(msg.seq)

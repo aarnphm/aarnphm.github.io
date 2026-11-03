@@ -129,6 +129,25 @@ export async function joinScripts(scripts: string[], ctx?: BuildCtx): Promise<st
   return result.outputFiles[0].text
 }
 
+/**
+ * Point a script's bare asset names (`semantic.worker.js`, …) at the hashed files, as the page
+ * scripts get. A lazy script (LazyScripts) bundles after ComponentResources and can do the same,
+ * skipping an asset that has not been written in this build.
+ */
+export function applyScriptAssetReferences(ctx: BuildCtx, script: string): string {
+  return componentScriptAssetReplacements.reduce((current, replacement) => {
+    if (!current.includes(replacement.placeholder)) return current
+    try {
+      return current.replaceAll(
+        replacement.placeholder,
+        staticScriptAssetReference(ctx, replacement.logicalPath),
+      )
+    } catch {
+      return current
+    }
+  }, script)
+}
+
 function resolveComponentResourceAssets(
   ctx: BuildCtx,
   componentResources: ComponentResourceSet,
