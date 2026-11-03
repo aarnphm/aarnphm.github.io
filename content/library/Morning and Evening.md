@@ -31,4 +31,3 @@ Source: [Lucia’s New York park reading reel](https://www.instagram.com/reel/Dd
 Bibliography: [publisher](https://fitzcarraldoeditions.com/books/morning-and-evening/).
 
 Originally published as Morgon og kveld in 2000. The featured Fitzcarraldo edition uses Damion Searls’s English translation. Original publication: [National Library of Norway](https://www.nb.no/bibliografi/fosse/show?bibliography=fosse&id=de8649c24e8bb97d7e73fb1f65af842a).
-
