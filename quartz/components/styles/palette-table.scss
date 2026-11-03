@@ -33,7 +33,7 @@
     color: var(--darkgray);
   }
   .search-column-score {
-    width: 8rem;
+    width: 10rem;
     text-align: right;
     font-variant-numeric: tabular-nums;
   }
@@ -56,7 +56,8 @@
       justify-content: flex-end;
       align-items: center;
       gap: 4px;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
+      white-space: nowrap;
       .suggestion-rank {
         margin-inline-start: 0;
       }
