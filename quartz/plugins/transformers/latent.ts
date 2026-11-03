@@ -21,9 +21,11 @@ import { LATENT, inScope, scopePrefixes } from '../../util/latent/types'
 /**
  * `layout: latent` turns a note into a reader of the embedding space under `directory:`
  * (an embeddings folder, `[[embeddings]]` by default). The first screen is rendered here from the
- * sidecar on disk: rail, reader, links and probe need no fetch and no script. `embeddings:` keeps
- * its harness meaning and doubles as the scope: folder links name which documents the page is
- * about; neighbours outside the scope are greyed, never dropped. `axes:` names the probe's
+ * sidecar on disk: rail, reader, links and probe need no fetch and no script. `scope:` (folder
+ * links, optional) names which documents the page is about; neighbours outside it are greyed,
+ * never dropped, and with no `scope:` every store is in scope. `embeddings:` is not read here: on
+ * embeddings/index.md it is the pdf harness's extraction queue (scripts/pdf-search/scope.py), and
+ * reading it as the scope greyed every note, image and base. `axes:` names the probe's
  * frontmatter axes by tag or path poles (baked in by the builder, see build.py), and `focus:`
  * the document the page opens on.
  */
@@ -52,12 +54,8 @@ export const Latent: QuartzTransformerPlugin = () => {
           const frontmatter = file.data.frontmatter
           if (frontmatter?.pageLayout !== LATENT) return
           const directory = directoryOf(frontmatter.directory)
-          const prefixes = scopePrefixes(frontmatter.embeddings)
-          const sidecar = openSidecar(
-            ctx.argv.directory,
-            directory,
-            axesSpec(frontmatter.axes),
-          )
+          const prefixes = scopePrefixes(frontmatter.scope)
+          const sidecar = openSidecar(ctx.argv.directory, directory, axesSpec(frontmatter.axes))
           file.data.latent = { directory, scope: prefixes, hash: sidecar?.index.hash ?? null }
 
           if (!sidecar) {
@@ -77,11 +75,7 @@ export const Latent: QuartzTransformerPlugin = () => {
 
           const { index, docs, track, probe } = sidecar
           const flags = scopeFlagsFor(docs, prefixes)
-          const focus = defaultFocus(
-            sidecar,
-            prefixes,
-            frontmatter.focus,
-          )
+          const focus = defaultFocus(sidecar, prefixes, frontmatter.focus)
           const focusDoc = docOfRow(sidecar, focus)
           const focusPreview = sidecar.preview(focus)
           const links = sidecar.knn(focus)

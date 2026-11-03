@@ -52,7 +52,9 @@ PREVIEW_DROP = re.compile(
   r'</?(?:thead|tbody|tfoot|sup|sub|u|i|em|b|strong|code|s|del|small|mark|kbd|span|font|a|center'
   r'|figure|figcaption|section|blockquote|img|wbr|hr|col|colgroup)\b[^<>]*>'
 )
-PART = 48  # chunks per text part; a 2,800-passage book must not be one 5 MB file
+PART = (
+  48  # chunks per text part; a 2,800-passage book must not be one 5 MB file
+)
 SAME_DOC = 4  # neighbours a row may keep inside its own document before cross-document ones win
 AXES = 8
 EPOCH = dt.date(1900, 1, 1)
@@ -81,8 +83,12 @@ def read_vectors(content: Path, vectors: dict, dims: int) -> np.ndarray:
     path = content / shard['path'].lstrip('/')
     data = np.fromfile(path, dtype=np.float32)
     if data.size != shard['rows'] * dims:
-      raise SystemExit(f'shard {path} holds {data.size} floats, expected {shard["rows"] * dims}')
-    out[shard['rowOffset'] : shard['rowOffset'] + shard['rows']] = data.reshape(shard['rows'], dims)
+      raise SystemExit(
+        f'shard {path} holds {data.size} floats, expected {shard["rows"] * dims}'
+      )
+    out[shard['rowOffset'] : shard['rowOffset'] + shard['rows']] = (
+      data.reshape(shard['rows'], dims)
+    )
   return out
 
 
@@ -134,7 +140,8 @@ def discover(content: Path, directory: Path) -> list[dict]:
         rows=manifest.get('rows'),
         model=manifest.get('model'),
         dims=manifest.get('dims'),
-        generation=manifest.get('generation') or manifest.get('passages', {}).get('generation'),
+        generation=manifest.get('generation')
+        or manifest.get('passages', {}).get('generation'),
       )
     )
   return found
@@ -154,7 +161,9 @@ def days_since_epoch(date: str | None) -> int:
 
 def preview(text: str, store: str) -> str:
   if store == 'pdf' and '<' in text:
-    text = re.sub(r'[ \t]{2,}', ' ', PREVIEW_DROP.sub('', PREVIEW_BREAK.sub(' ', text)))
+    text = re.sub(
+      r'[ \t]{2,}', ' ', PREVIEW_DROP.sub('', PREVIEW_BREAK.sub(' ', text))
+    )
   return text[:PREVIEW]
 
 
@@ -172,7 +181,9 @@ def tokens(text: str) -> set[str]:
   return {w for w in WORD.findall(text.lower()) if w not in STOP}
 
 
-def resolve_box(regions: dict | None, page: int, text: str) -> list[float] | None:
+def resolve_box(
+  regions: dict | None, page: int, text: str
+) -> list[float] | None:
   if not regions:
     return None
   boxes = regions.get('pages', {}).get(str(page))
@@ -197,13 +208,17 @@ def resolve_box(regions: dict | None, page: int, text: str) -> list[float] | Non
 # its math spans, in order, are found again in the document's text (rebuilt from charStart) with
 # a forward cursor, and wrapped where a chunk holds the whole span.
 FRONTMATTER = re.compile(r'\A---\n.*?\n---\n', re.S)
-MD_FENCE = re.compile(r'^[ \t>]*(```|~~~)[^\n]*\n.*?^[ \t>]*\1[ \t]*$', re.M | re.S)
+MD_FENCE = re.compile(
+  r'^[ \t>]*(```|~~~)[^\n]*\n.*?^[ \t>]*\1[ \t]*$', re.M | re.S
+)
 MD_CODE = re.compile(r'`[^`\n]+`')
 MD_QUOTE = re.compile(r'^[ \t]*(?:>[ \t]?)+', re.M)
 MD_DISPLAY = re.compile(r'\$\$([\s\S]+?)\$\$')
 # pandoc's rule, as in quartz/util/markdown-renderer.ts: "$5 and $10" is not math
 MD_INLINE = re.compile(r'\$(?![\s$])((?:\\.|[^\\$\n])+?)(?<!\s)\$(?!\d)')
-MATH_WINDOW = 1500  # how far past the cursor a span may sit before it counts as dropped
+MATH_WINDOW = (
+  1500  # how far past the cursor a span may sit before it counts as dropped
+)
 
 
 def math_spans(md: str) -> list[tuple[str, bool]]:
@@ -212,7 +227,10 @@ def math_spans(md: str) -> list[tuple[str, bool]]:
   spans: list[tuple[str, bool]] = []
   pos = 0
   for m in MD_DISPLAY.finditer(md):
-    spans += [(t, False) for t in MD_INLINE.findall(MD_CODE.sub('', md[pos : m.start()]))]
+    spans += [
+      (t, False)
+      for t in MD_INLINE.findall(MD_CODE.sub('', md[pos : m.start()]))
+    ]
     spans.append((m.group(1).strip(), True))
     pos = m.end()
   spans += [(t, False) for t in MD_INLINE.findall(MD_CODE.sub('', md[pos:]))]
@@ -221,7 +239,9 @@ def math_spans(md: str) -> list[tuple[str, bool]]:
 
 def tex_pattern(tex: str) -> re.Pattern[str]:
   # the passage text is html-escaped; whitespace may differ in runs
-  body = r'\s+'.join(re.escape(html.escape(part, quote=False)) for part in tex.split())
+  body = r'\s+'.join(
+    re.escape(html.escape(part, quote=False)) for part in tex.split()
+  )
   pre = r'(?<![\w\\])' if re.match(r'\w', tex) else ''
   post = r'(?!\w)' if re.search(r'\w$', tex) else ''
   return re.compile(pre + body + post)
@@ -229,7 +249,11 @@ def tex_pattern(tex: str) -> re.Pattern[str]:
 
 def restore_math(chunks: list[dict], md: str) -> int:
   """Put the dollars back into one note's chunk texts; returns the spans restored."""
-  placed = [(r['start'], r['text']) for r in chunks if r.get('start') is not None and r['text']]
+  placed = [
+    (r['start'], r['text'])
+    for r in chunks
+    if r.get('start') is not None and r['text']
+  ]
   if not placed:
     return 0
   buf = [' '] * max(s + len(t) for s, t in placed)
@@ -240,7 +264,9 @@ def restore_math(chunks: list[dict], md: str) -> int:
   cursor = 0
   for tex, display in math_spans(md):
     pattern = tex_pattern(tex)
-    m = pattern.search(full, cursor, min(len(full), cursor + MATH_WINDOW + 2 * len(tex)))
+    m = pattern.search(
+      full, cursor, min(len(full), cursor + MATH_WINDOW + 2 * len(tex))
+    )
     # a long, distinctive span may sit past a dropped stretch (a callout the text skipped)
     if not m and len(tex) >= 12 and '\\' in tex:
       m = pattern.search(full, cursor)
@@ -252,7 +278,9 @@ def restore_math(chunks: list[dict], md: str) -> int:
     s, t = r.get('start'), r['text']
     if s is None or not t:
       continue
-    for a, b, display in reversed([w for w in wraps if w[0] >= s and w[1] <= s + len(t)]):
+    for a, b, display in reversed([
+      w for w in wraps if w[0] >= s and w[1] <= s + len(t)
+    ]):
       fence = '$$' if display else '$'
       t = t[: a - s] + fence + t[a - s : b - s] + fence + t[b - s :]
     r['text'] = t
@@ -282,7 +310,9 @@ def load_bib(path: Path) -> dict[str, str]:
   out: dict[str, str] = {}
   heads = list(re.finditer(r'^@\w+\s*\{\s*([^,\s]+)\s*,', text, re.M))
   for i, m in enumerate(heads):
-    body = text[m.end() : heads[i + 1].start() if i + 1 < len(heads) else len(text)]
+    body = text[
+      m.end() : heads[i + 1].start() if i + 1 < len(heads) else len(text)
+    ]
     a = re.search(r'^\s*author\s*=\s*\{(.*)\},?\s*$', body, re.M)
     y = re.search(r'^\s*(?:year|date)\s*=\s*\{?\s*(\d{4})', body, re.M)
     names = []
@@ -290,10 +320,18 @@ def load_bib(path: Path) -> dict[str, str]:
       part = part.replace('{', '').replace('}', '').strip()
       if not part or part == 'others':
         continue
-      names.append(part.split(',')[0].strip() if ',' in part else part.split()[-1])
+      names.append(
+        part.split(',')[0].strip() if ',' in part else part.split()[-1]
+      )
     if not names:
       continue
-    who = names[0] if len(names) == 1 else f'{names[0]} & {names[1]}' if len(names) == 2 else f'{names[0]} et al.'
+    who = (
+      names[0]
+      if len(names) == 1
+      else f'{names[0]} & {names[1]}'
+      if len(names) == 2
+      else f'{names[0]} et al.'
+    )
     out[m.group(1)] = f'{who}, {y.group(1)}' if y else who
   return out
 
@@ -322,27 +360,60 @@ def sidenotes(md: str) -> str:
       pos = i + 2
       continue
     out.append(md[pos:i])
-    out.append(f'{md[lb + 1 : rb]} <small>({md[colon + 1 : j - 2].strip()})</small>')
+    out.append(
+      f'{md[lb + 1 : rb]} <small>({md[colon + 1 : j - 2].strip()})</small>'
+    )
     pos = j
   out.append(md[pos:])
   return ''.join(out)
 
 
 def slug_anchor(anchor: str) -> str:
-  return '#' + re.sub(r'[^\w-]+', '-', anchor.lstrip('#').strip().lower()).strip('-') if anchor else ''
+  return (
+    '#'
+    + re.sub(r'[^\w-]+', '-', anchor.lstrip('#').strip().lower()).strip('-')
+    if anchor
+    else ''
+  )
 
 
-def reader_markdown(md: str, doc: str, by_name: dict[str, str], bib: dict[str, str]) -> str:
+# A component fence (```jsx imports=..., mermaid, tikz) is a figure on the page; its source means
+# nothing in the reader, so it becomes one small line naming the figure by its label or caption.
+FIGURE_FENCE = re.compile(
+  r'^([ \t>]*)(`{3,})(jsx imports=|mermaid|tikz)[^\n]*\n.*?^[ \t>]*\2[ \t]*$',
+  re.M | re.S,
+)
+FIGURE_LABEL = re.compile(r'\blabel="([^"\n]{1,160})"')
+FIGURE_CAPTION = re.compile(r'\b(?:caption|title)="([^"\n]{1,160})"')
+
+
+def figure_line(m: re.Match[str]) -> str:
+  kind = 'figure' if m.group(3).startswith('jsx') else 'diagram'
+  name = FIGURE_LABEL.search(m.group(0)) or FIGURE_CAPTION.search(m.group(0))
+  text = f'{kind} · {name.group(1).strip()}' if name else kind
+  return f'{m.group(1)}<small>{text}</small>'
+
+
+def reader_markdown(
+  md: str, doc: str, by_name: dict[str, str], bib: dict[str, str]
+) -> str:
   md = MD_EMBED.sub('', MD_COMMENT.sub('', md))
+  md = FIGURE_FENCE.sub(figure_line, md)
   md = sidenotes(md)
 
   def wikilink(m: re.Match[str]) -> str:
     target = m.group(1).strip().rstrip('\\')
     anchor = (m.group(2) or '').rstrip('\\')
     alias = m.group(3)
-    slug = target.replace(' ', '-') if '/' in target else by_name.get(target.lower(), target.replace(' ', '-'))
+    slug = (
+      target.replace(' ', '-')
+      if '/' in target
+      else by_name.get(target.lower(), target.replace(' ', '-'))
+    )
     href = f'/{slug or doc}{slug_anchor(anchor)}'
-    shown = alias or (target.rsplit('/', 1)[-1] if target else anchor.lstrip('#'))
+    shown = alias or (
+      target.rsplit('/', 1)[-1] if target else anchor.lstrip('#')
+    )
     return f'[{shown}]({href.replace(" ", "-")})'
 
   def cite(m: re.Match[str]) -> str:
@@ -361,7 +432,9 @@ def find_gram(words: list[str], gram: list[str], start: int) -> int | None:
   return None
 
 
-def note_markdown(chunks: list[dict], md: str, by_name: dict[str, str], bib: dict[str, str]) -> bool:
+def note_markdown(
+  chunks: list[dict], md: str, by_name: dict[str, str], bib: dict[str, str]
+) -> bool:
   """Set `md` on the chunks of one note found in its source; False (nothing set) when most are lost.
 
   A chunk whose start is not in the source is generated text (a bibliography, a transclusion,
@@ -372,6 +445,7 @@ def note_markdown(chunks: list[dict], md: str, by_name: dict[str, str], bib: dic
   order = sorted(chunks, key=lambda r: r['chunk'])
   toks = [(m.start(), m.group()) for m in MD_WORD.finditer(body.lower())]
   words = [w for _, w in toks]
+  fences = [(m.start(), m.end()) for m in MD_FENCE.finditer(body)]
   starts: list[tuple[dict, int]] = [(order[0], 0)]
   cursor = 0
   for r in order[1:]:
@@ -393,7 +467,13 @@ def note_markdown(chunks: list[dict], md: str, by_name: dict[str, str], bib: dic
     block = block + 2 if block >= 0 else 0
     if block > starts[-1][1]:
       line = block
-    if line <= starts[-1][1]:
+    # a cut inside fenced code moves to the fence's opening line, or past its close when the
+    # previous chunk already opened it: a slice never holds half a fence
+    for a, b in fences:
+      if a < line < b:
+        line = a if a > starts[-1][1] else b + 1
+        break
+    if line <= starts[-1][1] or line >= len(body):
       continue
     starts.append((r, line))
     cursor = found + 1
@@ -402,8 +482,212 @@ def note_markdown(chunks: list[dict], md: str, by_name: dict[str, str], bib: dic
   doc = order[0]['doc']
   for i, (r, line) in enumerate(starts):
     end = starts[i + 1][1] if i + 1 < len(starts) else len(body)
-    r['md'] = reader_markdown(body[line:end].strip('\n'), doc, by_name, bib)
+    raw = body[line:end].strip('\n')
+    r['md'] = reader_markdown(raw, doc, by_name, bib)
+    r['figure'] = bool(FIGURE_FENCE.search(raw))
   return True
+
+
+# A note's embedding text is its rendered page's text, and the page holds more than its markdown:
+# a notebook cell's runtime data (a JSON script), each table again as run-together cells, and the
+# bibliographie the citations plugin appends. None of it is found in the source, so those chunks
+# kept their text and the reader showed a JSON blob and run-on references. Spans are found in the
+# document's text rebuilt from charStart (the original text, before restore_math): a notebook's
+# data becomes its cells as fenced code, the bibliographie a reference list, and text the previous
+# markdown slice already shows a pointer to that chunk. Each chunk owns [its start, the next
+# chunk's start), so the overlap between chunks shows once.
+NOTEBOOK_DATA = re.compile(
+  r'\{(?:&quot;|")id(?:&quot;|"):(?:&quot;|")notebook-runtime-'
+)
+BIB_HEAD = 'bibliographie'
+BIB_LABEL = re.compile(r'\s*\[[^\[\]\n]{1,40}\]\s*$')
+SQUASH = re.compile(r'[\W_]+')
+SHINGLE = 16
+WJ = '\N{WORD JOINER}'  # closes each bibliographie entry's link
+# fence, heading and list marks, which the link extract drops
+PLAIN_MARKS = re.compile(r'^(?:`{3,}.*\n?|#+ |- )', re.M)
+
+
+def json_end(text: str, start: int) -> int | None:
+  """End of the JSON object at `start` in html-escaped text (`&quot;` for quotes)."""
+  depth, in_str, i = 0, False, start
+  while i < len(text):
+    if text.startswith('\\', i):
+      i += 7 if text.startswith('&quot;', i + 1) else 2
+      continue
+    if text.startswith('&quot;', i) or text[i] == '"':
+      in_str = not in_str
+      i += 6 if text[i] == '&' else 1
+      continue
+    if not in_str:
+      if text[i] in '{[':
+        depth += 1
+      elif text[i] in '}]':
+        depth -= 1
+        if depth == 0:
+          return i + 1
+    i += 1
+  return None
+
+
+def notebook_cells(blob: str) -> str | None:
+  try:
+    data = json.loads(html.unescape(blob))
+  except ValueError:
+    return None
+  fences = []
+  for cell in data.get('cells') or []:
+    source = (cell.get('source') or '').strip('\n')
+    if not source:
+      continue
+    tick = '````' if '```' in source else '```'
+    lang = cell.get('language') or data.get('language') or ''
+    fences.append(f'{tick}{lang}\n{source}\n{tick}')
+  return '\n\n'.join(fences) or None
+
+
+def squash(text: str) -> str:
+  return SQUASH.sub('', html.unescape(text).lower())
+
+
+def shown_in(text: str, have: str) -> bool:
+  """Most of `text` already reads in `have`, a squashed markdown slice (a table's run-together
+  cells against its pipe rows, a callout title against the callout)."""
+  s = squash(text)
+  if len(s) < SHINGLE:
+    return bool(s) and s in have
+  pieces = [
+    s[i : i + SHINGLE] for i in range(0, len(s) - SHINGLE + 1, SHINGLE)
+  ]
+  return sum(p in have for p in pieces) >= 0.8 * len(pieces)
+
+
+def generated_text(chunks: list[dict]) -> int:
+  """Rewrite the chunks of one note that hold generated page text; returns how many changed."""
+  order = sorted(
+    (r for r in chunks if r.get('start') is not None and r['raw']),
+    key=lambda r: r['chunk'],
+  )
+  if not order:
+    return 0
+  end = max(r['start'] + len(r['raw']) for r in order)
+  buf = [' '] * end
+  for r in order:
+    buf[r['start'] : r['start'] + len(r['raw'])] = r['raw']
+  full = ''.join(buf)
+  # (start, end, markdown or None) for each generated span; None drops it
+  spans: list[tuple[int, int, str | None]] = []
+  found = [r for r in order if 'md' in r]
+  # a code cell's source is in the markdown, so its runtime data points at the chunk showing it;
+  # in a note read as text it renders as the cell's code
+  cell_at: dict[int, dict] = {}
+  for m in NOTEBOOK_DATA.finditer(full):
+    b = json_end(full, m.start())
+    if b is None:
+      continue
+    code = notebook_cells(full[m.start() : b])
+    first = squash(re.sub(r'^`{3,}.*$', '', code or '', flags=re.M))[:80]
+    holder = next(
+      (q for q in found if first and first in squash(q['md'])), None
+    )
+    if holder is not None:
+      cell_at[m.start()] = holder
+      code = None
+    spans.append((m.start(), b, code))
+  # the citations plugin's list follows the body, and each entry ends at a link and a word joiner
+  body_end = max((r['start'] for r in order if 'md' in r), default=0)
+  bib = full.rfind(BIB_HEAD)
+  if (
+    bib > body_end
+    and WJ in full[bib:]
+    and not any(a <= bib < b for a, b, _ in spans)
+  ):
+    spans.append((bib, bib + len(BIB_HEAD), f'### {BIB_HEAD}'))
+    pos = bib + len(BIB_HEAD)
+    for entry in full[pos:].split(WJ):
+      text = BIB_LABEL.sub('', entry.replace('\xa0', ' ')).strip()
+      if text:
+        lead = len(entry) - len(entry.lstrip())
+        spans.append((pos + lead, pos + len(entry) + 1, f'- {text}'))
+      pos += len(entry) + 1
+  if not spans and not found:
+    return 0
+  found = {id(r) for r in found}
+  spans.sort()
+  changed = 0
+  # Between two chunks found in the source, the earlier one's slice already shows every source
+  # line, so a chunk that was not found holds repeats and generated text only. Repeats drop;
+  # generated text after a figure is the figure's drawing (svg labels, a toy's numbers) and drops.
+  source = None  # the last chunk read from the markdown; its slice runs over the ones after it
+  for k, r in enumerate(order):
+    lo = r['start']
+    hi = order[k + 1]['start'] if k + 1 < len(order) else end
+    if id(r) in found:
+      source = r
+      continue
+    after = next((q for q in order[k + 1 :] if id(q) in found), None)
+    have = squash(
+      (source['md'] if source else '') + (after['md'] if after else '')
+    )
+    # the figure's text sits in the page where the figure is: before the next found chunk when
+    # that chunk's slice opens with it, after the previous one otherwise
+    holder = next((q for q in (source, after) if q and q.get('figure')), None)
+    figure = holder is not None
+    parts: list[str] = []
+    plain: list[str] = []
+    dropped: str | None = None
+    touched = any(a < hi and b > lo for a, b, _ in spans)
+    cursor = lo
+
+    def keep(text: str) -> None:
+      nonlocal dropped
+      for line in text.split('\n'):
+        line = line.strip(' \t\xa0\N{ZERO WIDTH SPACE}' + WJ)
+        if not squash(line):
+          continue
+        if have and shown_in(line, have):
+          dropped = dropped or 'repeat'
+        elif figure:
+          dropped = 'figure'
+        else:
+          parts.append(line)
+          plain.append(line)
+
+    cell = None
+    for a, b, md in spans:
+      if b <= cursor or a >= hi:
+        continue
+      if a > cursor:
+        keep(full[cursor:a])
+      if a >= lo and md:
+        parts.append(md)
+        plain.append(PLAIN_MARKS.sub('', md))
+      elif a >= lo and a in cell_at:
+        cell = cell_at[a]
+      cursor = max(cursor, b)
+    if cursor < hi:
+      keep(full[cursor:hi])
+    # a chunk with no generated span is either all repeats and figure text (a pointer) or left
+    # as it was: code that wasn't found keeps its lines even when `}` and `end` read as repeats
+    if not touched and (parts or not dropped):
+      continue
+    # list items stay one list; everything else is its own block
+    text = ''
+    for i, part in enumerate(parts):
+      if i:
+        both = part.startswith('- ') and parts[i - 1].startswith('- ')
+        text += '\n' if both else '\n\n'
+      text += part
+    r['md'] = text
+    r['plain'] = ' '.join(plain)
+    if cell is not None:
+      dropped = 'code'
+    target = cell if cell else holder if dropped == 'figure' else source
+    if not text and dropped and target is not None:
+      r['same'] = target
+      r['why'] = dropped
+    changed += 1
+  return changed
 
 
 def note_sources(content: Path) -> dict[str, Path]:
@@ -415,7 +699,9 @@ def note_sources(content: Path) -> dict[str, Path]:
   return out
 
 
-def load_rows(content: Path, store: dict, offset: int) -> tuple[list[dict], np.ndarray]:
+def load_rows(
+  content: Path, store: dict, offset: int
+) -> tuple[list[dict], np.ndarray]:
   """Rows of one store in vector order: id, doc, title, chunk, page, label, text, date."""
   m = store['manifest']
   kind = store['kind']
@@ -423,7 +709,11 @@ def load_rows(content: Path, store: dict, offset: int) -> tuple[list[dict], np.n
   vectors = read_vectors(content, m['vectors'], dims)
   rows: list[dict] = []
   if kind == 'note':
-    passages = read_shard_json(content, m['passages']['shards']) if 'passages' in m else []
+    passages = (
+      read_shard_json(content, m['passages']['shards'])
+      if 'passages' in m
+      else []
+    )
     if passages and len(passages) != m['rows']:
       raise SystemExit('note passages do not align with the vectors')
     for i, rid in enumerate(m['ids']):
@@ -438,6 +728,7 @@ def load_rows(content: Path, store: dict, offset: int) -> tuple[list[dict], np.n
           page=None,
           label='',
           text=p.get('text') or '',
+          raw=p.get('text') or '',
           date=p.get('date'),
           prec=p.get('datePrecision'),
           start=p.get('charStart'),
@@ -454,14 +745,17 @@ def load_rows(content: Path, store: dict, offset: int) -> tuple[list[dict], np.n
     bib = load_bib(content / 'References.bib')
     restored = 0
     marked = 0
+    generated = 0
     for doc, chunks in by_doc.items():
       source = sources.get(doc)
       if source is not None:
         md = source.read_text(encoding='utf-8', errors='replace')
         restored += restore_math(chunks, md)
         marked += note_markdown(chunks, md, by_name, bib)
+      generated += generated_text(chunks)
     log('note math spans restored', restored)
     log('notes read from markdown', marked, 'of', len(by_doc))
+    log('note chunks rewritten from generated page text', generated)
   elif kind == 'pdf':
     passages = read_shard_json(content, m['passages']['shards'])
     if len(passages) != m['rows']:
@@ -487,12 +781,34 @@ def load_rows(content: Path, store: dict, offset: int) -> tuple[list[dict], np.n
   elif kind == 'image':
     for rid in m['ids']:
       rows.append(
-        dict(id=rid, doc=rid, title=os.path.basename(rid), chunk=0, page=None, label='', text='', date=None, prec=None)
+        dict(
+          id=rid,
+          doc=rid,
+          title=os.path.basename(rid),
+          chunk=0,
+          page=None,
+          label='',
+          text='',
+          date=None,
+          prec=None,
+        )
       )
   elif kind == 'base':
     titles = m.get('titles') or m['ids']
     for i, rid in enumerate(m['ids']):
-      rows.append(dict(id=rid, doc=rid, title=titles[i], chunk=0, page=None, label='', text='', date=None, prec=None))
+      rows.append(
+        dict(
+          id=rid,
+          doc=rid,
+          title=titles[i],
+          chunk=0,
+          page=None,
+          label='',
+          text='',
+          date=None,
+          prec=None,
+        )
+      )
   for i, r in enumerate(rows):
     r['row'] = offset + i
     r['store'] = kind
@@ -500,7 +816,9 @@ def load_rows(content: Path, store: dict, offset: int) -> tuple[list[dict], np.n
   return rows, vectors
 
 
-def knn(V: np.ndarray, k: int, doc_of_row: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+def knn(
+  V: np.ndarray, k: int, doc_of_row: np.ndarray
+) -> tuple[np.ndarray, np.ndarray]:
   """Exact top-k by cosine, with at most SAME_DOC neighbours from the row's own document: a
   dictionary's entries otherwise fill every slot with the dictionary and the links pane never
   leaves the book. Candidates come from the top 8k; when fewer cross-document rows are there the
@@ -557,14 +875,24 @@ def bimodality(values: np.ndarray) -> float:
   return (g * g + 1.0) / (k + 3.0 * (n - 1) ** 2 / ((n - 2) * (n - 3)))
 
 
-def top_terms(rows: list[dict], order: np.ndarray, rest: np.ndarray, n: int = 5) -> list[str]:
+def top_terms(
+  rows: list[dict], order: np.ndarray, rest: np.ndarray, n: int = 5
+) -> list[str]:
   pole = Counter()
   for r in order:
-    pole.update(tokens(rows[int(r)]['title'] + ' ' + rows[int(r)]['text'][:400]))
+    pole.update(
+      tokens(rows[int(r)]['title'] + ' ' + rows[int(r)]['text'][:400])
+    )
   other = Counter()
   for r in rest:
-    other.update(tokens(rows[int(r)]['title'] + ' ' + rows[int(r)]['text'][:400]))
-  scored = {w: c / (1 + other.get(w, 0) * len(order) / max(1, len(rest))) for w, c in pole.items() if c >= 3}
+    other.update(
+      tokens(rows[int(r)]['title'] + ' ' + rows[int(r)]['text'][:400])
+    )
+  scored = {
+    w: c / (1 + other.get(w, 0) * len(order) / max(1, len(rest)))
+    for w, c in pole.items()
+    if c >= 3
+  }
   return [w for w, _ in sorted(scored.items(), key=lambda kv: -kv[1])[:n]]
 
 
@@ -617,8 +945,16 @@ def pole_spec(value: object) -> dict:
     tags = value
   elif isinstance(value, dict):
     tags, paths = value.get('tags') or [], value.get('paths') or []
-  tags = [tags] if isinstance(tags, str) else tags if isinstance(tags, list) else []
-  paths = [paths] if isinstance(paths, str) else paths if isinstance(paths, list) else []
+  tags = (
+    [tags] if isinstance(tags, str) else tags if isinstance(tags, list) else []
+  )
+  paths = (
+    [paths]
+    if isinstance(paths, str)
+    else paths
+    if isinstance(paths, list)
+    else []
+  )
   return dict(
     paths=sorted({link_target(p) for p in paths if link_target(p)}),
     tags=sorted({tag_key(t) for t in tags if tag_key(t)}),
@@ -636,11 +972,15 @@ def axes_spec(raw: object) -> list[dict]:
       continue
     name = ax.get('name')
     out.append(dict(a=a, b=b, name=str(name).strip() if name else None))
-  return out[: AXES - 2]  # the store contrast and at least one principal direction stay
+  return out[
+    : AXES - 2
+  ]  # the store contrast and at least one principal direction stay
 
 
 def spec_json(spec: list[dict]) -> str:
-  return json.dumps(spec, ensure_ascii=False, separators=(',', ':'), sort_keys=True)
+  return json.dumps(
+    spec, ensure_ascii=False, separators=(',', ':'), sort_keys=True
+  )
 
 
 def latent_page(content: Path, directory: str) -> tuple[Path | None, dict]:
@@ -655,7 +995,9 @@ def latent_page(content: Path, directory: str) -> tuple[Path | None, dict]:
         head = fh.read(2048)
     except OSError:
       continue
-    if not head.startswith('---') or not re.search(r'^layout:\s*[\'"]?latent\b', head, re.M):
+    if not head.startswith('---') or not re.search(
+      r'^layout:\s*[\'"]?latent\b', head, re.M
+    ):
       continue
     fm = read_frontmatter(path)
     if (link_target(fm.get('directory')) or 'embeddings') == want:
@@ -664,11 +1006,18 @@ def latent_page(content: Path, directory: str) -> tuple[Path | None, dict]:
     return None, {}
   hits.sort(key=lambda h: h[0] != content / want / 'index.md')
   if len(hits) > 1:
-    log('several latent pages read', want, '; axes from', hits[0][0].relative_to(content))
+    log(
+      'several latent pages read',
+      want,
+      '; axes from',
+      hits[0][0].relative_to(content),
+    )
   return hits[0]
 
 
-def pole_members(docs: list[dict], spec: dict, tags_of: dict[str, set[str]]) -> set[int]:
+def pole_members(
+  docs: list[dict], spec: dict, tags_of: dict[str, set[str]]
+) -> set[int]:
   out: set[int] = set()
   for di, d in enumerate(docs):
     doc_id = d['id']
@@ -676,7 +1025,11 @@ def pole_members(docs: list[dict], spec: dict, tags_of: dict[str, set[str]]) -> 
       out.add(di)
       continue
     have = tags_of.get(doc_id)
-    if have and any(t == want or t.startswith(want + '/') for t in have for want in spec['tags']):
+    if have and any(
+      t == want or t.startswith(want + '/')
+      for t in have
+      for want in spec['tags']
+    ):
       out.add(di)
   return out
 
@@ -686,15 +1039,22 @@ def held_out_auc(doc_vecs: np.ndarray, a: list[int], b: list[int]) -> float:
   fa, ta, fb, tb = a[::2], a[1::2], b[::2], b[1::2]
   w = doc_vecs[fb].mean(0) - doc_vecs[fa].mean(0)
   pa, pb = doc_vecs[ta] @ w, doc_vecs[tb] @ w
-  return float((pb[:, None] > pa[None, :]).mean() + 0.5 * (pb[:, None] == pa[None, :]).mean())
+  return float(
+    (pb[:, None] > pa[None, :]).mean()
+    + 0.5 * (pb[:, None] == pa[None, :]).mean()
+  )
 
 
 def main() -> None:
   ap = argparse.ArgumentParser()
   ap.add_argument('--content', default='content')
-  ap.add_argument('--directory', default='embeddings', help='relative to --content')
+  ap.add_argument(
+    '--directory', default='embeddings', help='relative to --content'
+  )
   ap.add_argument('--k', type=int, default=16)
-  ap.add_argument('--regions', default='embeddings/pdf-regions', help='relative to --content')
+  ap.add_argument(
+    '--regions', default='embeddings/pdf-regions', help='relative to --content'
+  )
   args = ap.parse_args()
   content = Path(args.content).resolve()
   directory = content / args.directory
@@ -708,7 +1068,9 @@ def main() -> None:
   reference = next((s for s in stores if s['kind'] == 'note'), stores[0])
   model, dims = reference['model'], reference['dims']
   for s in stores:
-    s['included'] = s['kind'] is not None and s['model'] == model and s['dims'] == dims
+    s['included'] = (
+      s['kind'] is not None and s['model'] == model and s['dims'] == dims
+    )
     s['reason'] = (
       None
       if s['included']
@@ -724,9 +1086,13 @@ def main() -> None:
   spec = axes_spec(page_fm.get('axes'))
   if spec:
     digest_lines.append(f'axes\t{sha256(spec_json(spec).encode())}')
-  log('axes from', page.relative_to(content) if page else None, spec_json(spec))
+  log(
+    'axes from', page.relative_to(content) if page else None, spec_json(spec)
+  )
   sidecar_hash = sha256('\n'.join(digest_lines).encode())
-  log('stores', [(s['id'], s['kind'], s['rows'], s['included']) for s in stores])
+  log(
+    'stores', [(s['id'], s['kind'], s['rows'], s['included']) for s in stores]
+  )
   log('hash', sidecar_hash)
 
   out_root = directory / 'latent'
@@ -788,7 +1154,13 @@ def main() -> None:
     if d['day'] == 0:
       d['date'] = None
   order = sorted(
-    range(len(docs)), key=lambda i: (docs[i]['day'] == 0, docs[i]['day'], docs[i]['store'], docs[i]['id'])
+    range(len(docs)),
+    key=lambda i: (
+      docs[i]['day'] == 0,
+      docs[i]['day'],
+      docs[i]['store'],
+      docs[i]['id'],
+    ),
   )
   docs = [docs[i] for i in order]
   doc_of_row = np.empty(N, dtype=np.uint32)
@@ -799,7 +1171,9 @@ def main() -> None:
   log('docs', len(docs))
 
   idx, sc = knn(V, args.k, doc_of_row)
-  degree = np.minimum(np.bincount(idx.ravel(), minlength=N), 0xFFFF).astype(np.uint16)
+  degree = np.minimum(np.bincount(idx.ravel(), minlength=N), 0xFFFF).astype(
+    np.uint16
+  )
   log('knn', f'{time.time() - t0:.0f}s')
 
   # regions for pdf page silhouettes
@@ -811,7 +1185,9 @@ def main() -> None:
       return None
     if sha not in regions_cache:
       path = regions_dir / f'{sha}.json'
-      regions_cache[sha] = json.loads(path.read_text(encoding='utf-8')) if path.exists() else None
+      regions_cache[sha] = (
+        json.loads(path.read_text(encoding='utf-8')) if path.exists() else None
+      )
     return regions_cache[sha]
 
   boxed = 0
@@ -832,19 +1208,35 @@ def main() -> None:
   q.tofile(out / 'vec' / 'rows-256-int8.bin')
   doc_vecs = np.stack([V256[d['rows']].mean(0) for d in docs])
   doc_vecs /= np.linalg.norm(doc_vecs, axis=1, keepdims=True) + 1e-9
-  np.clip(np.round(doc_vecs / scale * 127), -127, 127).astype(np.int8).tofile(out / 'vec' / 'docs-256-int8.bin')
+  np.clip(np.round(doc_vecs / scale * 127), -127, 127).astype(np.int8).tofile(
+    out / 'vec' / 'docs-256-int8.bin'
+  )
   log('vectors', f'{time.time() - t0:.0f}s')
 
   # axes: the store contrast, the page's frontmatter axes, then principal directions of the rest
   store_arr = np.array([r['store'] for r in rows])
   axes: list[dict] = []
 
-  def add_axis(aid: str, name: str, direction: np.ndarray, a: str, b: str, **extra: object) -> None:
+  def add_axis(
+    aid: str, name: str, direction: np.ndarray, a: str, b: str, **extra: object
+  ) -> None:
     direction = direction / (np.linalg.norm(direction) + 1e-9)
     proj = centred @ direction
-    axes.append(dict(id=aid, name=name, a=a, b=b, dir=direction.astype(np.float32), proj=proj, extra=extra))
+    axes.append(
+      dict(
+        id=aid,
+        name=name,
+        a=a,
+        b=b,
+        dir=direction.astype(np.float32),
+        proj=proj,
+        extra=extra,
+      )
+    )
 
-  kinds = [k for k in ('note', 'pdf', 'image', 'base') if (store_arr == k).any()]
+  kinds = [
+    k for k in ('note', 'pdf', 'image', 'base') if (store_arr == k).any()
+  ]
   if 'note' in kinds and 'pdf' in kinds:
     add_axis(
       'store',
@@ -859,18 +1251,37 @@ def main() -> None:
     for d in docs:
       if d['store'] == 'note' and d['id'] in sources:
         t = read_frontmatter(sources[d['id']]).get('tags') or []
-        tags_of[d['id']] = {tag_key(x) for x in ([t] if isinstance(t, str) else t if isinstance(t, list) else [])}
+        tags_of[d['id']] = {
+          tag_key(x)
+          for x in (
+            [t] if isinstance(t, str) else t if isinstance(t, list) else []
+          )
+        }
     doc_centred = doc_vecs - mean
     for ai, ax in enumerate(spec):
-      ma, mb = pole_members(docs, ax['a'], tags_of), pole_members(docs, ax['b'], tags_of)
+      ma, mb = (
+        pole_members(docs, ax['a'], tags_of),
+        pole_members(docs, ax['b'], tags_of),
+      )
       a, b = sorted(ma - mb), sorted(mb - ma)
-      label_a = ' · '.join(ax['a']['tags'] + [p + '/' for p in ax['a']['paths']])
-      label_b = ' · '.join(ax['b']['tags'] + [p + '/' for p in ax['b']['paths']])
+      label_a = ' · '.join(
+        ax['a']['tags'] + [p + '/' for p in ax['a']['paths']]
+      )
+      label_b = ' · '.join(
+        ax['b']['tags'] + [p + '/' for p in ax['b']['paths']]
+      )
       if len(a) < MIN_POLE or len(b) < MIN_POLE:
-        log(f'axis {label_a} ↔ {label_b} skipped: poles hold {len(a)} and {len(b)} documents')
+        log(
+          f'axis {label_a} ↔ {label_b} skipped: poles hold {len(a)} and {len(b)} documents'
+        )
         continue
       sep = held_out_auc(doc_centred, a, b)
-      log(f'axis {label_a} ↔ {label_b}', len(a), len(b), f'held-out auc {sep:.3f}')
+      log(
+        f'axis {label_a} ↔ {label_b}',
+        len(a),
+        len(b),
+        f'held-out auc {sep:.3f}',
+      )
       add_axis(
         f'fm{ai + 1}',
         ax['name'] or f'{label_a} ↔ {label_b}',
@@ -884,7 +1295,11 @@ def main() -> None:
       )
   # principal directions of the variance the named axes leave: the store contrast and a
   # philosophy ↔ ml axis both lie close to the raw pc1, which would show the same split twice
-  named = np.stack([ax['dir'] for ax in axes]).T if axes else np.zeros((256, 0), dtype=np.float32)
+  named = (
+    np.stack([ax['dir'] for ax in axes]).T
+    if axes
+    else np.zeros((256, 0), dtype=np.float32)
+  )
   if named.shape[1]:
     Q, _ = np.linalg.qr(named.astype(np.float64))
     P = np.eye(256) - Q @ Q.T
@@ -897,9 +1312,13 @@ def main() -> None:
   for i in range(AXES):
     if len(axes) >= AXES:
       break
-    add_axis(f'pc{i + 1}', f'pc{i + 1} · {explained[i] * 100:.1f} %', pcs[i], '−', '+')
+    add_axis(
+      f'pc{i + 1}', f'pc{i + 1} · {explained[i] * 100:.1f} %', pcs[i], '−', '+'
+    )
   axes = axes[:AXES]
-  rest_sample = np.random.default_rng(0).choice(N, size=min(N, 2000), replace=False)
+  rest_sample = np.random.default_rng(0).choice(
+    N, size=min(N, 2000), replace=False
+  )
   probe = []
   axis_i8 = np.zeros((N, AXES), dtype=np.int8)
   for ai, ax in enumerate(axes):
@@ -919,10 +1338,29 @@ def main() -> None:
         bc=round(bimodality(proj), 3),
         scale=lim,
         hist=hist.astype(int).tolist(),
-        terms=dict(a=top_terms(rows, order[:200], rest_sample), b=top_terms(rows, order[-200:], rest_sample)),
+        terms=dict(
+          a=top_terms(rows, order[:200], rest_sample),
+          b=top_terms(rows, order[-200:], rest_sample),
+        ),
         poles=dict(
-          a=[dict(r=int(r), d=int(doc_of_row[r]), t=rows[int(r)]['title'], s=rows[int(r)]['store']) for r in neg],
-          b=[dict(r=int(r), d=int(doc_of_row[r]), t=rows[int(r)]['title'], s=rows[int(r)]['store']) for r in pos],
+          a=[
+            dict(
+              r=int(r),
+              d=int(doc_of_row[r]),
+              t=rows[int(r)]['title'],
+              s=rows[int(r)]['store'],
+            )
+            for r in neg
+          ],
+          b=[
+            dict(
+              r=int(r),
+              d=int(doc_of_row[r]),
+              t=rows[int(r)]['title'],
+              s=rows[int(r)]['store'],
+            )
+            for r in pos
+          ],
         ),
       )
     )
@@ -935,7 +1373,14 @@ def main() -> None:
         dtype='int8',
         scale=scale,
         mean=[round(float(v), 6) for v in mean],
-        axes=[dict(id=a['id'], name=a['name'], dir=[round(float(v), 6) for v in a['dir']]) for a in axes],
+        axes=[
+          dict(
+            id=a['id'],
+            name=a['name'],
+            dir=[round(float(v), 6) for v in a['dir']],
+          )
+          for a in axes
+        ],
       ),
       fh,
     )
@@ -968,11 +1413,15 @@ def main() -> None:
         c=r['chunk'],
         p=r['page'],
         l=r['label'],
-        x=preview(r['text'], r['store']),
+        x=''
+        if r.get('same')
+        else preview(r.get('plain') or r['text'], r['store']),
       )
       for r in rows[b : b + BLOCK]
     ]
-    with open(out / 'prev' / f'{b // BLOCK:05d}.json', 'w', encoding='utf-8') as fh:
+    with open(
+      out / 'prev' / f'{b // BLOCK:05d}.json', 'w', encoding='utf-8'
+    ) as fh:
       json.dump(block, fh, ensure_ascii=False, separators=(',', ':'))
   for di, d in enumerate(docs):
     chunks = []
@@ -983,6 +1432,9 @@ def main() -> None:
         # the note's markdown slice; `m` tells the reader to parse it as markdown
         chunk['text'] = row['md']
         chunk['m'] = 1
+      if row.get('same'):
+        # page text the earlier chunk's markdown already shows: the reader points there
+        chunk['same'] = [row['same']['row'], row['same']['chunk'], row['why']]
       if row['page']:
         chunk['p'] = row['page']
         chunk['l'] = row['label']
@@ -1006,9 +1458,14 @@ def main() -> None:
     with open(out / 'text' / f'{di}.json', 'w', encoding='utf-8') as fh:
       json.dump(payload, fh, ensure_ascii=False, separators=(',', ':'))
     for p in range(1, (len(chunks) + PART - 1) // PART):
-      with open(out / 'text' / f'{di}-{p:03d}.json', 'w', encoding='utf-8') as fh:
+      with open(
+        out / 'text' / f'{di}-{p:03d}.json', 'w', encoding='utf-8'
+      ) as fh:
         json.dump(
-          dict(d=di, part=p, chunks=chunks[p * PART : (p + 1) * PART]), fh, ensure_ascii=False, separators=(',', ':')
+          dict(d=di, part=p, chunks=chunks[p * PART : (p + 1) * PART]),
+          fh,
+          ensure_ascii=False,
+          separators=(',', ':'),
         )
 
   # documents table and the time track
@@ -1082,7 +1539,11 @@ def main() -> None:
   with open(out / 'index.json', 'w', encoding='utf-8') as fh:
     json.dump(index, fh, indent=1)
   with open(out_root / 'index.json', 'w', encoding='utf-8') as fh:
-    json.dump(dict(version=VERSION, hash=sidecar_hash, directory=args.directory), fh, indent=1)
+    json.dump(
+      dict(version=VERSION, hash=sidecar_hash, directory=args.directory),
+      fh,
+      indent=1,
+    )
   for entry in out_root.iterdir():
     if entry.is_dir() and SHA.match(entry.name) and entry.name != sidecar_hash:
       shutil.rmtree(entry)

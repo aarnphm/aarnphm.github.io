@@ -12,10 +12,11 @@ import type {
 } from '../../util/latent/types'
 import type { SemanticEmbedRequest, SemanticWorkerResponse } from '../../util/semantic-protocol'
 import type { LatentWorkerRequest, LatentWorkerResponse } from '../../workers/latent.worker'
+import type { ToastHandle } from './toast'
 import {
   chunkArticles,
-  linksPane,
   docHead,
+  linksPane,
   moreSentinel,
   railSvg,
   readerDocument,
@@ -32,6 +33,7 @@ import {
 import { buildSelect } from '../controls/select'
 import { loadPageStyles } from './page-styles'
 import { rootNavSignal } from './root-lifecycle'
+import { setStatusText } from './status-flap'
 
 /**
  * Hydration for `layout: latent`. The build rendered the first screen; this makes the reader a
@@ -58,6 +60,7 @@ interface Runtime {
   prev: Map<number, Promise<LatentPreview[]>>
   text: Map<number, Promise<LatentText>>
   parts: Map<string, Promise<LatentChunk[]>>
+  mounting: Map<number, Promise<HTMLElement | null>>
   regions: Map<string, Promise<Record<string, { bbox: number[]; text: string }[]> | null>>
   docByRow: LatentDoc[]
   focus: number
@@ -79,6 +82,8 @@ interface Runtime {
   /** rail viewBox height: the pane's aspect ratio in rail units, so the track spans the pane */
   railHeight: number
   railItems: LinkItem[]
+  /** the bottom-right toast that carries the search phases; one per page, text changes in place */
+  toast: ToastHandle | null
 }
 
 interface Bench {
@@ -187,13 +192,42 @@ async function documentHtml(rt: Runtime, d: number, part: number, focus: number)
   return toHtml(readerDocument({ ...head, chunks }, rt.docs[d], focus, { offset }) as never)
 }
 
+// The chunk under the reading line and its offset in the document. Anything above it that
+// grows or shrinks (a document mounted or dropped, a part filled, math typeset, its stylesheet
+// or a font arriving) moves that offset; hold() scrolls by the same amount before the frame is
+// painted, so the passage under the line never moves. Scrolling leaves the offset alone, so a
+// scroll between the anchor and the check is not undone. The browser's own scroll anchoring is
+// off for this layout (latent.scss), so there is one correction, not two.
+const steady: { el: HTMLElement | null; y: number } = { el: null, y: 0 }
+
+function anchorTo(el: HTMLElement | null): void {
+  steady.el = el
+  steady.y = el ? el.getBoundingClientRect().top + window.scrollY : 0
+}
+
+function hold(): void {
+  const el = steady.el
+  if (!el || !el.isConnected) return
+  const y = el.getBoundingClientRect().top + window.scrollY
+  const moved = y - steady.y
+  steady.y = y
+  if (Math.abs(moved) > 0.5) window.scrollBy({ top: moved, behavior: 'instant' })
+}
+
 /** Keep the text under the reading line still when something above it grows or shrinks. */
 function keepLine(anchor: HTMLElement | null, mutate: () => void): void {
-  const before = anchor?.getBoundingClientRect().top ?? 0
+  if (anchor?.isConnected && anchor !== steady.el) anchorTo(anchor)
+  const el = steady.el
+  // read the anchor's place on screen before the change: dropping documents above can shorten
+  // the page so much that the browser clamps the scroll position while laying the change out,
+  // and a correction by the offset alone would then carry the clamp (tens of pixels) as a jump
+  const screen = el?.isConnected ? el.getBoundingClientRect().top : null
   mutate()
-  if (!anchor || !anchor.isConnected) return
-  const moved = anchor.getBoundingClientRect().top - before
-  if (Math.abs(moved) > 0.5) window.scrollBy(0, moved)
+  if (!el || screen === null || !el.isConnected) return hold()
+  const top = el.getBoundingClientRect().top
+  if (Math.abs(top - screen) > 0.5)
+    window.scrollTo({ top: window.scrollY + top - screen, behavior: 'instant' })
+  steady.y = el.getBoundingClientRect().top + window.scrollY
 }
 
 /** Fill a part sentinel with its part, moving the sentinel on to the next one. */
@@ -268,6 +302,7 @@ async function renderLinks(rt: Runtime, row: number): Promise<void> {
   if (!rt.query) {
     const pane = linksPane(focusPreview, items, rt.kinds)
     linksBody(rt).innerHTML = toHtml(pane.children as never, { allowDangerousHtml: false })
+    rt.links.scrollTop = 0
     rt.links.dataset.focus = String(row)
   }
   // probe ticks
@@ -333,7 +368,11 @@ function requestVec(
 }
 
 /** The site's query encoder, in its own worker; loads on the first query. */
-function embedQuery(rt: Runtime, text: string, hint: HTMLElement): Promise<Float32Array> {
+function embedQuery(
+  rt: Runtime,
+  text: string,
+  status: (text: string) => void,
+): Promise<Float32Array> {
   if (!rt.semantic) {
     rt.semantic = new Worker(new URL('semantic.worker.js', import.meta.url), { type: 'module' })
     rt.signal.addEventListener('abort', () => rt.semantic?.terminate())
@@ -344,9 +383,12 @@ function embedQuery(rt: Runtime, text: string, hint: HTMLElement): Promise<Float
     const onMessage = (event: MessageEvent<SemanticWorkerResponse>) => {
       const data = event.data
       if (data.type === 'model-progress') {
-        const pct = data.totalBytes ? Math.round((data.loadedBytes / data.totalBytes) * 100) : 0
-        hint.textContent =
-          data.phase === 'loading' ? `loading the encoder ${pct}%` : 'starting the encoder'
+        // `phase · loaded/total unit` so the status flap swaps digits in place
+        status(
+          data.phase === 'loading' && data.totalBytes
+            ? `encoder · ${megabytes(data.loadedBytes)}/${megabytes(data.totalBytes)} MB`
+            : 'starting the encoder…',
+        )
         return
       }
       if (data.type === 'embedding' && data.seq === seq) {
@@ -393,17 +435,51 @@ function matchAxes(rt: Runtime, text: string): number {
   return count
 }
 
-async function runQuery(rt: Runtime, text: string): Promise<void> {
+const MB = new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
+const megabytes = (bytes: number) => MB.format(bytes / 1e6)
+
+/**
+ * Search phases go to the links-pane hint and to the site's bottom-right toast. The toast is one
+ * element whose text changes in place (status-flap motion), held open until the query settles.
+ */
+function searchStatus(rt: Runtime): {
+  set: (text: string) => void
+  done: (text: string) => void
+  fail: (text: string) => void
+} {
   const hint = rt.links.querySelector<HTMLElement>('.lat-search-hint')
-  if (!hint) return
+  const toast = (): ToastHandle | null => {
+    if (rt.toast?.element.isConnected) return rt.toast
+    rt.toast =
+      window.quartzToast?.show('', {
+        durationMs: 0,
+        styles: { fontFamily: 'var(--lat-mono, var(--codeFont))', fontWeight: '400' },
+      }) ?? null
+    return rt.toast
+  }
+  const set = (text: string) => {
+    if (hint) hint.textContent = text
+    const handle = toast()
+    if (handle) setStatusText(handle.element, text)
+  }
+  const settle = (text: string, holdMs: number) => {
+    set(text)
+    rt.toast?.dismiss(holdMs)
+    rt.toast = null
+  }
+  return { set, done: text => settle(text, 1800), fail: text => settle(text, 3200) }
+}
+
+async function runQuery(rt: Runtime, text: string): Promise<void> {
+  const status = searchStatus(rt)
   const axes = matchAxes(rt, text)
-  hint.textContent = 'embedding the query…'
+  status.set('embedding the query…')
   try {
-    const vector = await embedQuery(rt, text, hint)
+    const vector = await embedQuery(rt, text, status.set)
     if (rt.signal.aborted) return
     const url = `${rt.base}/vec/rows-256-int8.bin`
     const meta = await metaOf(rt)
-    hint.textContent = `scoring ${meta.rows} chunks…`
+    status.set(`scoring · ${meta.rows.toLocaleString('en-US')} chunks`)
     await requestVec(rt, { type: 'load', url, rows: meta.rows, dims: 256 })
     const t0 = performance.now()
     const result = await requestVec(
@@ -430,11 +506,14 @@ async function runQuery(rt: Runtime, text: string): Promise<void> {
       'query',
     )
     linksBody(rt).innerHTML = toHtml(pane.children as never, { allowDangerousHtml: false })
+    rt.links.scrollTop = 0
     rt.links.dataset.query = text
-    hint.textContent = `${items.length} chunks in ${(performance.now() - t0).toFixed(0)} ms${axes ? ` · ${axes} ${axes === 1 ? 'axis' : 'axes'} match` : ''}`
+    status.done(
+      `${items.length} chunks · ${(performance.now() - t0).toFixed(0)} ms${axes ? ` · ${axes} ${axes === 1 ? 'axis' : 'axes'} match` : ''}`,
+    )
     renderRail(rt, items)
   } catch (error) {
-    hint.textContent = error instanceof Error ? error.message : String(error)
+    status.fail(error instanceof Error ? error.message : String(error))
   }
 }
 
@@ -443,6 +522,8 @@ function clearQuery(rt: Runtime): void {
     delete card.dataset.match
   const hint = rt.links.querySelector<HTMLElement>('.lat-search-hint')
   if (hint) hint.textContent = ''
+  rt.toast?.dismiss()
+  rt.toast = null
   if (!rt.query && !rt.links.dataset.query) return
   rt.query = null
   delete rt.links.dataset.query
@@ -633,19 +714,22 @@ function setFocus(rt: Runtime, row: number, options: { push?: boolean } = {}): v
   })
 }
 
-/** The head row's copy of the open document's head: only its text changes on scroll. */
+/** The reader's frozen head (see `docHead`), or null on a page built before it. */
 function readerHead(rt: Runtime): HTMLElement | null {
   return rt.reader.querySelector<HTMLElement>(':scope > .lat-reader-head')
 }
 
+/** Retitle the frozen head for the open document; it never moves, only its text changes. */
 function setReaderHead(rt: Runtime): void {
-  const html = toHtml(docHead(rt.docs[rt.open], true) as never)
+  const doc = rt.docs[rt.open]
+  if (!doc) return
+  const html = toHtml(docHead(doc, true) as never)
   const head = readerHead(rt)
   if (head) head.outerHTML = html
   else rt.reader.insertAdjacentHTML('afterbegin', html)
 }
 
-/** Put document html at the top of the reader, under the head row's copy. */
+/** Put a document before the current reader contents (after the frozen head). */
 function prependDocument(rt: Runtime, html: string): void {
   const head = readerHead(rt)
   if (head) head.insertAdjacentHTML('afterend', html)
@@ -653,7 +737,7 @@ function prependDocument(rt: Runtime, html: string): void {
 }
 
 /** Mount a document into the reader (replacing its stub), keeping one stub either side. */
-async function mountDocument(
+function mountDocument(
   rt: Runtime,
   d: number,
   part: number | 'last' = 0,
@@ -661,20 +745,42 @@ async function mountDocument(
   const existing = rt.reader.querySelector<HTMLElement>(
     `.lat-doc[data-doc="${d}"]:not(.lat-doc-stub)`,
   )
-  if (existing) return existing
-  const head = await textOf(rt, d)
-  const index =
-    part === 'last' ? Math.max(0, Math.ceil(head.total / Math.max(1, head.part)) - 1) : part
-  const html = await documentHtml(rt, d, index, rt.focus)
-  if (rt.signal.aborted) return null
-  const stub = rt.reader.querySelector<HTMLElement>(`.lat-doc[data-doc="${d}"]`)
-  const anchor = chunkUnderLine(rt)
-  // the previous document mounted above must not move the text under the reading line
-  keepLine(anchor, () => {
-    if (stub) stub.outerHTML = html
-    else rt.reader.insertAdjacentHTML('beforeend', html)
+  if (existing) return Promise.resolve(existing)
+  const pending = rt.mounting.get(d)
+  if (pending) return pending
+
+  const mounting = (async (): Promise<HTMLElement | null> => {
+    const head = await textOf(rt, d)
+    const index =
+      part === 'last' ? Math.max(0, Math.ceil(head.total / Math.max(1, head.part)) - 1) : part
+    const html = await documentHtml(rt, d, index, rt.focus)
+    if (rt.signal.aborted) return null
+    // Pruning can remove this stub while its data is in flight. Only replace the original slot;
+    // appending a late result at the reader's end creates duplicate or out-of-order documents.
+    const stub = rt.reader.querySelector<HTMLElement>(`.lat-doc-stub[data-doc="${d}"]`)
+    if (!stub) return null
+    const anchor = chunkUnderLine(rt)
+    // the previous document mounted above must not move the text under the reading line
+    keepLine(anchor, () => {
+      stub.outerHTML = html
+      // a document mounted above gets the stub above it in the same step: a short document
+      // replacing a tall stub would otherwise shrink the page above the reading line by more
+      // than the scroll offset near the top, the correction would clamp at 0, and the reading
+      // line would slide onto the document before, which then mounts in turn
+      if (d > 0 && d < rt.open && !rt.reader.querySelector(`.lat-doc[data-doc="${d - 1}"]`))
+        prependDocument(
+          rt,
+          toHtml(
+            readerDocument(stubText(rt.docs[d - 1]), rt.docs[d - 1], -1, { stub: true }) as never,
+          ),
+        )
+    })
+    return rt.reader.querySelector<HTMLElement>(`.lat-doc[data-doc="${d}"]:not(.lat-doc-stub)`)
+  })().finally(() => {
+    rt.mounting.delete(d)
   })
-  return rt.reader.querySelector<HTMLElement>(`.lat-doc[data-doc="${d}"]`)
+  rt.mounting.set(d, mounting)
+  return mounting
 }
 
 function ensureStubs(rt: Runtime): void {
@@ -692,10 +798,14 @@ function ensureStubs(rt: Runtime): void {
       prependDocument(rt, stubHtml(lo - 1))
     if (hi + 1 < rt.docs.length && !rt.reader.querySelector(`.lat-doc[data-doc="${hi + 1}"]`))
       rt.reader.insertAdjacentHTML('beforeend', stubHtml(hi + 1))
-    // unmount documents two away from the open one
+    // unmount documents two away from the open one once they are well off screen: short
+    // documents (an image, a two-row base) fit several to a viewport, and pruning by count
+    // alone left the reader without page above it at the top of the scroll range
     for (const el of rt.reader.querySelectorAll<HTMLElement>('.lat-doc')) {
       const d = Number(el.dataset.doc)
-      if (Math.abs(d - rt.open) > 2) el.remove()
+      if (Math.abs(d - rt.open) <= 2) continue
+      const rect = el.getBoundingClientRect()
+      if (rect.bottom < -window.innerHeight || rect.top > 2 * window.innerHeight) el.remove()
     }
   })
 }
@@ -714,25 +824,37 @@ async function goTo(rt: Runtime, row: number): Promise<void> {
     const next = doc.d + 1 < rt.docs.length ? rt.docs[doc.d + 1] : null
     const stub = (d: LatentDoc) =>
       toHtml(readerDocument(stubText(d), d, -1, { stub: true }) as never)
-    const mirror = readerHead(rt)
+    const frozen = readerHead(rt)
     rt.reader.innerHTML = [prev ? stub(prev) : '', html, next ? stub(next) : ''].join('')
-    if (mirror) rt.reader.prepend(mirror)
+    if (frozen) rt.reader.prepend(frozen)
     chunk = rt.reader.querySelector<HTMLElement>(`.lat-chunk[data-row="${row}"]`)
   }
   if (!chunk) return
   const top = chunk.getBoundingClientRect().top + window.scrollY - readingLineY() + 8
-  window.scrollTo({ top, behavior: 'auto' })
+  window.scrollTo({ top, behavior: 'instant' })
+  anchorTo(chunk)
   setFocus(rt, row)
+  // a scroll clamped at 0 fires no scroll event; let the reader look for stubs to mount anyway
+  window.dispatchEvent(new Event('scroll'))
 }
 
 function bindReader(rt: Runtime): void {
+  // a page built before the frozen head existed gets one now
+  if (!readerHead(rt)) setReaderHead(rt)
   let frame = 0
   const update = () => {
     frame = 0
     const chunk = chunkUnderLine(rt)
     if (!chunk) return
+    if (chunk !== steady.el) anchorTo(chunk)
     const row = Number(chunk.dataset.row)
-    if (row !== rt.focus) setFocus(rt, row)
+    if (row !== rt.focus) {
+      const open = rt.open
+      setFocus(rt, row)
+      // crossing into another document moves the one-stub-either-side window with it; without
+      // this the reader runs out of page above a document mounted from its stub
+      if (rt.open !== open) ensureStubs(rt)
+    }
     const near = (el: HTMLElement) => {
       const rect = el.getBoundingClientRect()
       return rect.top < window.innerHeight * 1.5 && rect.bottom > -window.innerHeight * 0.5
@@ -753,6 +875,16 @@ function bindReader(rt: Runtime): void {
     if (!frame) frame = requestAnimationFrame(update)
   }
   window.addEventListener('scroll', schedule, { passive: true, signal: rt.signal })
+  // at the top of the page a scroll up fires no scroll event, so the stub above the opening
+  // document would never mount; look once on arrival
+  schedule()
+  // every change of the reader's height, whatever made it, is held against the anchor
+  const sizes = new ResizeObserver(() => hold())
+  sizes.observe(rt.reader)
+  rt.signal.addEventListener('abort', () => {
+    sizes.disconnect()
+    anchorTo(null)
+  })
   window.addEventListener('resize', schedule, { passive: true, signal: rt.signal })
   rt.signal.addEventListener('abort', () => cancelAnimationFrame(frame))
 }
@@ -795,10 +927,55 @@ function tokens(text: string): Set<string> {
   return new Set((text.toLowerCase().match(/[a-z0-9]{3,}/g) ?? []).filter(w => w.length > 2))
 }
 
+/**
+ * A note as its page map, drawn like a pdf page's region boxes: one box per chunk in reading
+ * order, its height the chunk's share of the text, the linked chunk marked.
+ */
+async function noteSilhouette(rt: Runtime, item: HTMLElement): Promise<void> {
+  const slot = item.querySelector<HTMLElement>('.lat-silhouette[data-note]')
+  if (!slot) return
+  const d = Number(item.dataset.doc)
+  const row = Number(item.dataset.row)
+  const head = await textOf(rt, d)
+  // a long note's later parts are fetched too, up to a map's worth of text
+  const parts = Math.min(8, Math.ceil(head.total / Math.max(1, head.part || head.total)))
+  const chunks = (
+    await Promise.all(Array.from({ length: parts }, (_, p) => partOf(rt, d, p)))
+  ).flat()
+  if (rt.signal.aborted || chunks.length === 0) return
+  // a line of the card holds about this many characters; a one-line chunk (a heading, a
+  // short paragraph) is drawn as wide as its text
+  const perLine = 60
+  const lines = chunks.map(chunk => Math.max(1, chunk.text.length / perLine))
+  const gap = 24
+  const total = lines.reduce((sum, n) => sum + n, 0)
+  const unit = Math.min(40, (1160 - gap * (chunks.length - 1)) / total)
+  let y = 70
+  let rects = ''
+  chunks.forEach((chunk, i) => {
+    const height = Math.max(4, lines[i] * unit)
+    const raw = chunk.text.length / perLine
+    const width = raw < 1 ? Math.max(0.2, raw) * 840 : 840
+    rects += `<rect x="80" y="${y.toFixed(1)}" width="${width.toFixed(0)}" height="${height.toFixed(1)}"${chunk.r === row ? ' data-hit=""' : ''}/>`
+    y += height + Math.max(6, Math.min(gap, unit))
+  })
+  slot.innerHTML = `<svg viewBox="0 0 1000 1300" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${rects}</svg>`
+  slot.dataset.ready = ''
+}
+
 function bindSilhouettes(rt: Runtime): void {
   rt.links.addEventListener(
     'pointerover',
     event => {
+      const note = (event.target as HTMLElement).closest<HTMLElement>('.lat-link[data-row]')
+      if (
+        note?.querySelector('.lat-silhouette[data-note]') &&
+        note.dataset.silhouetteDone === undefined
+      ) {
+        note.dataset.silhouetteDone = ''
+        void noteSilhouette(rt, note).catch(() => {})
+        return
+      }
       const item = (event.target as HTMLElement).closest<HTMLElement>(
         '.lat-link[data-sha][data-page]',
       )
@@ -1143,9 +1320,28 @@ function hoverBench(rt: Runtime, px: number, py: number): void {
     const status = rt.probe.querySelector<HTMLElement>('.lat-bench-status')
     if (status && best >= 0) {
       const doc = bench.level === 'docs' ? rt.docs[best] : docOfRow(rt, best)
-      status.textContent = `${doc.s} · ${doc.t}`
+      setBenchStatus(status, `${doc.s} · ${doc.t}`)
     }
   }
+}
+
+/**
+ * The hovered point's name on the status line's one line. A name wider than the line scrolls
+ * to its end and back (latent.scss), at a reading pace, so it never wraps or moves the pane.
+ */
+function setBenchStatus(status: HTMLElement, text: string): void {
+  const span = document.createElement('span')
+  span.textContent = text
+  status.replaceChildren(span)
+  delete status.dataset.overflow
+  const style = getComputedStyle(status)
+  const room = status.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight)
+  const shift = span.getBoundingClientRect().width - room
+  if (shift <= 1) return
+  status.style.setProperty('--lat-shift', `${-Math.ceil(shift)}px`)
+  // about 40px a second, plus the holds at either end (a fifth of the cycle each)
+  status.style.setProperty('--lat-marquee', `${(shift / 40 / 0.6).toFixed(2)}s`)
+  status.dataset.overflow = ''
 }
 
 function drawBench(rt: Runtime): void {
@@ -1226,9 +1422,25 @@ function drawBench(rt: Runtime): void {
     const names = bench.axes.map(
       (a, slot) => `${'xyz'[slot]} ${axisBase(bench.meta?.axes[a].name ?? '')}`,
     )
-    const gap = ctx.measureText('   ').width
-    const room = (w - 12 - gap * 2) / 3
-    const fitted = names.map(name => fitText(ctx, name, room))
+    // the names read whole on one line: the type steps down to fit (to 80 %), and only a line
+    // still too long cuts its longest name
+    const room = w - 12
+    const widthAt = (list: string[]) =>
+      list.reduce((sum, name) => sum + ctx.measureText(name).width, 0) +
+      ctx.measureText('  ').width * 2
+    const base = parseFloat(style.fontSize) || 11
+    const size = Math.max(base * 0.8, Math.min(base, (base * room) / widthAt(names)))
+    ctx.font = `${size}px ${style.fontFamily}`
+    const gap = ctx.measureText('  ').width
+    const fitted = [...names]
+    for (let over = widthAt(fitted) - room; over > 0; over = widthAt(fitted) - room) {
+      let longest = 0
+      for (let i = 1; i < 3; i++)
+        if (ctx.measureText(fitted[i]).width > ctx.measureText(fitted[longest]).width) longest = i
+      const next = fitText(ctx, fitted[longest], ctx.measureText(fitted[longest]).width - over)
+      if (next === fitted[longest]) break
+      fitted[longest] = next
+    }
     let x = 6
     for (const text of fitted) {
       ctx.strokeText(text, x, h - 6)
@@ -1408,6 +1620,7 @@ export function mountLatent(root: HTMLElement): void {
     prev: new Map(),
     text: new Map(),
     parts: new Map(),
+    mounting: new Map(),
     regions: new Map(),
     docByRow: [],
     focus: Number(root.dataset.latentFocus),
@@ -1425,6 +1638,7 @@ export function mountLatent(root: HTMLElement): void {
     railLayout: null,
     railHeight: RAIL_HEIGHT,
     railItems: [],
+    toast: null,
   }
   bindSilhouettes(rt)
   watchMath(rt)
