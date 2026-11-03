@@ -19,6 +19,16 @@ export function isStreamRoutePathname(pathname: string): boolean {
   )
 }
 
+export function isAbsoluteStreamDocument(href: string): boolean {
+  try {
+    const url = new URL(href)
+    if (url.hostname !== STREAM_HOSTNAME) return false
+    return url.pathname === '/' || url.pathname === '' || isStreamRoutePathname(url.pathname)
+  } catch {
+    return false
+  }
+}
+
 export function streamHostPathname(pathname: string): string {
   const normalized = leadingSlash(pathname)
   if (normalized === STREAM_PREFIX || normalized === `${STREAM_PREFIX}/`) return '/'

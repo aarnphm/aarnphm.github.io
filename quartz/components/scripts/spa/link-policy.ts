@@ -1,6 +1,7 @@
 import { getFileExtension, sluggify } from '../../../util/path'
 import { NOTES_HOSTNAME, stackedNoteRootSlug, stackedNotesUrl } from '../../../util/stacked-notes'
 import {
+  isAbsoluteStreamDocument,
   isStreamRoutePathname,
   STREAM_HOSTNAME,
   streamHostPathname,
@@ -60,7 +61,7 @@ function normalizeStreamPath(raw: string): { path: string; streamRoute: boolean 
     const parsed = new URL(trimmed, `https://${STREAM_HOSTNAME}`)
     const hash = parsed.hash ?? ''
     const search = parsed.search ?? ''
-    const streamRoute = isStreamRoutePathname(parsed.pathname)
+    const streamRoute = isStreamRoutePathname(parsed.pathname) || isAbsoluteStreamDocument(trimmed)
     const canonicalPathname = streamRoute ? streamHostPathname(parsed.pathname) : parsed.pathname
     let pathname = canonicalPathname.replace(/^\/+/, '')
     if (pathname === '') return { path: `/${search}${hash}`, streamRoute }
@@ -70,6 +71,14 @@ function normalizeStreamPath(raw: string): { path: string; streamRoute: boolean 
   } catch {
     return null
   }
+}
+
+export function resolveStreamInternalHref(raw: string): string | null {
+  const target = normalizeStreamPath(raw)
+  if (!target) return null
+  return target.streamRoute
+    ? streamHostUrl(target.path)
+    : `${APEX_ORIGIN}${target.path.startsWith('/') ? target.path : `/${target.path}`}`
 }
 
 export function transformHostInternalLinks(root: Document | Element) {
@@ -84,9 +93,8 @@ export function transformHostInternalLinks(root: Document | Element) {
       const target = normalizeStreamPath(preferred)
       if (!target) return
 
-      const absoluteHref = target.streamRoute
-        ? streamHostUrl(target.path)
-        : `${APEX_ORIGIN}${target.path.startsWith('/') ? target.path : `/${target.path}`}`
+      const absoluteHref = resolveStreamInternalHref(preferred)
+      if (!absoluteHref) return
       if (anchor.getAttribute('href') !== absoluteHref) {
         anchor.setAttribute('href', absoluteHref)
       }
@@ -111,9 +119,8 @@ export function transformHostInternalLinks(root: Document | Element) {
       const preferred = ref.dataset.slug ?? ref.dataset.href ?? ''
       const target = normalizeStreamPath(preferred)
       if (!target) return
-      const absoluteHref = target.streamRoute
-        ? streamHostUrl(target.path)
-        : `${APEX_ORIGIN}${target.path.startsWith('/') ? target.path : `/${target.path}`}`
+      const absoluteHref = resolveStreamInternalHref(preferred)
+      if (!absoluteHref) return
       ref.dataset.href = absoluteHref
       ref.dataset.routerIgnore = 'true'
     })
