@@ -46,7 +46,12 @@
     display: inline;
   }
 
-  .tri-elev-wrap > .tri-elev-cap:has(> .tri-elev-d):not(:has(> .tri-cycling-power-legend)) {
+  .tri-elev-wrap:not(
+      .tri-power-balance-chart,
+      .tri-torque-effectiveness-chart,
+      .tri-pedal-smoothness-chart
+    )
+    > .tri-elev-cap:has(> .tri-elev-d):not(:has(> .tri-cycling-power-legend)) {
     flex-wrap: nowrap;
     column-gap: 0.45rem;
     min-width: 0;

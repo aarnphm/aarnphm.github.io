@@ -14,8 +14,35 @@
   grid-template-columns: 2.4rem minmax(0, 1fr);
 }
 
-.tri-power-balance-chart > .tri-elev-cap--summary {
+.tri-power-balance-chart > .tri-elev-cap--summary,
+.tri-torque-effectiveness-chart > .tri-elev-cap--summary,
+.tri-pedal-smoothness-chart > .tri-elev-cap--summary {
   flex-wrap: wrap;
+  row-gap: 0.25rem;
+  min-width: 0;
+  white-space: normal;
+
+  > :is(.tri-power-balance-summary, .tri-cycling-dynamics-summary) {
+    min-width: 0;
+  }
+
+  // Keep scrub values in the caption flow so they cannot cover the averages.
+  > :is(.tri-fig-readout, .tri-cycling-watts-readout) {
+    position: static;
+    order: 1;
+    flex-basis: 100%;
+    min-width: 0;
+    min-height: 1lh;
+    height: auto;
+    padding: 0;
+    transform: none;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-align: right;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
 }
 
 .tri-cycling-chart-modes {
