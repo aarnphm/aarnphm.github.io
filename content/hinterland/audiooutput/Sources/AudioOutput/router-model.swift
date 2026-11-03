@@ -15,6 +15,7 @@ struct Assignment: Codable, Identifiable {
 @available(macOS 14.2, *)
 @MainActor
 final class RouterModel: ObservableObject {
+    let master = OutputMaster()
     @Published var siteRules = SiteRouting.load().sites
     @Published var siteStatuses: [String: String] = [:]
     @Published var defaultOutputName = ""
@@ -39,6 +40,7 @@ final class RouterModel: ObservableObject {
             do { assignments = try JSONDecoder().decode([Assignment].self, from: data) }
             catch { issue = "Saved assignments could not be read: \(error.localizedDescription)" }
         }
+        master.onChange = { [weak self] in self?.refresh() }
         refresh()
         timer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { [weak self] _ in
             Task { @MainActor in self?.refresh() }
@@ -60,6 +62,7 @@ final class RouterModel: ObservableObject {
             outputs = try Hardware.outputs()
             let defaultID = try Hardware.scalar(Hardware.system, kAudioHardwarePropertyDefaultOutputDevice, initial: AudioObjectID(0))
             defaultOutputID = defaultID
+            master.configure(device: outputs.first { $0.id == defaultID }, paused: paused)
             defaultOutputName = outputs.first { $0.id == defaultID }?.name ?? "Unavailable"
             for site in SiteRouting.load().sites where !siteRules.contains(where: { $0.id == site.id }) {
                 siteRules.append(site)
@@ -150,8 +153,8 @@ final class RouterModel: ObservableObject {
         reconcile()
     }
 
-    func togglePause() { paused.toggle(); publishSites(); reconcile() }
-    func retry() { failures.removeAll(); issue = nil; refresh() }
+    func togglePause() { paused.toggle(); refresh() }
+    func retry() { failures.removeAll(); master.retry(); issue = nil; refresh() }
 
     func setLogin(_ enabled: Bool) {
         do {
@@ -189,36 +192,43 @@ final class RouterModel: ObservableObject {
                 continue
             }
             let signature = "\(app.processes)-\(device.id)-\(device.sampleRate)"
-            if let route = routes[app.id], route.processes != app.processes || route.device != device {
+            if let route = routes[app.id], route.source != .processes(app.processes) || route.device != device {
                 routes.removeValue(forKey: app.id)?.stop()
                 failures.removeValue(forKey: app.id)
             }
             if routes[app.id] == nil && failures[app.id] != signature {
-                do { routes[app.id] = try AudioRoute(processes: app.processes, device: device, gain: Float(assignment.gain)) }
+                do { routes[app.id] = try AudioRoute(source: .processes(app.processes), device: device, gain: Float(assignment.gain * master.factor(for: device))) }
                 catch {
                     failures[app.id] = signature
                     statuses[app.id] = error.localizedDescription
                 }
             }
             if let route = routes[app.id] {
-                route.setGain(Float(assignment.gain))
+                route.setGain(Float(assignment.gain * master.factor(for: device)))
                 nextStatuses[app.id] = route.nonzeroFrames > 0 ? "Routing to \(device.name)" : "Listening · waiting for audio"
             } else { nextStatuses[app.id] = statuses[app.id] ?? "Route unavailable · retry" }
         }
+        let excluded = routes.values.flatMap { route -> [AudioObjectID] in
+            if case .processes(let processes) = route.source { return processes }
+            return []
+        }
+        master.apply(excluding: excluded)
         statuses = nextStatuses
-        activeCount = routes.count + (paused ? 0 : siteRules.filter { site in
+        activeCount = routes.count + (master.active ? 1 : 0) + (paused ? 0 : siteRules.filter { site in
             guard !site.outputUID.isEmpty || site.gain != 1, let status = SiteRouting.status(site.id) else { return false }
             return status.state == "routing" && status.outputUID == site.outputUID
         }.count)
     }
 
     func stopAll() {
+        master.stopRoute()
         for route in routes.values { route.stop() }
         routes.removeAll()
         activeCount = 0
     }
 
     func shutdown() {
+        master.shutdown()
         timer?.invalidate()
         for observer in observers { NSWorkspace.shared.notificationCenter.removeObserver(observer) }
         observers.removeAll()

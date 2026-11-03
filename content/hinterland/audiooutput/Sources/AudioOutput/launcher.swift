@@ -22,6 +22,16 @@ struct Launcher {
                 }
                 return
             }
+            if arguments.count == 5, arguments[1] == "--probe-device",
+               let gain = Float(arguments[3]), gain.isFinite, gain >= 0, gain <= 1,
+               let seconds = Double(arguments[4]), seconds > 0, seconds <= 60 {
+                guard let output = try Hardware.outputs().first(where: { $0.uid == arguments[2] }) else {
+                    throw AudioFailure(message: "Output UID is not connected.")
+                }
+                let route = try AudioRoute(source: .device(excluding: []), device: output, gain: gain) { fputs("\($0)\n", stderr) }
+                try verifyRoute(route, seconds: seconds)
+                return
+            }
             if arguments.count == 5, arguments[1] == "--probe",
                let pid = pid_t(arguments[2]), let seconds = Double(arguments[4]), seconds > 0, seconds <= 60 {
                 let processes = try Hardware.objects(Hardware.system, kAudioHardwarePropertyProcessObjectList)
@@ -30,25 +40,8 @@ struct Launcher {
                 guard let output = try Hardware.outputs().first(where: { $0.uid == arguments[3] }) else {
                     throw AudioFailure(message: "Output UID is not connected.")
                 }
-                let route = try AudioRoute(processes: processes, device: output) { fputs("\($0)\n", stderr) }
-                RunLoop.current.run(until: Date().addingTimeInterval(seconds))
-                let frames = route.frames
-                let nonzero = route.nonzeroFrames
-                let resources = route.resourceIDs
-                route.stop()
-                print("PROBE\tframes=\(frames)\tnonzero=\(nonzero)\toutput=\(output.name)")
-                RunLoop.current.run(until: Date().addingTimeInterval(0.25))
-                let remaining = try Hardware.objects(Hardware.system, kAudioHardwarePropertyTapList)
-                    + Hardware.objects(Hardware.system, kAudioHardwarePropertyDevices)
-                for resource in resources {
-                    guard !remaining.contains(resource) else {
-                        throw AudioFailure(message: "Route resource \(resource) survived teardown.")
-                    }
-                }
-                print("CLEANUP\tprivate tap and aggregate destroyed")
-                guard frames > 0, nonzero > 0 else {
-                    throw AudioFailure(message: "No nonzero audio reached the renderer. Check capture permission and source playback.")
-                }
+                let route = try AudioRoute(source: .processes(processes), device: output) { fputs("\($0)\n", stderr) }
+                try verifyRoute(route, seconds: seconds)
                 return
             }
             AudioOutputApp.main()
@@ -57,4 +50,26 @@ struct Launcher {
             exit(1)
         }
     }
+    @available(macOS 14.2, *)
+    private static func verifyRoute(_ route: AudioRoute, seconds: Double) throws {
+        RunLoop.current.run(until: Date().addingTimeInterval(seconds))
+        let frames = route.frames
+        let nonzero = route.nonzeroFrames
+        let resources = route.resourceIDs
+        route.stop()
+        print("PROBE\tframes=\(frames)\tnonzero=\(nonzero)\toutput=\(route.device.name)")
+        RunLoop.current.run(until: Date().addingTimeInterval(0.25))
+        let remaining = try Hardware.objects(Hardware.system, kAudioHardwarePropertyTapList)
+            + Hardware.objects(Hardware.system, kAudioHardwarePropertyDevices)
+        for resource in resources {
+            guard !remaining.contains(resource) else {
+                throw AudioFailure(message: "Route resource \(resource) survived teardown.")
+            }
+        }
+        print("CLEANUP\tprivate tap and aggregate destroyed")
+        guard frames > 0, nonzero > 0 else {
+            throw AudioFailure(message: "No nonzero audio reached the renderer. Check capture permission and source playback.")
+        }
+    }
+
 }

@@ -2,9 +2,14 @@ import CoreAudio
 import AudioRender
 import Foundation
 
+enum AudioRouteSource: Equatable {
+    case processes([AudioObjectID])
+    case device(excluding: [AudioObjectID])
+}
+
 @available(macOS 14.2, *)
 final class AudioRoute {
-    let processes: [AudioObjectID]
+    let source: AudioRouteSource
     let device: OutputDevice
     private var tap: AudioObjectID = 0
     private var aggregate: AudioObjectID = 0
@@ -14,15 +19,29 @@ final class AudioRoute {
     var frames: UInt64 { renderState.map(ao_render_frames) ?? 0 }
     var nonzeroFrames: UInt64 { renderState.map(ao_render_nonzero_frames) ?? 0 }
 
-    init(processes: [AudioObjectID], device: OutputDevice, gain: Float = 1, progress: (String) -> Void = { _ in }) throws {
-        self.processes = processes
+    init(source: AudioRouteSource, device: OutputDevice, gain: Float = 1, progress: (String) -> Void = { _ in }) throws {
+        self.source = source
         self.device = device
         do { try start(gain: gain, progress: progress) } catch { stop(); throw error }
     }
 
     private func start(gain: Float, progress: (String) -> Void) throws {
         progress("Creating process tap")
-        let description = CATapDescription(stereoMixdownOfProcesses: processes)
+        let description: CATapDescription
+        switch source {
+        case .processes(let processes):
+            description = CATapDescription(stereoMixdownOfProcesses: processes)
+        case .device(let excluded):
+            let streams = try Hardware.objects(device.id, kAudioDevicePropertyStreams, scope: kAudioDevicePropertyScopeOutput)
+            guard streams.count == 1, let stream = streams.first else {
+                throw AudioFailure(message: "Volume keys require a single stereo output stream.")
+            }
+            let format = try Hardware.scalar(stream, kAudioStreamPropertyVirtualFormat, initial: AudioStreamBasicDescription())
+            guard format.mChannelsPerFrame == 2 else {
+                throw AudioFailure(message: "Volume keys require a stereo output.")
+            }
+            description = CATapDescription(excludingProcesses: excluded, deviceUID: device.uid, stream: 0)
+        }
         description.name = "Audio Output route"
         description.uuid = UUID()
         description.isPrivate = true
@@ -84,6 +103,19 @@ final class AudioRoute {
         try checkAudio(AudioDeviceCreateIOProcID(aggregate, ao_render, UnsafeMutableRawPointer(state), &callback), "Register audio renderer")
         guard let callback else { throw AudioFailure(message: "Audio callback was not created.") }
         try checkAudio(ao_select_tap_input(aggregate, callback, inputOffset), "Disable physical input streams")
+        if case .device(let excluded) = source {
+            let ownProcesses = try Hardware.objects(Hardware.system, kAudioHardwarePropertyProcessObjectList).filter {
+                (try? Hardware.scalar($0, kAudioProcessPropertyPID, initial: pid_t(0))) == ProcessInfo.processInfo.processIdentifier
+            }
+            guard !ownProcesses.isEmpty else {
+                throw AudioFailure(message: "Could not exclude the renderer from the output tap.")
+            }
+            description.processes = Array(Set(excluded + ownProcesses)).sorted()
+            var updated = Unmanaged.passUnretained(description)
+            var property = Hardware.address(kAudioTapPropertyDescription)
+            try checkAudio(AudioObjectSetPropertyData(tap, &property, 0, nil,
+                UInt32(MemoryLayout<Unmanaged<CATapDescription>>.size), &updated), "Exclude master renderer")
+        }
         progress("Starting audio IO")
         try checkAudio(AudioDeviceStart(aggregate, callback), "Start audio routing (check System Audio Recording permission)")
     }

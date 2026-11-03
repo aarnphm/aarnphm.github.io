@@ -20,7 +20,7 @@ struct RouterView: View {
                     model.togglePause()
                 }
             }
-            Text("System output: \(model.defaultOutputName)").font(.callout).foregroundStyle(.secondary)
+            MasterVolumeView(master: model.master, outputName: model.defaultOutputName)
             if let issue = model.issue {
                 Label(issue, systemImage: "exclamationmark.triangle").font(.callout).textSelection(.enabled)
             }
