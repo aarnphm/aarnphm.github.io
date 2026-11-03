@@ -40,10 +40,13 @@ def publish_regions(
       raise ValueError('Invalid PDF page inventory')
     cache = PageCache(cache_root, source, spec)
     pages: dict[str, list[Region]] = {}
+    partial_pages: list[int] = []
     for number in numbers:
       page = cache.read(number)
       if page is None:
         raise ValueError(f'Missing verified OCR page {source}/{number}')
+      if page.status == 'partial':
+        partial_pages.append(number)
       pages[str(number)] = [
         {'text': region.text, 'bbox': region.bbox}
         for region in page.regions
@@ -51,7 +54,12 @@ def publish_regions(
       ]
       count += 1
     target = output / f'{source}.json'
-    payload = canonical({'version': 1, 'sourceSha256': source, 'pages': pages})
+    payload = canonical({
+      'version': 1,
+      'sourceSha256': source,
+      'pages': pages,
+      'partialPages': partial_pages,
+    })
     if target.exists() and target.read_bytes() == payload:
       continue
     temporary = target.with_suffix('.tmp')

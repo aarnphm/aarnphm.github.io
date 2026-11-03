@@ -67,7 +67,10 @@ class CheckedLayout(PPDocLayoutDetector):
         if not isinstance(source, PdfPage):
           continue
         for region in regions:
-          if region.get('label') not in self.label_task_mapping['text']:
+          if (
+            region.get('label') not in self.label_task_mapping['text']
+            and region.get('label') != 'table'
+          ):
             continue
           reviewed = reviewed_region_text(
             source.source, source.number, region['bbox_2d'], None
@@ -122,7 +125,10 @@ class OcrClient:
         number, label = loaded.source.number, loaded.label
         recovered = False
         for region in raw[0]:
-          if region.get('label') in self.layout.label_task_mapping['text']:
+          if (
+            region.get('label') in self.layout.label_task_mapping['text']
+            or region.get('label') == 'table'
+          ):
             reviewed = reviewed_region_text(
               loaded.source.source,
               number,

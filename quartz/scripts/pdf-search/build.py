@@ -58,6 +58,8 @@ class PdfMetadata(TypedDict, total=False):
   acronyms: list[str]
   sourceSha256: str
   pages: list[int]
+  partialPages: list[int]
+  fullyTranscribedPages: list[int]
   totalPages: int
   date: str
   datePrecision: str
@@ -75,6 +77,9 @@ def public_pdfs(index_path: Path, content_root: Path) -> dict[str, PdfSource]:
       index.update(json.loads(target.read_text()))
   else:
     index = manifest
+  from scope import collection_exclusions
+
+  exclusions = collection_exclusions(content_root)
   ignores = quartz_ignore_patterns(Path('quartz.config.ts'))
   eligible = {}
   for slug, entry in index.items():
@@ -90,7 +95,9 @@ def public_pdfs(index_path: Path, content_root: Path) -> dict[str, PdfSource]:
     ):
       continue
     relative = source.relative_to(content_root.resolve()).as_posix()
-    if any(ignore_pattern_matches(relative, pattern) for pattern in ignores):
+    if relative in exclusions or any(
+      ignore_pattern_matches(relative, pattern) for pattern in ignores
+    ):
       continue
     if relative.split('/')[0] in ('hinterland', 'embeddings'):
       continue
@@ -170,6 +177,12 @@ def read_passages(
       'acronyms': acronyms,
       'sourceSha256': source_sha,
       'pages': document['pages'],
+      'partialPages': [
+        p.page_number for p in pages if p and p.status == 'partial'
+      ],
+      'fullyTranscribedPages': [
+        p.page_number for p in pages if p and p.status != 'partial'
+      ],
       'totalPages': document['totalPages'],
     }
     dated = resolve(slug, source, notes or {})
@@ -325,6 +338,10 @@ def build(args: argparse.Namespace) -> None:
       'eligibleDocuments': len(inventory),
       'indexedDocuments': len(documents),
       'indexedPages': sum(len(d['pages']) for d in documents.values()),
+      'partialPages': sum(len(d['partialPages']) for d in documents.values()),
+      'fullyTranscribedPages': sum(
+        len(d['fullyTranscribedPages']) for d in documents.values()
+      ),
     },
   }
   payload = canonical(manifest)

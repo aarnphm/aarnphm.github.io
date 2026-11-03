@@ -1,0 +1,18 @@
+{
+  "source_sha256": "728e6d0ca3809d504f12f3302ef5303238a7324cf2824b303d64781d597dba7d",
+  "page": 97,
+  "region": 8,
+  "bounds": [
+    347.0,
+    432.0,
+    391.0,
+    453.0
+  ],
+  "original_text_sha256": "20e4e5a2b6faae49388c6712290143afeb531d6c68317a749b59ff5a79dfca9b",
+  "status": "reviewed-partial",
+  "model": "gemini-4-argon-high",
+  "reviewer": "Codex image review authorized by aarnphm",
+  "review_date": "2026-11-03",
+  "reference": "docs/verification/ocr-aside-recovery/source-review.md#thinking-with-type-page-97-authorized-partial-ocr",
+  "text": "[unreadable: complete transcription of this photographed German specimen remains unresolved; original OCR retained in cache]"
+}

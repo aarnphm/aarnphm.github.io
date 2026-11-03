@@ -195,7 +195,7 @@ class Runner:
         )
       total += count
       indexed += available
-      complete += available == count
+      complete += available == count and not document.get('partialPages')
     return {
       'documents': len(sources),
       'totalPages': total,
