@@ -28,10 +28,18 @@
   }
 }
 
-.base-map-canvas {
+// The canvas overhangs the stage by the strip the Mapbox wordmark lives in;
+// the stage clips it (see HIDDEN_STRIP in base-map.inline.ts).
+.base-map-stage {
+  position: relative;
   min-width: 0;
   min-height: 0;
-  height: 100%;
+  overflow: hidden;
+}
+
+.base-map .base-map-canvas {
+  position: absolute;
+  inset: 0 0 -44px;
 }
 
 .base-map-tools {

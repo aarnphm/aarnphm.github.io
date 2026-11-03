@@ -44,7 +44,7 @@ export function mountBaseMapView(
   actions: MapViewActions,
   signal: AbortSignal,
 ) {
-  container.innerHTML = `<div class="base-map-canvas"></div>
+  container.innerHTML = `<div class="base-map-stage"><div class="base-map-canvas"></div></div>
     <div class="base-map-tools" role="group" aria-label="Map controls">
       <button type="button" data-map-control="list" aria-label="Show saved spots" title="Show saved spots" aria-expanded="true">${icon(icons.list)}</button>
       <button type="button" data-map-control="fit" aria-label="Fit matching spots" title="Fit matching spots" disabled>${icon(icons.fit)}</button>
@@ -113,7 +113,7 @@ export function mountBaseMapView(
       container.querySelector('[data-map-control="list"]')?.setAttribute('aria-expanded', 'true')
       browser.scrollTo({
         top:
-          canvas && browser.offsetTop >= canvas.offsetHeight
+          browser.offsetTop > 0
             ? selection.offsetTop - browser.offsetTop
             : 0,
       })

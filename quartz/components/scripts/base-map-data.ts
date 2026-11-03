@@ -329,7 +329,7 @@ export function createPopupContent(
   const actions = url
     ? `<div class="base-map-popup-actions"><a href="${escapeHTML(url)}" target="_blank" rel="noopener noreferrer">open in maps ↗</a></div>`
     : ''
-  return `<div class="base-map-popup"><div class="base-map-popup-eyebrow">${categories}${rating}</div><a href="${escapeHTML(href)}" class="base-map-popup-title internal" data-slug="${escapeHTML(marker.slug)}">${escapeHTML(marker.title)}</a>${description}${address}${metadata}${actions}</div>`
+  return `<div class="base-map-popup"><div class="base-map-popup-eyebrow">${categories}${rating}</div><a href="${escapeHTML(href)}" class="base-map-popup-title internal" data-no-popover data-slug="${escapeHTML(marker.slug)}">${escapeHTML(marker.title)}</a>${description}${address}${metadata}${actions}</div>`
 }
 
 function safeMapUrl(value: string | undefined): string | undefined {
