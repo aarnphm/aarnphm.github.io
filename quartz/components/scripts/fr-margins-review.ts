@@ -36,9 +36,15 @@ const button = (label: string, className = 'fr-btn') => {
   return node
 }
 
-// Margins change height when a card flips or a note is added; the stack below follows
-// (fr-margins.inline.ts sets the hook while its layout is mounted).
-export const layout = { relayout: () => {} }
+// Margins change height when a card flips or a note is added; every mounted article follows.
+const relayouts = new Set<() => void>()
+export const layout = {
+  relayout: () => relayouts.forEach(relayout => relayout()),
+  register: (relayout: () => void, signal: AbortSignal) => {
+    relayouts.add(relayout)
+    signal.addEventListener('abort', () => relayouts.delete(relayout), { once: true })
+  },
+}
 
 const decks = new Map<string, Promise<Map<string, Face>>>()
 

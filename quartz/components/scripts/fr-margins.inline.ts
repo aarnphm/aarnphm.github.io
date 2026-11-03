@@ -5,6 +5,7 @@
 
 import { mountClamps, type ClampFit } from './fr-margins-clamp'
 import { layout, mountNotes, mountReview } from './fr-margins-review'
+import { rootNavSignal } from './root-lifecycle'
 
 // Room for a 15.5rem column and its narrowest 3rem gutter left of the text (fr-margins.scss).
 const MARGIN_COLUMN = 248 + 48 + 16
@@ -202,7 +203,9 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
   const paint = () => {
     const box = measureBox(article)
     const mode =
-      article.closest('.preview-container') || box.left < MARGIN_COLUMN ? 'inline' : 'margin'
+      article.closest('.preview-container, .stacked-note') || box.left < MARGIN_COLUMN
+        ? 'inline'
+        : 'margin'
     article.dataset.frMode = mode
     for (const label of article.querySelectorAll<HTMLButtonElement>('.fr-entry-label')) {
       if (mode === 'margin') {
@@ -474,7 +477,7 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
     cancelAnimationFrame(frame)
     frame = requestAnimationFrame(paint)
   }
-  layout.relayout = queue
+  layout.register(queue, signal)
   // a block's height when the observer last saw it; its first notice only sets the baseline, since
   // the first paint is already queued
   const heights = new Map<Element, number>()
@@ -525,7 +528,6 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
       observer.disconnect()
       hung.disconnect()
       leaders.remove()
-      layout.relayout = () => {}
     },
     { once: true },
   )
@@ -533,18 +535,27 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
   queue()
 }
 
+const mounted = new WeakMap<HTMLElement, AbortSignal>()
+
 function mountRoot(root: HTMLElement, signal: AbortSignal) {
+  if (mounted.get(root) === signal || signal.aborted) return
   if (!root.querySelector('.fr-group')) return
+  mounted.set(root, signal)
   mountLayout(root, signal)
   root.querySelectorAll<HTMLElement>('[data-fr-notes]').forEach(el => mountNotes(el, signal))
   root.querySelectorAll<HTMLElement>('[data-fr-rev]').forEach(el => void mountReview(el, signal))
 }
 
 document.addEventListener('nav', () => {
-  const controller = new AbortController()
-  window.addCleanup(() => controller.abort())
-  const article = document.querySelector<HTMLElement>('article')
-  if (article) mountRoot(article, controller.signal)
+  const navController = new AbortController()
+  window.addCleanup(() => navController.abort())
+  const hydrateArticles = (scope: ParentNode = document) => {
+    for (const article of scope.querySelectorAll<HTMLElement>('article'))
+      if (!article.closest('.preview-container')) mountRoot(article, rootNavSignal(article))
+  }
+  hydrateArticles()
+  const onContentDecrypted = () => hydrateArticles()
+  document.addEventListener('contentdecrypted', onContentDecrypted, { signal: navController.signal })
 
   for (const preview of document.querySelectorAll<HTMLElement>('.preview-container')) {
     let previewController: AbortController | null = null
@@ -557,8 +568,8 @@ document.addEventListener('nav', () => {
       mountRoot(inner, previewController.signal)
     }
     const observer = new MutationObserver(syncPreview)
-    observer.observe(preview, { childList: true })
-    controller.signal.addEventListener(
+    observer.observe(preview, { childList: true, subtree: true })
+    navController.signal.addEventListener(
       'abort',
       () => {
         observer.disconnect()
