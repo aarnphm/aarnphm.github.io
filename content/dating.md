@@ -162,7 +162,7 @@ I have the attention-span of a three-year-old, but an old soul (some said). So I
 - I'm training for IRONMAN Lanzarote 2027. Feel free to check out progress in [daily stream](https://stream.aarnphm.xyz) or the [feed](https://t.aarnphm.xyz/feed)/[calendar](https://t.aarnphm.xyz/calendar)
 - More/less an excuse for me to travel. Here is a random picture of me on a backpacking trip with my colleague at Yosemite Fall
 
-  ![[thoughts/images/me-in-yosemite.webp|3840x2160]]
+  ![[thoughts/images/me-in-yosemite.webp#{width:100%; height:auto; margin:0}]]
 
 ### bouldering
 
