@@ -1,0 +1,18 @@
+{
+  "source_sha256": "67199d19ca1eed2eb62255e82711568cf5e55f57ce4f71d22453e6f11a9089c9",
+  "page": 277,
+  "region": 8,
+  "bounds": [
+    763.0,
+    358.0,
+    982.0,
+    947.0
+  ],
+  "original_text_sha256": "d167b650c22648f9c0331552d61292c567a35cfb75a197e2915a8d2309c0dfd2",
+  "status": "reviewed-partial",
+  "model": "gemini-4-argon-high",
+  "reviewer": "Codex image review authorized by aarnphm",
+  "review_date": "2026-11-02",
+  "reference": "docs/verification/ocr-aside-recovery/source-review.md",
+  "text": "[Reviewed partial transcription. Large category labels and the footer are transcribed below.]\n[unreadable: photographically reduced commune records and their row identifiers in the plotted matrix]\nA: 1, 2, 3\nB: 1, 2, 3\nC: 1, 2, 3\nD: 1, 2, 3\nE: 1, 2, 3\nF: 1, 2\nG: 1, 2, 3\na\nc\ne\ng\nh\nDEPARTEMENT\nREGION AGRIC.\nCOMMUNE\n0,5  1  5  10  20  50  100\nClasses d'exploitations (ha)\nS.A.U. PAR CLASSE\npour 100 S.A.U. communale\nEchelle propre à chaque classe\n-10 -75 -45 -60 -60 -60 -100(%)\nSURFACE AGRIC. UTILE\nEXPLOITATIONS (nombre)"
+}
