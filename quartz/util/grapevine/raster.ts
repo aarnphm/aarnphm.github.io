@@ -53,12 +53,24 @@ export function blockedMask(
   inset: number,
   letter: Pt[][],
   gap: number,
+  region: { halo?: number; embolden?: number } = {},
 ): Uint8Array {
   const { nx, ny, cell } = grid
   const mask = new Uint8Array(nx * ny)
   if (letter.length) {
-    rings(mask, letter, grid)
+    const ink = new Uint8Array(nx * ny)
+    rings(ink, letter, grid)
+    const { halo = 0, embolden = 0 } = region
+    if (embolden > 0) dilate(ink, embolden, grid)
+    mask.set(ink)
     if (gap > 0) dilate(mask, gap, grid)
+    if (halo > 0) {
+      const f = new Float64Array(nx * ny)
+      for (let k = 0; k < f.length; k++) f[k] = ink[k] ? 0 : 1e20
+      edt(f, nx, ny)
+      const limit = (halo / cell) ** 2
+      for (let k = 0; k < f.length; k++) if (f[k] > limit) mask[k] = 1
+    }
   }
   for (let j = 0; j < ny; j++)
     for (let i = 0; i < nx; i++) {

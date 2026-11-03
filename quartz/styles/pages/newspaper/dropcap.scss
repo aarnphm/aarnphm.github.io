@@ -2,50 +2,208 @@
 @use 'sass:map';
 @use '../../fonts.initials';
 
-// Drop-cap faces a newspaper page can pick in its frontmatter (`dropcap: goudy`), after
-// gwern.net's dropcaps (https://gwern.net/dropcap): the default is the two-layer EB Garamond
-// Initials set in column.scss; the rest are monochrome faces served one letter per file from
-// /fonts/ (harness/fonts/subset/initials.py). Each letter has its own family so the line strut
-// uses its metrics without a unicode-range fallback. The Profile transformer stamps the face on
-// each span.mag-initial as data-face, so nothing here needs the page root.
+// Drop-cap faces a page can pick in its frontmatter (`dropcap: goudy`), after gwern.net's
+// dropcaps (https://gwern.net/dropcap). Newspaper pages get one by default. Any other layout
+// gets one only when `dropcap` is set. The default face is the two-layer EB Garamond Initials;
+// the rest are monochrome faces served one letter per file from /fonts/
+// (harness/fonts/subset/initials.py). Each letter has its own family so the line strut uses its
+// metrics without a unicode-range fallback. Profile stamps the face on each span.mag-initial
+// as data-face.
 //
-// Sizing is column.scss's: the letter's ink, not its em, spans (n - 1) lines plus a cap height
-// from the first line's cap top to the last line's baseline. Each letter's ink top and bottom
-// (em above the baseline; tails below it are negative and fit inside the block) are measured
-// with fontTools by initials.py and emitted as fonts.$initials-ink, which the build can rely on
-// because it also normalises every face's vertical metrics so a `line-height: 1` box ends at the
-// baseline. That holds only for the /fonts/ files: the originals in harness/fonts/initials keep
-// their own ascent/descent (Goudy's is 800/0, which drops the box 0.1em below the baseline), so
-// never test the sizing against them. The Garamond default is tabled per letter in column.scss.
-$faces: (
-  // EB Garamond Initials in one layer (Duffner and Greinert, OFL; renamed in the files): the
-  // default's letter and ornament merged into a single ink-coloured square, ink 0 to 1em.
-  ebgaramond: (
-      family: 'Garden Initials Mono',
-      gap: 0.07em,
-    ),
-  // Goudy Initialen: a floriated tile exactly 0.8em square, flush left, nothing below the line.
-  goudy: (
-      family: 'Goudy Initialen',
-      gap: 0.07em,
-    ),
-  // Yinit: Lombardic capitals on a hatched ground, near a full em and heavy, so one line less.
-  yinit: (
-      family: 'Yinit',
-      gap: 0.08em,
-      lede: 4,
-    ),
-  // Deutsche Zierschrift: Koch's hatched caps; F H J P Q Y Z carry tails about 0.15em deep.
-  dezs: (
-      family: 'Deutsche Zierschrift',
-      gap: 0.09em,
-    )
+// The letter's ink, not its em, spans (n - 1) lines plus a cap height, from the first line's
+// cap top to the last line's baseline. Lengths are rem and px, not em or lh: those resolve
+// against the initial's own size. Newspaper pages override the three line metrics in
+// column.scss (Source Serif 4 at 20px on a 30px line). Here they match the reading face,
+// PP Neue Montreal at 1rem on a 1.6 line: hhea 958/-242, cap 715, UPM 1000, so the cap is
+// 0.715rem and sits 0.443rem below the line top. Other faces override ink in the table below.
+// Ink tops and bottoms (em above the baseline; tails below it are negative) come from
+// fonts.$initials-ink. The build can rely on them because initials.py also normalises every
+// face's vertical metrics so a `line-height: 1` box ends at the baseline. That holds only for
+// the /fonts/ files.
+$garamond-ink: (
+  A: (
+    0.927,
+    0.095,
+  ),
+  B: (
+    0.93,
+    0.072,
+  ),
+  C: (
+    0.916,
+    0.076,
+  ),
+  D: (
+    0.867,
+    0.134,
+  ),
+  E: (
+    0.916,
+    0.097,
+  ),
+  F: (
+    0.91,
+    0.109,
+  ),
+  G: (
+    0.903,
+    0.091,
+  ),
+  H: (
+    0.911,
+    0.099,
+  ),
+  I: (
+    0.912,
+    0.098,
+  ),
+  J: (
+    0.899,
+    0.076,
+  ),
+  K: (
+    0.893,
+    0.096,
+  ),
+  L: (
+    0.893,
+    0.087,
+  ),
+  M: (
+    0.904,
+    0.099,
+  ),
+  N: (
+    0.897,
+    0.087,
+  ),
+  O: (
+    0.9,
+    0.086,
+  ),
+  P: (
+    0.917,
+    0.095,
+  ),
+  Q: (
+    0.937,
+    0.035,
+  ),
+  R: (
+    0.891,
+    0.095,
+  ),
+  S: (
+    0.924,
+    0.061,
+  ),
+  T: (
+    0.895,
+    0.08,
+  ),
+  U: (
+    0.896,
+    0.078,
+  ),
+  V: (
+    0.868,
+    0.133,
+  ),
+  W: (
+    0.866,
+    0.061,
+  ),
+  X: (
+    0.89,
+    0.102,
+  ),
+  Y: (
+    0.887,
+    0.099,
+  ),
+  Z: (
+    0.91,
+    0.095,
+  ),
 );
 
-[data-layout='newspaper'] :where(#quartz-root) article {
+$faces: (
+  ebgaramond: (
+    family: 'Garden Initials Mono',
+    gap: 0.07em,
+  ),
+  goudy: (
+    family: 'Goudy Initialen',
+    gap: 0.07em,
+  ),
+  yinit: (
+    family: 'Yinit',
+    gap: 0.08em,
+    lede: 4,
+  ),
+  dezs: (
+    family: 'Deutsche Zierschrift',
+    gap: 0.09em,
+  ),
+);
+
+:where(#quartz-root) article {
+  --mag-display: 'EB Garamond', Garamond, 'Times New Roman', serif;
+  --mag-initial-letter: 'Garden Initials Letter', var(--mag-display);
+  --mag-initial-ornament: 'Garden Initials Ornament', var(--mag-display);
+  --mag-ornament: color-mix(in srgb, var(--tertiary) 70%, var(--light));
+  --mag-line: 1.6rem;
+  --mag-cap: 0.715rem;
+  --mag-cap-top: 0.443rem;
+
+  .mag-initial {
+    --mag-initial-lines: 3;
+    --dc-top: 0.9;
+    --dc-bottom: 0.09;
+    --dc-gap: 0.14em;
+    --dc-block: calc((var(--mag-initial-lines) - 1) * var(--mag-line) + var(--mag-cap));
+    --dc-size: calc(var(--dc-block) / (var(--dc-top) - var(--dc-bottom)));
+    --dc-lift: calc(var(--mag-cap-top) - (1 - var(--dc-top)) * var(--dc-size));
+    position: relative;
+    float: left;
+    margin: var(--dc-lift) var(--dc-gap)
+      calc(var(--mag-initial-lines) * var(--mag-line) - var(--dc-size) - var(--dc-lift)) 0;
+    font-family: var(--mag-initial-letter);
+    font-style: normal;
+    font-weight: 400;
+    font-size: var(--dc-size);
+    line-height: 1;
+    color: var(--dark);
+    text-transform: uppercase;
+    hyphens: manual;
+
+    &::before {
+      content: attr(data-letter);
+      position: absolute;
+      inset: 0;
+      font-family: var(--mag-initial-ornament);
+      color: var(--mag-ornament);
+      pointer-events: none;
+    }
+
+    &[data-kind='lede'] {
+      --mag-initial-lines: 5;
+    }
+
+    @each $letter, $ink in $garamond-ink {
+      &[data-letter='#{$letter}']:not([data-face]) {
+        --dc-top: #{list.nth($ink, 1)};
+        --dc-bottom: #{list.nth($ink, 2)};
+      }
+    }
+  }
+
+  // The lede's ornament rises above its paragraph by up to a rem.
+  p:has(> .mag-initial[data-kind='lede']) {
+    padding-top: 1rem;
+  }
+
   .mag-initial[data-face] {
-    // column.scss does the sizing from --dc-top/--dc-bottom/--dc-gap; a face only sets those.
-    // One layer: the ornament ::before is the Garamond set's and would print the same letter.
     &::before {
       content: none;
     }
@@ -72,16 +230,13 @@ $faces: (
     }
   }
 
-  // The words after the initial run in small capitals, as the first line of a chapter is set
-  // in print; the transformer wraps them so the run ends on a word. Source Serif 4 cuts true
-  // small caps (smcp/c2sc kept in the subset) and the browser fakes them until those land.
   .mag-leadin {
     font-variant-caps: small-caps;
     letter-spacing: 0.04em;
   }
 
-  // A paragraph that opens on a quotation mark hangs it in the margin, so the initial itself
-  // sits flush with the column (gwern.net's .initial-preceding-punctuation).
+  // A paragraph that opens on a quotation mark hangs it in the margin, so the initial sits
+  // flush with the text.
   .mag-initial-punct {
     float: left;
     margin-left: -0.55em;
@@ -91,12 +246,19 @@ $faces: (
   }
 }
 
-// `procedural`: a grapevine grown around the capital at build time (quartz/util/grapevine, the
-// initialis engine). Chapter vines are styled independently in column.scss. The tile is a 1em square the SVG
-// draws whole: the span's own letter stays in the flow for selection and readers but prints
-// transparent, and the SVG's letter is the default face's EB Garamond capital as a path, so no
-// font has to arrive before the page is final.
-[data-layout='newspaper'] :where(#quartz-root) {
+// Reading pages keep paragraphs apart, so a short opener has to grow around its initial.
+// Newspaper paragraphs share one grid and let the float run into the next line.
+body:not([data-layout='newspaper']) :where(#quartz-root) article :is(p, li):has(.mag-initial) {
+  display: flow-root;
+  line-height: var(--mag-line);
+}
+
+// `procedural`: an initialis halo grown around the capital at build time (quartz/util/grapevine).
+// The tile is a 1em square the SVG draws whole: the span's own letter stays in the flow for
+// selection and readers but prints transparent, and the SVG's letter is the default face's
+// EB Garamond capital as a path. Ink A is the letter, B the wreath, C the cells, from one
+// initialis share; dark theme lifts the same hues so the letter stays readable on --light.
+:where(#quartz-root) {
   --mag-vine: color-mix(in srgb, var(--dark) 60%, var(--secondary));
   --mag-leaf: color-mix(in srgb, var(--secondary) 72%, var(--light));
   --mag-grape: color-mix(in srgb, var(--tertiary) 78%, var(--dark));
@@ -104,7 +266,10 @@ $faces: (
   article .mag-initial[data-face='procedural'] {
     --dc-top: 1;
     --dc-bottom: 0;
-    --dc-gap: 0.1em;
+    --dc-gap: 0.12em;
+    --mag-ink-a: #592c63;
+    --mag-ink-b: #8b81c3;
+    --mag-ink-c: #838a2d;
     width: 1em;
     color: transparent;
 
@@ -116,9 +281,15 @@ $faces: (
       overflow: visible;
     }
   }
+}
 
-  // Groups from quartz/util/grapevine/svg.ts: stems and buds, leaf blades with their veins,
-  // bunches of grapes edged in paper so the berries stay apart.
+:root[saved-theme='dark'] :where(#quartz-root) article .mag-initial[data-face='procedural'] {
+  --mag-ink-a: #f0e4f6;
+  --mag-ink-b: #c9c1e6;
+  --mag-ink-c: #d5d98a;
+}
+
+:where(#quartz-root) {
   .gv-frame {
     fill: none;
     stroke: var(--mag-vine);
@@ -153,5 +324,34 @@ $faces: (
     stroke-width: 26;
     stroke-linejoin: round;
     paint-order: stroke;
+  }
+
+  .gv-initial {
+    .gv-cells {
+      fill: var(--mag-ink-c);
+    }
+
+    .gv-stem path,
+    .gv-stem circle {
+      fill: var(--mag-ink-b);
+      stroke: var(--mag-ink-b);
+      stroke-width: 0.7px;
+      stroke-linejoin: round;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .gv-leaf path,
+    .gv-grapes path {
+      fill: var(--mag-ink-b);
+      stroke: none;
+    }
+
+    .gv-letter {
+      fill: var(--light);
+      stroke: var(--mag-ink-a);
+      stroke-width: 2.2px;
+      vector-effect: non-scaling-stroke;
+      paint-order: stroke fill;
+    }
   }
 }
