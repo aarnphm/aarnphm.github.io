@@ -2,12 +2,7 @@
   "source_sha256": "728e6d0ca3809d504f12f3302ef5303238a7324cf2824b303d64781d597dba7d",
   "page": 97,
   "region": 3,
-  "bounds": [
-    0.0,
-    501.0,
-    190.0,
-    615.0
-  ],
+  "bounds": [0.0, 501.0, 190.0, 615.0],
   "original_text_sha256": "72c32ec84bdd22e0f2f299fc42aca42dc7a6d33d61315fe782bdd45d3746731a",
   "status": "reviewed-partial",
   "model": "gemini-4-argon-high",

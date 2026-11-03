@@ -29,15 +29,27 @@ def collection_exclusions(content: Path) -> frozenset[str]:
   if not (content / 'embeddings/index.md').exists():
     return frozenset()
   entries = collection_metadata(content).get('pdfExclude', [])
-  if not isinstance(entries, list) or not all(
-    isinstance(entry, str)
-    and entry.endswith('.pdf')
-    and not entry.startswith('/')
-    and all(part not in ('', '.', '..') for part in entry.split('/'))
-    for entry in entries
-  ):
-    raise ValueError('pdfExclude must contain content-relative PDF paths')
-  return frozenset(entries)
+  if not isinstance(entries, list):
+    raise ValueError('pdfExclude must be a list of PDF paths or wikilinks')
+  targets = []
+  for entry in entries:
+    link = (
+      re.fullmatch(r'\[\[([^|#\[\]]+)(?:\|[^\[\]]*)?\]\]', entry)
+      if isinstance(entry, str)
+      else None
+    )
+    target = link[1].strip() if link else entry
+    if (
+      not isinstance(target, str)
+      or not target.endswith('.pdf')
+      or target.startswith('/')
+      or any(character in target for character in ('\\', '[', ']', '#', '|'))
+      or any(part in ('', '.', '..') for part in target.split('/'))
+      or not (content / target).resolve().is_relative_to(content.resolve())
+    ):
+      raise ValueError(f'Invalid content-relative PDF exclusion: {entry!r}')
+    targets.append(target)
+  return frozenset(targets)
 
 
 def collection_prefixes(content: Path) -> tuple[str, ...]:
