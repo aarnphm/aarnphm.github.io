@@ -20,6 +20,7 @@ export function installGraph(s: CanvasScene) {
     // Whole-pixel fonts keep Canvas measurement and SVG text aligned across browsers.
     const quantized = Math.round(2 ** (Math.round(4 * Math.log2(size)) / 4))
     if (quantized === s.groupLabelSize) return
+    if (!s.container.checkVisibility()) return
     s.groupLabelSize = quantized
     for (const label of s.groupLabels) {
       label.element.setAttribute('font-size', `${quantized}px`)

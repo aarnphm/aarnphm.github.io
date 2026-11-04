@@ -30,10 +30,10 @@ export function installCamera(s: CanvasScene) {
           s.container.classList.toggle('canvas-skeleton-view', skeleton)
           s.measureEdgeLabels()
         }
-        if (skeleton) s.fitCenterTitles()
-        s.measureGroupLabels()
         s.renderedTransform = transform
       }
+      s.measureGroupLabels()
+      if (s.container.classList.contains('canvas-skeleton-view')) s.fitCenterTitles()
       s.updatePreviewVisibility()
     })
   }
@@ -133,7 +133,8 @@ export function mountCamera(s: CanvasScene) {
   addCanvasCleanup(s.lifecycle, () => {
     cancelAnimationFrame(s.renderFrame)
     window.clearTimeout(s.previewTimer)
-    window.cancelIdleCallback(s.previewIdle)
+    if (window.cancelIdleCallback) window.cancelIdleCallback(s.previewIdle)
+    else window.clearTimeout(s.previewIdle)
     for (const job of s.previewJobs.splice(0)) job.run(false)
     s.helpModal?.close()
     if (s.mousePanning || s.nodeDragging) {

@@ -12,7 +12,7 @@ export function installPreviews(s: CanvasScene) {
     s.previewTimer = window.setTimeout(
       () => {
         s.previewTimer = 0
-        s.previewIdle = window.requestIdleCallback(() => {
+        const run = () => {
           s.previewIdle = 0
           if (s.mousePanning || s.nodeDragging || performance.now() - s.lastCameraInput < 120) {
             s.schedulePreviewWork()
@@ -25,7 +25,10 @@ export function installPreviews(s: CanvasScene) {
           }
           job?.run(true)
           s.schedulePreviewWork()
-        })
+        }
+        s.previewIdle = window.requestIdleCallback
+          ? window.requestIdleCallback(run)
+          : window.setTimeout(run, 0)
       },
       Math.max(0, 120 - (performance.now() - s.lastCameraInput)),
     )

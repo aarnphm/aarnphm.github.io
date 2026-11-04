@@ -8,6 +8,8 @@ export function installCards(s: CanvasScene) {
   s.fitCenterTitles = function fitCenterTitles() {
     const size = 16 * 2 ** Math.max(0, Math.ceil(4 * Math.log2(0.75 / s.currentScale)) / 4)
     if (size === s.centerTitleSize) return
+    // Hidden embeds have no SVG glyph geometry. Leave the size uncached until reveal.
+    if (!s.container.checkVisibility()) return
     s.centerTitleSize = size
     s.node.select<SVGTextElement>('.node-title-center').each(function (d) {
       const text = cardName(d)

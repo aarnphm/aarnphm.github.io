@@ -162,31 +162,45 @@ export function bindDrag(s: CanvasScene) {
 
   if (s.bounds) s.applyBoundsTransform(s.bounds, false)
 
+  let resizeFrame = 0
   s.resizeObserver = new ResizeObserver(() => {
-    const nextWidth = s.container.clientWidth
-    const nextHeight = s.container.clientHeight
-    if (!nextWidth || !nextHeight || (nextWidth === s.width && nextHeight === s.height)) return
-    const previousWidth = s.width
-    const previousHeight = s.height
-    s.width = nextWidth
-    s.height = nextHeight
-    s.svg.attr('width', s.width).attr('height', s.height).attr('viewBox', [0, 0, s.width, s.height])
-    s.svg.interrupt()
-    if (s.isFitted && s.bounds) s.applyBoundsTransform(s.bounds, false)
-    else if (s.zoomBehavior) {
-      s.svg.call(
-        s.zoomBehavior.transform,
-        zoomIdentity
-          .translate(
-            s.currentTransform.x + (s.width - previousWidth) / 2,
-            s.currentTransform.y + (s.height - previousHeight) / 2,
-          )
-          .scale(s.currentScale),
-      )
-    } else s.queueRender()
+    if (resizeFrame) return
+    resizeFrame = requestAnimationFrame(() => {
+      resizeFrame = 0
+      if (!isCanvasActive(s.container, s.lifecycle)) return
+      const nextWidth = s.container.clientWidth
+      const nextHeight = s.container.clientHeight
+      if (!nextWidth || !nextHeight) return
+      s.queueRender()
+      if (nextWidth === s.width && nextHeight === s.height) return
+      const previousWidth = s.width
+      const previousHeight = s.height
+      s.width = nextWidth
+      s.height = nextHeight
+      s.svg
+        .attr('width', s.width)
+        .attr('height', s.height)
+        .attr('viewBox', [0, 0, s.width, s.height])
+      s.svg.interrupt()
+      if (s.isFitted && s.bounds) s.applyBoundsTransform(s.bounds, false)
+      else if (s.zoomBehavior) {
+        s.svg.call(
+          s.zoomBehavior.transform,
+          zoomIdentity
+            .translate(
+              s.currentTransform.x + (s.width - previousWidth) / 2,
+              s.currentTransform.y + (s.height - previousHeight) / 2,
+            )
+            .scale(s.currentScale),
+        )
+      }
+    })
   })
 
   s.resizeObserver.observe(s.container)
 
-  addCanvasCleanup(s.lifecycle, () => s.resizeObserver.disconnect())
+  addCanvasCleanup(s.lifecycle, () => {
+    s.resizeObserver.disconnect()
+    cancelAnimationFrame(resizeFrame)
+  })
 }
