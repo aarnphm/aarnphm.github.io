@@ -1,0 +1,115 @@
+@use '../variables.scss' as *;
+
+// `layout: latent`: a pdf passage's page (quartz/util/latent/pdf.ts, latent-client/folio.ts).
+// The gutter glyph is the page drawn small with the passage's box filled; the folio under the
+// passage is the site's pdf embed (transcludes.scss) fitted to the column, its box marked the way
+// the reader marks focus: a dark rule at the left, over a wash of the pdf colour.
+
+[data-layout='latent'] :where(#quartz-root) {
+  .lat-reader .lat-locus .lat-folio-toggle {
+    display: block;
+    width: 0.8rem;
+    height: 1.04rem;
+    margin: 0.4rem 0 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--gray);
+    cursor: pointer;
+
+    svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .lat-folio-sheet {
+      fill: var(--light);
+      stroke: currentColor;
+      stroke-width: 1px;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .lat-folio-band {
+      fill: var(--lat-pdf);
+    }
+
+    &:hover,
+    &:focus-visible {
+      color: var(--dark);
+    }
+
+    &:focus-visible {
+      outline: 1px solid var(--dark);
+      outline-offset: 2px;
+    }
+
+    &[aria-expanded='true'] {
+      color: var(--dark);
+
+      .lat-folio-sheet {
+        fill: color-mix(in srgb, var(--lat-pdf) 22%, var(--light));
+      }
+    }
+  }
+
+  .lat-reader .lat-chunk > .lat-folio {
+    margin-top: 0.9rem;
+
+    .pdf-embed {
+      margin: 0;
+      border-color: var(--ledger-line, var(--lightgray));
+
+      &:focus,
+      &:focus-within,
+      &[data-pdf-selected='true'] {
+        border-color: var(--darkgray);
+      }
+    }
+  }
+
+  .lat-folio-mark {
+    position: absolute;
+    z-index: 1;
+    background: color-mix(in srgb, var(--lat-pdf) 34%, transparent);
+    mix-blend-mode: multiply;
+    pointer-events: none;
+    animation: lat-folio-mark 240ms ease-out both;
+
+    &::before {
+      position: absolute;
+      inset: 0 auto 0 -6px;
+      width: 2px;
+      background: var(--dark);
+      content: '';
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lat-folio-mark {
+      animation: none;
+    }
+  }
+
+  // the locus sits above its passage on phones: the glyph follows its text on the same line
+  @media all and ($mobile) {
+    .lat-reader .lat-locus .lat-folio-toggle {
+      display: inline-block;
+      margin: 0 0 0 0.45rem;
+      vertical-align: -0.2em;
+    }
+  }
+}
+
+// the dark sheet is the inverted page (transcludes.scss): multiply would vanish on it
+[saved-theme='dark'] [data-layout='latent'] :where(#quartz-root) .lat-folio-mark {
+  background: color-mix(in srgb, var(--lat-pdf) 24%, transparent);
+  mix-blend-mode: normal;
+}
+
+@keyframes lat-folio-mark {
+  from {
+    opacity: 0;
+  }
+}

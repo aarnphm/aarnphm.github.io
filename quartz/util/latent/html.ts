@@ -1,5 +1,6 @@
 import type { Element, ElementContent } from 'hast'
 import { h } from 'hastscript'
+import { linkProperties } from './pdf'
 
 /**
  * Passage html, sanitised. OCR'd pdf passages carry html tables (`<table border="1">`,
@@ -70,14 +71,20 @@ const UNWRAP = new Set([
   'div',
   'span',
   'font',
-  'a',
   'p',
   'center',
   'figure',
   'figcaption',
   'section',
   'blockquote',
+  'dl',
+  'dd',
+  'details',
 ])
+// html links keep a web, mail, site or anchor href (others unwrap); a definition term and a
+// disclosure's summary are bold (a passage shows the disclosure open)
+const SAFE_HREF = /^(?:https?:\/\/|mailto:|\/|#)/i
+const ALIAS: Record<string, string> = { dt: 'strong', summary: 'strong' }
 const DROP = new Set(['img', 'wbr', 'hr', 'col', 'colgroup'])
 const CELL = new Set(['td', 'th'])
 const ROWS = new Set(['thead', 'tbody', 'tfoot'])
@@ -91,7 +98,13 @@ const TOKENS_CODE = new RegExp(`${CODE_SPAN}|${TAG}`, 'g')
 const CODE_SPANS = new RegExp(CODE_SPAN, 'g')
 
 const known = (name: string) =>
-  TABLE.has(name) || INLINE.has(name) || UNWRAP.has(name) || DROP.has(name) || name === 'br'
+  TABLE.has(name) ||
+  INLINE.has(name) ||
+  UNWRAP.has(name) ||
+  DROP.has(name) ||
+  name === 'br' ||
+  name === 'a' ||
+  name in ALIAS
 
 function spanOf(attrs: string, key: 'colspan' | 'rowspan'): number | undefined {
   const match = new RegExp(String.raw`\b${key}\s*=\s*["']?(\d{1,4})`, 'i').exec(attrs)
@@ -156,12 +169,29 @@ function build(root: Element, source: string, leaf: Leaf, options: HtmlOptions):
       continue
     }
     const close = match[1 + offset] === '/'
-    const name = match[2 + offset]
+    const raw = match[2 + offset]
+    const name = ALIAS[raw] ?? raw
     const attrs = match[3 + offset] ?? ''
-    if (!known(name) || (TABLE.has(name) && !inTable)) {
+    if (!known(raw) || (TABLE.has(name) && !inTable)) {
       text(match[0])
     } else if (DROP.has(name) || UNWRAP.has(name)) {
       continue
+    } else if (name === 'a') {
+      const href = decodeEntities(
+        /\bhref\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+))/i
+          .exec(attrs)
+          ?.slice(1)
+          .find(v => v !== undefined) ?? '',
+      )
+      if (close)
+        closeTo(
+          tag => tag === 'a',
+          tag => CELL.has(tag) || TABLE.has(tag),
+        )
+      else if (SAFE_HREF.test(href)) {
+        ensureCell()
+        open(h('a', linkProperties(href)))
+      }
     } else if (name === 'br') {
       if (close) continue
       ensureCell()

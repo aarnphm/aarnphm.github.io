@@ -39,6 +39,7 @@ from pathlib import Path
 
 import numpy as np
 import yaml
+from dedup import canonical_rows, summary
 
 SHA = re.compile(r'^[a-f0-9]{64}$')
 VERSION = 1
@@ -337,20 +338,30 @@ def load_bib(path: Path) -> dict[str, str]:
 
 
 def sidenotes(md: str) -> str:
-  """`{{sidenotes[label]: body}}` → `label <small>(body)</small>`; braces in the body nest."""
+  """`{{sidenotes[label]: body}}` → `label <small>(body)</small>`; braces in the body nest. The
+  options form (`{{sidenotes<inline: true>[label]: …}}`) and a note with no label read the same."""
   out: list[str] = []
   pos = 0
   while True:
     i = md.find('{{sidenotes', pos)
     if i < 0:
       break
-    lb = md.find('[', i)
-    rb = md.find(']', lb)
-    colon = md.find(':', rb)
-    if lb < 0 or rb < 0 or colon < 0 or md[rb + 1 : colon].strip():
+    k = i + len('{{sidenotes')
+    if md.startswith('<', k):
+      gt = md.find('>', k)
+      k = gt + 1 if gt >= 0 else k
+    label = ''
+    if md.startswith('[', k):
+      rb = md.find(']', k)
+      label = md[k + 1 : rb] if rb >= 0 else ''
+      k = rb + 1 if rb >= 0 else k
+    while k < len(md) and md[k] in ' \t':
+      k += 1
+    if not md.startswith(':', k):
       out.append(md[pos : i + 2])
       pos = i + 2
       continue
+    colon = k
     depth, j = 2, colon + 1
     while j < len(md) and depth > 0:
       depth += {'{': 1, '}': -1}.get(md[j], 0)
@@ -360,8 +371,11 @@ def sidenotes(md: str) -> str:
       pos = i + 2
       continue
     out.append(md[pos:i])
+    body = md[colon + 1 : j - 2].strip()
     out.append(
-      f'{md[lb + 1 : rb]} <small>({md[colon + 1 : j - 2].strip()})</small>'
+      f'{label} <small>({body})</small>'
+      if label
+      else f'<small>({body})</small>'
     )
     pos = j
   out.append(md[pos:])
@@ -379,6 +393,8 @@ def slug_anchor(anchor: str) -> str:
 
 # A component fence (```jsx imports=..., mermaid, tikz) is a figure on the page; its source means
 # nothing in the reader, so it becomes one small line naming the figure by its label or caption.
+# A tikz fence stays: the reader shows the picture the note page typeset from it (TikzJax), and
+# matches it by that source.
 FIGURE_FENCE = re.compile(
   r'^([ \t>]*)(`{3,})(jsx imports=|mermaid|tikz)[^\n]*\n.*?^[ \t>]*\2[ \t]*$',
   re.M | re.S,
@@ -388,6 +404,8 @@ FIGURE_CAPTION = re.compile(r'\b(?:caption|title)="([^"\n]{1,160})"')
 
 
 def figure_line(m: re.Match[str]) -> str:
+  if m.group(3) == 'tikz':
+    return m.group(0)
   kind = 'figure' if m.group(3).startswith('jsx') else 'diagram'
   name = FIGURE_LABEL.search(m.group(0)) or FIGURE_CAPTION.search(m.group(0))
   text = f'{kind} · {name.group(1).strip()}' if name else kind
@@ -1184,6 +1202,11 @@ def main() -> None:
     action='store_true',
     help='skip the sparse dictionaries (features.py)',
   )
+  ap.add_argument(
+    '--out',
+    default=None,
+    help='sidecar root instead of <directory>/latent (a dry run beside the live one)',
+  )
   args = ap.parse_args()
   content = Path(args.content).resolve()
   directory = content / args.directory
@@ -1224,7 +1247,7 @@ def main() -> None:
   )
   log('hash', sidecar_hash)
 
-  out_root = directory / 'latent'
+  out_root = Path(args.out).resolve() if args.out else directory / 'latent'
   out = out_root / sidecar_hash
   if out.exists():
     shutil.rmtree(out)
@@ -1256,6 +1279,12 @@ def main() -> None:
       r['row'] = i
     log('rows permuted into document order')
   log('rows', N, f'{time.time() - t0:.0f}s')
+  # copied text: every row stays (a copied page still reads in full), but the graph, the axes and
+  # the dictionaries count each text once, at its canonical row (dedup.py)
+  canon = canonical_rows(rows, V)
+  unique = canon == np.arange(N)
+  copies = summary(rows, canon)
+  log('copies', copies, f'{time.time() - t0:.0f}s')
 
   # documents, time-ordered: dated oldest -> newest, then undated by store and id
   doc_index: dict[str, int] = {}
@@ -1298,11 +1327,26 @@ def main() -> None:
       doc_of_row[r] = di
     d['rows'].sort()
   log('docs', len(docs))
+  # a document every row of which is a copy points at the document holding most of its text
+  doc_own = np.array([bool(unique[d['rows']].any()) for d in docs])
+  for di in np.flatnonzero(~doc_own):
+    held = Counter(int(doc_of_row[canon[r]]) for r in docs[di]['rows'])
+    docs[di]['copyOf'] = held.most_common(1)[0][0]
 
-  idx, sc = knn(V, args.k, doc_of_row)
-  degree = np.minimum(np.bincount(idx.ravel(), minlength=N), 0xFFFF).astype(
-    np.uint16
-  )
+  # neighbours are canonical rows only; a copy lists its canonical row first, then that row's
+  # neighbours, so the links pane of a copied page leads to the copy it repeats
+  keep = np.flatnonzero(unique)
+  idx = np.empty((N, args.k), dtype=np.uint32)
+  sc = np.empty((N, args.k), dtype=np.float32)
+  sub_idx, sc[keep] = knn(V[keep], args.k, doc_of_row[keep])
+  idx[keep] = keep[sub_idx]
+  for r in np.flatnonzero(~unique):
+    c = canon[r]
+    idx[r, 0], idx[r, 1:] = c, idx[c, :-1]
+    sc[r, 0], sc[r, 1:] = float(V[r] @ V[c]), sc[c, :-1]
+  degree = np.minimum(
+    np.bincount(idx[keep].ravel(), minlength=N), 0xFFFF
+  ).astype(np.uint16)
   log('knn', f'{time.time() - t0:.0f}s')
 
   # regions for pdf page silhouettes
@@ -1329,9 +1373,9 @@ def main() -> None:
   # vectors: 256-d MRL truncation, renormalised, int8; PCA axes over the truncated space
   V256 = V[:, :256].copy()
   V256 /= np.linalg.norm(V256, axis=1, keepdims=True) + 1e-9
-  mean = V256.mean(0)
+  mean = V256[unique].mean(0)
   centred = V256 - mean
-  cov = centred.T @ centred / N
+  cov = centred[unique].T @ centred[unique] / int(unique.sum())
   scale = float(np.abs(V256).max())
   q = np.clip(np.round(V256 / scale * 127), -127, 127).astype(np.int8)
   q.tofile(out / 'vec' / 'rows-256-int8.bin')
@@ -1370,7 +1414,8 @@ def main() -> None:
     add_axis(
       'store',
       'notes ↔ passages',
-      V256[store_arr == 'pdf'].mean(0) - V256[store_arr == 'note'].mean(0),
+      V256[(store_arr == 'pdf') & unique].mean(0)
+      - V256[(store_arr == 'note') & unique].mean(0),
       'notes',
       'pdf passages',
     )
@@ -1392,7 +1437,8 @@ def main() -> None:
         pole_members(docs, ax['a'], tags_of),
         pole_members(docs, ax['b'], tags_of),
       )
-      a, b = sorted(ma - mb), sorted(mb - ma)
+      a = sorted(d for d in ma - mb if doc_own[d])
+      b = sorted(d for d in mb - ma if doc_own[d])
       label_a = ' · '.join(
         ax['a']['tags'] + [p + '/' for p in ax['a']['paths']]
       )
@@ -1446,7 +1492,7 @@ def main() -> None:
     )
   axes = axes[:AXES]
   rest_sample = np.random.default_rng(0).choice(
-    N, size=min(N, 2000), replace=False
+    keep, size=min(keep.size, 2000), replace=False
   )
   probe = []
   axis_i8 = np.zeros((N, AXES), dtype=np.int8)
@@ -1454,9 +1500,9 @@ def main() -> None:
     proj = ax['proj']
     lim = float(np.abs(proj).max()) + 1e-9
     axis_i8[:, ai] = np.clip(np.round(proj / lim * 127), -127, 127)
-    order = np.argsort(proj)
+    order = keep[np.argsort(proj[keep])]
     neg, pos = order[:12], order[-12:][::-1]
-    hist, _ = np.histogram(proj, bins=32, range=(-lim, lim))
+    hist, _ = np.histogram(proj[keep], bins=32, range=(-lim, lim))
     probe.append(
       dict(
         id=ax['id'],
@@ -1464,7 +1510,7 @@ def main() -> None:
         a=ax['a'],
         b=ax['b'],
         **ax['extra'],
-        bc=round(bimodality(proj), 3),
+        bc=round(bimodality(proj[keep]), 3),
         scale=lim,
         hist=hist.astype(int).tolist(),
         terms=dict(
@@ -1569,6 +1615,9 @@ def main() -> None:
         chunk['l'] = row['label']
       if row.get('box'):
         chunk['box'] = row['box']
+      if not unique[r]:
+        # text an earlier row holds (dedup.py); the reader can point at that row
+        chunk['copy'] = int(canon[r])
       chunks.append(chunk)
     payload = dict(
       d=di,
@@ -1613,6 +1662,7 @@ def main() -> None:
         r0=first,
         n=count,
         **({'sha': d['sha'], 'pages': d['pages']} if d.get('sha') else {}),
+        **({'copyOf': d['copyOf']} if 'copyOf' in d else {}),
       )
     )
     track += struct.pack(
@@ -1628,6 +1678,7 @@ def main() -> None:
   (out / 'track.bin').write_bytes(bytes(track))
   degree.tofile(out / 'degree.u16')
   doc_of_row.tofile(out / 'rowdoc.u32')
+  canon.astype('<u4').tofile(out / 'canon.u32')
 
   counts = Counter(r['store'] for r in rows)
   dated = sum(1 for d in docs if d['day'])
@@ -1648,6 +1699,7 @@ def main() -> None:
     axesPage=page.relative_to(content).as_posix() if page else None,
     axesSpec=spec,
     counts=dict(counts),
+    copies=copies,
     stores=[
       dict(
         id=s['id'],

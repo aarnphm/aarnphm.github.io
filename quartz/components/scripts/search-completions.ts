@@ -14,7 +14,9 @@ export function createSearchCompletions(
   input: HTMLInputElement,
   host: HTMLElement,
   enabled: () => boolean = () => true,
-  options: SearchCompletionOptions = {},
+  options: SearchCompletionOptions & {
+    source?: (value: string, cursor: number) => SearchCompletion[]
+  } = {},
 ): SearchCompletions {
   const abort = new AbortController()
   const { signal } = abort
@@ -30,7 +32,8 @@ export function createSearchCompletions(
   list.setAttribute('role', 'listbox')
   list.setAttribute('aria-label', 'search suggestions')
   panel.append(label, list)
-  input.closest('.input-container')?.after(panel)
+  const anchor = input.closest('.input-container') ?? input
+  anchor.after(panel)
   const attributes = [
     'role',
     'aria-autocomplete',
@@ -76,7 +79,11 @@ export function createSearchCompletions(
     clear()
     if (!enabled()) return false
     if (input.selectionStart !== input.selectionEnd) return false
-    choices = searchCompletions(input.value, input.selectionStart ?? input.value.length, options)
+    choices = (options.source ?? searchCompletions)(
+      input.value,
+      input.selectionStart ?? input.value.length,
+      options,
+    )
     if (!choices.length) return false
     list.replaceChildren(
       ...choices.map((choice, index) => {
@@ -112,12 +119,14 @@ export function createSearchCompletions(
   input.addEventListener(
     'keydown',
     event => {
-      if (!choices.length || event.isComposing || event.ctrlKey || event.metaKey || event.altKey)
-        return
-      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      if (!choices.length || event.isComposing || event.metaKey || event.altKey) return
+      const next = event.ctrlKey && !event.shiftKey && event.key.toLowerCase() === 'n'
+      const previous = event.ctrlKey && !event.shiftKey && event.key.toLowerCase() === 'p'
+      if (event.ctrlKey && !next && !previous) return
+      if (event.key === 'ArrowDown' || event.key === 'ArrowUp' || next || previous) {
         event.preventDefault()
         event.stopPropagation()
-        select(selected + (event.key === 'ArrowDown' ? 1 : -1))
+        select(selected + (event.key === 'ArrowDown' || next ? 1 : -1))
       } else if ((event.key === 'Enter' || event.key === 'Tab') && !event.shiftKey) {
         event.preventDefault()
         event.stopPropagation()

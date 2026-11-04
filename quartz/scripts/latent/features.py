@@ -20,7 +20,8 @@ of the dictionary (features [0, 128), [0, 512), [0, 2048) for text), so the firs
 carry the coarse topics alone and the later ones refine them. Each feature gets a level and a
 parent: the feature one level up that fires with it most often. One dictionary per family (DICTS):
 text passages, images, base entries. Training runs on MLX when it imports (Apple silicon), numpy
-otherwise.
+otherwise. A row whose text another row holds (canon.u32, from build.py and dedup.py) is encoded
+but neither trains a dictionary nor counts in its tables.
 
 Output, <sidecar>/feat/<dictionary>/:
   meta.json      M, k, mean and norm of the input, encoder bias, per-feature quantisation scales,
@@ -533,16 +534,12 @@ def note_months(
   """Notes by month (yyyymm): per feature, how many dated notes fire it at least once, and how
   many dated notes each month holds. A note's date is when it was written, so this is when a
   topic turned up in the garden; a pdf's date is its publication year and is left out."""
-  year = np.array(
-    [
-      int(d['date'][:4]) * 100 + int(d['date'][5:7])
-      if d['s'] == 'note'
-      and d.get('date')
-      and d.get('prec') in ('day', 'month')
-      else 0
-      for d in docs
-    ]
-  )
+  year = np.array([
+    int(d['date'][:4]) * 100 + int(d['date'][5:7])
+    if d['s'] == 'note' and d.get('date') and d.get('prec') in ('day', 'month')
+    else 0
+    for d in docs
+  ])
   totals = Counter(int(y) for y in year if y)
   N, k = ids.shape
   live = acts > 0
@@ -554,7 +551,10 @@ def note_months(
   fy = np.unique(f_of * 1000000 + year[d_of], return_counts=True)
   out: dict[int, list[list[int]]] = {}
   for key, n in zip(*fy):
-    out.setdefault(int(key // 1000000), []).append([int(key % 1000000), int(n)])
+    out.setdefault(int(key // 1000000), []).append([
+      int(key % 1000000),
+      int(n),
+    ])
   return out, dict(sorted(totals.items()))
 
 
@@ -797,7 +797,9 @@ def archive_model(
       k=spec['k'],
       M=spec['features'],
       p0=spec['prefixes'][0],
-      p1=spec['prefixes'][1] if len(spec['prefixes']) > 1 else spec['features'],
+      p1=spec['prefixes'][1]
+      if len(spec['prefixes']) > 1
+      else spec['features'],
       prefixes=' / '.join(map(str, spec['prefixes'])),
       rows=meta['trained'],
       balance=BALANCE,
@@ -866,11 +868,16 @@ def write_dict(
   backend: str,
   steps: int | None,
   archive: Path | None = None,
+  unique: np.ndarray | None = None,
 ) -> dict | None:
   t0 = time.time()
   name, M, k = spec['name'], spec['features'], spec['k']
   prefixes = tuple(spec['prefixes'])
-  own = np.isin(kinds, spec['kinds'])
+  # a copied row is encoded (its page shows its features) but neither trains the dictionary nor
+  # counts in a feature's statistics, top rows or labels: its canonical row already does
+  if unique is None:
+    unique = np.ones(V.shape[0], bool)
+  own = np.isin(kinds, spec['kinds']) & unique
   n_own = int(own.sum())
   if n_own < 4 * M // k:
     log(f'{name}: {n_own} rows is too few for {M} features, skipped')
@@ -883,7 +890,7 @@ def write_dict(
   # `msae`: the Matryoshka weights; the flat v1 cache (`sae`) holds different ids
   cache = cache_dir / f'latent-msae-{name}.npz' if cache_dir else None
   init = load_cache(cache, M, D)
-  n_doc = np.bincount(doc_of)
+  n_doc = np.maximum(np.bincount(doc_of, weights=unique), 1)
   weights = n_doc[doc_of].astype(np.float64) ** (-BALANCE) * own
   if steps is None or (steps == 0 and init is None):
     steps = spec['warm'] if init is not None else spec['cold']
@@ -937,9 +944,20 @@ def write_dict(
   enc_q.tofile(dest / 'enc-int8.bin')
   dec_q.tofile(dest / 'dec-int8.bin')
   table = feature_table(
-    ids, acts, own, fmax, doc_of, texts, df, sample, w['W_dec'], prefixes
+    ids,
+    acts * unique[:, None],
+    own,
+    fmax,
+    doc_of,
+    texts,
+    df,
+    sample,
+    w['W_dec'],
+    prefixes,
   )
-  apply_labels(table, read_labels(out.parent.parent / 'labels.json').get(name) or {})
+  apply_labels(
+    table, read_labels(out.parent.parent / 'labels.json').get(name) or {}
+  )
   (dest / 'features.json').write_text(
     json.dumps(table, ensure_ascii=False, separators=(',', ':')),
     encoding='utf-8',
@@ -1006,9 +1024,11 @@ def logistic(
   sw = np.where(y > 0, len(y) / (2 * pos), len(y) / (2 * max(1, len(y) - pos)))
   w = np.zeros(Xb.shape[1])
   R = l2 * np.eye(Xb.shape[1])
-  R[-1, -1] = 0
+  # a separable tag saturates every p: the bias then needs a trace of ridge for H to stay
+  # invertible, and the logits a clip for exp
+  R[-1, -1] = 1e-6
   for _ in range(iters):
-    p = 1 / (1 + np.exp(-(Xb @ w)))
+    p = 1 / (1 + np.exp(-np.clip(Xb @ w, -30, 30)))
     g = Xb.T @ (sw * (p - y)) + R @ w
     H = (Xb * (sw * p * (1 - p))[:, None]).T @ Xb + R
     step = np.linalg.solve(H, g)
@@ -1023,12 +1043,18 @@ def auc(score: np.ndarray, y: np.ndarray) -> float:
   if not len(pos) or not len(neg):
     return 0.5
   return float(
-    (pos[:, None] > neg[None, :]).mean() + 0.5 * (pos[:, None] == neg[None, :]).mean()
+    (pos[:, None] > neg[None, :]).mean()
+    + 0.5 * (pos[:, None] == neg[None, :]).mean()
   )
 
 
 def write_tags(
-  side: Path, content: Path, V: np.ndarray, doc_of: np.ndarray, docs: list[dict]
+  side: Path,
+  content: Path,
+  V: np.ndarray,
+  doc_of: np.ndarray,
+  docs: list[dict],
+  unique: np.ndarray | None = None,
 ) -> dict:
   """A logistic probe per frontmatter tag, on document vectors (the mean of a document's rows,
   renormalised, so a book and a note weigh the same). Probes that rank held-out notes well
@@ -1041,6 +1067,12 @@ def write_tags(
   np.add.at(S, doc_of.astype(np.int64), V)
   S /= np.linalg.norm(S, axis=1, keepdims=True) + 1e-9
   sources = note_sources(content)
+  # a note copied whole (a lab's copy of the lecture notebook) trains no probe; it is predicted
+  own = (
+    np.bincount(doc_of, weights=unique, minlength=len(docs)) > 0
+    if unique is not None
+    else np.ones(len(docs), bool)
+  )
   have: dict[int, set[str]] = {}
   for d in docs:
     if d['s'] != 'note':
@@ -1051,10 +1083,13 @@ def write_tags(
     raw = read_frontmatter(path).get('tags') or []
     if isinstance(raw, str):
       raw = [raw]
-    tags = {tag_key(t) for t in raw if isinstance(t, (str, int))} - {'', 'seed'}
+    tags = {tag_key(t) for t in raw if isinstance(t, (str, int))} - {
+      '',
+      'seed',
+    }
     have[d['d']] = tags
-  notes = np.array(sorted(have))
-  counts = Counter(t for ts in have.values() for t in ts)
+  notes = np.array(sorted(d for d in have if own[d]))
+  counts = Counter(t for d in notes for t in have[int(d)])
   rng = np.random.default_rng(0)
   hold = rng.random(len(notes)) < 0.25
   kept, P = [], []
@@ -1088,7 +1123,8 @@ def write_tags(
   out = dict(tags=kept, pred=pred, min=TAG_MIN, auc=TAG_AUC, notes=len(notes))
   (side / 'feat').mkdir(exist_ok=True)
   (side / 'feat' / 'tags.json').write_text(
-    json.dumps(out, ensure_ascii=False, separators=(',', ':')), encoding='utf-8'
+    json.dumps(out, ensure_ascii=False, separators=(',', ':')),
+    encoding='utf-8',
   )
   log(
     f'tags: {len(kept)} probes kept of {sum(1 for c in counts.values() if c >= TAG_MIN)}, {len(pred)} documents with predictions'
@@ -1096,7 +1132,9 @@ def write_tags(
   return dict(probes=len(kept), predicted=len(pred))
 
 
-def load_side(side: Path) -> tuple[dict, list[dict], np.ndarray, np.ndarray, np.ndarray]:
+def load_side(
+  side: Path,
+) -> tuple[dict, list[dict], np.ndarray, np.ndarray, np.ndarray]:
   index = json.loads((side / 'index.json').read_text(encoding='utf-8'))
   meta = json.loads((side / 'vec' / 'meta.json').read_text(encoding='utf-8'))
   docs = json.loads((side / 'docs.json').read_text(encoding='utf-8'))
@@ -1109,6 +1147,18 @@ def load_side(side: Path) -> tuple[dict, list[dict], np.ndarray, np.ndarray, np.
   doc_of = np.fromfile(side / 'rowdoc.u32', dtype=np.uint32)
   kinds = np.array([docs[int(d)]['s'] for d in doc_of])
   return index, docs, V, doc_of, kinds
+
+
+def load_canon(side: Path, N: int) -> np.ndarray:
+  """Canonical row per row (build.py, dedup.py); a sidecar written before it maps every row to
+  itself."""
+  path = side / 'canon.u32'
+  if not path.exists():
+    return np.arange(N, dtype=np.uint32)
+  canon = np.fromfile(path, dtype='<u4')
+  if canon.size != N:
+    raise SystemExit(f'{path} holds {canon.size} rows, expected {N}')
+  return canon
 
 
 def write_features(
@@ -1135,19 +1185,25 @@ def write_features(
         made = json.loads((runs[-1] / 'manifest.json').read_text())
       except (IndexError, OSError, ValueError):
         continue
-      if made.get('datasetHash') == f'sidecar:{side.name}' and (
-        cache_dir / f'latent-msae-{spec["name"]}.npz'
-      ).exists():
+      if (
+        made.get('datasetHash') == f'sidecar:{side.name}'
+        and (cache_dir / f'latent-msae-{spec["name"]}.npz').exists()
+      ):
         fresh.add(spec['name'])
     if len(fresh) == len(DICTS):
-      log(f'sidecar {side.name[:12]} unchanged since the last archive; nothing to train')
-      return json.loads((side / 'index.json').read_text()).get('features') or []
+      log(
+        f'sidecar {side.name[:12]} unchanged since the last archive; nothing to train'
+      )
+      return (
+        json.loads((side / 'index.json').read_text()).get('features') or []
+      )
     if fresh:
       log(f'unchanged, skipped: {", ".join(sorted(fresh))}')
       only = {s['name'] for s in DICTS if s['name'] not in fresh} | {'tags'}
   index, docs, V, doc_of, kinds = load_side(side)
+  unique = load_canon(side, len(V)) == np.arange(len(V))
   texts = Texts(side, docs, index['part'], kinds)
-  text_rows = np.flatnonzero(np.isin(kinds, ('note', 'pdf')))
+  text_rows = np.flatnonzero(np.isin(kinds, ('note', 'pdf')) & unique)
   sample_rows = np.random.default_rng(0).choice(
     text_rows, size=min(4000, text_rows.size), replace=False
   )
@@ -1178,13 +1234,14 @@ def write_features(
       backend,
       steps,
       archive,
+      unique,
     )
     if made:
       dicts.append(made)
   index['features'] = dicts
   if content is not None and (not only or 'tags' in only):
     try:
-      index['tags'] = write_tags(side, content, V, doc_of, docs)
+      index['tags'] = write_tags(side, content, V, doc_of, docs, unique)
     except ImportError as err:
       log(f'tags skipped: {err}')
   (side / 'index.json').write_text(
@@ -1195,7 +1252,9 @@ def write_features(
     from steering import write_steer
 
     write_steer(side, content)
-  except Exception as err:  # the explorer falls back to default units without steer.json
+  except (
+    Exception
+  ) as err:  # the explorer falls back to default units without steer.json
     log(f'steer.json skipped: {err}')
   return dicts
 

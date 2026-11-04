@@ -2,6 +2,7 @@ import type { LinkItem } from '../../../util/latent/markup'
 import type { RailLayout } from '../../../util/latent/rail'
 import type { LatentWorkerRequest, LatentWorkerResponse } from '../../../workers/latent.worker'
 import type { ToastHandle } from '../toast'
+import type { Atlas } from './bench-feats'
 import type { BenchLinks } from './bench-links'
 import {
   blockName,
@@ -64,7 +65,8 @@ export interface Runtime {
 export interface Bench {
   worker: Worker
   seq: number
-  level: 'docs' | 'rows'
+  /** documents, chunks, or the SAE features themselves (bench-feats.ts) */
+  level: 'docs' | 'rows' | 'feats'
   coords: Float32Array | null
   extent: number
   yaw: number
@@ -91,6 +93,14 @@ export interface Bench {
     rows: number
     docs: number
   } | null
+  /** the picked feature: ringed at the features level, its heat at the other two */
+  feature: { dict: string; f: number } | null
+  /** the features level has been opened; until then a feature picked elsewhere is ignored */
+  featsOn: boolean
+  atlas: Atlas | null
+  /** activation per point (0..255) of the picked feature at this level, and what it is for */
+  heat: Uint8Array | null
+  heatKey: string
   frame: number
   hover: number
   // canvas size in css px; the backing store is w·dpr × h·dpr so points and labels stay sharp
@@ -111,50 +121,50 @@ export async function fetchBytes(rt: Pick<Runtime, 'signal'>, url: string): Prom
   return response.arrayBuffer()
 }
 
+function cached<K, V>(cache: Map<K, Promise<V>>, key: K, load: () => Promise<V>): Promise<V> {
+  let pending = cache.get(key)
+  if (!pending) {
+    pending = load().catch(error => {
+      if (cache.get(key) === pending) cache.delete(key)
+      throw error
+    })
+    cache.set(key, pending)
+  }
+  return pending
+}
+
 export function knnOf(rt: Runtime, row: number): Promise<LatentRowLinks> {
   const b = blockOf(row, rt.block)
-  let block = rt.knn.get(b)
-  if (!block) {
-    block = fetchBytes(rt, `${rt.base}/knn/${blockName(b)}.bin`).then(bytes =>
+  const block = cached(rt.knn, b, () =>
+    fetchBytes(rt, `${rt.base}/knn/${blockName(b)}.bin`).then(bytes =>
       decodeKnnBlock(bytes, b, { k: rt.k, axes: rt.axes, block: rt.block }),
-    )
-    rt.knn.set(b, block)
-  }
+    ),
+  )
   return block.then(rows => rows[row - b * rt.block])
 }
 
 export function previewOf(rt: Runtime, row: number): Promise<LatentPreview> {
   const b = blockOf(row, rt.block)
-  let block = rt.prev.get(b)
-  if (!block) {
-    block = fetchJson<LatentPreview[]>(rt, `${rt.base}/prev/${blockName(b)}.json`)
-    rt.prev.set(b, block)
-  }
+  const block = cached(rt.prev, b, () =>
+    fetchJson<LatentPreview[]>(rt, `${rt.base}/prev/${blockName(b)}.json`),
+  )
   return block.then(rows => rows[row - b * rt.block])
 }
 
 /** The head file: document meta plus part 0. */
 export function textOf(rt: Runtime, doc: number): Promise<LatentText> {
-  let text = rt.text.get(doc)
-  if (!text) {
-    text = fetchJson<LatentText>(rt, `${rt.base}/text/${partName(doc, 0)}`)
-    rt.text.set(doc, text)
-  }
-  return text
+  return cached(rt.text, doc, () =>
+    fetchJson<LatentText>(rt, `${rt.base}/text/${partName(doc, 0)}`),
+  )
 }
 
 /** Chunks of one part of a document. */
 export function partOf(rt: Runtime, doc: number, part: number): Promise<LatentChunk[]> {
   if (part === 0) return textOf(rt, doc).then(t => t.chunks)
   const key = `${doc}:${part}`
-  let chunks = rt.parts.get(key)
-  if (!chunks) {
-    chunks = fetchJson<LatentTextPart>(rt, `${rt.base}/text/${partName(doc, part)}`).then(
-      p => p.chunks,
-    )
-    rt.parts.set(key, chunks)
-  }
-  return chunks
+  return cached(rt.parts, key, () =>
+    fetchJson<LatentTextPart>(rt, `${rt.base}/text/${partName(doc, part)}`).then(p => p.chunks),
+  )
 }
 
 export function docOfRow(rt: Runtime, row: number): LatentDoc {
@@ -201,7 +211,10 @@ let metaCache: WeakMap<Runtime, Promise<NonNullable<Bench['meta']>>> = new WeakM
 export function metaOf(rt: Runtime): Promise<NonNullable<Bench['meta']>> {
   let meta = metaCache.get(rt)
   if (!meta) {
-    meta = fetchJson<NonNullable<Bench['meta']>>(rt, `${rt.base}/vec/meta.json`)
+    meta = fetchJson<NonNullable<Bench['meta']>>(rt, `${rt.base}/vec/meta.json`).catch(error => {
+      if (metaCache.get(rt) === meta) metaCache.delete(rt)
+      throw error
+    })
     metaCache.set(rt, meta)
   }
   return meta

@@ -38,7 +38,10 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).parent))
 from features import STOP, WORD  # noqa: E402
 
-MODEL_ID, REV = 'mlx-community/embeddinggemma-2-bf16', '1a4ffddb7905d3f63486748deabe091a01fb6201'
+MODEL_ID, REV = (
+  'mlx-community/embeddinggemma-2-bf16',
+  '1a4ffddb7905d3f63486748deabe091a01fb6201',
+)
 TEMPLATE = {'title', ':', '▁|', '▁text', '|', 'text'}
 PUNCT = re.compile(r'^[\W_]+$')
 MAX_TOKENS = 512
@@ -48,14 +51,18 @@ def log(*args: object) -> None:
   print('[words]', *args, flush=True)
 
 
-def words_of(toks: list[str], ig: np.ndarray, skip: set[int]) -> list[tuple[str, float]]:
+def words_of(
+  toks: list[str], ig: np.ndarray, skip: set[int]
+) -> list[tuple[str, float]]:
   """Merge sentencepiece pieces into words; a piece starting with ▁ or a newline opens a word."""
   out: list[list] = []
   for i, t in enumerate(toks):
     if i in skip:
       out.append(None)  # type: ignore[arg-type]
       continue
-    opens = t.startswith('▁') or t.startswith('\n') or not out or out[-1] is None
+    opens = (
+      t.startswith('▁') or t.startswith('\n') or not out or out[-1] is None
+    )
     piece = t.replace('▁', ' ').strip()
     if opens or PUNCT.match(piece or ' '):
       out.append([piece, float(ig[i])])
@@ -80,9 +87,13 @@ def main() -> None:
   ap.add_argument('--content', default='content')
   ap.add_argument('--directory', default='embeddings')
   ap.add_argument('--cache', default='quartz/.quartz-cache')
-  ap.add_argument('--rows', type=int, default=3, help='strongest rows per feature')
+  ap.add_argument(
+    '--rows', type=int, default=3, help='strongest rows per feature'
+  )
   ap.add_argument('--steps', type=int, default=4)
-  ap.add_argument('--limit', type=int, default=0, help='features to do this run (0 = all)')
+  ap.add_argument(
+    '--limit', type=int, default=0, help='features to do this run (0 = all)'
+  )
   args = ap.parse_args()
 
   import mlx.core as mx
@@ -96,7 +107,12 @@ def main() -> None:
   meta = json.loads((tb / 'meta.json').read_text())
   table = json.loads((tb / 'features.json').read_text())
   M, D = meta['features'], meta['dims']
-  enc = np.fromfile(tb / 'enc-int8.bin', dtype=np.int8).reshape(M, D).astype(np.float32)
+  enc = (
+    np
+    .fromfile(tb / 'enc-int8.bin', dtype=np.int8)
+    .reshape(M, D)
+    .astype(np.float32)
+  )
   enc *= np.array(meta['encScale'], np.float32)[:, None]
   mean = mx.array(np.array(meta['mean'], np.float32))
   norm, bias = meta['norm'], np.array(meta['bias'], np.float32)
@@ -113,12 +129,15 @@ def main() -> None:
       except ValueError:
         pass
   order = sorted(
-    (t for t in table if t['n'] >= 3), key=lambda t: (t.get('level', 0), -t['n'])
+    (t for t in table if t['n'] >= 3),
+    key=lambda t: (t.get('level', 0), -t['n']),
   )
   todo = [t for t in order if t['f'] not in done]
   if args.limit:
     todo = todo[: args.limit]
-  log(f'{len(done)} features cached, {len(todo)} to do, {args.rows} rows × {args.steps} steps')
+  log(
+    f'{len(done)} features cached, {len(todo)} to do, {args.rows} rows × {args.steps} steps'
+  )
 
   model, processor = load(MODEL_ID, revision=REV)
   tok = processor.tokenizer
@@ -134,7 +153,10 @@ def main() -> None:
     key = (d, p)
     if key not in texts:
       name = f'{d}.json' if p == 0 else f'{d}-{p:03d}.json'
-      texts[key] = {ch['r']: ch['text'] for ch in json.loads((side / 'text' / name).read_text())['chunks']}
+      texts[key] = {
+        ch['r']: ch['text']
+        for ch in json.loads((side / 'text' / name).read_text())['chunks']
+      }
     return doc['t'] or 'none', texts[key].get(r, '')
 
   def attribute(r: int, f: int) -> tuple[list[str], np.ndarray, set[int]]:
@@ -145,8 +167,12 @@ def main() -> None:
     mask = inputs['attention_mask'][:, :MAX_TOKENS]
     keep = np.isin(ids, [tok.bos_token_id, tok.eos_token_id])
     x = (lm.embed_tokens(mx.array(ids)) * scale).astype(mx.float32)
-    x0 = (lm.embed_tokens(mx.array(np.where(keep, ids, tok.pad_token_id))) * scale).astype(mx.float32)
-    alphas = mx.array(((np.arange(args.steps) + 0.5) / args.steps).astype(np.float32))[:, None, None]
+    x0 = (
+      lm.embed_tokens(mx.array(np.where(keep, ids, tok.pad_token_id))) * scale
+    ).astype(mx.float32)
+    alphas = mx.array(
+      ((np.arange(args.steps) + 0.5) / args.steps).astype(np.float32)
+    )[:, None, None]
     path = x0 + (x - x0) * alphas  # steps x T x H
     maskb = mx.broadcast_to(mask, (args.steps, mask.shape[1]))
     e_f = mx.array(enc[f])
@@ -161,15 +187,25 @@ def main() -> None:
     ig = mx.sum(mx.mean(g, axis=0) * (x - x0)[0], axis=-1)
     mx.eval(ig)
     toks = tok.convert_ids_to_tokens(ids[0].tolist())
-    prefix = len(tok(f'title: {title} | text:', add_special_tokens=True)['input_ids'])
-    skip = {i for i, t in enumerate(toks) if keep[0, i] or (i < prefix and t in TEMPLATE)}
+    prefix = len(
+      tok(f'title: {title} | text:', add_special_tokens=True)['input_ids']
+    )
+    skip = {
+      i
+      for i, t in enumerate(toks)
+      if keep[0, i] or (i < prefix and t in TEMPLATE)
+    }
     return toks, np.array(ig), skip
 
   t0 = time.time()
   with cache.open('a') as fh:
     for n, row in enumerate(todo, 1):
       f = row['f']
-      rows = [r for r, _ in row['top'] if docs[int(rowdoc[r])]['s'] in ('note', 'pdf')][: args.rows]
+      rows = [
+        r
+        for r, _ in row['top']
+        if docs[int(rowdoc[r])]['s'] in ('note', 'pdf')
+      ][: args.rows]
       per = []
       for r in rows:
         try:
@@ -184,14 +220,23 @@ def main() -> None:
       for _, ws in per:
         for w, s in ws:
           agg[w] = agg.get(w, 0.0) + s / max(1, len(per))
-      item = dict(f=f, w=[[w, round(s, 3)] for w, s in sorted(agg.items(), key=lambda kv: -kv[1])[:8]], r=per)
+      item = dict(
+        f=f,
+        w=[
+          [w, round(s, 3)]
+          for w, s in sorted(agg.items(), key=lambda kv: -kv[1])[:8]
+        ],
+        r=per,
+      )
       done[f] = item
       fh.write(json.dumps(item, ensure_ascii=False) + '\n')
       fh.flush()
       if n % 100 == 0 or n == len(todo):
         write(tb, done, args)
         rate = (time.time() - t0) / n
-        log(f'{n}/{len(todo)} features, {rate:.1f}s each, about {rate * (len(todo) - n) / 3600:.1f} h left')
+        log(
+          f'{n}/{len(todo)} features, {rate:.1f}s each, about {rate * (len(todo) - n) / 3600:.1f} h left'
+        )
   write(tb, done, args)
 
 
@@ -200,10 +245,15 @@ def write(tb: Path, done: dict[int, dict], args) -> None:
     model=MODEL_ID,
     steps=args.steps,
     rows=args.rows,
-    features={str(f): dict(w=v['w'], r=v['r']) for f, v in sorted(done.items())},
+    features={
+      str(f): dict(w=v['w'], r=v['r']) for f, v in sorted(done.items())
+    },
   )
   tmp = tb / 'words.json.tmp'
-  tmp.write_text(json.dumps(out, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
+  tmp.write_text(
+    json.dumps(out, ensure_ascii=False, separators=(',', ':')),
+    encoding='utf-8',
+  )
   tmp.replace(tb / 'words.json')
 
 

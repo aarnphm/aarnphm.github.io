@@ -10,6 +10,8 @@ import type {
   LatentText,
   LatentTrackDoc,
 } from './types'
+import { dropcapSpecimen } from '../dropcap'
+import { telescopeHast, telescopicContent } from '../telescopic'
 import {
   type HtmlOptions,
   blockSpans,
@@ -21,7 +23,8 @@ import {
   pipeTable,
   repairCuts,
 } from './html'
-import { type MdHooks, mdBlocks, mdInline } from './md'
+import { type MdHooks, codeText, mdBlocks, mdInline, mdLink, mdSource } from './md'
+import { folioToggle, pdfSource } from './pdf'
 import { pseudocodeBlock } from './pseudo'
 import {
   LABEL_ROW,
@@ -128,6 +131,10 @@ interface PassageOptions extends HtmlOptions {
   markdown?: boolean
   /** the chunk is a note's rendered text: every line is a paragraph */
   lines?: boolean
+  /** the note's page (`/slug`): its tikz figures are fetched from there */
+  page?: string
+  /** the note's slug, the seed of a `procedural` dropcap without its own */
+  seed?: string
 }
 
 const mathSpan = (tex: string, display: boolean) =>
@@ -159,35 +166,43 @@ const gardenText = (text: string) => dropSvg(text).replace(MARKED, '$1')
 // (`**Parse tree for `x`:**`), so they are held out as placeholders while the html allowlist and
 // mdInline run over the rest, and put back as `code` after: html inside code stays text and the
 // strong run still spans the code.
+// A link whose text holds html (`[<span style=…>Space Grotesk</span>](https://…)`) is held the
+// same way: the allowlist would cut its text at the tags and leave `[` and `](url)` as text.
 const CODE_SPAN = /(`+)(?!`)([^\n]*?[^`\n])\1(?!`)/g
-const HELD = /\uE000(\d+)\uE001/g
+const HTML_LINK =
+  /(?<!!)\[((?:[^[\]\n]|\[[^[\]\n]*\])*<[a-zA-Z](?:[^[\]\n]|\[[^[\]\n]*\])*)\]\(\s*<?([^()\s<>]*(?:\([^()\s]*\)[^()\s<>]*)*)>?(?:\s+"[^"\n]*")?\s*\)/g
+const HELD = /(\d+)/g
 function withCode(text: string, runs: (masked: string) => ElementContent[]): ElementContent[] {
-  const held: string[] = []
-  const masked = text.replace(CODE_SPAN, (_, _ticks: string, body: string) => {
-    held.push(body)
-    return `\uE000${held.length - 1}\uE001`
-  })
-  if (!held.length) return runs(text)
-  const code = (body: string) =>
-    // one space each side is padding, as in CommonMark
-    h('code', decodeEntities(/^ [\s\S]* $/.test(body) && body.trim() ? body.slice(1, -1) : body))
+  const held: ElementContent[][] = []
+  const hold = (nodes: ElementContent[]) => {
+    held.push(nodes)
+    return `${held.length - 1}`
+  }
   const restore = (nodes: ElementContent[]): ElementContent[] =>
     nodes.flatMap(node => {
       if (node.type === 'element') {
         node.children = restore(node.children as ElementContent[])
         return [node]
       }
-      if (node.type !== 'text' || !node.value.includes('\uE000')) return [node]
+      if (node.type !== 'text' || !node.value.includes('')) return [node]
       const out: ElementContent[] = []
       let last = 0
       for (const m of node.value.matchAll(HELD)) {
         if (m.index > last) out.push({ type: 'text', value: node.value.slice(last, m.index) })
-        out.push(code(held[Number(m[1])] ?? ''))
+        out.push(...(held[Number(m[1])] ?? []))
         last = m.index + m[0].length
       }
       if (last < node.value.length) out.push({ type: 'text', value: node.value.slice(last) })
       return out
     })
+  const masked = text
+    .replace(CODE_SPAN, (_, _ticks: string, body: string) =>
+      hold([h('code', decodeEntities(codeText(body)))]),
+    )
+    .replace(HTML_LINK, (_, label: string, href: string) =>
+      hold(mdLink(decodeEntities(href), restore(runs(label)))),
+    )
+  if (!held.length) return runs(text)
   return restore(runs(masked))
 }
 
@@ -231,8 +246,8 @@ const ANSI = new RegExp(`${String.fromCharCode(27)}\\[[0-?]*[ -/]*[@-~]`, 'g')
  * A fence in a note's markdown slice. Garden components render as the page shows them: `quotes`
  * is a quote whose last paragraph is its attribution, `poetry` and `poem` keep their line breaks,
  * `sms` is a message, `tracking` (the triathlon log) one metadata line, `pseudo` an algorithm
- * the way the note page sets it. Anything else is code, as
- * is every fence outside a markdown slice.
+ * the way the note page sets it, `telescopic` the page's telescopic text, `dropcap` its specimen
+ * and `tikz` its figure. Anything else is code, as is every fence outside a markdown slice.
  */
 function fenceView(body: string, info: string | undefined, options: PassageOptions): Element {
   const [kind = '', name = ''] = (info ?? '').toLowerCase().split(/\s+/)
@@ -248,7 +263,20 @@ function fenceView(body: string, info: string | undefined, options: PassageOptio
     const algorithm = pseudocodeBlock(decodeEntities(body), info)
     if (algorithm) return algorithm
   }
+  // a drop-cap specimen, as the note page's Profile transformer sets one
+  if (kind === 'dropcap') {
+    const specimen = dropcapSpecimen(body, info ?? '', options.seed ?? '')
+    if (specimen) return specimen
+  }
+  if (kind === 'tikz') return tikzFigure(decodeEntities(body), info ?? '', options.page)
   const hooks = mdHooks(options)
+  // telescopic text (telescopic.inline.ts on the page opens it; links arrive as markdown)
+  if (kind === 'telescopic')
+    return h('div.telescopic-container', [
+      telescopeHast(telescopicContent(decodeEntities(body)), text =>
+        text ? hooks.inline(text) : [],
+      ),
+    ])
   const stanzas = body
     .replace(/^\n+|\s+$/g, '')
     .split(/\n[ \t]*\n+/)
@@ -284,10 +312,27 @@ function fenceView(body: string, info: string | undefined, options: PassageOptio
       .map(m => (m[2] === 'true' ? m[1] : `${m[1]} ${m[2]}`))
     return h('p.lat-meta', [
       date ? h('time', { dateTime: date }, date) : null,
-      ...rest.flatMap((part, n) => (date || n > 0 ? [' · ', part] : [part])),
+      // a field's value can link (`wahoo [26-09-06.fit](/triathlon/wahoo/…)`)
+      ...rest.flatMap((part, n) => [...(date || n > 0 ? [' · '] : []), ...hooks.inline(part)]),
     ])
   }
   return fenceBlock(body, info)
+}
+
+/**
+ * A tikz fence. The build typesets tikz on the note page (TikzJax); the reader holds the source
+ * and the client swaps in that page's rendered figure the first time the passage shows. A fence
+ * carrying its own picture (`alt="data:image/svg+xml;base64,…"`) shows it at once.
+ */
+function tikzFigure(source: string, info: string, page: string | undefined): Element {
+  const alt = /\balt\s*=\s*"(data:image\/svg\+xml;base64,[A-Za-z0-9+/=]+)"/.exec(info)?.[1]
+  if (alt)
+    return h('figure.tikz', { dataRemarkTikz: '' }, [
+      h('img', { src: alt, alt: 'tikz diagram', loading: 'lazy', decoding: 'async' }),
+    ])
+  return h('figure.tikz.lat-tikz', { dataPage: page }, [
+    h('pre.lat-code.lat-tikz-source', [h('code', source.replace(/\n+$/, ''))]),
+  ])
 }
 
 function paragraphs(text: string, options: PassageOptions): Element[] {
@@ -312,7 +357,7 @@ function paragraphs(text: string, options: PassageOptions): Element[] {
 
 /** display math on its own, blank lines split the rest into paragraphs */
 function prose(source: string, options: PassageOptions): Element[] {
-  if (options.markdown) return mdBlocks(source, mdHooks(options))
+  if (options.markdown) return mdSource(source, mdHooks(options))
   const blocks: Element[] = []
   let last = 0
   for (const match of source.matchAll(DISPLAY_MATH)) {
@@ -443,6 +488,7 @@ function chunkLocus(
   doc: Pick<LatentDoc, 'id' | 's'>,
   chunk: LatentChunk,
   last: LatentChunk,
+  box?: LatentChunk['box'],
 ): Element {
   if (meta.store === 'pdf' && chunk.p) {
     const to =
@@ -457,6 +503,10 @@ function chunkLocus(
         { href: rowHref(doc, chunk.p), dataNoPopover: true },
         `p. ${pageLabel(chunk.l, chunk.p)} ¶${chunk.c + 1}${to}`,
       ),
+      // the page itself, in the site's pdf viewer under the passage (latent-client/folio.ts)
+      doc.s === 'pdf'
+        ? folioToggle(pdfSource(doc.id), chunk.p, box, `p. ${pageLabel(chunk.l, chunk.p)}`)
+        : null,
     ])
   }
   return h('span.lat-locus', [
@@ -498,7 +548,7 @@ export function chunkArticles(
           dataFocus: run.some(c => c.r === focus) ? '' : undefined,
         },
         [
-          chunkLocus(meta, doc, chunk, run[run.length - 1]),
+          chunkLocus(meta, doc, chunk, run[run.length - 1], runBox(run)),
           // an image row is the image: its embedding has no text to show
           ...(meta.store === 'image'
             ? [imageFrame(doc)]
@@ -508,6 +558,8 @@ export function chunkArticles(
                   code: meta.store === 'note',
                   markdown: chunk.m === 1,
                   lines: meta.store === 'note' && chunk.m !== 1,
+                  page: meta.store === 'note' ? rowHref(doc) : undefined,
+                  seed: doc.id,
                 })),
         ],
       ),
@@ -615,91 +667,7 @@ export function readerDocument(
   ])
 }
 
-export interface LinkItem {
-  preview: LatentPreview
-  score: number
-  doc: LatentDoc
-  inScope: boolean
-}
-
-export function linksPane(
-  focus: LatentPreview,
-  items: LinkItem[],
-  kinds: LatentKind[],
-  label = 'links',
-): Element {
-  const docs = new Set(items.map(i => i.doc.d))
-  const groups: ElementContent[] = []
-  for (const kind of kinds) {
-    const own = items.filter(i => i.preview.s === kind)
-    if (own.length === 0) continue
-    groups.push(
-      h('h3.lat-group', [mark(kind), h('span', `${own.length}`)]),
-      h(
-        'ol.lat-list',
-        { dataKind: kind },
-        own.map(item => {
-          const sameDoc = item.doc.d === focus.d
-          const href = rowHref(item.doc, item.preview.p)
-          return h(
-            'li.lat-link',
-            {
-              dataRow: String(item.preview.r),
-              dataDoc: String(item.doc.d),
-              dataOut: item.inScope ? undefined : '',
-              dataSame: sameDoc ? '' : undefined,
-              dataSha: item.doc.sha,
-              dataPage: item.preview.p ? String(item.preview.p) : undefined,
-            },
-            [
-              h('span.lat-score', [
-                h('i', { style: `--score:${(item.score / 255).toFixed(3)}` }),
-                h('b', (item.score / 255).toFixed(3)),
-              ]),
-              h(
-                'a.lat-link-title',
-                { href: `?focus=${item.preview.r}`, dataLatFocus: String(item.preview.r) },
-                titleRuns(item.doc.t),
-              ),
-              h('span.lat-link-locus', [
-                locus(item.preview),
-                sameDoc ? h('em', 'same document') : null,
-                item.inScope ? null : h('em', 'out of scope'),
-              ]),
-              item.preview.x ? h('p.lat-extract', extractRuns(item.preview.x)) : null,
-              item.preview.s === 'pdf'
-                ? h('a.lat-link-read', { href, dataNoPopover: true }, '/read →')
-                : null,
-              // the map card: a pdf's page boxes, or a note's chunks as lines of text; a click
-              // on it opens the row as the title does
-              item.preview.s === 'pdf' && item.doc.sha && item.preview.p
-                ? h('span.lat-silhouette', {
-                    dataSha: item.doc.sha,
-                    dataPage: String(item.preview.p),
-                    dataLatFocus: String(item.preview.r),
-                    ariaHidden: 'true',
-                  })
-                : item.preview.s === 'note'
-                  ? h('span.lat-silhouette', {
-                      dataNote: '',
-                      dataLatFocus: String(item.preview.r),
-                      ariaHidden: 'true',
-                    })
-                  : null,
-            ],
-          )
-        }),
-      ),
-    )
-  }
-  return h('section.lat-links', { dataFocus: String(focus.r) }, [
-    h('header.lat-pane-head', [
-      h('span', label),
-      h('span.lat-count', `${items.length} from ${docs.size} documents`),
-    ]),
-    ...groups,
-  ])
-}
+export { linksPane, type LinkItem } from './document-links'
 
 export interface RailModel {
   docs: LatentTrackDoc[]

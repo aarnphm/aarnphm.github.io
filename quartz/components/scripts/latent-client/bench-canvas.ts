@@ -1,4 +1,5 @@
 import { titleText } from '../../../util/latent/title'
+import { LEVEL_RADIUS, atlasName, atlasPoint, drawAtlasEdges } from './bench-feats'
 import { drawBenchLinks } from './bench-links'
 import { docOfRow, type Bench, type Runtime } from './runtime'
 
@@ -118,8 +119,11 @@ function drawBenchPoints(
   colours: string[],
 ): void {
   const kinds = bench.kinds!
-  const n = kinds.length
-  const docs = bench.level === 'docs'
+  const n = Math.min(kinds.length, at.xs.length)
+  const docs = bench.level !== 'rows'
+  const atlas = bench.level === 'feats' ? bench.atlas : null
+  const heat = bench.level === 'feats' ? null : bench.heat
+  if (heat) return drawBenchHeat(ctx, bench, at, shown, colours, heat, n)
   const radius = new Float32Array(BANDS)
   for (let b = 0; b < BANDS; b++) {
     const t = (b + 0.5) / BANDS
@@ -136,7 +140,10 @@ function drawBenchPoints(
     const b = t <= 0 ? 0 : t >= 1 ? BANDS - 1 : (t * BANDS) | 0
     const slot = b * KINDS + kinds[i]
     const path = (paths[slot] ??= new Path2D())
-    const r = radius[b]
+    // a feature's size is its Matryoshka level, eased by depth
+    const r = atlas
+      ? LEVEL_RADIUS[atlas.lvl[i]] * (0.8 + 0.4 * Math.max(0, Math.min(1, t)))
+      : radius[b]
     const x = at.xs[i]
     const y = at.ys[i]
     // same area as the disc: side r·√π
@@ -155,6 +162,64 @@ function drawBenchPoints(
       ctx.fill(path)
     }
   }
+}
+
+// heat: the floor in depth bands of ink, the firing points in activation × depth bands of
+// the fire colour over it, weak first; 12 + 24 fills whatever the feature
+const HEAT_DEPTHS = 6
+const HEAT_EDGES = [64, 128, 192]
+const HEAT_ALPHA = [0.55, 0.7, 0.85, 1]
+
+function drawBenchHeat(
+  ctx: CanvasRenderingContext2D,
+  bench: Bench,
+  at: Screen,
+  shown: (i: number) => boolean,
+  colours: string[],
+  heat: Uint8Array,
+  n: number,
+): void {
+  const docs = bench.level === 'docs'
+  const grow = docs ? [1.2, 1.6, 2.0, 2.5] : [1.1, 1.4, 1.8, 2.3]
+  const floor: (Path2D | undefined)[] = Array.from({ length: BANDS })
+  const fire: (Path2D | undefined)[] = Array.from({ length: 4 * HEAT_DEPTHS })
+  const TAU = Math.PI * 2
+  for (let i = 0; i < n; i++) {
+    if (!shown(i)) continue
+    const t = Math.max(0, Math.min(0.999, (at.depth[i] + 1) / 2))
+    const base = docs ? 1.2 + t * 2.2 : 0.6 + t * 1.4
+    const x = at.xs[i]
+    const y = at.ys[i]
+    const a = heat[i] ?? 0
+    if (!a) {
+      const path = (floor[(t * BANDS) | 0] ??= new Path2D())
+      if (docs) {
+        path.moveTo(x + base, y)
+        path.arc(x, y, base, 0, TAU)
+      } else path.rect(x - base * 0.886, y - base * 0.886, base * 1.772, base * 1.772)
+      continue
+    }
+    let band = 0
+    while (band < 3 && a > HEAT_EDGES[band]) band++
+    const path = (fire[band * HEAT_DEPTHS + ((t * HEAT_DEPTHS) | 0)] ??= new Path2D())
+    const r = base * grow[band]
+    path.moveTo(x + r, y)
+    path.arc(x, y, r, 0, TAU)
+  }
+  ctx.fillStyle = colours[0]
+  floor.forEach((path, b) => {
+    if (!path) return
+    ctx.globalAlpha = 0.06 + ((b + 0.5) / BANDS) * 0.12
+    ctx.fill(path)
+  })
+  ctx.fillStyle = colours[4]
+  fire.forEach((path, slot) => {
+    if (!path) return
+    const band = Math.floor(slot / HEAT_DEPTHS)
+    const d = slot % HEAT_DEPTHS
+    ctx.globalAlpha = (0.25 + ((d + 0.5) / HEAT_DEPTHS) * 0.65) * HEAT_ALPHA[band]
+    ctx.fill(path)
+  })
 }
 
 export function hoverBench(rt: Runtime, px: number, py: number): void {
@@ -187,8 +252,11 @@ export function hoverBench(rt: Runtime, px: number, py: number): void {
 }
 
 function hoverName(rt: Runtime, bench: Bench, i: number): string {
+  if (bench.level === 'feats') return atlasName(rt, bench, i)
   const doc = bench.level === 'docs' ? rt.docs[i] : docOfRow(rt, i)
-  return `${doc.s} · ${titleText(doc.t)}`
+  const name = `${doc.s} · ${titleText(doc.t)}`
+  const a = bench.heat?.[i]
+  return a ? `${name} · fires ${(a / 255).toFixed(2)}` : name
 }
 
 // what the status line last said about the hovered point's edges, so a redraw only touches the
@@ -231,6 +299,7 @@ export function drawBench(rt: Runtime): void {
       style.getPropertyValue('--lat-pdf').trim() || '#fdb2a2',
       style.getPropertyValue('--lat-image').trim() || '#cdd597',
       style.getPropertyValue('--gray').trim() || '#6f6e69',
+      style.getPropertyValue('--lat-fire').trim() || '#bc5215',
     ]
     const w = bench.w
     const h = bench.h
@@ -242,7 +311,8 @@ export function drawBench(rt: Runtime): void {
     const at = projectAll(bench, w, h)
     drawBenchAxes(ctx, bench, w, h, colours[3], style)
     const shown = (i: number) => !((bench.hidden >> bench.kinds![i]) & 1)
-    const mark = bench.level === 'docs' ? rt.open : rt.focus
+    const feats = bench.level === 'feats'
+    const mark = feats ? atlasPoint(bench) : bench.level === 'docs' ? rt.open : rt.focus
     const selected = mark >= 0 && mark < n ? mark : -1
     drawBenchPoints(ctx, bench, at, shown, colours)
     // edges are drawn for two points only (bench-links.ts): the marked one once a point has
@@ -250,9 +320,15 @@ export function drawBench(rt: Runtime): void {
     const redraw = () => drawBench(rt)
     const edgeColours = { ink, near: colours[3] }
     const hovered = bench.hover >= 0 && bench.hover < n ? bench.hover : -1
-    if (bench.picked && selected !== hovered)
+    // a feature's edges are its own table (near, parent, finer), drawn without a fetch
+    if (feats) {
+      if (selected !== hovered) drawAtlasEdges(ctx, bench, at, shown, selected, edgeColours)
+      drawAtlasEdges(ctx, bench, at, shown, hovered, edgeColours)
+    } else if (bench.picked && selected !== hovered)
       drawBenchLinks(ctx, rt, bench, at, shown, selected, edgeColours, redraw)
-    const counts = drawBenchLinks(ctx, rt, bench, at, shown, hovered, edgeColours, redraw, true)
+    const counts = feats
+      ? null
+      : drawBenchLinks(ctx, rt, bench, at, shown, hovered, edgeColours, redraw, true)
     if (counts && hovered >= 0) {
       const parts = [
         counts.near === null ? null : `${counts.near} near`,

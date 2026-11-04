@@ -78,32 +78,36 @@ export function keepLine(anchor: HTMLElement | null, mutate: () => void): void {
 async function fillMore(rt: Runtime, more: HTMLElement): Promise<void> {
   if (more.dataset.loading !== undefined) return
   more.dataset.loading = ''
-  const d = Number(more.dataset.doc)
-  const part = Number(more.dataset.part)
-  const side = more.dataset.side as 'before' | 'after'
-  const [head, chunks] = await Promise.all([textOf(rt, d), partOf(rt, d, part)])
-  if (rt.signal.aborted || !more.isConnected) return
-  const docEl = more.closest<HTMLElement>('.lat-doc')
-  if (!docEl) return
-  const html = chunkArticles(head, rt.docs[d], chunks, rt.focus)
-    .map(el => toHtml(el as never))
-    .join('')
-  const anchor = chunkUnderLine(rt)
-  keepLine(anchor, () => {
-    more.insertAdjacentHTML(side === 'before' ? 'afterend' : 'beforebegin', html)
-    const lo = side === 'before' ? part : Number(docEl.dataset.lo)
-    const hi = side === 'after' ? part : Number(docEl.dataset.hi)
-    docEl.dataset.lo = String(lo)
-    docEl.dataset.hi = String(hi)
-    const remaining =
-      side === 'before' ? lo * head.part : head.total - Math.min(head.total, (hi + 1) * head.part)
-    if (remaining <= 0) more.remove()
-    else {
-      more.outerHTML = toHtml(
-        moreSentinel(head, side, remaining, side === 'before' ? lo - 1 : hi + 1) as never,
-      )
-    }
-  })
+  try {
+    const d = Number(more.dataset.doc)
+    const part = Number(more.dataset.part)
+    const side = more.dataset.side as 'before' | 'after'
+    const [head, chunks] = await Promise.all([textOf(rt, d), partOf(rt, d, part)])
+    if (rt.signal.aborted || !more.isConnected) return
+    const docEl = more.closest<HTMLElement>('.lat-doc')
+    if (!docEl) return
+    const html = chunkArticles(head, rt.docs[d], chunks, rt.focus)
+      .map(el => toHtml(el as never))
+      .join('')
+    const anchor = chunkUnderLine(rt)
+    keepLine(anchor, () => {
+      more.insertAdjacentHTML(side === 'before' ? 'afterend' : 'beforebegin', html)
+      const lo = side === 'before' ? part : Number(docEl.dataset.lo)
+      const hi = side === 'after' ? part : Number(docEl.dataset.hi)
+      docEl.dataset.lo = String(lo)
+      docEl.dataset.hi = String(hi)
+      const remaining =
+        side === 'before' ? lo * head.part : head.total - Math.min(head.total, (hi + 1) * head.part)
+      if (remaining <= 0) more.remove()
+      else {
+        more.outerHTML = toHtml(
+          moreSentinel(head, side, remaining, side === 'before' ? lo - 1 : hi + 1) as never,
+        )
+      }
+    })
+  } finally {
+    delete more.dataset.loading
+  }
 }
 
 function readingLineY(): number {
@@ -184,9 +188,7 @@ function setReaderHead(rt: Runtime, d = rt.open): void {
 function docAtHead(rt: Runtime, frozen: HTMLElement): number {
   const line = frozen.getBoundingClientRect().top + 1
   let at = rt.open
-  for (const head of rt.reader.querySelectorAll<HTMLElement>(
-    ':scope > .lat-doc > .lat-doc-head',
-  )) {
+  for (const head of rt.reader.querySelectorAll<HTMLElement>(':scope > .lat-doc > .lat-doc-head')) {
     if (head.getBoundingClientRect().top > line) break
     at = Number(head.parentElement!.dataset.doc)
   }
@@ -219,6 +221,8 @@ function mountDocument(
   if (existing) return Promise.resolve(existing)
   const pending = rt.mounting.get(d)
   if (pending) return pending
+  const stub = rt.reader.querySelector<HTMLElement>(`.lat-doc-stub[data-doc="${d}"]`)
+  if (!stub) return Promise.resolve(null)
 
   const mounting = (async (): Promise<HTMLElement | null> => {
     const head = await textOf(rt, d)
@@ -228,8 +232,7 @@ function mountDocument(
     if (rt.signal.aborted) return null
     // Pruning can remove this stub while its data is in flight. Only replace the original slot;
     // appending a late result at the reader's end creates duplicate or out-of-order documents.
-    const stub = rt.reader.querySelector<HTMLElement>(`.lat-doc-stub[data-doc="${d}"]`)
-    if (!stub) return null
+    if (!stub.isConnected) return null
     const anchor = chunkUnderLine(rt)
     // the previous document mounted above must not move the text under the reading line
     keepLine(anchor, () => {
@@ -282,15 +285,20 @@ function ensureStubs(rt: Runtime): void {
 }
 
 /** Open a row's document in the reader and put that row under the reading line. */
+const navigation = new WeakMap<Runtime, object>()
+
 export async function goTo(rt: Runtime, row: number): Promise<void> {
+  const intent = {}
+  navigation.set(rt, intent)
+  const stale = () => rt.signal.aborted || navigation.get(rt) !== intent
   const doc = docOfRow(rt, row)
   let chunk = rowChunk(rt, row)
   if (!chunk) {
     const head = await textOf(rt, doc.d)
-    if (rt.signal.aborted) return
+    if (stale()) return
     const part = Math.floor((row - doc.r0) / Math.max(1, head.part))
     const html = await documentHtml(rt, doc.d, part, row)
-    if (rt.signal.aborted) return
+    if (stale()) return
     const prev = doc.d > 0 ? rt.docs[doc.d - 1] : null
     const next = doc.d + 1 < rt.docs.length ? rt.docs[doc.d + 1] : null
     const stub = (d: LatentDoc) =>
@@ -313,6 +321,9 @@ export function bindReader(rt: Runtime): void {
   // a page built before the frozen head existed gets one now
   if (!readerHead(rt)) setReaderHead(rt)
   let frame = 0
+  const reportError = (error: unknown) => {
+    if (!rt.signal.aborted) console.warn('[latent]', error)
+  }
   const update = () => {
     frame = 0
     const chunk = chunkUnderLine(rt)
@@ -336,13 +347,17 @@ export function bindReader(rt: Runtime): void {
     }
     // approach the rest of the open document: fill the part sentinel within one viewport
     for (const more of rt.reader.querySelectorAll<HTMLElement>('.lat-more')) {
-      if (near(more)) void fillMore(rt, more)
+      if (near(more)) void fillMore(rt, more).catch(reportError)
     }
     // approach the neighbours: mount the stub that is within one viewport
     for (const stub of rt.reader.querySelectorAll<HTMLElement>('.lat-doc-stub')) {
       if (near(stub)) {
         const d = Number(stub.dataset.doc)
-        void mountDocument(rt, d, d < rt.open ? 'last' : 0).then(() => ensureStubs(rt))
+        void mountDocument(rt, d, d < rt.open ? 'last' : 0)
+          .then(() => {
+            if (!rt.signal.aborted) ensureStubs(rt)
+          })
+          .catch(reportError)
       }
     }
   }

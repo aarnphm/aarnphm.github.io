@@ -1,3 +1,4 @@
+import type { SharedFeatures } from '../../../util/latent/share'
 import type { Element, ElementContent } from 'hast'
 import { toHtml } from 'hast-util-to-html'
 import { h } from 'hastscript'
@@ -134,6 +135,8 @@ type SteerTerm =
   | { kind: 'axis'; id: string; w: number }
 
 interface FeatureState {
+  refresh(): void
+  pin(label: string, rows: [number, number][]): Promise<void>
   names: string[]
   dicts: Map<string, Promise<FeatureDict>>
   tags: Promise<Map<number, [string, number][]> | null> | null
@@ -154,6 +157,9 @@ interface FeatureState {
   whyReady: boolean
   /** bumps per panel render, so a late reasoning fill lands only in the panel it was made for */
   renderSeq: number
+  /** reasoning per link row, for the current focus or query (whyKey) */
+  whyCache: Map<number, WhyLink>
+  whyKey: string
   /** the rows steering last pinned to the links pane, which "reasoning" explains */
   pinned: number[] | null
   dragFrame: number | null
@@ -168,6 +174,22 @@ const MAX = 12
 
 const KIND_ORDER: LatentKind[] = ['note', 'pdf', 'image', 'base']
 const states = new WeakMap<Runtime, FeatureState>()
+
+export type { FeatureDict, FeatureRow }
+
+/** What the bench's features level reads (bench-feats.ts); null when the page has no dictionaries. */
+export function benchFeatures(rt: Runtime) {
+  const st = states.get(rt)
+  if (!st) return null
+  return {
+    names: st.names,
+    dict: (name: string) => loadDict(rt, st, name),
+    dec: (dict: FeatureDict) => weights(rt, dict, 'dec'),
+    block: (dict: FeatureDict, b: number) => codeBlock(rt, dict, b),
+    name: featureName,
+    select: (name: string, f: number) => selectFeature(rt, st, name, f),
+  }
+}
 
 function loadDict(rt: Runtime, st: FeatureState, name: string): Promise<FeatureDict> {
   let dict = st.dicts.get(name)
@@ -466,13 +488,30 @@ async function featureCard(
   const kinds = KIND_ORDER.map((kind, i) =>
     row.kinds[i] ? h('span', [mark(kind), ` ${row.kinds[i].toLocaleString('en-US')}`]) : null,
   ).filter(Boolean) as Element[]
+  const key = steerKey(dict.meta.name, f)
+  const steered = st.steer.get(key)?.w ?? 0
   return h('section.lat-feat-card', { dataDict: dict.meta.name, dataF: String(f) }, [
     h('header', [
       h('span.lat-feat-head', featureName(row)),
-      h(
-        'span.lat-chip',
-        `${dict.meta.name} #${f}${row.level === undefined ? '' : ` · L${row.level}`} · ${share(dict, row)}`,
-      ),
+      h('span.lat-feat-card-tools', [
+        h(
+          'span.lat-chip',
+          `${dict.meta.name} #${f}${row.level === undefined ? '' : ` · L${row.level}`} · ${share(dict, row)}`,
+        ),
+        // add this feature to the steering set (another press steps it a unit further)
+        h(
+          'button.lat-feat-add',
+          {
+            type: 'button',
+            dataTerm: key,
+            dataSteer: '1',
+            title: steered
+              ? `steer one unit further toward it (now ${amount(steered)})`
+              : 'add it to steering',
+          },
+          '+',
+        ),
+      ]),
     ]),
     up.length
       ? h('p.lat-feat-path', [
@@ -488,9 +527,10 @@ async function featureCard(
           ),
         ])
       : null,
+    // one line, cut with an ellipsis; hover scrolls it to its end (marquee.ts)
     row.about ? h('p.lat-feat-about', row.about) : null,
+    // the label's score, and an arrow whose note lists the label's terms
     h('p.lat-feat-terms', [
-      row.terms.join(' · '),
       row.score === undefined
         ? null
         : h(
@@ -501,8 +541,15 @@ async function featureCard(
               dataTipAt: 'up',
               tabIndex: 0,
             },
-            ` · label ${row.score.toFixed(2)}`,
+            `label ${row.score.toFixed(2)}`,
           ),
+      row.terms.length
+        ? h(
+            'span.lat-feat-more',
+            { dataTip: row.terms.join(' · '), tabIndex: 0, ariaLabel: 'all terms' },
+            '→',
+          )
+        : null,
     ]),
     said?.w.length
       ? h(
@@ -697,16 +744,18 @@ async function renderPanel(rt: Runtime, st: FeatureState): Promise<void> {
       'p.lat-feat-note',
       {
         dataTip:
-          'a Matryoshka sparse autoencoder per family of rows splits each 256-d vector into k of M learned directions, the first few of which must rebuild it alone. the percentages are the variance the coarsest prefix and the whole dictionary rebuild.',
+          'a Matryoshka sparse autoencoder per family of rows splits each 256-d vector into k of M learned directions. the percentages are the variance between the coarsest prefix versus the whole dictionary.',
         dataTipAt: 'up',
         tabIndex: 0,
       },
-      `sparse dictionaries · ${fvu}`,
+      `${fvu}`,
     ),
   )
   if (rt.signal.aborted || (rt.focus !== focus && !st.selected)) return
   st.panel.innerHTML = toHtml(groups as never)
   if (st.panel.querySelector('.lat-why[data-why-pending]')) fillWhy(rt, st, dicts, seq)
+  else if (st.whyReady || !st.explain)
+    void annotateLinks(rt, st, dicts).catch(error => console.warn('[latent] reasoning', error))
 }
 
 /** Build "reasoning" once the browser is idle after a paint, then swap it into the same panel. */
@@ -718,6 +767,7 @@ function fillWhy(rt: Runtime, st: FeatureState, dicts: FeatureDict[], seq: numbe
     if (rt.signal.aborted || st.renderSeq !== seq) return
     const slot = st.panel.querySelector('.lat-why[data-why-pending]')
     if (slot) slot.outerHTML = toHtml(section as never)
+    await annotateLinks(rt, st, dicts)
   }
   const go = () => void run().catch(error => console.warn('[latent] reasoning', error))
   if ('requestIdleCallback' in window) requestIdleCallback(go, { timeout: 1500 })
@@ -817,6 +867,8 @@ async function selectFeature(
   withCluster = false,
 ) {
   st.selected = { dict: name, f }
+  // the bench rings it at the features level and lights its rows at the other two
+  rt.root.dispatchEvent(new CustomEvent('latent:feature', { detail: { dict: name, f } }))
   const dict = await loadDict(rt, st, name)
   const row = dict.table[f]
   void renderPanel(rt, st)
@@ -1005,7 +1057,7 @@ async function applySteer(rt: Runtime, st: FeatureState, drag = false, retry = t
   if (live.length === 0 && !st.query) {
     // nothing left to steer: back to the focus's own links (a query re-scores unsteered below)
     st.pinned = null
-    if (!drag) void renderPanel(rt, st)
+    if (!drag) st.refresh()
     rt.query = null
     delete rt.links.dataset.query
     void renderLinks(rt, rt.focus)
@@ -1055,9 +1107,9 @@ async function applySteer(rt: Runtime, st: FeatureState, drag = false, retry = t
     : st.query!.text
   if (seq !== st.steerSeq) return
   st.pinned = rows.map(([r]) => r)
-  await pinLinks(rt, label, rows)
+  await st.pin(label, rows)
   // after the pin, so "reasoning" explains the steered list
-  if (!drag) void renderPanel(rt, st)
+  if (!drag) st.refresh()
 }
 
 async function steeringSection(
@@ -1260,11 +1312,36 @@ const dot = (a: ArrayLike<number>, b: ArrayLike<number>) => {
   return s
 }
 
+/** The links "reasoning" lists in the panel: steering's pin, a typed or feature pin, else the
+ * focus's neighbours, the first five. */
 async function explainLinks(
   rt: Runtime,
   st: FeatureState,
   dicts: FeatureDict[],
 ): Promise<WhyLink[]> {
+  const steered = st.pinned && [...st.steer.values()].some(t => t.w !== 0)
+  const links = steered
+    ? st.pinned!.slice(0, 5)
+    : rt.query
+      ? rt.query.items.slice(0, 5).map(i => i.preview.r)
+      : (await knnOf(rt, rt.focus)).neighbours.slice(0, 5).map(n => n.r)
+  return explainRows(rt, st, dicts, links)
+}
+
+/** Reasoning for the given link rows against the focus (or the typed query), cached per row. */
+async function explainRows(
+  rt: Runtime,
+  st: FeatureState,
+  dicts: FeatureDict[],
+  links: number[],
+): Promise<WhyLink[]> {
+  const key = st.query ? `q:${st.query.text}` : `f:${rt.focus}`
+  if (st.whyKey !== key) {
+    st.whyKey = key
+    st.whyCache.clear()
+  }
+  const cache = st.whyCache
+  if (links.every(r => cache.has(r))) return links.map(r => cache.get(r)!)
   const meta = await metaOf(rt)
   const url = `${rt.base}/vec/rows-256-int8.bin`
   await requestVec(rt, { type: 'load', url, rows: meta.rows, dims: 256 })
@@ -1272,13 +1349,6 @@ async function explainLinks(
     const got = await requestVec(rt, { type: 'row', url, row: r, scale: meta.scale })
     return got.type === 'row' ? got.vector : new Float32Array(256)
   }
-  // the list on screen: steering's pin, a typed query's or a feature's pin, else the focus's links
-  const steered = st.pinned && [...st.steer.values()].some(t => t.w !== 0)
-  const links = steered
-    ? st.pinned!.slice(0, 5)
-    : rt.query
-      ? rt.query.items.slice(0, 5).map(i => i.preview.r)
-      : (await knnOf(rt, rt.focus)).neighbours.slice(0, 5).map(n => n.r)
   const qDict = st.query
     ? dicts.find(d => d.meta.name === 'text')!
     : dictFor(dicts, docOfRow(rt, rt.focus)?.s)!
@@ -1287,6 +1357,11 @@ async function explainLinks(
   const qr = await reconstruct(rt, qDict, qCodes)
   const out: WhyLink[] = []
   for (const r of links) {
+    const hit = cache.get(r)
+    if (hit) {
+      out.push(hit)
+      continue
+    }
     const xDict = dictFor(dicts, docOfRow(rt, r)?.s)!
     const [x, xCodes] = await Promise.all([rowVec(r), codesOf(rt, xDict, r)])
     const xr = await reconstruct(rt, xDict, xCodes)
@@ -1304,14 +1379,67 @@ async function explainLinks(
     )
     edges.sort((a, b) => Math.abs(b.v) - Math.abs(a.v))
     const above = cos - baseline
-    out.push({
+    const link: WhyLink = {
       r,
       cos,
       share: above > 1e-6 ? Math.max(0, Math.min(1, total / above)) : 0,
       edges: edges.slice(0, 3),
-    })
+    }
+    if (st.whyKey === key) cache.set(r, link)
+    out.push(link)
   }
   return out
+}
+
+/** A link's top three feature-pair edges, each a pair of chips (one filled chip when both rows
+ * fire the same feature) and the edge's value. */
+function edgeList(link: WhyLink): Element {
+  return h(
+    'ol.lat-why-edges',
+    link.edges.map(({ q: [qd, f], x: [xd, g], v }) =>
+      h('li', { dataBoth: qd === xd && f === g ? '' : undefined }, [
+        h('span.lat-why-pair', [
+          chip(qd, f, qd === xd && f === g ? 'both rows fire it' : 'fires in the focus'),
+          qd === xd && f === g ? null : h('span.lat-why-to', '⟷'),
+          qd === xd && f === g ? null : chip(xd, g, 'fires in the link'),
+        ]),
+        h('span.lat-why-v', `${v >= 0 ? '+' : '−'}${Math.abs(v).toFixed(3)}`),
+      ]),
+    ),
+  )
+}
+
+const shareTip = (link: WhyLink) =>
+  `cosine ${link.cos.toFixed(3)}; feature pairs carry ${Math.round(link.share * 100)} % of what is above the shared baseline, the rest is the dictionaries' error`
+
+/** The links pane's cards, each with its reasoning under it (the first 24, while reasoning is
+ * open); hiding reasoning takes them off. */
+async function annotateLinks(rt: Runtime, st: FeatureState, dicts?: FeatureDict[]): Promise<void> {
+  const cards = [...rt.links.querySelectorAll<HTMLElement>('li.lat-link[data-row]')]
+  if (!st.explain) {
+    for (const el of rt.links.querySelectorAll('.lat-link-why')) el.remove()
+    return
+  }
+  const todo = cards.slice(0, 24)
+  if (!todo.length) return
+  dicts ??= await Promise.all(st.names.map(name => loadDict(rt, st, name)))
+  const links = await explainRows(
+    rt,
+    st,
+    dicts,
+    todo.map(li => Number(li.dataset.row)),
+  )
+  if (rt.signal.aborted || !st.explain) return
+  todo.forEach((li, i) => {
+    if (!li.isConnected) return
+    li.querySelector(':scope > .lat-link-why')?.remove()
+    const html = toHtml(
+      h('div.lat-link-why', { title: shareTip(links[i]) }, [edgeList(links[i])]) as never,
+    )
+    const before = li.querySelector(':scope > .lat-link-read, :scope > .lat-silhouette')
+    if (before) before.insertAdjacentHTML('beforebegin', html)
+    else li.insertAdjacentHTML('beforeend', html)
+  })
 }
 
 async function whySection(
@@ -1346,33 +1474,14 @@ async function whySection(
         h('li', [
           h('p.lat-why-head', [
             mark(previews[i].s),
-            h(
-              'a',
-              { href: `?focus=${link.r}`, dataLatFocus: String(link.r) },
-              truncate(previews[i].t, 34),
-            ),
+            h('a', { href: `?focus=${link.r}`, dataLatFocus: String(link.r) }, previews[i].t),
             h(
               'span.lat-why-share',
-              {
-                style: `--a:${link.share.toFixed(3)}`,
-                title: `cosine ${link.cos.toFixed(3)}; feature pairs carry ${Math.round(link.share * 100)} % of what is above the shared baseline, the rest is the dictionaries' error`,
-              },
-              `${link.cos.toFixed(2)} · ${Math.round(link.share * 100)} %`,
+              { title: shareTip(link) },
+              `${link.cos.toFixed(3)} · ${Math.round(link.share * 100)} %`,
             ),
           ]),
-          h(
-            'ol.lat-why-edges',
-            link.edges.map(({ q: [qd, f], x: [xd, g], v }) =>
-              h('li', { dataBoth: qd === xd && f === g ? '' : undefined }, [
-                h('span.lat-why-pair', [
-                  chip(qd, f, qd === xd && f === g ? 'both rows fire it' : 'fires in the focus'),
-                  qd === xd && f === g ? null : h('span.lat-why-to', '⟷'),
-                  qd === xd && f === g ? null : chip(xd, g, 'fires in the link'),
-                ]),
-                h('span.lat-why-v', `${v >= 0 ? '+' : '−'}${Math.abs(v).toFixed(3)}`),
-              ]),
-            ),
-          ),
+          edgeList(link),
         ]),
       ),
     ),
@@ -1387,6 +1496,8 @@ export function bindFeatures(rt: Runtime): void {
   const names = (rt.root.dataset.latentFeatures ?? '').split(',').filter(Boolean)
   if (!panel || names.length === 0) return
   const st: FeatureState = {
+    refresh: () => { void renderPanel(rt, st) },
+    pin: (label, rows) => pinLinks(rt, label, rows),
     names,
     dicts: new Map(),
     tags: null,
@@ -1402,6 +1513,8 @@ export function bindFeatures(rt: Runtime): void {
     explain: true,
     whyReady: false,
     renderSeq: 0,
+    whyCache: new Map(),
+    whyKey: '',
     pinned: null,
     dragFrame: null,
     panel,
@@ -1508,7 +1621,27 @@ export function bindFeatures(rt: Runtime): void {
     'latent:focus',
     () => {
       if (st.steer.size && !st.query) void applySteer(rt, st)
-      else refresh()
+      else if (open()) refresh()
+      // the tab is closed: the cards still carry their reasoning once the decoders are in
+      else if (st.whyReady && st.explain)
+        void annotateLinks(rt, st).catch(error => console.warn('[latent] reasoning', error))
+    },
+    { signal: rt.signal },
+  )
+  // a chip in a card's reasoning opens that feature's card in the features tab
+  rt.links.addEventListener(
+    'click',
+    event => {
+      const item = (event.target as HTMLElement).closest<HTMLElement>(
+        '.lat-link-why [data-dict][data-f]',
+      )
+      if (!item) return
+      event.preventDefault()
+      event.stopPropagation()
+      const name = item.dataset.dict!
+      const f = Number(item.dataset.f)
+      if (!open()) tab?.click()
+      void selectFeature(rt, st, name, f)
     },
     { signal: rt.signal },
   )
@@ -1554,7 +1687,8 @@ export function bindFeatures(rt: Runtime): void {
         if (was) refresh()
         return
       }
-      if (!open()) tab?.click()
+      // a bench showing features keeps the probe: the match lands on it as heat or a ring
+      if (!open() && rt.probe.dataset.benchFeats === undefined) tab?.click()
       else refresh()
       timer = window.setTimeout(() => void commit(), 350)
     },
@@ -1569,4 +1703,45 @@ export function bindFeatures(rt: Runtime): void {
     },
     { signal: rt.signal },
   )
+}
+
+/** The owning controller exposes values, keeping worker channels and caches private. */
+export function snapshotFeatures(rt: Runtime): SharedFeatures | null {
+  const st = states.get(rt)
+  if (!st) return null
+  const label = rt.query?.text ?? ''
+  return {
+    selected: st.selected ? { ...st.selected } : null,
+    steer: [...st.steer].map(([key, term]) => [key, term.w]),
+    explain: st.explain,
+    query: st.query?.text ?? '',
+    pin: label.startsWith('feature · ') || label.startsWith('# '),
+    cluster: label.startsWith('# '),
+  }
+}
+
+export async function restoreFeatures(rt: Runtime, saved: SharedFeatures): Promise<void> {
+  const st = states.get(rt)
+  if (!st) return
+  const dicts = await Promise.all(st.names.map(name => loadDict(rt, st, name)))
+  const tables = await steerTables(rt, st)
+  const meta = await metaOf(rt)
+  if (rt.signal.aborted) return
+  const valid = (name: string, f: number) => dicts.some(d => d.meta.name === name && !!d.table[f])
+  st.explain = saved.explain
+  st.steer.clear()
+  for (const [key, w] of saved.steer) {
+    const term = termOf(key, w)
+    if (term.kind === 'feature' ? valid(term.dict, term.f) : term.kind === 'tag'
+      ? tables?.tags.some(tag => tag.t === term.id) : meta.axes.some(axis => axis.id === term.id))
+      st.steer.set(key, term)
+  }
+  const selected = saved.selected
+  st.selected = selected && valid(selected.dict, selected.f) ? { ...selected } : null
+  if (saved.pin && st.selected) {
+    await selectFeature(rt, st, st.selected.dict, st.selected.f, saved.cluster)
+  } else if (st.steer.size || st.query) {
+    await applySteer(rt, st)
+  }
+  await renderPanel(rt, st)
 }

@@ -39,9 +39,11 @@ from pathlib import Path
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from features import Texts, apply_labels, load_side  # noqa: E402
+from features import Texts, apply_labels, load_canon, load_side  # noqa: E402
 
-MODEL = os.environ.get('LATENT_LABEL_MODEL', 'mlx-community/gemma-4-e4b-it-4bit')
+MODEL = os.environ.get(
+  'LATENT_LABEL_MODEL', 'mlx-community/gemma-4-e4b-it-4bit'
+)
 # the snapshot the labels were made with; a new one is a deliberate bump (and relabels everything,
 # since a label records the model that wrote it)
 REVISION = '475b9088d29754a3379866cf5aeb6b41acd313c2'
@@ -50,7 +52,9 @@ HELD = 4  # held-out firing rows in the scoring prompt (and as many that do not 
 CLIP = 160  # characters per row; prefill (~450 tokens/s on an M1 Max) is most of the cost
 MIN_FIRES = 3
 JACCARD = 0.5
-BATCH = 4  # prompts per mlx-lm batch_generate call: ~1.5x one at a time; 16 thrashes
+BATCH = (
+  4  # prompts per mlx-lm batch_generate call: ~1.5x one at a time; 16 thrashes
+)
 
 ASK = """You are naming one feature of a sparse autoencoder trained on text embeddings of a personal \
 research garden: notes on machine learning, philosophy, mathematics and literature, plus the \
@@ -108,7 +112,10 @@ def first_json(text: str):
   if not m:
     return None
   d = re.search(r'"description"\s*:\s*"((?:[^"\\]|\\.)*)', text)
-  return {'label': m.group(1), 'description': d.group(1).rstrip('\\') + '…' if d else ''}
+  return {
+    'label': m.group(1),
+    'description': d.group(1).rstrip('\\') + '…' if d else '',
+  }
 
 
 def resolve(model: str, revision: str | None) -> str:
@@ -122,7 +129,9 @@ def resolve(model: str, revision: str | None) -> str:
   try:
     return snapshot_download(model, revision=rev, local_files_only=True)
   except Exception:
-    log(f'{model} {(rev or "main")[:7]} is not cached; downloading it once (~3 GB)')
+    log(
+      f'{model} {(rev or "main")[:7]} is not cached; downloading it once (~3 GB)'
+    )
     return snapshot_download(model, revision=rev)
 
 
@@ -153,11 +162,15 @@ class Gemma:
         for p in prompts[a : a + BATCH]
       ]
       # transformers 5 returns an encoding where 4 returned the ids
-      ids = [list(x['input_ids']) if hasattr(x, 'keys') else list(x) for x in ids]
+      ids = [
+        list(x['input_ids']) if hasattr(x, 'keys') else list(x) for x in ids
+      ]
       out.extend(batch_generate(model, tok, ids, max_tokens=max_tokens).texts)
     return out
 
-  def images(self, prompt: str, images: list[str], max_tokens: int = 120) -> str:
+  def images(
+    self, prompt: str, images: list[str], max_tokens: int = 120
+  ) -> str:
     from mlx_vlm import generate, load
     from mlx_vlm.prompt_utils import apply_chat_template
 
@@ -206,8 +219,12 @@ def main() -> None:
   ap.add_argument('--content', default='content')
   ap.add_argument('--directory', default='embeddings')
   ap.add_argument('--model', default=MODEL)
-  ap.add_argument('--only', default='', help='comma-separated dictionary names')
-  ap.add_argument('--limit', type=int, default=0, help='label at most this many')
+  ap.add_argument(
+    '--only', default='', help='comma-separated dictionary names'
+  )
+  ap.add_argument(
+    '--limit', type=int, default=0, help='label at most this many'
+  )
   ap.add_argument('--force', action='store_true', help='relabel everything')
   ap.add_argument('--no-score', action='store_true')
   ap.add_argument(
@@ -225,6 +242,7 @@ def main() -> None:
   labels_path = root / 'labels.json'
   store = json.loads(labels_path.read_text()) if labels_path.exists() else {}
   index, docs, _, doc_of, kinds = load_side(side)
+  unique = load_canon(side, len(doc_of)) == np.arange(len(doc_of))
   texts = Texts(side, docs, index['part'], kinds)
   only = {n for n in args.only.split(',') if n}
   gemma = Gemma(path)
@@ -257,12 +275,15 @@ def main() -> None:
     table = json.loads((dest / 'features.json').read_text())
     meta = json.loads((dest / 'meta.json').read_text())
     ids = load_codes(dest, meta['rows'], meta['k'], meta['codeBlock'])
-    own = np.flatnonzero(np.isin(kinds, spec['kinds']))
+    # negatives for detection scoring come from canonical rows: a copy of a top row is no negative
+    own = np.flatnonzero(np.isin(kinds, spec['kinds']) & unique)
     have = store.setdefault(name, {})
     pictures = name == 'image'
     what, one = (
-      ('images', 'image') if pictures else ('entries', 'entry')
-    ) if name in ('image', 'base') else ('passages', 'passage')
+      (('images', 'image') if pictures else ('entries', 'entry'))
+      if name in ('image', 'base')
+      else ('passages', 'passage')
+    )
     todo = []
     for row in sorted(table, key=lambda r: (r.get('level', 0), r['f'])):
       if row['n'] < MIN_FIRES or not row['top']:
@@ -274,7 +295,10 @@ def main() -> None:
         continue  # written by hand
       if not args.force and isinstance(prev, dict):
         a, b = set(prev.get('rows') or []), set(keys)
-        if prev.get('model') == args.model and len(a & b) / max(1, len(a | b)) >= JACCARD:
+        if (
+          prev.get('model') == args.model
+          and len(a & b) / max(1, len(a | b)) >= JACCARD
+        ):
           continue
       todo.append((row, shown, keys))
     if args.limit:
@@ -301,11 +325,17 @@ def main() -> None:
                 Path('quartz/.quartz-cache/latent-thumbs'),
               )
             )
-            names = '\n'.join(f'{j + 1}. {show(r)}' for j, r in enumerate(shown[:6]))
+            names = '\n'.join(
+              f'{j + 1}. {show(r)}' for j, r in enumerate(shown[:6])
+            )
             body = f'Images attached, with their file names:\n{names}'
           else:
-            body = '\n'.join(f'{j + 1}. {show(r)}' for j, r in enumerate(shown))
-          prompts.append(ASK.format(what=what, one=one, parent=parent, rows=body))
+            body = '\n'.join(
+              f'{j + 1}. {show(r)}' for j, r in enumerate(shown)
+            )
+          prompts.append(
+            ASK.format(what=what, one=one, parent=parent, rows=body)
+          )
         if pictures:
           raws = [
             gemma.images(p, im) if im else gemma.text([p])[0]
@@ -316,7 +346,10 @@ def main() -> None:
         recs: list[tuple[dict, dict]] = []
         for (row, shown, keys), raw in zip(chunk, raws):
           got = first_json(raw)
-          if not isinstance(got, dict) or not str(got.get('label') or '').strip():
+          if (
+            not isinstance(got, dict)
+            or not str(got.get('label') or '').strip()
+          ):
             log(f'{name} {row["f"]}: unparsed {raw[:120]!r}')
             continue
           rec = dict(
@@ -336,10 +369,14 @@ def main() -> None:
           if args.no_score or pictures or len(held) < 2:
             continue
           pool = own[~np.any(ids[own] == row['f'], axis=1)]
-          neg = [int(r) for r in rng.choice(pool, size=len(held), replace=False)]
+          neg = [
+            int(r) for r in rng.choice(pool, size=len(held), replace=False)
+          ]
           mix = [(r, 1) for r in held] + [(r, 0) for r in neg]
           rng.shuffle(mix)
-          rows = '\n'.join(f'{j + 1}. {show(r)}' for j, (r, _) in enumerate(mix))
+          rows = '\n'.join(
+            f'{j + 1}. {show(r)}' for j, (r, _) in enumerate(mix)
+          )
           mixes.append((rec, mix))
           asks.append(
             SCORE.format(
@@ -350,11 +387,15 @@ def main() -> None:
               n=len(mix),
             )
           )
-        for (rec, mix), raw in zip(mixes, gemma.text(asks, max_tokens=40) if asks else []):
+        for (rec, mix), raw in zip(
+          mixes, gemma.text(asks, max_tokens=40) if asks else []
+        ):
           ans = first_json(raw)
           if isinstance(ans, list) and len(ans) == len(mix):
             y = np.array([t for _, t in mix])
-            got = np.array([1 if str(v).strip() in ('1', 'True', 'true') else 0 for v in ans])
+            got = np.array([
+              1 if str(v).strip() in ('1', 'True', 'true') else 0 for v in ans
+            ])
             rec['score'] = round(
               float(0.5 * (got[y == 1].mean() + (1 - got[y == 0]).mean())), 2
             )
@@ -372,11 +413,16 @@ def main() -> None:
     save()
     apply_labels(table, have)
     (dest / 'features.json').write_text(
-      json.dumps(table, ensure_ascii=False, separators=(',', ':')), encoding='utf-8'
+      json.dumps(table, ensure_ascii=False, separators=(',', ':')),
+      encoding='utf-8',
     )
-    scored = [v['score'] for v in have.values() if isinstance(v, dict) and 'score' in v]
+    scored = [
+      v['score'] for v in have.values() if isinstance(v, dict) and 'score' in v
+    ]
     if scored:
-      log(f'{name}: detection score mean {np.mean(scored):.2f} over {len(scored)}')
+      log(
+        f'{name}: detection score mean {np.mean(scored):.2f} over {len(scored)}'
+      )
   log(f'done: {done} labelled, {time.time() - t0:.0f}s')
 
 

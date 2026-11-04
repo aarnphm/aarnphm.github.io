@@ -7,6 +7,8 @@
 [data-layout='latent'] :where(#quartz-root) {
   --lat-pdf: #fdb2a2;
   --lat-image: #cdd597;
+  // a picked feature's rows on the 3-d bench (Flexoki orange, themed)
+  --lat-fire: var(--color-orange);
   // rules, heads and tints come from the curius/arena ledger tokens (tokens/_ledger.scss)
   --lat-hair: var(--ledger-line);
   --lat-rule: var(--dark);
@@ -463,10 +465,23 @@
     }
 
     // curius's row: padded, a 1px rule between rows, the surface on hover
+    // title and score share the first line; every other part spans the row
     .lat-link {
       position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      column-gap: 0.75rem;
+      align-items: baseline;
       padding: 0.625rem 0.75rem;
       font-size: var(--text-meta);
+
+      > :not(.lat-link-title, .lat-score) {
+        grid-column: 1 / -1;
+      }
+
+      > .lat-link-read {
+        justify-self: start;
+      }
 
       & + .lat-link {
         border-top: 1px solid var(--ledger-line);
@@ -490,22 +505,10 @@
     }
 
     .lat-score {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
       font-family: var(--lat-mono);
       font-size: var(--lat-micro);
       color: var(--gray);
-      margin-bottom: 0.15rem;
-
-      i {
-        flex: 0 0 auto;
-        display: block;
-        width: calc(var(--score) * 100%);
-        max-width: calc(100% - 3rem);
-        height: 1px;
-        background: var(--dark);
-      }
+      font-variant-numeric: tabular-nums;
     }
 
     .lat-link-title {
@@ -513,6 +516,9 @@
       font-weight: var(--lat-strong);
       color: var(--dark);
       text-decoration: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
 
       &:hover {
         text-decoration: underline;
@@ -1301,8 +1307,39 @@
     }
   }
 
-  .lat-callout-title {
-    font-weight: var(--lat-strong);
+  // garden components as the note page sets them (callouts.scss, telescopic.inline.scss,
+  // newspaper/dropcap.scss, custom.scss figure.tikz), spaced as the passage's other blocks
+  & > :is(.callout, .telescopic-container, figure.tikz) {
+    margin-bottom: 0;
+  }
+
+  & > * + :is(.callout, .telescopic-container, figure.tikz) {
+    margin-top: 0.75em;
+  }
+
+  // callouts.scss clips a callout's blocks so it can fold them; code in one still scrolls sideways
+  .callout-content > pre.lat-code {
+    overflow-x: auto;
+  }
+
+  // specimens run side by side, so every one keeps the same top (the first block's is 0 otherwise)
+  & > .dropcap-specimen {
+    margin-top: 0.75em;
+    margin-bottom: 0.25em;
+  }
+
+  // a tikz figure shows its source only when its note page has no picture of it
+  figure.lat-tikz {
+    min-height: 4rem;
+
+    &:not([data-state='source']) > .lat-tikz-source {
+      display: none;
+    }
+
+    &[data-state='source'] {
+      display: block;
+      min-height: 0;
+    }
   }
 
   // a notebook cell's output, as notebook/_output-content.scss sets .notebook-output

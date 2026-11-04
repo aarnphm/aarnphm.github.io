@@ -34,7 +34,8 @@ const ENTITY: Record<string, string> = {
   '&#x27;': "'",
   '&#x2F;': '/',
 }
-const unescape = (text: string) => text.replace(/&(?:amp|lt|gt|quot|#39|#x27|#x2F);/gi, m => ENTITY[m] ?? m)
+const unescape = (text: string) =>
+  text.replace(/&(?:amp|lt|gt|quot|#39|#x27|#x2F);/gi, m => ENTITY[m] ?? m)
 const escape = (text: string) =>
   text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
@@ -83,13 +84,16 @@ function algorithmSource(body: string): string {
 /** The algorithm as a `.ps-root` element, or null when the library cannot parse it. */
 export function pseudocodeBlock(body: string, info = ''): Element | null {
   try {
-    const renderer = new Renderer(
-      new Parser(new Lexer(algorithmSource(body))),
-      { ...OPTIONS, lineNumber: lineNumbers(info), captionCount: 0 },
-    )
+    const renderer = new Renderer(new Parser(new Lexer(algorithmSource(body))), {
+      ...OPTIONS,
+      lineNumber: lineNumbers(info),
+      captionCount: 0,
+    })
     renderer.backend = {
       name: 'katex',
-      driver: { renderToString: (tex: string) => `<span class="math math-inline">${escape(tex)}</span>` },
+      driver: {
+        renderToString: (tex: string) => `<span class="math math-inline">${escape(tex)}</span>`,
+      },
     }
     const root = parseMarkup(renderer.toMarkup())
     if (!root) return null

@@ -42,6 +42,17 @@ export interface LatentIndex {
   kinds: LatentKind[]
   counts: Partial<Record<LatentKind, number>>
   stores: LatentStore[]
+  /**
+   * Copied text (quartz/scripts/latent/dedup.py): rows whose text an earlier row holds, by store,
+   * and documents with no row of their own. `canon.u32` maps each row to its canonical row.
+   */
+  copies?: {
+    rows: number
+    stores: Partial<Record<LatentKind, number>>
+    docs: number
+    cos: number
+    jaccard: number
+  }
   /** sparse dictionaries under `feat/<name>/` (quartz/scripts/latent/features.py) */
   features?: LatentFeatureDict[]
 }
@@ -67,6 +78,8 @@ export interface LatentDoc {
   n: number
   sha?: string
   pages?: number | null
+  /** every row is a copy: the document that holds most of this one's text */
+  copyOf?: number
 }
 
 /** One row of a `prev/NNNNN.json` block. */
@@ -97,6 +110,8 @@ export interface LatentChunk {
    * runtime data. The reader points at that chunk instead of showing it.
    */
   same?: [number, number, 'repeat' | 'figure' | 'code']
+  /** the canonical row holding this chunk's text; neighbours and features count that row only */
+  copy?: number
 }
 
 export interface LatentText {

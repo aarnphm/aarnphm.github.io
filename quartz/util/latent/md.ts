@@ -1,5 +1,7 @@
 import type { Element, ElementContent } from 'hast'
 import { h } from 'hastscript'
+import { canonicalizeCallout, formatMathCalloutTitle, isMathCallout } from '../callouts'
+import { linkProperties } from './pdf'
 
 /**
  * Markdown for note passages. The builder hands the reader each note chunk's markdown slice
@@ -33,6 +35,9 @@ const TASK = /^\[([ xX])\][ \t]+/
 
 const MATH = String.raw`\$\$([\s\S]+?)\$\$|\$(?![\s$])((?:\\.|[^\\$\n])+?)(?<!\s)\$(?!\d)`
 const HREF = String.raw`<?([^()\s<>]*(?:\([^()\s]*\)[^()\s<>]*)*)>?`
+// a tag's characters (ofm.ts tagRegex is letters, marks, digits, emoji, `-` and `_`): anything but
+// space, ASCII punctuation other than `-` and `_`, and the slash between segments
+const TAG_CHAR = String.raw`[^\s!-,./:-@[-^\`{-~]`
 const INLINE = new RegExp(
   [
     MATH, // 1 display tex, 2 inline tex
@@ -45,9 +50,38 @@ const INLINE = new RegExp(
     String.raw`~~(?!\s)([^\n]+?)(?<!\s)~~`, // 11 del
     String.raw`==(?!\s)([^\n]+?)(?<!\s)==`, // 12 mark
     String.raw`(\`+)(?!\`)([^\n]*?[^\`\n])\13(?!\`)`, // 13 ticks, 14 code span
+    // the Obsidian and GFM extras note pages render (ofm.ts, remark-gfm)
+    String.raw`(?<![\w/@.\-])(https?:\/\/[^\s<>]+)`, // 15 bare url
+    String.raw`(?<=^|\s)#(${TAG_CHAR}+(?:\/${TAG_CHAR}+)*)`, // 16 tag
+    String.raw`::([^:\n]+?)(?:\{(h[1-7])\})?::`, // 17 marker text, 18 intensity
+    String.raw`\^\[((?:[^\[\]\n]|\[[^\[\]\n]*\])+)\]`, // 19 inline footnote
+    String.raw`(-{1,2}>|={1,2}>|<-{1,2}|<={1,2})`, // 20 arrow
   ].join('|'),
   'g',
 )
+
+// ofm.ts `arrowMapping`
+const ARROWS: Record<string, string> = {
+  '->': '→',
+  '-->': '⇒',
+  '=>': '⇒',
+  '==>': '⇒',
+  '<-': '←',
+  '<--': '⇐',
+  '<=': '⇐',
+  '<==': '⇐',
+}
+
+/** `[text](href)`: a link when the href is a web, mail, site or anchor address, else its text */
+export function mdLink(href: string, children: ElementContent[]): ElementContent[] {
+  if (!SAFE_HREF.test(href)) return children
+  return [h('a', linkProperties(href), children)]
+}
+
+/** rehype-pretty-code's language hint at the end of a code span (`berkeley mono{:text}`) */
+export const codeText = (body: string) =>
+  // one space each side is padding, as in CommonMark
+  (/^ [\s\S]* $/.test(body) && body.trim() ? body.slice(1, -1) : body).replace(/\{:[^{}\s]*\}$/, '')
 
 const SAFE_HREF = /^(?:https?:\/\/|mailto:|\/|#)/i
 const dollarsBalanced = (text: string) =>
@@ -89,26 +123,34 @@ function convert(
   if (m[1] !== undefined) return m[1].trim() ? [math(m[1].trim(), true)] : null
   if (m[2] !== undefined) return [math(m[2], false)]
   if (m[0].startsWith('!')) return []
-  if (m[3] !== undefined) {
-    const href = m[4] ?? ''
-    if (!SAFE_HREF.test(href)) return inner(m[3])
-    const internal = href.startsWith('/') || href.startsWith('#')
+  if (m[3] !== undefined) return mdLink(m[4] ?? '', inner(m[3]))
+  if (m[15] !== undefined) {
+    // GFM leaves trailing punctuation, and a close paren the url did not open, outside the link
+    let url = m[15].replace(/[.,:;!?'"*_~]+$/, '')
+    while (url.endsWith(')') && url.split('(').length < url.split(')').length)
+      url = url.slice(0, -1).replace(/[.,:;!?'"*_~]+$/, '')
+    const rest = m[15].slice(url.length)
     return [
-      h(
-        'a',
-        internal
-          ? { href, className: ['internal'] }
-          : { href, className: ['external'], rel: 'noopener noreferrer', target: '_blank' },
-        inner(m[3]),
-      ),
+      h('a', linkProperties(url), url),
+      ...(rest ? [{ type: 'text' as const, value: rest }] : []),
     ]
   }
-  if (m[5] !== undefined)
-    return [h('a.external', { href: m[5], rel: 'noopener noreferrer', target: '_blank' }, m[5])]
+  if (m[16] !== undefined) {
+    // all digits and slashes (`#1`, `#2/3`) is not a tag
+    if (/^[\d/]+$/.test(m[16])) return null
+    const slug = m[16]
+      .split('/')
+      .map(s => s.replace(/&/g, '-and-').replace(/%/g, '-percent').replace(/\?/g, ''))
+      .join('/')
+    return [h('a.internal.tag-link', { href: `/tags/${slug}` }, slug)]
+  }
+  if (m[17] !== undefined)
+    return [h('span', { className: ['marker', `marker-${m[18] ?? 'h3'}`] }, inner(m[17]))]
+  if (m[19] !== undefined) return [h('small.lat-fn-inline', ['(', ...inner(m[19]), ')'])]
+  if (m[20] !== undefined) return [{ type: 'text', value: ARROWS[m[20]] }]
+  if (m[5] !== undefined) return [h('a', linkProperties(m[5]), m[5])]
   if (m[6] !== undefined) return [h('sup.lat-fn', m[6])]
-  if (m[14] !== undefined)
-    // one space each side is padding, as in CommonMark
-    return [h('code', /^ [\s\S]* $/.test(m[14]) && m[14].trim() ? m[14].slice(1, -1) : m[14])]
+  if (m[14] !== undefined) return [h('code', codeText(m[14]))]
   const delimiter = m[7] ?? m[9]
   const body = m[8] ?? m[10] ?? m[11] ?? m[12]
   if (body === undefined || !dollarsBalanced(body)) return null
@@ -134,6 +176,8 @@ const FENCE = /^[ \t]*(`{3,}|~{3,})/
 const DISPLAY_OPEN = /^[ \t]*\$\$/
 const META = /^([ \t]*)[-*+][ \t]+\[meta\]:[ \t]*$/
 const FIGURE = /^ {0,3}<(figure|svg)\b/
+// raw `<pre>` (a hex dump, a listing with coloured spans) is a code block on the page too
+const PRE = /^ {0,3}<pre\b/i
 
 /**
  * Where the html block opening `source` ends: after the close that balances its first tag
@@ -159,7 +203,8 @@ const startsBlock = (line: string) =>
   FOOTNOTE.test(line) ||
   FENCE.test(line) ||
   DISPLAY_OPEN.test(line) ||
-  FIGURE.test(line)
+  FIGURE.test(line) ||
+  PRE.test(line)
 
 function dedent(lines: string[], by: number): string[] {
   return lines.map(line => {
@@ -171,6 +216,20 @@ function dedent(lines: string[], by: number): string[] {
     }
     return line.slice(cut)
   })
+}
+
+/**
+ * Block markup of a markdown source. A chunk cut inside a raw `<pre>` opens on its listing: the
+ * text before a `</pre>` no `<pre>` opened is that listing.
+ */
+export function mdSource(source: string, hooks: MdHooks): Element[] {
+  const close = /<\/pre\s*>/i.exec(source)
+  if (!close || /<pre\b/i.test(source.slice(0, close.index))) return mdBlocks(source, hooks)
+  const listing = source.slice(0, close.index).replace(/<[^>]*>/g, '')
+  return [
+    ...(listing.trim() ? [hooks.fence(listing.replace(/^\n+/, ''), '')] : []),
+    ...mdBlocks(source.slice(close.index + close[0].length), hooks),
+  ]
 }
 
 /** Block markup of a markdown source, line by line. */
@@ -188,13 +247,11 @@ export function mdBlocks(source: string, hooks: MdHooks): Element[] {
       const body: string[] = []
       while (i < lines.length && QUOTE.test(lines[i]))
         body.push(lines[i++].replace(/^ {0,3}> ?/, ''))
-      const callout = /^\[!([\w-]+)\][+-]?[ \t]*(.*)$/.exec(body[0] ?? '')
-      const rest = callout ? body.slice(1) : body
+      const head = CALLOUT.exec(body[0] ?? '')
       out.push(
-        h('blockquote.lat-quote', { dataCallout: callout ? callout[1].toLowerCase() : undefined }, [
-          callout ? h('p.lat-callout-title', hooks.inline(callout[2] || callout[1])) : null,
-          ...mdBlocks(rest.join('\n'), hooks),
-        ]),
+        head
+          ? callout(head, body.slice(1).join('\n'), hooks)
+          : h('blockquote.lat-quote', mdBlocks(body.join('\n'), hooks)),
       )
     } else if (FENCE.test(line)) {
       const marker = FENCE.exec(line)![1]
@@ -241,6 +298,19 @@ export function mdBlocks(source: string, hooks: MdHooks): Element[] {
       while (i < lines.length && lines[i].trim() && indentOf(lines[i]) >= 2)
         body.push(lines[i++].trim())
       out.push(h('p.lat-fn-def', [h('sup.lat-fn', id), ' ', ...hooks.inline(body.join(' '))]))
+    } else if (PRE.test(line)) {
+      // the block runs to its `</pre>` (or the chunk's end); tags inside drop, text after the
+      // close on the same line carries on as markdown
+      const rest = lines.slice(i).join('\n')
+      const close = /<\/pre\s*>/i.exec(rest)
+      const end = close ? close.index + close[0].length : rest.length
+      const body = rest
+        .slice(0, close ? close.index : rest.length)
+        .replace(/^[^>]*>\n?/, '')
+        .replace(/<[^>]*>/g, '')
+      if (body.trim()) out.push(hooks.fence(body, ''))
+      out.push(...mdBlocks(rest.slice(end), hooks))
+      break
     } else if (FIGURE.test(line)) {
       // a drawing is one block however many lines (and blank lines) it spans; text after its
       // close on the same line carries on as markdown
@@ -252,7 +322,7 @@ export function mdBlocks(source: string, hooks: MdHooks): Element[] {
       out.push(...hooks.figure(rest.slice(0, end)), ...mdBlocks(rest.slice(end), hooks))
       break
     } else if (META.test(line)) {
-      i = meta(lines, i, out)
+      i = meta(lines, i, out, hooks)
     } else if (ITEM.test(line)) {
       i = list(lines, i, out, hooks)
     } else {
@@ -266,6 +336,45 @@ export function mdBlocks(source: string, hooks: MdHooks): Element[] {
     }
   }
   return out
+}
+
+// `> [!type|metadata]± title`, as ObsidianFlavoredMarkdown reads a callout's first line
+const CALLOUT = /^\[!([\w-]+)(?:\|([^\]]*))?\]([+-]?)[ \t]*(.*)$/
+
+/**
+ * A callout as the note page sets it (ofm.ts): `blockquote.callout.<type>` with its title and a
+ * `.callout-content` body, foldable when the head says `+` or `-` (folded). callouts.scss styles
+ * it and the reader's click handler folds it. A passage cannot count a page's theorems, so a
+ * math callout keeps only a number its title gives.
+ */
+function callout(head: RegExpExecArray, body: string, hooks: MdHooks): Element {
+  const [, raw, metadata, fold, title] = head
+  const type = canonicalizeCallout(raw.toLowerCase())
+  const math = isMathCallout(type)
+  let shown = title.trim()
+  if (math && type !== 'math')
+    shown = (formatMathCalloutTitle(type, shown, shown, 0) ?? shown).replace(/^(\w+) 0\./, '$1.')
+  else if (!shown) shown = (raw[0].toUpperCase() + raw.slice(1)).replace(/-/g, ' ')
+  const content = mdBlocks(body, hooks)
+  return h(
+    'blockquote',
+    {
+      className: [
+        'callout',
+        type,
+        math ? 'callout-math' : '',
+        fold ? 'is-collapsible' : '',
+        fold === '-' ? 'is-collapsed' : '',
+      ].filter(Boolean),
+      dataCallout: type,
+      dataCalloutFold: fold ? '' : undefined,
+      dataCalloutMetadata: metadata || undefined,
+    },
+    [
+      h('div.callout-title', [h('div.callout-title-inner', [h('p', hooks.inline(shown))])]),
+      content.length > 0 ? h('div.callout-content', content) : null,
+    ],
+  )
 }
 
 /** Soft wraps join with a space; a line ending in two spaces or a backslash breaks. */
@@ -350,7 +459,7 @@ function list(lines: string[], start: number, out: Element[], hooks: MdHooks): n
  * A stream entry's `- [meta]:` list (date, tags, other `key: value` pairs, see content/stream.md)
  * as one line of metadata: `2026-10-28 16:07 · life · death · training log 087`.
  */
-function meta(lines: string[], start: number, out: Element[]): number {
+function meta(lines: string[], start: number, out: Element[], hooks: MdHooks): number {
   const indent = indentOf(META.exec(lines[start])![1])
   const parts: string[] = []
   let date = ''
@@ -367,7 +476,8 @@ function meta(lines: string[], start: number, out: Element[]): number {
   out.push(
     h('p.lat-meta', [
       date ? h('time', { dateTime: date.replace(' ', 'T') }, date) : null,
-      ...parts.flatMap((part, n) => (date || n > 0 ? [' · ', part] : [part])),
+      // a value can be a link (`[dualism](/thoughts/dualism)`) or a bare url
+      ...parts.flatMap((part, n) => [...(date || n > 0 ? [' · '] : []), ...hooks.inline(part)]),
     ]),
   )
   return i

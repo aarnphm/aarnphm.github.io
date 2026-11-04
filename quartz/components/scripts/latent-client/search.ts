@@ -1,12 +1,22 @@
 import { toHtml } from 'hast-util-to-html'
 import type { SemanticEmbedRequest, SemanticWorkerResponse } from '../../../util/semantic-protocol'
 import type { ToastHandle } from '../toast'
+import {
+  completeGoto,
+  gotoIndex,
+  gotoPane,
+  matchDocs,
+  parseGoto,
+  type GotoIndex,
+} from '../../../util/latent/goto'
 import { linksPane, railSvg, type LinkItem } from '../../../util/latent/markup'
 import { RAIL_WIDTH } from '../../../util/latent/rail'
-import { inScope } from '../../../util/latent/types'
+import { inScope, type LatentDoc } from '../../../util/latent/types'
 import { setStatusText } from '../status-flap'
 import { drawBench } from './bench-canvas'
+import { goTo } from './reader'
 import { knnOf, metaOf, previewOf, requestVec, type Runtime } from './runtime'
+import { bindSearchCompletion } from './search-completion'
 
 export async function renderLinks(rt: Runtime, row: number): Promise<void> {
   const links = await knnOf(rt, row)
@@ -17,7 +27,8 @@ export async function renderLinks(rt: Runtime, row: number): Promise<void> {
     const doc = rt.docs[preview.d]
     return { preview, score: links.neighbours[i].score, doc, inScope: inScope(doc.id, rt.scope) }
   })
-  if (!rt.query) {
+  // a typed query or an open goto list holds the pane until it is cleared
+  if (!rt.query && rt.links.dataset.goto === undefined) {
     const pane = linksPane(focusPreview, items, rt.kinds)
     linksBody(rt).innerHTML = toHtml(pane.children as never, { allowDangerousHtml: false })
     rt.links.scrollTop = 0
@@ -161,7 +172,7 @@ function searchStatus(rt: Runtime): {
   return { set, done: text => settle(text, 1800), fail: text => settle(text, 3200) }
 }
 
-async function runQuery(rt: Runtime, text: string): Promise<void> {
+export async function runQuery(rt: Runtime, text: string): Promise<void> {
   const status = searchStatus(rt)
   const axes = matchAxes(rt, text)
   if (rt.wanted === text && rt.query?.text === text) return
@@ -222,10 +233,88 @@ function clearQuery(rt: Runtime): void {
   rt.toast = null
   rt.wanted = ''
   rt.root.dispatchEvent(new CustomEvent('latent:query', { detail: null }))
-  if (!rt.query && !rt.links.dataset.query) return
+  if (!rt.query && !rt.links.dataset.query && rt.links.dataset.goto === undefined) return
   rt.query = null
   delete rt.links.dataset.query
+  delete rt.links.dataset.goto
   void renderLinks(rt, rt.focus)
+}
+
+/**
+ * `goto:` lists documents by title, slug or path as you type (no embedding); ↑↓ pick, Enter or a
+ * click opens the pick at its first row, Tab fills its full path into the box.
+ */
+function gotoMode(rt: Runtime, input: HTMLInputElement) {
+  let index: GotoIndex | null = null
+  let hits: LatentDoc[] = []
+  let active = 0
+  const items = () => [...rt.links.querySelectorAll<HTMLElement>('.lat-goto-item')]
+  const show = (needle: string) => {
+    index ??= gotoIndex(rt.docs)
+    hits = matchDocs(index, needle)
+    active = 0
+    // a query still embedding drops its result, and its status line goes with it
+    rt.wanted = ''
+    rt.toast?.dismiss()
+    rt.toast = null
+    for (const card of rt.probe.querySelectorAll<HTMLElement>('.lat-axis[data-match]'))
+      delete card.dataset.match
+    rt.links.dataset.goto = needle
+    const pane = gotoPane(hits, needle, rt.docs.length, active, doc => !inScope(doc.id, rt.scope))
+    linksBody(rt).innerHTML = toHtml(pane as never, { allowDangerousHtml: false })
+    rt.links.scrollTop = 0
+  }
+  const pick = (next: number) => {
+    const all = items()
+    if (all.length === 0) return
+    active = (next + all.length) % all.length
+    all.forEach((el, i) => el.toggleAttribute('data-active', i === active))
+    all[active].scrollIntoView({ block: 'nearest' })
+  }
+  const open = async (i = active) => {
+    const doc = hits[i]
+    if (!doc) return
+    input.value = ''
+    input.blur()
+    delete rt.links.dataset.goto
+    if (rt.query || rt.links.dataset.query) {
+      rt.query = null
+      delete rt.links.dataset.query
+      rt.root.dispatchEvent(new CustomEvent('latent:query', { detail: null }))
+    }
+    // goTo re-renders the links through setFocus, which skips a row that already has the focus
+    const same = rt.focus === doc.r0
+    await goTo(rt, doc.r0)
+    if (same && !rt.signal.aborted) void renderLinks(rt, rt.focus)
+  }
+  const fill = (): boolean => {
+    const doc = hits[active]
+    if (!doc) return false
+    const value = completeGoto(doc)
+    if (input.value.trim() === value) return false
+    input.value = value
+    show(parseGoto(value) ?? '')
+    return true
+  }
+  rt.links.addEventListener(
+    'click',
+    event => {
+      const item = (event.target as HTMLElement).closest<HTMLElement>('.lat-goto-item')
+      if (!item) return
+      event.preventDefault()
+      event.stopPropagation()
+      const d = Number(item.dataset.goto)
+      void open(hits.findIndex(doc => doc.d === d))
+    },
+    { signal: rt.signal },
+  )
+  return {
+    active: () => rt.links.dataset.goto !== undefined,
+    show,
+    pick: (step: number) => pick(active + step),
+    open: () => void open(),
+    fill,
+  }
 }
 
 const SEARCH_DEBOUNCE_MS = 450
@@ -240,10 +329,32 @@ export function bindSearch(rt: Runtime): void {
     if (timer !== null) window.clearTimeout(timer)
     timer = null
   }
+  const goto = gotoMode(rt, input)
+  bindSearchCompletion(rt, input, form)
+  let resultIndex = -1
+  document.addEventListener(
+    'keydown',
+    event => {
+      if (
+        event.ctrlKey &&
+        !event.altKey &&
+        !event.metaKey &&
+        !event.shiftKey &&
+        !event.isComposing &&
+        event.code === 'KeyK'
+      ) {
+        event.preventDefault()
+        event.stopImmediatePropagation()
+        input.focus({ preventScroll: true })
+      }
+    },
+    { capture: true, signal: rt.signal },
+  )
   const run = () => {
     cancel()
     const text = input.value.trim()
-    if (!text) clearQuery(rt)
+    if (parseGoto(text) !== null) goto.open()
+    else if (!text) clearQuery(rt)
     // `#…` searches features (features.ts); Enter selects the best match now
     else if (text.startsWith('#'))
       rt.root.dispatchEvent(new CustomEvent('latent:feature-search', { detail: text }))
@@ -260,11 +371,36 @@ export function bindSearch(rt: Runtime): void {
   input.addEventListener(
     'keydown',
     event => {
-      if (event.key === 'Escape') {
+      if (event.defaultPrevented || event.isComposing) return
+      const step =
+        event.ctrlKey && !event.altKey && !event.metaKey && !event.shiftKey
+          ? event.key.toLowerCase() === 'n'
+            ? 1
+            : event.key.toLowerCase() === 'p'
+              ? -1
+              : 0
+          : 0
+      if (step) {
+        event.preventDefault()
+        event.stopPropagation()
+        if (goto.active()) goto.pick(step)
+        else {
+          const rows = [...rt.links.querySelectorAll<HTMLElement>('.lat-link')]
+          if (!rows.length) return
+          resultIndex = Math.max(0, Math.min(rows.length - 1, resultIndex + step))
+          rows.forEach((row, i) => row.toggleAttribute('data-keyboard-active', i === resultIndex))
+          rows[resultIndex].scrollIntoView({ block: 'nearest' })
+        }
+      } else if (event.key === 'Escape') {
         cancel()
         input.value = ''
         clearQuery(rt)
         input.blur()
+      } else if (goto.active() && (event.key === 'ArrowDown' || event.key === 'ArrowUp')) {
+        event.preventDefault()
+        goto.pick(event.key === 'ArrowDown' ? 1 : -1)
+      } else if (goto.active() && event.key === 'Tab' && !event.shiftKey) {
+        if (goto.fill()) event.preventDefault()
       }
     },
     { signal: rt.signal },
@@ -273,10 +409,21 @@ export function bindSearch(rt: Runtime): void {
     'input',
     () => {
       cancel()
+      resultIndex = -1
       const text = input.value.trim()
+      const needle = parseGoto(text)
+      if (needle !== null) {
+        goto.show(needle)
+        return
+      }
       if (!text) {
         clearQuery(rt)
         return
+      }
+      // leaving goto: the focus's links come back until the new query settles
+      if (goto.active()) {
+        delete rt.links.dataset.goto
+        void renderLinks(rt, rt.focus)
       }
       if (text.startsWith('#')) return
       matchAxes(rt, text)

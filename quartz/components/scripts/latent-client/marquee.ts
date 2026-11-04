@@ -1,9 +1,9 @@
 import type { Runtime } from './runtime'
 
 // the probe's one-line labels that an ellipsis can cut: feature names, chips, the card title,
-// the titles under "in text", steering pins
+// the titles under "in text", steering pins, a feature card's description
 const CUT =
-  '.lat-feat-chip, .lat-feat-head, .lat-feat-name, .lat-feat-cross a, .lat-feat-pin > span, .lat-chip'
+  '.lat-feat-chip, .lat-feat-head, .lat-feat-name, .lat-feat-cross a, .lat-feat-pin > span, .lat-chip, .lat-feat-about'
 
 /**
  * Hovering a label that is cut short scrolls it to its end and back at a reading pace (the
