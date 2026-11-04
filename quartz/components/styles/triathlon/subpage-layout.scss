@@ -384,14 +384,13 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   }
 }
 
-// Primary readouts use UI size; supporting labels retain the metadata scale.
 .tri-pace-table {
   width: 100%;
   min-width: 44rem;
   margin: 0;
   border-collapse: collapse;
   font-family: var(--codeFont);
-  font-size: var(--text-ui);
+  font-size: var(--text-meta);
   font-variant-numeric: tabular-nums;
   line-height: 1.5;
   color: var(--dark);
