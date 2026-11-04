@@ -137,9 +137,7 @@ export function chunkUnderLine(rt: Runtime): HTMLElement | null {
 function rowChunk(rt: Runtime, row: number): HTMLElement | null {
   const chunk = rt.reader.querySelector<HTMLElement>(`.lat-chunk[data-row="${row}"]`)
   const first = chunk?.dataset.joined
-  return (
-    (first && rt.reader.querySelector<HTMLElement>(`.lat-chunk[data-row="${first}"]`)) || chunk
-  )
+  return (first && rt.reader.querySelector<HTMLElement>(`.lat-chunk[data-row="${first}"]`)) || chunk
 }
 
 function setFocus(rt: Runtime, row: number, options: { push?: boolean } = {}): void {

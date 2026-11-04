@@ -23,7 +23,6 @@ import {
 } from './html'
 import { type MdHooks, mdBlocks, mdInline } from './md'
 import { pseudocodeBlock } from './pseudo'
-import { displayTex } from './tex'
 import {
   LABEL_ROW,
   LABEL_X,
@@ -41,6 +40,7 @@ import {
   truncate,
 } from './rail'
 import { svgDrawings } from './svg'
+import { displayTex } from './tex'
 import { titleRuns, titleText } from './title'
 import { KIND_ORDER, inScope, rowHref } from './types'
 
@@ -389,7 +389,10 @@ function joinedRun(chunks: LatentChunk[], texts: string[], i: number): number {
   }
   // a lone `$`, a table or a heading inside any of the run's display math means the dollars
   // pair up wrong (text that happens to use them), so the run stays as rows
-  for (const [, tex] of texts.slice(i, j + 1).join('\n\n').matchAll(DISPLAY_MATH))
+  for (const [, tex] of texts
+    .slice(i, j + 1)
+    .join('\n\n')
+    .matchAll(DISPLAY_MATH))
     if (/(?<!\\)\$|<t[dhr]\b|\n#/.test(tex)) return i
   return j
 }
@@ -403,9 +406,8 @@ const OVERLAP_MIN = 12
 function ownText(prev: LatentChunk | undefined, chunk: LatentChunk): string {
   const text = chunk.text ?? ''
   const before = prev?.text ?? ''
-  if (!prev || prev.same || chunk.same || prev.r + 1 !== chunk.r || text.length < OVERLAP_MIN)
-    return text
-  const probe = text.slice(0, OVERLAP_MIN)
+  if (!prev || prev.same || chunk.same || prev.r + 1 !== chunk.r) return text
+  const probe = text.length < OVERLAP_MIN ? '\u0000' : text.slice(0, OVERLAP_MIN)
   // the earliest place the row's start recurs in the tail of the one before is the longest seam
   for (
     let at = before.indexOf(probe, Math.max(0, before.length - text.length));
@@ -417,6 +419,10 @@ function ownText(prev: LatentChunk | undefined, chunk: LatentChunk): string {
       return own.trim() ? own.replace(/^\s+/, '') : text
     }
   }
+  // a short seam (`Hence,`) counts when it is a whole paragraph on both sides
+  const cut = text.indexOf('\n\n')
+  const head = cut > 0 ? text.slice(0, cut) : ''
+  if (head.trim() && before.endsWith(`\n\n${head}`)) return text.slice(cut).replace(/^\s+/, '')
   return text
 }
 
@@ -505,14 +511,16 @@ export function chunkArticles(
                 })),
         ],
       ),
-      ...run.slice(1).map(c =>
-        h('article.lat-chunk.lat-joined', {
-          id: `lat-r${c.r}`,
-          dataRow: String(c.r),
-          dataPage: c.p ? String(c.p) : undefined,
-          dataJoined: String(chunk.r),
-        }),
-      ),
+      ...run
+        .slice(1)
+        .map(c =>
+          h('article.lat-chunk.lat-joined', {
+            id: `lat-r${c.r}`,
+            dataRow: String(c.r),
+            dataPage: c.p ? String(c.p) : undefined,
+            dataJoined: String(chunk.r),
+          }),
+        ),
     )
     i = j
   }

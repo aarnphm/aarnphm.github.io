@@ -7,7 +7,8 @@
 
 // `x _ {a} _ {b}`: OCR stacks a second subscript (or superscript) where the page set a nested
 // one; an empty group between them is what TeX needs
-const DOUBLE = /(([_^])\s*(?:\{(?:[^{}]|\{(?:[^{}]|\{[^{}]*\})*\})*\}|\\[a-zA-Z]+|[a-zA-Z0-9]))\s*(?=\2)/g
+const DOUBLE =
+  /(([_^])\s*(?:\{(?:[^{}]|\{(?:[^{}]|\{[^{}]*\})*\})*\}|\\[a-zA-Z]+|[a-zA-Z0-9]))\s*(?=\2)/g
 
 const TAG = /\\tag(\*?)\s*\{((?:[^{}]|\{[^{}]*\})*)\}/g
 
