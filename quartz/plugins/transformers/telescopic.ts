@@ -1,4 +1,4 @@
-import type { RootContent, Text } from 'hast'
+import type { ElementContent, RootContent } from 'hast'
 import { Root, Element } from 'hast'
 import { fromHtmlIsomorphic } from 'hast-util-from-html-isomorphic'
 import { toHtml } from 'hast-util-to-html'
@@ -30,31 +30,8 @@ import content from '../../components/styles/telescopic.inline.scss'
 // Some deviation: separator=" ", shouldExpandOnMouseOver=false
 import { QuartzTransformerPlugin } from '../../types/plugin'
 import { simplifySlug, splitAnchor, stripSlashes, transformLink } from '../../util/path'
+import { type Content, telescopeHast, telescopicContent } from '../../util/telescopic'
 import { extractWikilinksWithPositions } from '../../util/wikilinks'
-
-interface Line {
-  og: string // the original string to replace
-  new: string // the replacement string
-  replacements: Line[] // nested replacements to apply on the resultant line afterwards
-}
-
-interface Content {
-  text: string // Original string content in the line
-  replacements: Line[] // Sections of the original text to replace/expand
-}
-
-interface NewContent {
-  text: string
-  expansions?: NewContent[]
-  separator?: string
-}
-
-type TelescopicOutput = NewContent[]
-
-interface TelescopeNode {
-  depth: number
-  telescopicOut: TelescopicOutput
-}
 
 interface Config {
   /**
@@ -66,8 +43,6 @@ interface Config {
    */
   shouldExpandOnMouseOver?: boolean
 }
-
-const createEmptyTextNode = (): Text => ({ type: 'text', value: '' })
 
 function applyInlineFormatting(value: string): string {
   if (!value) {
@@ -117,165 +92,15 @@ function inlineFragmentToNodes(value: string): RootContent[] {
   return children
 }
 
-/*****************/
-/* PARSING LOGIC */
-/*****************/
-
-// Parses the input string and returns the output as a structured data format.
-function parseMarkdown(mdContent: string): TelescopicOutput {
-  // In future we might want to support full markdown in which case..
-  //   const html = marked.parse(mdContent);
-  //  convert into jsdom
-  //   const lines = html.split("\n");
-  // Also idea for "..." or ellipsis character to represent infinite expansion.
-
-  const BulletSeparators = ['*', '-', '+']
-  const RegexEscapedBulletSeparators = ['\\*', '-', '\\+']
-
-  const lines = mdContent.split('\n')
-  // NOTE: this should handle normalizing the depth (if its an indented list)
-  const root: TelescopicOutput = []
-  const nodeStack: TelescopeNode[] = [{ depth: 0, telescopicOut: root }]
-
-  // This is essentially a trie data structure to parse out all the bullet points
-  // The algorithm works by assuming that any time you encounter a longer depth than the current one,
-  // you are moving onto the next line.
-  const firstNonEmptyLine = lines.find(l => l.trim().length > 0)
-  const defaultDepth =
-    // @ts-ignore
-    firstNonEmptyLine?.match(`^\\s*(${RegexEscapedBulletSeparators.join('|')})`)?.[0]?.length - 1 ||
-    0
-  for (const line of lines) {
-    const trimmedLine = line.trim()
-    if (!trimmedLine.length) {
-      continue
-    }
-
-    // validate that the trimmed line starts with the bullet indicators.
-    if (!BulletSeparators.some(sep => trimmedLine.startsWith(sep))) {
-      console.log(`Invalid line found! ${line}`)
-      continue
-    }
-
-    // count all spaces in front to get current depth
-    const currentDepth =
-      line.match(`^\\s*(${RegexEscapedBulletSeparators.join('|')})`)![0].length - 1
-
-    // if greater depth, attach on to the last one
-    // else you can pop back up to one with 1 less depth
-    while (
-      nodeStack.length - 1 >= 0 &&
-      currentDepth <= nodeStack[nodeStack.length - 1].depth &&
-      nodeStack[nodeStack.length - 1].depth > 0
-    ) {
-      nodeStack.pop()
-    }
-
-    const { telescopicOut, ...restLastNode } = nodeStack[nodeStack.length - 1]
-    const strippedLine = trimmedLine.substring(1).replace(/^\s+/, '')
-    // Add current content / node to the stack
-    const currentContent: NewContent = { text: strippedLine, expansions: [] }
-    if (currentDepth === defaultDepth) {
-      telescopicOut.push(currentContent)
-      nodeStack[nodeStack.length - 1] = { ...restLastNode, telescopicOut }
-    } else {
-      telescopicOut[telescopicOut.length - 1].expansions!.push(currentContent)
-      // add this current one as a replacement to the last upper level one.
-      const newNode = { depth: currentDepth, telescopicOut: [currentContent] }
-      nodeStack.push(newNode)
-    }
-  }
-
-  return root
-}
-
-// Ideally this would not be needed (just used to convert between data structures currently).
-function outputToContent(output: TelescopicOutput, separator: string = ' '): Content {
-  const parseReplacementsFromOutput = (out: TelescopicOutput): Line[] => {
-    return out.flatMap((line: NewContent) => {
-      if (!line.expansions?.length) {
-        return []
-      }
-      const newText = line.expansions.map(line => line.text).join(separator)
-
-      return [
-        {
-          og: line.text,
-          new: newText,
-          replacements: line.expansions?.length ? parseReplacementsFromOutput(line.expansions) : [],
-        },
-      ]
-    })
-  }
-  const text = output.map((line: NewContent) => line.text).join(separator)
-  const replacements: Line[] = parseReplacementsFromOutput(output)
-
-  return { text, replacements }
-}
-
-// Ideally this would not be needed (just used to convert between data structures currently).
-function mdToContent(mdContent: string, separator: string = ' '): Content {
-  const output = parseMarkdown(mdContent)
-  return outputToContent(output, separator)
-}
-
-function contentToHast(content: Content, opts: Config) {
-  function processContent(line: Content) {
-    let lastIndex = 0
-    const nodes: RootContent[] = []
-    let lineText = line.text
-
-    for (let i = 0; i < line.replacements.length; i++) {
-      const replacement = line.replacements[i]
-
-      const index = lineText.indexOf(replacement.og, lastIndex)
-      const [before, ...after] = lineText.split(replacement.og)
-      lineText = after.join(replacement.og)
-
-      // Add text before replacement
-      nodes.push(...inlineFragmentToNodes(before))
-
-      // Create telescopic node
-      const summaryChildren = inlineFragmentToNodes(replacement.og)
-      const expandedChildren = processContent({
-        text: replacement.new,
-        replacements: replacement.replacements,
-      })
-
-      const detail: Element = h('span', { class: 'details close' }, [
-        // A span keeps the summary in the text flow; a button is an atomic inline-block box.
-        h(
-          'span',
-          { class: 'summary', role: 'button', tabindex: 0, 'aria-expanded': 'false' },
-          summaryChildren.length ? summaryChildren : [createEmptyTextNode()],
-        ),
-        // Expanded content
-        h(
-          'span',
-          { class: 'expanded' },
-          expandedChildren.length ? expandedChildren : [createEmptyTextNode()],
-        ),
-      ])
-
-      nodes.push(detail)
-      lastIndex = index + replacement.og.length
-    }
-
-    // Add remaining text
-    if (lastIndex < lineText.length) {
-      nodes.push(...inlineFragmentToNodes(lineText.slice(lastIndex)))
-    }
-
-    return nodes
-  }
-
-  // Helper to get fully expanded text
-  return h(
-    'div.telescope',
-    { 'data-expand': opts.shouldExpandOnMouseOver ? 'hover' : 'click' },
-    processContent(content),
+const contentToHast = (content: Content, opts: Config) =>
+  telescopeHast(
+    content,
+    value => inlineFragmentToNodes(value) as ElementContent[],
+    opts.shouldExpandOnMouseOver ? 'hover' : 'click',
   )
-}
+
+const mdToContent = (mdContent: string, separator: string = ' ') =>
+  telescopicContent(mdContent, separator, line => console.log(`Invalid line found! ${line}`))
 
 const defaultOpts: Config = { separator: ' ', shouldExpandOnMouseOver: false }
 
