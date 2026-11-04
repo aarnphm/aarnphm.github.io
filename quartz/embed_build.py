@@ -1030,21 +1030,37 @@ def main():
     restamp_text_store(Path(args.out), rows)
     return
 
+  # a passage copied into several notes (a course notebook in every lab folder) is embedded once,
+  # under the title of its first copy, and the copies share that vector
+  first: dict[str, int] = {}
+  source = [
+    first.setdefault(' '.join(t.split()), i) for i, t in enumerate(texts)
+  ]
+  once = sorted(first.values())
+  print(f'Embedding {len(once)} distinct texts for {len(texts)} chunks')
+  once_texts = [texts[i] for i in once]
+  once_titles = [titles[i] for i in once]
   if args.use_vllm:
     vecs = embed_vllm(
-      texts,
+      once_texts,
       args.model,
       args.vllm_url,
       batch_size=args.batch_size,
       concurrency=args.concurrency,
       max_tokens=args.max_tokens,
-      titles=titles,
+      titles=once_titles,
     )
   else:
     device = 'cuda' if os.environ.get('CUDA_VISIBLE_DEVICES') else 'cpu'
     vecs = embed_hf(
-      texts, args.model, device, max_tokens=args.max_tokens, titles=titles
+      once_texts,
+      args.model,
+      device,
+      max_tokens=args.max_tokens,
+      titles=once_titles,
     )
+  slot = {i: j for j, i in enumerate(once)}
+  vecs = vecs[[slot[i] for i in source]]
 
   if vecs.shape[1] != args.dims:
     if vecs.shape[1] > args.dims:

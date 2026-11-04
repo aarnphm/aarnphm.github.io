@@ -57,6 +57,10 @@ const rows = new Map()
 const query = byId('query')
 const table = byId('documents')
 
+function isPublished(item) {
+  return item.totalPages > 0 && item.indexedPages === item.totalPages && item.invalidPages === 0
+}
+
 function documentRow(item) {
   let saved = rows.get(item.slug)
   if (!saved) {
@@ -112,8 +116,7 @@ function documentRow(item) {
     rows.set(item.slug, saved)
   }
   const pending = data.queue?.jobs.find(job => job.slug === item.slug)
-  saved.enqueue.disabled =
-    item.status === 'complete' || ['queued', 'active'].includes(pending?.state)
+  saved.enqueue.disabled = isPublished(item) || ['queued', 'active'].includes(pending?.state)
   saved.enqueue.textContent =
     pending?.state === 'error'
       ? 'retry PDF'
@@ -123,15 +126,18 @@ function documentRow(item) {
   saved.row.dataset.status = item.status
   saved.title.textContent = item.title
   saved.filename.textContent = item.slug.replace(data.prefix, '')
-  saved.status.textContent =
-    {
-      ready: 'awaiting embed',
-      active: 'OCR active',
-      partial: 'partial',
-      paused: 'paused',
-      complete: 'complete',
-      queued: 'queued',
-    }[item.status] ?? item.status
+  saved.status.textContent = isPublished(item)
+    ? item.partialPages?.length
+      ? 'published · partial OCR'
+      : 'published'
+    : ({
+        ready: 'awaiting embed',
+        active: 'OCR active',
+        partial: 'partial',
+        paused: 'paused',
+        complete: 'complete',
+        queued: 'queued',
+      }[item.status] ?? item.status)
   saved.cachedCount.textContent = `${count(item.ocrPages)} / ${count(item.totalPages)}`
   saved.indexedCount.textContent = `${count(item.indexedPages)} / ${count(item.totalPages)}`
   saved.remaining.textContent = count(item.remainingPages)
@@ -157,9 +163,9 @@ function renderDocuments() {
     const row = documentRow(item)
     const matchesView =
       view === 'all' ||
-      (view === 'remaining' && item.status !== 'complete') ||
+      (view === 'remaining' && !isPublished(item)) ||
       (view === 'active' && ['active', 'paused', 'ready'].includes(item.status)) ||
-      (view === 'complete' && item.status === 'complete')
+      (view === 'complete' && isPublished(item))
     const visibleRow =
       matchesView && (!term || `${item.title} ${item.slug}`.toLocaleLowerCase().includes(term))
     row.hidden = !visibleRow
@@ -286,8 +292,9 @@ function render(next) {
   put('vectors', count(totals.vectors))
   put('ocr-pages', count(totals.ocrPages))
   put('indexed-pages', count(totals.indexedPages))
-  put('remaining-docs', count(totals.remainingDocuments))
-  put('document-note', `${count(totals.completeDocuments)} / ${count(totals.documents)} published`)
+  const published = data.documents.filter(isPublished).length
+  put('remaining-docs', count(totals.documents - published))
+  put('document-note', `${count(published)} / ${count(totals.documents)} published`)
   for (const [id, value] of [
     ['ocr', totals.ocrPages],
     ['index', totals.indexedPages],
