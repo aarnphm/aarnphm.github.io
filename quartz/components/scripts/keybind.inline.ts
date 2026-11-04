@@ -431,12 +431,12 @@ document.addEventListener('nav', () => {
       return
     }
 
-    if (linkHints.handleKeydown(e)) return
-
     if (e.ctrlKey || e.metaKey || e.altKey) {
       clearGPrefix()
       return
     }
+
+    if (linkHints.handleKeydown(e)) return
 
     if (waitingForSecondG && e.key !== 'g') {
       const speechSettings = e.key === 'v' ? document.getElementById('speech-settings') : null
