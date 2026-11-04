@@ -1,6 +1,7 @@
 import { useEffect } from 'preact/hooks'
 import type { PdfMarkKind } from '../../../util/pdf-marks'
 import type { MarkBook } from '../book'
+import type { PageSelection } from '../geometry'
 import type { PdfViewer } from '../viewer'
 import { followCourseKey, isEditable } from './utils'
 
@@ -8,8 +9,8 @@ interface ReaderRef<T> {
   current: T | null
 }
 
-interface ReaderSelection {
-  page: number
+interface ReaderSelection extends PageSelection {
+  range: Range
 }
 
 interface ReaderKeyboardOptions {

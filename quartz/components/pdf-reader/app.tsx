@@ -1,56 +1,30 @@
 import { render } from 'preact'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks'
-import {
-  type PdfCitation,
-  type PdfMark,
-  type PdfMarkKind,
-  type PdfMarkTarget,
-} from '../../util/pdf-marks'
+import { parsePdfFragment, type PdfCitation, type PdfMark } from '../../util/pdf-marks'
 import { readData, type DocumentData } from './app/data'
-
-const COMPACT_WIDTH = 720
 import { ReaderHeader } from './app/header'
 import { ReaderIndex } from './app/index'
 import { useReaderKeyboard } from './app/keyboard'
 import { useReaderLifecycle } from './app/lifecycle'
 import { useMarkActions } from './app/mark-actions'
 import { createPointerHandlers } from './app/pointer'
-import {
-  copyText,
-  describeLoadFailure,
-  flattenOutline,
-  followCourseKey,
-  isEditable,
-  reanchor,
-  toast,
-} from './app/utils'
+import { useReaderSelection, type ActiveSelection } from './app/selection'
+import { ReaderShortcuts } from './app/shortcuts'
+import { reanchor, toast } from './app/utils'
 import { MarkBook, type MarkEntry } from './book'
-import {
-  boxQuad,
-  boxRect,
-  hitTest,
-  selectionOnPage,
-  targetBoxes,
-  type PageBox,
-  type PageSelection,
-} from './geometry'
+import { targetBoxes, type PageBox } from './geometry'
 import {
   CitationCard,
   IndexPanel,
-  kindMeta,
   Margin,
   MarkCard,
   SelectionBubble,
   Strip,
   type MarginItem,
-  type OutlineEntry,
   type StripTick,
 } from './parts'
-import { PdfViewer } from './viewer'
 
-interface ActiveSelection extends PageSelection {
-  range: Range
-}
+const COMPACT_WIDTH = 720
 
 export function mountPdfReader(root: HTMLElement, signal: AbortSignal): () => void {
   const data = readData()
@@ -265,40 +239,7 @@ function DocumentReader({ data, signal }: { data: DocumentData; signal: AbortSig
     })()
   }, [phase, marksState, book])
 
-  // Text selection → bubble.
-  useEffect(() => {
-    let timer = 0
-    const onChange = () => {
-      window.clearTimeout(timer)
-      timer = window.setTimeout(() => {
-        const current = document.getSelection()
-        const column = columnRef.current
-        if (!current || current.isCollapsed || current.rangeCount === 0 || !column) {
-          setSelection(null)
-          return
-        }
-        const range = current.getRangeAt(0)
-        if (!column.contains(range.commonAncestorContainer)) {
-          setSelection(null)
-          return
-        }
-        const resolved = selectionOnPage(range)
-        setSelection(resolved ? { ...resolved, range: range.cloneRange() } : null)
-      }, 90)
-    }
-    const release = () => {
-      for (const layer of columnRef.current?.querySelectorAll('.pdf-reader-text.selecting') ?? []) {
-        layer.classList.remove('selecting')
-      }
-    }
-    document.addEventListener('selectionchange', onChange)
-    window.addEventListener('pointerup', release)
-    return () => {
-      window.clearTimeout(timer)
-      document.removeEventListener('selectionchange', onChange)
-      window.removeEventListener('pointerup', release)
-    }
-  }, [])
+  useReaderSelection(columnRef, setSelection)
 
   const { onBubble, markFromSelection, pageNote, removeMark, step, copyMarkQuote, copyLink } =
     useMarkActions({
@@ -515,11 +456,6 @@ function DocumentReader({ data, signal }: { data: DocumentData; signal: AbortSig
   )
 
   const markCount = book.entries.size
-  // The page field holds the longest page number or label, so it keeps its width while paging.
-  const fieldChars = Math.min(
-    6,
-    Math.max(String(pageCount).length, ...(labels ?? []).map(l => l.length)),
-  )
   const showSide = !compact
   const viewer = viewerRef.current
 
@@ -639,48 +575,12 @@ function DocumentReader({ data, signal }: { data: DocumentData; signal: AbortSig
         {compact && indexPanel}
       </dialog>
 
-      <dialog ref={keysRef} class="pdf-reader-keys" aria-labelledby="pdf-reader-keys-title">
-        <h2 id="pdf-reader-keys-title">shortcuts</h2>
-        <dl>
-          {book.canWrite && (
-            <>
-              <dt>a · q · x</dt>
-              <dd>
-                mark the selection as {kindMeta.mark.label}, {kindMeta.question.label} or{' '}
-                {kindMeta.contra.label}; on an active mark, change its kind
-              </dd>
-              <dt>n</dt>
-              <dd>mark with a note, or a note on this page</dd>
-              <dt>r</dt>
-              <dd>drag a box around a figure or equation</dd>
-              <dt>delete</dt>
-              <dd>delete the active mark (⌘Z restores it)</dd>
-            </>
-          )}
-          <dt>c</dt>
-          <dd>copy the selection or active mark as a garden quote</dd>
-          <dt>[ · ]</dt>
-          <dd>previous or next mark</dd>
-          <dt>+ · − · 0</dt>
-          <dd>zoom in, out, fit width</dd>
-          {chrome === 'course' && (
-            <>
-              <dt>&lt; · &gt; · u</dt>
-              <dd>previous, next, up to the course</dd>
-            </>
-          )}
-          <dt>esc</dt>
-          <dd>clear the selection, tool or active mark</dd>
-        </dl>
-        {!book.canWrite && (
-          <p>
-            Marks here are aarnphm's. <a href={book.signInUrl}>Owner sign-in</a>
-          </p>
-        )}
-        <form method="dialog">
-          <button type="submit">close</button>
-        </form>
-      </dialog>
+      <ReaderShortcuts
+        dialogRef={keysRef}
+        canWrite={book.canWrite}
+        signInUrl={book.signInUrl}
+        chrome={chrome}
+      />
     </div>
   )
 }
