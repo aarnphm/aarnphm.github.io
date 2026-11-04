@@ -17,7 +17,6 @@ import {
   blockSpans,
   decodeEntities,
   fenceBlock,
-  flattenHtml,
   htmlRuns,
   htmlTable,
   pipeTable,
@@ -96,21 +95,6 @@ function inlineRuns(text: string): ElementContent[] {
   }
   if (last < text.length) out.push({ type: 'text', value: text.slice(last) })
   return out
-}
-
-/**
- * A link's extract: entities decoded, heading hashes dropped, display math folded inline (the
- * extract is clamped to three lines), and math the 200-character preview cut off replaced by an
- * ellipsis rather than shown as raw TeX.
- */
-function extractRuns(x: string): ElementContent[] {
-  let text = decodeEntities(flattenHtml(x)).replace(/(^|\s)#{1,6}\s+/g, '$1')
-  const display = text.split('$$').length - 1
-  if (display % 2 === 1) text = `${text.slice(0, text.lastIndexOf('$$')).trimEnd()} …`
-  text = text.replace(DISPLAY_MATH, (_, tex: string) => `$${tex.trim().replace(/\s+/g, ' ')}$`)
-  const dollars = text.replace(/\\\$/g, '').split('$').length - 1
-  if (dollars % 2 === 1) text = `${text.slice(0, text.lastIndexOf('$')).trimEnd()} …`
-  return inlineRuns(text)
 }
 
 // text between tags: entities decoded (hast escapes again on output), then math and strong
@@ -377,7 +361,7 @@ function prose(source: string, options: PassageOptions): Element[] {
  * ./html; `code` turns backtick spans into code (notes only); a note's markdown slice goes
  * through ./md.
  */
-function passageBlocks(raw: string, options: PassageOptions = {}): Element[] {
+export function passageBlocks(raw: string, options: PassageOptions = {}): Element[] {
   // pdf passages are cut by length, sometimes inside a tag; notebook output keeps its ANSI colours
   const text = (options.code ? raw : repairCuts(raw)).replace(ANSI, '')
   const blocks: Element[] = []

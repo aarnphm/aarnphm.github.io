@@ -15,8 +15,19 @@ export type LatentWorkerRequest =
       mean: Float32Array
       scale: number
     }
-  /** Top-k rows of the matrix at `url` by dot product with a unit query vector. */
-  | { type: 'query'; seq: number; url: string; vector: Float32Array; scale: number; k: number }
+  /**
+   * Top-k rows of the matrix at `url` by dot product with a unit query vector. `only` holds one
+   * byte per row; rows with a zero never rank (the search box's `filter:`).
+   */
+  | {
+      type: 'query'
+      seq: number
+      url: string
+      vector: Float32Array
+      scale: number
+      k: number
+      only?: Uint8Array
+    }
   /** One row of the matrix as a unit float vector (the features tab steers from it). */
   | { type: 'row'; seq: number; url: string; row: number; scale: number }
   /**
@@ -47,6 +58,8 @@ export type LatentWorkerRequest =
       report: string
       skip: number[]
       k: number
+      /** one byte per row, as for `query` */
+      only?: Uint8Array
     }
 
 export type LatentWorkerResponse =
@@ -125,6 +138,7 @@ function fuse(
   report: string,
   skip: number[],
   k: number,
+  only?: Uint8Array,
 ): { hits: Uint32Array; scores: Float32Array; fused: Float32Array } {
   const { rows } = matrixAt(url)
   const live = terms
@@ -134,9 +148,10 @@ function fuse(
   const total = new Float32Array(rows)
   for (const { c, w } of live) for (let r = 0; r < rows; r++) total[r] += w * c[r]
   for (const r of skip) if (r >= 0 && r < rows) total[r] = -Infinity
+  if (only) for (let r = 0; r < rows; r++) if (!only[r]) total[r] = -Infinity
   const n = Math.min(k, rows)
-  const hits = new Uint32Array(n)
-  const best = new Float32Array(n).fill(-Infinity)
+  let hits = new Uint32Array(n)
+  let best = new Float32Array(n).fill(-Infinity)
   for (let r = 0; r < rows; r++) {
     const v = total[r]
     if (v <= best[n - 1]) continue
@@ -149,8 +164,14 @@ function fuse(
     best[i] = v
     hits[i] = r
   }
-  const scores = new Float32Array(n)
-  for (let i = 0; i < n; i++) scores[i] = shown[hits[i]]
+  // a mask that keeps fewer rows than k leaves empty slots at the end
+  const filled = best.findIndex(v => v === -Infinity)
+  if (filled !== -1) {
+    hits = hits.slice(0, filled)
+    best = best.slice(0, filled)
+  }
+  const scores = new Float32Array(hits.length)
+  for (let i = 0; i < hits.length; i++) scores[i] = shown[hits[i]]
   return { hits, scores, fused: best }
 }
 
@@ -166,25 +187,24 @@ function query(
   vector: Float32Array,
   scale: number,
   k: number,
+  only?: Uint8Array,
 ): { hits: Uint32Array; scores: Float32Array } {
   const { matrix, rows, dims } = matrixAt(url)
   if (vector.length < dims) throw new Error('query vector is shorter than the matrix')
-  const scores = new Float32Array(rows)
   const inv = scale / 127
+  const n = Math.min(k, rows)
+  const hits = new Uint32Array(n)
+  const best = new Float32Array(n).fill(-Infinity)
+  let filled = 0
+  // partial selection: n is small (16), rows are many; masked rows skip the dot product
   for (let r = 0; r < rows; r++) {
+    if (only && !only[r]) continue
     const base = r * dims
     let s = 0
     for (let d = 0; d < dims; d++) s += matrix[base + d] * vector[d]
-    scores[r] = s * inv
-  }
-  const n = Math.min(k, rows)
-  const hits = new Uint32Array(n)
-  const best = new Float32Array(n)
-  // partial selection: n is small (16), rows are many
-  for (let r = 0; r < rows; r++) {
-    const v = scores[r]
-    if (r >= n && v <= best[n - 1]) continue
-    let i = Math.min(r, n - 1)
+    const v = s * inv
+    if (filled === n && v <= best[n - 1]) continue
+    let i = Math.min(filled, n - 1)
     while (i > 0 && best[i - 1] < v) {
       best[i] = best[i - 1]
       hits[i] = hits[i - 1]
@@ -192,8 +212,11 @@ function query(
     }
     best[i] = v
     hits[i] = r
+    if (filled < n) filled++
   }
-  return { hits, scores: best }
+  return filled === n
+    ? { hits, scores: best }
+    : { hits: hits.slice(0, filled), scores: best.slice(0, filled) }
 }
 
 function project(
@@ -265,13 +288,20 @@ self.onmessage = async (event: MessageEvent<LatentWorkerRequest>) => {
         request.report,
         request.skip,
         request.k,
+        request.only,
       )
       ;(self as unknown as Worker).postMessage(
         { type: 'fused', seq: request.seq, hits, scores, fused } satisfies LatentWorkerResponse,
         [hits.buffer, scores.buffer, fused.buffer],
       )
     } else if (request.type === 'query') {
-      const { hits, scores } = query(request.url, request.vector, request.scale, request.k)
+      const { hits, scores } = query(
+        request.url,
+        request.vector,
+        request.scale,
+        request.k,
+        request.only,
+      )
       ;(self as unknown as Worker).postMessage(
         { type: 'queried', seq: request.seq, hits, scores } satisfies LatentWorkerResponse,
         [hits.buffer, scores.buffer],

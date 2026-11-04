@@ -174,7 +174,7 @@ export const Latent: QuartzTransformerPlugin = () => {
             h('input', {
               type: 'search',
               name: 'q',
-              placeholder: 'search text, #feature or goto:document…',
+              placeholder: 'search text, #feature, goto:document or filter:pdf…',
               autocomplete: 'off',
               spellcheck: 'false',
               ariaLabel: 'search the latent space',

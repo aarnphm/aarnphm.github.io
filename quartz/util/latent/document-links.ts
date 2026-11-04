@@ -1,7 +1,7 @@
 import type { Element } from 'hast'
 import { h } from 'hastscript'
-import { titleRuns, titleText } from './title'
 import type { LatentDoc, LatentKind, LatentPreview } from './types'
+import { titleRuns, titleText } from './title'
 
 export interface LinkItem {
   preview: LatentPreview
@@ -70,7 +70,11 @@ export function documentLink(group: DocumentLink, focus: number): Element {
         },
         titleRuns(doc.t),
       ),
-      h('span.lat-document-chunks', { ariaLabel: 'matching chunks' }, matches.map(item => chunkLink(item.preview, doc))),
+      h(
+        'span.lat-document-chunks',
+        { ariaLabel: 'matching chunks' },
+        matches.map(item => chunkLink(item.preview, doc)),
+      ),
       h('span.lat-score', { title: 'strongest chunk cosine' }, (best.score / 255).toFixed(3)),
     ],
   )
@@ -96,7 +100,11 @@ export function linksPane(
           h('span.lat-mark', { dataKind: kind, title: kind }, kind),
           h('span', String(own.length)),
         ]),
-        h('ol.lat-list.lat-document-list', { dataKind: kind }, own.map(group => documentLink(group, focus.d))),
+        h(
+          'ol.lat-list.lat-document-list',
+          { dataKind: kind },
+          own.map(group => documentLink(group, focus.d)),
+        ),
       ]
     }),
   ])

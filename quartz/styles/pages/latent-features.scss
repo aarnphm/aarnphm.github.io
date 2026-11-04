@@ -662,7 +662,7 @@
   }
 }
 
-// a link's top feature-pair edges: in the probe's reasoning group and under each neighbour card
+// Feature-pair edges belong to the reasoning group and the active chunk preview.
 @mixin why-edges {
   .lat-why-edges {
     list-style: none;
@@ -838,7 +838,7 @@
     margin: 0;
     font-family: var(--lat-mono);
     font-size: var(--lat-micro);
-    color: var(--gray);
+    color: var(--darkgray);
   }
 
   .lat-why-links {
@@ -851,16 +851,28 @@
     }
   }
 
+  .lat-why-chunks {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 1 auto;
+    gap: 0.15rem;
+    overflow-x: auto;
+    min-width: 0;
+    max-width: 40%;
+    white-space: nowrap;
+  }
+
   .lat-why-head {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    column-gap: var(--lat-mark-gap);
-    align-items: baseline;
+    display: flex;
+    gap: var(--lat-mark-gap);
+    align-items: center;
     margin: 0;
     font-size: var(--text-meta);
     line-height: 1.3;
 
-    a {
+    > a {
+      flex: 1 1 0;
+      min-width: 4ch;
       color: var(--dark);
       text-decoration: none;
       overflow: hidden;
@@ -876,9 +888,10 @@
 
   // cosine and the share the feature pairs carry, right-aligned like a neighbour card's score
   .lat-why-share {
+    flex: none;
     font-family: var(--lat-mono);
     font-size: var(--lat-micro);
-    color: var(--gray);
+    color: var(--darkgray);
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
   }
@@ -886,8 +899,7 @@
   @include why-edges;
 }
 
-// each neighbour card carries its reasoning under it while reasoning is open (features.ts
-// annotateLinks); the pane has no features-panel styles, so the chip comes along
+// Chunk previews keep feature chips operable without changing the compact document rows.
 [data-layout='latent'] :where(#quartz-root) .lat-links .lat-link-why {
   margin: 0.3rem 0 0;
 

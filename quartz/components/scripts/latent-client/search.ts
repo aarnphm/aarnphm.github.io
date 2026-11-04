@@ -1,6 +1,7 @@
 import { toHtml } from 'hast-util-to-html'
 import type { SemanticEmbedRequest, SemanticWorkerResponse } from '../../../util/semantic-protocol'
 import type { ToastHandle } from '../toast'
+import { filterLabel, keepsAll, parseFilter, rowMask } from '../../../util/latent/filter'
 import {
   completeGoto,
   gotoIndex,
@@ -9,29 +10,44 @@ import {
   parseGoto,
   type GotoIndex,
 } from '../../../util/latent/goto'
-import { linksPane, railSvg, type LinkItem } from '../../../util/latent/markup'
+import { railSvg, type LinkItem } from '../../../util/latent/markup'
 import { RAIL_WIDTH } from '../../../util/latent/rail'
-import { inScope, type LatentDoc } from '../../../util/latent/types'
+import { inScope, type LatentDoc, type LatentKind } from '../../../util/latent/types'
 import { setStatusText } from '../status-flap'
 import { drawBench } from './bench-canvas'
+import { bindChunkPreview } from './chunk-preview'
+import { linkItems, renderDocumentLinks, stepDocumentLinks } from './document-list'
 import { goTo } from './reader'
-import { knnOf, metaOf, previewOf, requestVec, type Runtime } from './runtime'
+import { knnOf, metaOf, requestVec, type Runtime } from './runtime'
 import { bindSearchCompletion } from './search-completion'
 
 export async function renderLinks(rt: Runtime, row: number): Promise<void> {
   const links = await knnOf(rt, row)
-  const focusPreview = await previewOf(rt, row)
-  const previews = await Promise.all(links.neighbours.map(n => previewOf(rt, n.r)))
   if (rt.signal.aborted || rt.focus !== row) return
-  const items: LinkItem[] = previews.map((preview, i) => {
-    const doc = rt.docs[preview.d]
-    return { preview, score: links.neighbours[i].score, doc, inScope: inScope(doc.id, rt.scope) }
-  })
-  // a typed query or an open goto list holds the pane until it is cleared
+  let items = linkItems(
+    rt,
+    links.neighbours.map(n => [n.r, n.score]),
+  )
+  // A typed query or open goto list holds the pane until it is cleared.
   if (!rt.query && rt.links.dataset.goto === undefined) {
-    const pane = linksPane(focusPreview, items, rt.kinds)
-    linksBody(rt).innerHTML = toHtml(pane.children as never, { allowDangerousHtml: false })
-    rt.links.scrollTop = 0
+    const filter = rt.filter
+    if (filter) {
+      // `filter:` alone: the focus's nearest chunks of the kept kinds, from the whole store
+      const rows = await filteredNeighbours(rt, row).catch(error => {
+        console.warn('[latent] filter', error)
+        return null
+      })
+      if (rt.signal.aborted || rt.focus !== row || rt.filter !== filter) return
+      items = rows ? linkItems(rt, rows) : items.filter(item => filter.kinds.includes(item.doc.s))
+    }
+    const focusPreview = linkItems(rt, [[row, 255]])[0]?.preview
+    if (focusPreview)
+      renderDocumentLinks(
+        rt,
+        focusPreview,
+        items,
+        filter ? `links · ${filterLabel(filter.kinds)}` : undefined,
+      )
     rt.links.dataset.focus = String(row)
   }
   // probe ticks
@@ -55,6 +71,60 @@ export async function renderLinks(rt: Runtime, row: number): Promise<void> {
   renderRail(rt, rt.query ? rt.query.items : items)
   if (rt.bench) drawBench(rt)
   rt.root.dispatchEvent(new CustomEvent('latent:focus', { detail: row }))
+}
+
+const ROWS_URL = (rt: Runtime) => `${rt.base}/vec/rows-256-int8.bin`
+
+/** Keep `kinds` for the box's `filter:`; true when that changed what the pane may show. */
+function setFilter(rt: Runtime, kinds: LatentKind[] | null): boolean {
+  const next = kinds && !keepsAll(kinds, rt.kinds) ? kinds : null
+  if ((next?.join(',') ?? '') === (rt.filter?.kinds.join(',') ?? '')) return false
+  rt.filter = next ? { kinds: next, mask: null } : null
+  return true
+}
+
+/** The worker's row mask for the box's `filter:`, or undefined when it keeps every row. */
+export async function filterMask(rt: Runtime): Promise<Uint8Array | undefined> {
+  const filter = rt.filter
+  if (!filter) return undefined
+  if (!filter.mask) {
+    const meta = await metaOf(rt)
+    filter.mask = rowMask(rt.docByRow, filter.kinds, meta.rows)
+  }
+  return filter.mask
+}
+
+/** The precomputed links keep at most this many chunks of the focus's own document. */
+const SAME_DOC = 4
+
+/**
+ * The focus row's nearest rows of the filtered kinds, scored over the whole matrix: the
+ * precomputed links (k=16) hold too few of a rare kind to filter after the fact.
+ */
+async function filteredNeighbours(rt: Runtime, row: number): Promise<[number, number][]> {
+  const meta = await metaOf(rt)
+  const url = ROWS_URL(rt)
+  await requestVec(rt, { type: 'load', url, rows: meta.rows, dims: 256 })
+  const got = await requestVec(rt, { type: 'row', url, row, scale: meta.scale })
+  const mask = await filterMask(rt)
+  if (got.type !== 'row' || !mask) return []
+  const only = mask.slice()
+  only[row] = 0
+  const result = await requestVec(
+    rt,
+    { type: 'query', url, vector: got.vector, scale: meta.scale, k: rt.k * 3, only },
+    [got.vector.buffer, only.buffer],
+  )
+  if (result.type !== 'queried') return []
+  const own = rt.docByRow[row]?.d
+  const out: [number, number][] = []
+  let same = 0
+  for (let i = 0; i < result.hits.length && out.length < rt.k; i++) {
+    const r = result.hits[i]
+    if (rt.docByRow[r]?.d === own && ++same > SAME_DOC) continue
+    out.push([r, Math.round(Math.max(0, result.scores[i]) * 255)])
+  }
+  return out
 }
 
 function linksBody(rt: Runtime): HTMLElement {
@@ -173,51 +243,54 @@ function searchStatus(rt: Runtime): {
 }
 
 export async function runQuery(rt: Runtime, text: string): Promise<void> {
+  // `filter:` tokens narrow the hits; the rest of the box is what gets embedded
+  const filter = parseFilter(text)
+  const filtered = setFilter(rt, filter.kinds)
+  const phrase = filter.rest
+  if (!phrase) {
+    clearQuery(rt, filtered)
+    return
+  }
   const status = searchStatus(rt)
-  const axes = matchAxes(rt, text)
+  const axes = matchAxes(rt, phrase)
   if (rt.wanted === text && rt.query?.text === text) return
   rt.wanted = text
   const stale = () => rt.signal.aborted || rt.wanted !== text
   status.set('embedding the query…')
   try {
-    const vector = await embedQuery(rt, text, status.set)
+    const vector = await embedQuery(rt, phrase, status.set)
     if (stale()) return
-    const url = `${rt.base}/vec/rows-256-int8.bin`
+    const url = ROWS_URL(rt)
     const meta = await metaOf(rt)
+    if (stale()) return
     status.set(`scoring · ${meta.rows.toLocaleString('en-US')} chunks`)
     // the worker takes the buffer; the features tab encodes its own copy
     const kept = vector.slice()
     await requestVec(rt, { type: 'load', url, rows: meta.rows, dims: 256 })
+    if (stale()) return
     const t0 = performance.now()
+    const only = await filterMask(rt)
+    if (stale()) return
     const result = await requestVec(
       rt,
-      { type: 'query', url, vector, scale: meta.scale, k: rt.k },
+      { type: 'query', url, vector, scale: meta.scale, k: rt.k, only },
       [vector.buffer],
     )
     if (result.type !== 'queried' || stale()) return
-    const previews = await Promise.all([...result.hits].map(r => previewOf(rt, r)))
-    if (stale()) return
-    const items: LinkItem[] = previews.map((preview, i) => {
-      const doc = rt.docs[preview.d]
-      return {
-        preview,
-        score: Math.round(Math.max(0, result.scores[i]) * 255),
-        doc,
-        inScope: inScope(doc.id, rt.scope),
-      }
-    })
+    const items = linkItems(
+      rt,
+      [...result.hits].map((row, i) => [row, Math.round(Math.max(0, result.scores[i]) * 255)]),
+    )
     rt.query = { text, items }
-    const pane = linksPane(
+    renderDocumentLinks(
+      rt,
       { r: -1, d: -1, s: 'note', t: text, c: 0, p: null, l: '', x: '' },
       items,
-      rt.kinds,
-      'query',
+      rt.filter ? `query · ${filterLabel(rt.filter.kinds)}` : 'query',
     )
-    linksBody(rt).innerHTML = toHtml(pane.children as never, { allowDangerousHtml: false })
-    rt.links.scrollTop = 0
     rt.links.dataset.query = text
     status.done(
-      `${items.length} chunks · ${(performance.now() - t0).toFixed(0)} ms${axes ? ` · ${axes} ${axes === 1 ? 'axis' : 'axes'} match` : ''}`,
+      `${items.length} chunks · ${(performance.now() - t0).toFixed(0)} ms${axes ? ` · ${axes} ${axes === 1 ? 'axis' : 'axes'} match` : ''}${unknownTypes(filter.unknown)}`,
     )
     renderRail(rt, items)
     rt.root.dispatchEvent(new CustomEvent('latent:query', { detail: { text, vector: kept } }))
@@ -226,14 +299,18 @@ export async function runQuery(rt: Runtime, text: string): Promise<void> {
   }
 }
 
-function clearQuery(rt: Runtime): void {
+const unknownTypes = (names: string[]) =>
+  names.length ? ` · no type ${names.map(n => `“${n}”`).join(', ')} (note, pdf, image, base)` : ''
+
+/** Back to the focus's links; `force` re-renders them even with nothing pinned (a new filter). */
+function clearQuery(rt: Runtime, force = false): void {
   for (const card of rt.probe.querySelectorAll<HTMLElement>('.lat-axis[data-match]'))
     delete card.dataset.match
   rt.toast?.dismiss()
   rt.toast = null
   rt.wanted = ''
   rt.root.dispatchEvent(new CustomEvent('latent:query', { detail: null }))
-  if (!rt.query && !rt.links.dataset.query && rt.links.dataset.goto === undefined) return
+  if (!force && !rt.query && !rt.links.dataset.query && rt.links.dataset.goto === undefined) return
   rt.query = null
   delete rt.links.dataset.query
   delete rt.links.dataset.goto
@@ -251,7 +328,9 @@ function gotoMode(rt: Runtime, input: HTMLInputElement) {
   const items = () => [...rt.links.querySelectorAll<HTMLElement>('.lat-goto-item')]
   const show = (needle: string) => {
     index ??= gotoIndex(rt.docs)
-    hits = matchDocs(index, needle)
+    const kinds = rt.filter?.kinds
+    const keep = kinds ? (doc: LatentDoc) => kinds.includes(doc.s) : undefined
+    hits = matchDocs(index, needle, 60, keep)
     active = 0
     // a query still embedding drops its result, and its status line goes with it
     rt.wanted = ''
@@ -260,7 +339,14 @@ function gotoMode(rt: Runtime, input: HTMLInputElement) {
     for (const card of rt.probe.querySelectorAll<HTMLElement>('.lat-axis[data-match]'))
       delete card.dataset.match
     rt.links.dataset.goto = needle
-    const pane = gotoPane(hits, needle, rt.docs.length, active, doc => !inScope(doc.id, rt.scope))
+    const pane = gotoPane(
+      hits,
+      needle,
+      keep ? rt.docs.filter(keep).length : rt.docs.length,
+      active,
+      doc => !inScope(doc.id, rt.scope),
+      kinds ? `goto · ${filterLabel(kinds)}` : 'goto',
+    )
     linksBody(rt).innerHTML = toHtml(pane as never, { allowDangerousHtml: false })
     rt.links.scrollTop = 0
   }
@@ -277,6 +363,7 @@ function gotoMode(rt: Runtime, input: HTMLInputElement) {
     input.value = ''
     input.blur()
     delete rt.links.dataset.goto
+    rt.filter = null
     if (rt.query || rt.links.dataset.query) {
       rt.query = null
       delete rt.links.dataset.query
@@ -290,10 +377,11 @@ function gotoMode(rt: Runtime, input: HTMLInputElement) {
   const fill = (): boolean => {
     const doc = hits[active]
     if (!doc) return false
-    const value = completeGoto(doc)
+    // Tab keeps the box's `filter:` tokens in front of the filled path
+    const value = [parseFilter(input.value).tokens, completeGoto(doc)].filter(Boolean).join(' ')
     if (input.value.trim() === value) return false
     input.value = value
-    show(parseGoto(value) ?? '')
+    show(parseGoto(parseFilter(value).rest) ?? '')
     return true
   }
   rt.links.addEventListener(
@@ -329,9 +417,10 @@ export function bindSearch(rt: Runtime): void {
     if (timer !== null) window.clearTimeout(timer)
     timer = null
   }
+  bindChunkPreview(rt)
+  void renderLinks(rt, rt.focus)
   const goto = gotoMode(rt, input)
   bindSearchCompletion(rt, input, form)
-  let resultIndex = -1
   document.addEventListener(
     'keydown',
     event => {
@@ -353,8 +442,13 @@ export function bindSearch(rt: Runtime): void {
   const run = () => {
     cancel()
     const text = input.value.trim()
-    if (parseGoto(text) !== null) goto.open()
-    else if (!text) clearQuery(rt)
+    const filter = parseFilter(text)
+    const filtered = setFilter(rt, filter.kinds)
+    if (parseGoto(filter.rest) !== null) goto.open()
+    else if (!filter.rest) {
+      clearQuery(rt, filtered)
+      if (filter.unknown.length) searchStatus(rt).fail(`filter${unknownTypes(filter.unknown)}`)
+    }
     // `#…` searches features (features.ts); Enter selects the best match now
     else if (text.startsWith('#'))
       rt.root.dispatchEvent(new CustomEvent('latent:feature-search', { detail: text }))
@@ -385,16 +479,21 @@ export function bindSearch(rt: Runtime): void {
         event.stopPropagation()
         if (goto.active()) goto.pick(step)
         else {
-          const rows = [...rt.links.querySelectorAll<HTMLElement>('.lat-link')]
-          if (!rows.length) return
-          resultIndex = Math.max(0, Math.min(rows.length - 1, resultIndex + step))
-          rows.forEach((row, i) => row.toggleAttribute('data-keyboard-active', i === resultIndex))
-          rows[resultIndex].scrollIntoView({ block: 'nearest' })
+          stepDocumentLinks(rt, step)
         }
+      } else if (
+        event.key === 'Enter' &&
+        !event.altKey &&
+        !event.ctrlKey &&
+        !event.metaKey &&
+        !event.shiftKey
+      ) {
+        event.preventDefault()
+        run()
       } else if (event.key === 'Escape') {
         cancel()
         input.value = ''
-        clearQuery(rt)
+        clearQuery(rt, setFilter(rt, null))
         input.blur()
       } else if (goto.active() && (event.key === 'ArrowDown' || event.key === 'ArrowUp')) {
         event.preventDefault()
@@ -409,15 +508,17 @@ export function bindSearch(rt: Runtime): void {
     'input',
     () => {
       cancel()
-      resultIndex = -1
       const text = input.value.trim()
-      const needle = parseGoto(text)
+      const filter = parseFilter(text)
+      const filtered = setFilter(rt, filter.kinds)
+      const needle = parseGoto(filter.rest)
       if (needle !== null) {
         goto.show(needle)
         return
       }
-      if (!text) {
-        clearQuery(rt)
+      // `filter:` alone narrows the focus's links at once; with words it waits for the query
+      if (!filter.rest) {
+        clearQuery(rt, filtered)
         return
       }
       // leaving goto: the focus's links come back until the new query settles
@@ -426,7 +527,7 @@ export function bindSearch(rt: Runtime): void {
         void renderLinks(rt, rt.focus)
       }
       if (text.startsWith('#')) return
-      matchAxes(rt, text)
+      matchAxes(rt, filter.rest)
       timer = window.setTimeout(run, SEARCH_DEBOUNCE_MS)
     },
     { signal: rt.signal },

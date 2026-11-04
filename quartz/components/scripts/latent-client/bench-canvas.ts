@@ -18,6 +18,9 @@ export function fitBenchCanvas(rt: Runtime, canvas: HTMLCanvasElement): void {
       pw = devW
       ph = devH
     }
+    // Preserve the shared camera offset when controls or the viewport resize the canvas.
+    if (bench.w > 0) bench.panX *= cssW / bench.w
+    if (bench.h > 0) bench.panY *= cssH / bench.h
     bench.w = cssW
     bench.h = cssH
     bench.dpr = pw / cssW

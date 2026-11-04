@@ -127,7 +127,7 @@
 }
 
 // `goto:` in the search box lists documents by title or path (latent/goto.ts); the picked row
-// carries the surface and a rule in the search's focus colour
+// is boxed by a 1px rule in the search's focus colour (see the keyboard-picked rows below)
 [data-layout='latent'] :where(#quartz-root) .lat-links {
   .lat-link.lat-goto-item {
     cursor: pointer;
@@ -141,11 +141,6 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-    }
-
-    &[data-active] {
-      background: var(--ledger-surface);
-      box-shadow: inset 2px 0 var(--secondary);
     }
   }
 
@@ -169,10 +164,236 @@
   border: 1px solid var(--ledger-line);
 }
 
-[data-layout='latent'] :where(#quartz-root) .lat-link[data-keyboard-active] {
-  background: var(--ledger-surface);
+// the row picked with ctrl-n/ctrl-p (or ↑↓) gets one accent rule on all four sides and nothing
+// else. An inset outline paints over the row's own 1px rule and takes no space, so picking never
+// moves a row; the grey rule on the far side of the box goes transparent so the edge stays 1px
+[data-layout='latent'] :where(#quartz-root) .lat-links {
+  .lat-link:is(.lat-goto-item[data-active], [data-keyboard-active]) {
+    outline: 1px solid var(--secondary);
+    outline-offset: -1px;
+  }
+
+  // goto rows rule their top edge: the row below drops its rule
+  .lat-goto-item[data-active] + .lat-link {
+    border-top-color: transparent;
+  }
+
+  // document rows rule their bottom edge: the row above drops its rule
+  .lat-link.lat-link-document:has(+ [data-keyboard-active]) {
+    border-bottom-color: transparent;
+  }
 }
 
 [data-layout='latent'] :where(#quartz-root) .lat-search:has(.search-completions:not([hidden])) {
   z-index: 2;
+}
+
+[data-layout='latent'] :where(#quartz-root) .lat-search .search-completions {
+  .search-completions-list {
+    grid-template-columns: max-content minmax(0, 1fr);
+  }
+
+  .search-completion-value,
+  .search-completion-description {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+[data-layout='latent'] :where(#quartz-root) .lat-search .search-completion-description {
+  grid-column: 2;
+}
+
+[data-layout='latent'] :where(#quartz-root) {
+  .lat-links .lat-link.lat-link-document {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    height: 2.5rem;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 0.25rem 0.75rem;
+    border-bottom: 1px solid var(--ledger-line);
+    font-size: var(--text-meta);
+
+    & + .lat-link {
+      border-top: 0;
+    }
+
+    > .lat-link-title {
+      flex: 1 1 0;
+      min-width: 4ch;
+    }
+
+    > .lat-score {
+      flex: none;
+      font-size: var(--text-meta);
+      color: var(--darkgray);
+      font-variant-numeric: tabular-nums;
+    }
+
+    &[data-out] .lat-link-title {
+      color: var(--darkgray);
+    }
+  }
+
+  .lat-document-chunks {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 1 auto;
+    gap: 0.15rem;
+    min-width: 0;
+    max-width: 46%;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  .lat-chunk-link {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.5rem;
+    min-height: 1.5rem;
+    font: var(--text-meta)/1.3 var(--lat-mono);
+    font-variant-numeric: tabular-nums;
+    color: var(--darkgray);
+    background: var(--ledger-surface);
+    text-decoration: none;
+  }
+
+  :is(.lat-chunk-link, .lat-link-title, .lat-chunk-map, .lat-chunk-read):focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
+  }
+
+  .lat-list-spacer {
+    display: block;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    pointer-events: none;
+  }
+
+  .lat-chunk-preview {
+    position: fixed;
+    inset: auto;
+    box-sizing: border-box;
+    display: none;
+    grid-template-columns: minmax(0, 1fr) 7rem;
+    gap: 0.5rem 0.75rem;
+    margin: 0;
+    padding: 0.75rem;
+    max-width: calc(100vw - 16px);
+    max-height: min(34rem, calc(100dvh - 16px));
+    overflow: auto;
+    border: 1px solid var(--darkgray);
+    border-radius: var(--radius-none);
+    background: var(--light);
+    color: var(--darkgray);
+    font: var(--text-meta)/1.45 var(--lat-text);
+
+    &:popover-open {
+      display: grid;
+    }
+
+    .lat-chunk-preview-head,
+    .lat-link-why {
+      grid-column: 1 / -1;
+      min-width: 0;
+    }
+
+    .lat-chunk-preview-head {
+      color: var(--dark);
+      font-family: var(--lat-mono);
+    }
+
+    .lat-link-why:empty {
+      display: none;
+    }
+  }
+
+  .lat-chunk-preview-text {
+    grid-column: 1;
+    grid-row: 2;
+    min-width: 0;
+    max-height: 20rem;
+    overflow: auto;
+    overflow-wrap: anywhere;
+    font-size: var(--text-meta);
+
+    p {
+      font-size: inherit;
+      line-height: inherit;
+      margin: 0 0 0.5rem;
+    }
+
+    :is(pre, table, .math-display) {
+      max-width: 100%;
+      overflow: auto;
+    }
+  }
+
+  .lat-chunk-map {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: start;
+    height: 9rem;
+    padding: 0.25rem;
+    border: 1px solid var(--ledger-line);
+    background: var(--ledger-surface);
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    rect {
+      fill: var(--gray);
+
+      &[data-hit] {
+        fill: var(--dark);
+      }
+    }
+
+    &[data-kind='pdf'] rect[data-hit] {
+      fill: var(--lat-pdf);
+    }
+  }
+
+  .lat-chunk-read {
+    grid-column: 2;
+    color: var(--darkgray);
+    font-family: var(--lat-mono);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .lat-chunk-link:hover {
+      color: var(--dark);
+      background: var(--lightgray);
+      text-decoration: underline;
+    }
+  }
+
+  @media (pointer: coarse) {
+    .lat-links .lat-link.lat-link-document {
+      height: 44px;
+    }
+
+    .lat-chunk-link {
+      min-width: 44px;
+      min-height: 44px;
+    }
+  }
+
+  @media (max-width: 400px) {
+    .lat-chunk-preview {
+      grid-template-columns: minmax(0, 1fr) 5rem;
+    }
+
+    .lat-links .lat-link-document > .lat-score {
+      display: none;
+    }
+  }
 }

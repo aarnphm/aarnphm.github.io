@@ -60,6 +60,11 @@ export interface Runtime {
   toast: ToastHandle | null
   /** the text the latest query was started for; older queries drop their results */
   wanted: string
+  /**
+   * the box's `filter:` kinds (null keeps every kind); `mask` is one byte per row, built on the
+   * first worker query that needs it (search.ts filterMask)
+   */
+  filter?: { kinds: LatentKind[]; mask: Uint8Array | null } | null
 }
 
 export interface Bench {

@@ -24,7 +24,7 @@ const initializing = new WeakMap<Runtime, Promise<void>>()
 export function openBench(rt: Runtime, saved?: SharedBench | null): Promise<void> {
   const pending = initializing.get(rt)
   if (pending) return pending
-  const ready = initializeBench(rt).finally(() => initializing.delete(rt))
+  const ready = initializeBench(rt, saved).finally(() => initializing.delete(rt))
   initializing.set(rt, ready)
   return ready
 }
@@ -35,7 +35,7 @@ export async function selectBenchLevel(rt: Runtime, level: Bench['level']): Prom
   rt.probe.querySelector<HTMLButtonElement>(`.lat-bench-level[data-level="${level}"]`)?.click()
 }
 
-async function initializeBench(rt: Runtime): Promise<void> {
+async function initializeBench(rt: Runtime, saved?: SharedBench | null): Promise<void> {
   if (rt.bench) return
   const status = rt.probe.querySelector<HTMLElement>('.lat-bench-status')
   const canvas = rt.probe.querySelector<HTMLCanvasElement>('.lat-bench-canvas')

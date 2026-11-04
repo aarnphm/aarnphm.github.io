@@ -226,6 +226,11 @@ def main() -> None:
     '--limit', type=int, default=0, help='label at most this many'
   )
   ap.add_argument('--force', action='store_true', help='relabel everything')
+  ap.add_argument(
+    '--since',
+    default='',
+    help='with --force: keep labels written at or after this UTC time (resume an interrupted run)',
+  )
   ap.add_argument('--no-score', action='store_true')
   ap.add_argument(
     '--setup', action='store_true', help='cache the pinned model and exit'
@@ -293,6 +298,9 @@ def main() -> None:
       prev = have.get(str(row['f']))
       if isinstance(prev, str):
         continue  # written by hand
+      # a resumed --force run: what this run already labelled stays
+      if args.since and isinstance(prev, dict) and str(prev.get('at') or '') >= args.since:
+        continue
       if not args.force and isinstance(prev, dict):
         a, b = set(prev.get('rows') or []), set(keys)
         if (

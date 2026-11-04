@@ -97,16 +97,27 @@ function byKindThenLength(a: LatentDoc, b: LatentDoc): number {
   return KIND_RANK[a.s] - KIND_RANK[b.s] || a.t.length - b.t.length || a.d - b.d
 }
 
-export function matchDocs(index: GotoIndex, raw: string, limit = 60): LatentDoc[] {
+/** `keep` narrows the candidates (the box's `filter:` kinds) before the limit applies. */
+export function matchDocs(
+  index: GotoIndex,
+  raw: string,
+  limit = 60,
+  keep?: (doc: LatentDoc) => boolean,
+): LatentDoc[] {
   const typed = raw.trim()
   if (!typed) return []
   if (typed.includes('/')) {
     index.tree ??= buildPathTree(index.docs.map(d => ({ slug: d.id, title: d.t })))
-    const { exact, items } = matchPaths(index.tree, typed.replace(/^\/+/, ''), limit)
+    // the path matcher knows no kinds: ask for more and drop the rest here
+    const { exact, items } = matchPaths(
+      index.tree,
+      typed.replace(/^\/+/, ''),
+      keep ? limit * 8 : limit,
+    )
     const out: LatentDoc[] = []
     for (const entry of exact ? [exact, ...items] : items) {
       const doc = entry.slug === undefined ? undefined : index.byId.get(entry.slug)
-      if (doc && !out.includes(doc)) out.push(doc)
+      if (doc && (!keep || keep(doc)) && !out.includes(doc)) out.push(doc)
       if (out.length >= limit) break
     }
     if (out.length) return out
@@ -116,6 +127,7 @@ export function matchDocs(index: GotoIndex, raw: string, limit = 60): LatentDoc[
   const words = needle.split(/[^a-z0-9]+/).filter(Boolean)
   const hits: { doc: LatentDoc; tier: number }[] = []
   for (let i = 0; i < index.docs.length; i++) {
+    if (keep && !keep(index.docs[i])) continue
     const t = tier(index, i, needle, words)
     if (t !== -1) hits.push({ doc: index.docs[i], tier: t })
   }
@@ -135,9 +147,10 @@ export function gotoPane(
   total: number,
   active: number,
   outOfScope: (doc: LatentDoc) => boolean,
+  label = 'goto',
 ): ElementContent[] {
   const head = h('header.lat-pane-head', [
-    h('span', 'goto'),
+    h('span', label),
     h('span.lat-count', needle ? `${docs.length} of ${total} documents` : `${total} documents`),
   ])
   if (!needle)

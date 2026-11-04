@@ -142,7 +142,8 @@ function convert(
       .split('/')
       .map(s => s.replace(/&/g, '-and-').replace(/%/g, '-percent').replace(/\?/g, ''))
       .join('/')
-    return [h('a.internal.tag-link', { href: `/tags/${slug}` }, slug)]
+    // the label is lowercase (the embeddings view shows every tag that way); the href keeps the slug
+    return [h('a.internal.tag-link', { href: `/tags/${slug}` }, slug.toLowerCase())]
   }
   if (m[17] !== undefined)
     return [h('span', { className: ['marker', `marker-${m[18] ?? 'h3'}`] }, inner(m[17]))]
@@ -471,7 +472,11 @@ function meta(lines: string[], start: number, out: Element[], hooks: MdHooks): n
     const [, key, value] = entry
     if (key === 'date') date = value.replace(/^(\d{4}-\d{2}-\d{2})[ T](\d{2}:\d{2}).*$/, '$1 $2')
     else if (key && value.trim()) parts.push(value.trim())
-    else if (!key && value.trim()) parts.push(value.trim())
+    else if (!key && value.trim()) {
+      // a bare item under `tags:` is a tag, shown lowercase; links and urls keep their case
+      const item = value.trim()
+      parts.push(/\]\(|\[\[|:\/\//.test(item) ? item : item.toLowerCase())
+    }
   }
   out.push(
     h('p.lat-meta', [

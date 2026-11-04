@@ -284,9 +284,9 @@ function ensureStubs(rt: Runtime): void {
   })
 }
 
-/** Open a row's document in the reader and put that row under the reading line. */
 const navigation = new WeakMap<Runtime, object>()
 
+/** Open a row's document in the reader and put that row under the reading line. */
 export async function goTo(rt: Runtime, row: number): Promise<void> {
   const intent = {}
   navigation.set(rt, intent)

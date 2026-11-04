@@ -10,6 +10,7 @@ import { bindRail } from './latent-client/rail'
 import { bindReader, chunkUnderLine, goTo, keepLine } from './latent-client/reader'
 import { fetchBytes, fetchJson, type Runtime } from './latent-client/runtime'
 import { bindSearch } from './latent-client/search'
+import { bindShare } from './latent-client/share'
 import { bindTips } from './latent-client/tips'
 import { loadPageStyles } from './page-styles'
 import { rootNavSignal } from './root-lifecycle'
@@ -213,7 +214,7 @@ export function mountLatent(root: HTMLElement): void {
     fetchJson<LatentDoc[]>(rt, `${rt.base}/docs.json`),
     fetchBytes(rt, `${rt.base}/track.bin`),
   ])
-    .then(([docs, trackBytes]) => {
+    .then(async ([docs, trackBytes]) => {
       if (signal.aborted) return
       rt.docs = docs
       rt.track = decodeTrack(trackBytes, rt.kinds)
@@ -228,7 +229,9 @@ export function mountLatent(root: HTMLElement): void {
       bindMarquee(rt, rt.probe)
       bindTips(rt)
       bindRail(rt)
+      const shared = await bindShare(rt)
       root.dataset.latentLive = ''
+      if (shared || signal.aborted) return
       // the probe opens on the 3-d bench: its vectors wait for an idle moment after the reader
       if (rt.probe.querySelector('.lat-tab[data-tab="bench"][aria-selected="true"]')) {
         const open = () => {

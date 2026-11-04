@@ -50,38 +50,77 @@ const feature = (value: unknown): value is SharedFeature | null =>
 
 function features(value: unknown): value is SharedFeatures | null {
   if (value === null) return true
-  return record(value) && feature(value.selected) &&
-    typeof value.explain === 'boolean' && typeof value.pin === 'boolean' &&
-    typeof value.cluster === 'boolean' && typeof value.query === 'string' &&
-    value.query.length <= 4096 && Array.isArray(value.steer) && value.steer.length <= 128 &&
-    value.steer.every((term: unknown) => Array.isArray(term) && term.length === 2 &&
-      typeof term[0] === 'string' && term[0].length <= 256 &&
-      /^(?:tag:.+|axis:.+|[a-z][a-z0-9-]*:\d+)$/.test(term[0]) &&
-      finite(term[1]) && Math.abs(term[1]) <= 12)
+  return (
+    record(value) &&
+    feature(value.selected) &&
+    typeof value.explain === 'boolean' &&
+    typeof value.pin === 'boolean' &&
+    typeof value.cluster === 'boolean' &&
+    typeof value.query === 'string' &&
+    value.query.length <= 4096 &&
+    Array.isArray(value.steer) &&
+    value.steer.length <= 128 &&
+    value.steer.every(
+      (term: unknown) =>
+        Array.isArray(term) &&
+        term.length === 2 &&
+        typeof term[0] === 'string' &&
+        term[0].length <= 256 &&
+        /^(?:tag:.+|axis:.+|[a-z][a-z0-9-]*:\d+)$/.test(term[0]) &&
+        finite(term[1]) &&
+        Math.abs(term[1]) <= 12,
+    )
+  )
 }
 
 function bench(value: unknown): value is SharedBench | null {
   if (value === null) return true
-  return record(value) && finite(value.yaw) && finite(value.pitch) &&
-    finite(value.zoom) && value.zoom > 0 && value.zoom <= 100 &&
-    finite(value.panX) && finite(value.panY) &&
-    Array.isArray(value.axes) && value.axes.length === 3 && value.axes.every(integer) &&
+  return (
+    record(value) &&
+    finite(value.yaw) &&
+    finite(value.pitch) &&
+    finite(value.zoom) &&
+    value.zoom > 0 &&
+    value.zoom <= 100 &&
+    finite(value.panX) &&
+    finite(value.panY) &&
+    Array.isArray(value.axes) &&
+    value.axes.length === 3 &&
+    value.axes.every(integer) &&
     (value.level === 'docs' || value.level === 'rows' || value.level === 'feats') &&
-    integer(value.hidden) && value.hidden <= 15 && typeof value.featsOn === 'boolean' &&
-    typeof value.picked === 'boolean' && feature(value.feature)
+    integer(value.hidden) &&
+    value.hidden <= 15 &&
+    typeof value.featsOn === 'boolean' &&
+    typeof value.picked === 'boolean' &&
+    feature(value.feature)
+  )
 }
 
 export function readSharedView(hash: string): SharedView | null {
   if (!hash.startsWith('#view=') || hash.length > 65536) return null
   try {
     const value: unknown = JSON.parse(decodeURIComponent(hash.slice(6)))
-    if (!record(value) || value.v !== 1 || typeof value.base !== 'string' ||
-      value.base.length > 512 || !integer(value.focus) ||
+    if (
+      !record(value) ||
+      value.v !== 1 ||
+      typeof value.base !== 'string' ||
+      value.base.length > 512 ||
+      !integer(value.focus) ||
       !['axes', 'bench', 'features'].includes(String(value.tab)) ||
-      !features(value.features) || !bench(value.bench)) return null
+      !features(value.features) ||
+      !bench(value.bench)
+    )
+      return null
     const tab = value.tab
     if (tab !== 'axes' && tab !== 'bench' && tab !== 'features') return null
-    return { v: 1, base: value.base, focus: value.focus, tab, features: value.features, bench: value.bench }
+    return {
+      v: 1,
+      base: value.base,
+      focus: value.focus,
+      tab,
+      features: value.features,
+      bench: value.bench,
+    }
   } catch {
     return null
   }

@@ -30,11 +30,12 @@ export function bindProbeShortcuts(rt: Runtime): void {
         featurePrefixUntil = 0
         return
       }
+      if (event.key === 'Alt') return
       // Option changes event.key on macOS (f becomes ƒ); code keeps the physical shortcut.
       const key = event.code || (event.key === '3' ? 'Digit3' : `Key${event.key.toUpperCase()}`)
       const secondF = key === 'KeyF' && performance.now() < featurePrefixUntil
       if (!event.altKey && !secondF) {
-        if (event.key !== 'Alt') featurePrefixUntil = 0
+        featurePrefixUntil = 0
         return
       }
       let action: (() => void) | undefined
