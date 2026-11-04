@@ -141,7 +141,7 @@ export async function displayPreview(s: SearchSession, el: HTMLElement | null) {
   if (!s.previewVisible || !el || !preview) return
   const codeMatch = s.codeMatches.get(el)
   const slug = el.dataset.codeOwner ?? el.id
-  if (!isFullSlug(slug)) return
+  if (!slug || !isFullSlug(slug)) return
   const previewKey = codeMatch
     ? `${slug}:${codeMatch.unit.id}:${codeMatch.ranges[codeMatch.selectedRange]?.start.offset}`
     : el.dataset.pdfPage

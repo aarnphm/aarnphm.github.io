@@ -92,6 +92,7 @@ export function createSearchCompletions(
         item.tabIndex = -1
         item.id = `${list.id}-${index}`
         item.className = 'search-completion'
+        item.title = choice.insert
         item.setAttribute('role', 'option')
         const token = document.createElement('span')
         token.className = 'search-completion-token'

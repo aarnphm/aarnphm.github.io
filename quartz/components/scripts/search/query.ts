@@ -2,6 +2,7 @@ import type { ContentDetails } from '../../../plugins'
 import type { LexicalField, LexicalFieldResult } from '../lexical-search-types'
 import { parseCodeQuery } from '../../../util/code-query'
 import { escapeHTML } from '../../../util/escape'
+import { parsePathQuery } from '../../../util/path-query'
 import { pdfMetadata } from '../../../util/pdf-search'
 import { isSearchExcluded } from '../../../util/search-exclude'
 import { parseSearchQuery, searchScopeIncludes, type SearchScope } from '../../../util/search-scope'
@@ -23,6 +24,7 @@ import {
   setSemanticState,
   updateModeUI,
 } from './engine'
+import { searchSitePaths } from './paths'
 import { clearPreview, setImageSearch } from './preview'
 import { completeSearchProgress, resetProgressBar, startSearchProgress } from './progress'
 import { commitSearchDisplay, displayResults } from './results'
@@ -179,6 +181,11 @@ export async function runSearch(s: SearchSession, rawTerm: string, token: number
 }
 
 async function querySearch(s: SearchSession, rawTerm: string, token: number) {
+  const pathQuery = parsePathQuery(rawTerm)
+  if (pathQuery) {
+    await searchSitePaths(s, pathQuery, token)
+    return
+  }
   const codeQuery = parseCodeQuery(rawTerm)
   if (codeQuery) {
     await searchCode(s, codeQuery, token)

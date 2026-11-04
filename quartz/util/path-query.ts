@@ -1,4 +1,4 @@
-/** A palette query that names a site path: `/embeddings`, `/thoughts/`, `/posts/25#notes`. */
+/** A search query that names a site path: `/embeddings`, `path:/thoughts/`, `/posts/25#notes`. */
 export interface PathQuery {
   /** Path without the leading slash; keeps a trailing slash when one was typed. */
   path: string
@@ -33,7 +33,9 @@ export interface PathMatches {
 }
 
 export function parsePathQuery(raw: string): PathQuery | null {
-  const value = raw.trim()
+  let value = raw.trim()
+  const prefixed = /^path:/i.exec(value)
+  if (prefixed) value = value.slice(prefixed[0].length).trim()
   if (!value.startsWith('/') || /\s/.test(value)) return null
   const cut = value.search(/[?#]/)
   const head = cut === -1 ? value : value.slice(0, cut)

@@ -1,7 +1,7 @@
 import { CODE_FILE_EXTENSIONS, canonicalCodeLanguage } from './code-languages'
 import { codeQueryTokens, parseCodeQuery } from './code-query'
 
-export const SEARCH_QUERY_PLACEHOLDER = 'search · filter: · path: · ast:'
+export const SEARCH_QUERY_PLACEHOLDER = 'search · /path · path:/ · filter: · ast:'
 
 export interface SearchCompletion {
   operator: string
@@ -97,9 +97,14 @@ export function searchCompletions(
           : 'choose notes, images, PDF, code or a language',
       ),
     ]
-  if (!parseCodeQuery(raw.slice(0, from))) return []
-  if (value && 'path:'.startsWith(value) && value !== 'path:')
-    return [choice('path:', '', 'limit code to a file or part of its path')]
+  if (!parseCodeQuery(raw.slice(0, from))) {
+    const typed = value.toLowerCase()
+    if (typed && 'path:/'.startsWith(typed) && typed !== 'path:/')
+      return [choice('path:/', '', 'open a site path, same as /thoughts/')]
+    return []
+  }
+  if (value && 'path:'.startsWith(value.toLowerCase()) && value.toLowerCase() !== 'path:')
+    return [choice('path:', '', 'keep code whose file path contains this text')]
   if (value && 'ast:'.startsWith(value))
     return [choice('ast:', '', 'match code structure with $X and $$$ARGS')]
   return []

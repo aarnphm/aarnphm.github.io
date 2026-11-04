@@ -1,4 +1,5 @@
 import { parseCodeQuery } from '../../../util/code-query'
+import { parsePathQuery } from '../../../util/path-query'
 import { parseSearchQuery } from '../../../util/search-scope'
 import { isSearchModeToggle, isSearchToggle } from '../../../util/search-shortcuts'
 import { ensureSemantic, updateModeUI } from './engine'
@@ -157,6 +158,18 @@ export function shortcutHandler(s: SearchSession, e: HTMLElementEventMap['keydow
     (e.key === 'Enter' || e.key === ' ')
   )
     return
+  if (e.key === 'Tab' && !e.shiftKey && parsePathQuery(searchBar.value)) {
+    const path =
+      s.currentHover?.dataset.path ??
+      results.querySelector<HTMLElement>('.result-card.focus')?.dataset.path
+    if (path) {
+      e.preventDefault()
+      searchBar.value = path
+      searchBar.setSelectionRange(path.length, path.length)
+      searchBar.dispatchEvent(new Event('input', { bubbles: true }))
+      return
+    }
+  }
   if (e.key === 'Enter') {
     if (e.target !== searchBar && !results.contains(document.activeElement)) return
     // Cancel native form submission before any asynchronous work can yield to the browser.
@@ -274,7 +287,7 @@ export function onType(s: SearchSession) {
     resetProgressBar(s)
     return
   }
-  if (!hasQuery || shared.searchMode === 'lexical') {
+  if (parsePathQuery(term) || !hasQuery || shared.searchMode === 'lexical') {
     void runSearch(s, term, token)
     return
   }

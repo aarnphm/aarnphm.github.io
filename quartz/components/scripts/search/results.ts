@@ -63,8 +63,10 @@ export function flushSearchDisplay(s: SearchSession) {
 function navigateSearchResult(s: SearchSession, anchor: HTMLAnchorElement) {
   const href = anchor.getAttribute('href')
   if (!href) return
-  window.spaNavigate(new URL(href, window.location.toString()))
+  const destination = new URL(anchor.href, window.location.toString())
   hideSearch(s)
+  if (anchor.dataset.pathLiteral === 'true') location.assign(destination)
+  else window.spaNavigate(destination)
 }
 
 export function openSearchResult(s: SearchSession) {

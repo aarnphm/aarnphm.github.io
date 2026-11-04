@@ -40,10 +40,18 @@ export function literalRanges(text: string, pattern: string, caseSensitive: bool
   return ranges
 }
 
+function pathNeedleMatches(unitPath: string, needle: string) {
+  const haystack = unitPath.toLowerCase()
+  const folded = needle.toLowerCase()
+  if (haystack.includes(folded)) return true
+  const unslashed = folded.replace(/^\/+/, '')
+  return unslashed !== folded && unslashed.length > 0 && haystack.includes(unslashed)
+}
+
 export function codeUnitSelected(unit: CodeUnit, query: CodeQuery): boolean {
   return (
     (query.language ? unit.language === query.language : unit.language !== 'json') &&
-    (!query.path || unit.path.toLowerCase().includes(query.path.toLowerCase()))
+    (!query.path || pathNeedleMatches(unit.path, query.path))
   )
 }
 

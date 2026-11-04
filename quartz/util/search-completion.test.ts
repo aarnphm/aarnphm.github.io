@@ -39,7 +39,9 @@ test('code operators are offered only within code search', () => {
   assert.equal(searchCompletions('fil', 3)[0]?.insert, 'filter:')
   assert.equal(searchCompletions('filter:python as', 16)[0]?.insert, 'ast:')
   assert.equal(searchCompletions('filter:code pa', 14)[0]?.insert, 'path:')
+  assert.equal(searchCompletions('pat', 3)[0]?.insert, 'path:/')
   assert.deepEqual(searchCompletions('notes as', 8), [])
+  assert.deepEqual(searchCompletions('path:/thoughts', 13), [])
 })
 
 test('source strings, AST patterns and commands stay opaque', () => {

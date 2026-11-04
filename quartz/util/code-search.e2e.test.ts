@@ -136,6 +136,12 @@ test('real HTTP retrieval validates shards, scopes listings, recovers generation
     )
     assert.equal(listed.matches.length, 1)
     assert.equal(listed.matches[0].ranges.length, 0)
+    const rooted = await engine.search(
+      { ...query, pattern: '', path: '/courses/a.py' },
+      new AbortController().signal,
+    )
+    assert.equal(rooted.matches.length, 1)
+    assert.equal(rooted.matches[0].unit.path, 'courses/a.py')
     const json = await engine.search({ ...query, language: 'json' }, new AbortController().signal)
     assert.equal(json.matches.length, 1)
     assert.equal(

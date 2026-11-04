@@ -24,6 +24,10 @@ test('parsePathQuery reads only slash-led single tokens', () => {
   assert.deepEqual(parsePathQuery('/'), { path: '', suffix: '' })
   assert.equal(parsePathQuery('embeddings'), null)
   assert.equal(parsePathQuery('/a b'), null)
+  assert.deepEqual(parsePathQuery('path:/thoughts/'), { path: 'thoughts/', suffix: '' })
+  assert.deepEqual(parsePathQuery('PATH: /posts/25#notes'), { path: 'posts/25', suffix: '#notes' })
+  assert.equal(parsePathQuery('path:thoughts'), null)
+  assert.equal(parsePathQuery('filter:code path:/a.py'), null)
 })
 
 test('routePath folds folder index slugs', () => {

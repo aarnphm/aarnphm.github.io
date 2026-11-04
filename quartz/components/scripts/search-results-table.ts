@@ -33,7 +33,7 @@ export function searchStatusTable(query: string, scope = 'notes', message?: stri
   hint.className = 'search-empty-hint'
   hint.textContent = query.trim()
     ? 'try fewer words or change the filter.'
-    : 'type a title, phrase, or filter:code to begin.'
+    : 'type a title, /path, path:/path, or filter:code to begin.'
   cell.append(status, hint)
   return table
 }
