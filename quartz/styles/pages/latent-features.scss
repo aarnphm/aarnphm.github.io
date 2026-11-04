@@ -226,6 +226,23 @@
     content: '○';
   }
 
+  // the id column: a fixed marker slot and a right-aligned id wide enough for #2047, so the
+  // numbers line up down every list whatever the level or the digit count
+  .lat-feat-id {
+    display: inline-grid;
+    grid-template-columns: 0.8rem 5ch;
+    align-items: baseline;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+
+    &::before {
+      content: '';
+      grid-column: 1;
+      margin-right: 0;
+      text-align: left;
+    }
+  }
+
   .lat-feat-about {
     font-size: var(--text-meta);
     color: var(--dark);
@@ -585,7 +602,7 @@
 
 // Steering by score fusion (docs/latent-steering.md): each term's strength is a slider in its
 // own unit, tags and axes list beside features in `#` search with their sparse probe under them,
-// and "why these links" splits each link's cosine into feature-pair edges.
+// and "explanation" splits each link's cosine into feature-pair edges.
 [data-layout='latent'] :where(#quartz-root) .lat-probe .lat-features {
   .lat-steer-amount {
     grid-template-columns: 5.5rem 2.6rem;

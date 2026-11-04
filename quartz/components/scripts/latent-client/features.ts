@@ -148,9 +148,9 @@ interface FeatureState {
   words: Promise<WordTable | null> | null
   /** channel keys the worker holds for the rows matrix */
   channels: Set<string>
-  /** the "why these links" group is open */
+  /** the "explanation" group is open */
   explain: boolean
-  /** the rows steering last pinned to the links pane, which "why these links" explains */
+  /** the rows steering last pinned to the links pane, which "explanation" explains */
   pinned: number[] | null
   dragFrame: number | null
   panel: HTMLElement
@@ -316,9 +316,12 @@ function featureItem(
         featureName(row),
       ),
       h(
-        'span.lat-feat-meta',
-        { dataLevel: row.level === undefined ? undefined : String(row.level) },
-        `${dict.meta.name === 'text' ? '' : `${dict.meta.name} `}#${f}`,
+        'span.lat-feat-meta.lat-feat-id',
+        {
+          dataLevel: row.level === undefined ? undefined : String(row.level),
+          title: dict.meta.name === 'text' ? undefined : `${dict.meta.name} feature`,
+        },
+        `#${f}`,
       ),
       steerPair(weak),
     ],
@@ -635,8 +638,10 @@ async function renderPanel(rt: Runtime, st: FeatureState): Promise<void> {
   for (const [i, other] of ordered.slice(1).entries()) {
     const read = codes[i + 1].slice(0, 3).map(([f, a]) => ({ dict: other, f, a }))
     if (read.length)
-      groups.push(section(`as ${other.meta.name}`, `${read.length}`, [featureList(read, st)]))
+      groups.push(section(other.meta.name, `${read.length}`, [featureList(read, st)]))
   }
+  // the explanation sits under what the other dictionaries read in the focus
+  const whyAt = groups.length
   if (st.query) {
     const text = dicts.find(d => d.meta.name === 'text') ?? own
     const rows = (await encodeVector(rt, text, st.query.vector)).map(([f, a]) => ({
@@ -651,7 +656,7 @@ async function renderPanel(rt: Runtime, st: FeatureState): Promise<void> {
   }
   const why = await whySection(rt, st, dicts)
   if (rt.signal.aborted) return
-  if (why) groups.splice(1, 0, why)
+  if (why) groups.splice(whyAt, 0, why)
   if (st.needle) {
     const hits = findFeatures(dicts, st.needle)
     const terms = await findTerms(rt, st, st.needle)
@@ -1030,7 +1035,7 @@ async function applySteer(rt: Runtime, st: FeatureState, drag = false, retry = t
   if (seq !== st.steerSeq) return
   st.pinned = rows.map(([r]) => r)
   await pinLinks(rt, label, rows)
-  // after the pin, so "why these links" explains the steered list
+  // after the pin, so "explanation" explains the steered list
   if (!drag) void renderPanel(rt, st)
 }
 
@@ -1189,7 +1194,7 @@ function termList(st: FeatureState, dicts: FeatureDict[], hits: TermHit[]): Elem
   )
 }
 
-// ---- why these links -------------------------------------------------------------------------
+// ---- explanation ----------------------------------------------------------------------------
 
 /**
  * A link's cosine as an attribution graph. Each row is mean + norm · Σ a_f d_f + error in its
@@ -1290,7 +1295,7 @@ async function explainLinks(
 
 async function whySection(rt: Runtime, st: FeatureState, dicts: FeatureDict[]): Promise<Element> {
   const head = h('header', [
-    h('span.lat-feat-head', 'why these links'),
+    h('span.lat-feat-head', 'explanation'),
     h(
       'button.lat-feat-clear',
       { type: 'button', dataWhy: '', ariaExpanded: st.explain ? 'true' : 'false' },
