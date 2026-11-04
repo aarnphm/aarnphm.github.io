@@ -246,6 +246,8 @@ async function mouseClickHandler(evt: MouseEvent, link: HTMLAnchorElement) {
 }
 
 function closestPopoverLink(target: EventTarget | null): HTMLAnchorElement | null {
+  // The Curius workspace owns link previews through its reader panel.
+  if (document.body.dataset.slug === 'curius') return null
   const element =
     target instanceof Element ? target : target instanceof Node ? target.parentElement : null
   const link =

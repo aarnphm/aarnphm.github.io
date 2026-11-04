@@ -130,6 +130,17 @@ test('custom page and Curius link popovers use the shared browser lifecycle', as
             a.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
             check(requested, 'click still opens the Curius reader')
             check(!document.querySelector('.active-popover'), 'reader activation dismisses the hover card')
+            document.body.dataset.slug = 'curius'
+            for (const anchor of [a, document.querySelector('#ordinary')]) {
+              enter(anchor)
+              await new Promise(r => setTimeout(r, 350))
+              check(!document.querySelector('.active-popover'), 'Curius workspace suppresses hover for ' + anchor.href)
+            }
+            requested = false
+            document.addEventListener('curius:preview', () => { requested = true }, { once: true })
+            a.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+            check(requested, 'Curius workspace keeps click-to-preview')
+            delete document.body.dataset.slug
             const { topics, highlights, ...trailLink } = _SENTINEL
             const trailRow = createTitle({ Link: { ...trailLink, title: 'Trail link', link: 'https://example.org/trail' } })
             document.querySelector('#curius-fragments').append(trailRow)
