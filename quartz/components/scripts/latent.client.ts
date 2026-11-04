@@ -198,7 +198,35 @@ async function renderMath(rt: Runtime): Promise<void> {
   void loadPageStyles(rt.root)
 }
 
-/** Render math whenever the reader or links gain markup: part fills, documents, a new focus. */
+// ---- code -------------------------------------------------------------------------------------
+
+// The build highlighted the first screen's code. Blocks mounted later name their language in
+// `data-lang`; the site's shared highlighter chunk (the one comments and previews use) loads the
+// first time one appears and writes the note pages' token markup, so syntax.scss colours it.
+const CODE = 'pre.lat-code[data-lang] > code:not([data-theme])'
+
+async function renderCode(rt: Runtime): Promise<void> {
+  const blocks = rt.root.querySelectorAll<HTMLElement>(CODE)
+  if (blocks.length === 0) return
+  const highlighter = await import('../../util/highlight-source').catch(() => null)
+  if (!highlighter || rt.signal.aborted) return
+  for (const code of blocks) {
+    const pre = code.parentElement
+    if (!pre?.isConnected || code.hasAttribute('data-theme')) continue
+    const out = highlighter.highlightCode(code.textContent ?? '', pre.dataset.lang ?? '')
+    if (out.language === 'plain') {
+      pre.removeAttribute('data-lang')
+      continue
+    }
+    for (const [name, value] of Object.entries(highlighter.codeAttributes(out)))
+      code.setAttribute(name, value)
+    // a passage is an excerpt: numbering from 1 would misstate where it sits in the file
+    code.dataset.disableLineNumber = ''
+    code.innerHTML = out.html
+  }
+}
+
+/** Math and code whenever the reader or links gain markup: part fills, documents, a new focus. */
 function watchMath(rt: Runtime): void {
   let queued = false
   const observer = new MutationObserver(() => {
@@ -207,6 +235,7 @@ function watchMath(rt: Runtime): void {
     queueMicrotask(() => {
       queued = false
       void renderMath(rt)
+      void renderCode(rt)
     })
   })
   observer.observe(rt.reader, { childList: true, subtree: true })

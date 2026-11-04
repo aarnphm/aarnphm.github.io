@@ -365,8 +365,34 @@ export function blockSpans(source: string, options: HtmlOptions = {}): Span[] {
   return spans
 }
 
-export function fenceBlock(body: string): Element {
-  return h('pre.lat-code', [h('code', decodeEntities(body.replace(/\n+$/, '')))])
+const PLAIN_FENCES = new Set(['text', 'txt', 'plain', 'plaintext', 'output', 'math'])
+// notebook kernel names the highlighter does not list among its aliases
+const FENCE_ALIASES: Record<string, string> = {
+  python3: 'python',
+  ipython: 'python',
+  ipython3: 'python',
+}
+
+/**
+ * The language a fence's info string names (`python`, `{julia} cell`), or nothing for plain text.
+ * The highlighter decides later whether it knows the name, so the client loads it only when a
+ * passage names one.
+ */
+export function fenceLanguage(info: string | undefined): string | undefined {
+  const word = (info ?? '')
+    .trim()
+    .split(/\s+/)[0]
+    .replace(/^\{|\}$/g, '')
+    .toLowerCase()
+  if (!word || PLAIN_FENCES.has(word) || !/^[\w#+.-]+$/.test(word)) return undefined
+  return FENCE_ALIASES[word] ?? word
+}
+
+/** `pre.lat-code`; `data-lang` marks a block the transformer or client highlights */
+export function fenceBlock(body: string, info?: string): Element {
+  return h('pre.lat-code', { dataLang: fenceLanguage(info) }, [
+    h('code', decodeEntities(body.replace(/\n+$/, ''))),
+  ])
 }
 
 // ---- pipe tables ------------------------------------------------------------------------------

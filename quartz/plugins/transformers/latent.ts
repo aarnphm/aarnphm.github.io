@@ -1,11 +1,14 @@
-import type { Root } from 'hast'
+import type { Element, ElementContent, Root } from 'hast'
+import { fromHtml } from 'hast-util-from-html'
 import { h } from 'hastscript'
+import { SKIP, visit } from 'unist-util-visit'
 import type { LinkItem } from '../../util/latent/markup'
 import { customMacros } from '../../cfg'
 // @ts-ignore
 import loader from '../../components/scripts/latent-loader.inline'
 import { QuartzTransformerPlugin } from '../../types/plugin'
 import cachedKatex from '../../util/cached-katex'
+import { codeAttributes, highlightCode } from '../../util/highlight-source'
 import {
   axisCard,
   docHead,
@@ -17,6 +20,31 @@ import {
 } from '../../util/latent/markup'
 import { axesSpec, defaultFocus, docOfRow, openSidecar } from '../../util/latent/sidecar'
 import { LATENT, inScope, scopePrefixes } from '../../util/latent/types'
+
+/**
+ * Code blocks on the first screen in the note pages' token markup (the client does the same for
+ * blocks it mounts later). Line numbers stay off: a passage is an excerpt.
+ */
+function highlightPassages(tree: Element): void {
+  visit(tree, 'element', node => {
+    const lang = node.properties.dataLang
+    if (node.tagName !== 'pre' || typeof lang !== 'string') return
+    const code = node.children[0]
+    if (code?.type !== 'element' || code.tagName !== 'code') return SKIP
+    const source = code.children.map(c => (c.type === 'text' ? c.value : '')).join('')
+    const out = highlightCode(source, lang)
+    if (out.language === 'plain') {
+      delete node.properties.dataLang
+      return SKIP
+    }
+    code.properties = h('code', {
+      ...codeAttributes(out),
+      'data-disable-line-number': '',
+    }).properties
+    code.children = fromHtml(out.html, { fragment: true }).children as ElementContent[]
+    return SKIP
+  })
+}
 
 /**
  * `layout: latent` turns a note into a reader of the embedding space under `directory:`
@@ -220,6 +248,7 @@ export const Latent: QuartzTransformerPlugin = () => {
             },
             [rail, reader, linksEl, probeEl],
           )
+          highlightPassages(reader)
           // passages carry math as `.math-inline` / `.math-display` spans; the Latex plugin's
           // html pass ran before this one, so render them here with the notes' macros
           katex({ type: 'root', children: [root] }, file)

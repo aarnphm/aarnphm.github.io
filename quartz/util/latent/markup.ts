@@ -236,7 +236,7 @@ const ANSI = new RegExp(`${String.fromCharCode(27)}\\[[0-?]*[ -/]*[@-~]`, 'g')
  */
 function fenceView(body: string, info: string | undefined, options: PassageOptions): Element {
   const [kind = '', name = ''] = (info ?? '').toLowerCase().split(/\s+/)
-  if (!options.markdown) return fenceBlock(body)
+  if (!options.markdown) return fenceBlock(body, info)
   // a notebook cell's output (the builder writes `output stdout|stderr|result|error`), set as
   // the notebook page sets it: mono on its own tint, the stream named above it
   if (kind === 'output')
@@ -287,7 +287,7 @@ function fenceView(body: string, info: string | undefined, options: PassageOptio
       ...rest.flatMap((part, n) => (date || n > 0 ? [' · ', part] : [part])),
     ])
   }
-  return fenceBlock(body)
+  return fenceBlock(body, info)
 }
 
 function paragraphs(text: string, options: PassageOptions): Element[] {

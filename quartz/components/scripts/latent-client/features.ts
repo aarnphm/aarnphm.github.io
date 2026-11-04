@@ -148,9 +148,13 @@ interface FeatureState {
   words: Promise<WordTable | null> | null
   /** channel keys the worker holds for the rows matrix */
   channels: Set<string>
-  /** the "explanation" group is open */
+  /** the "reasoning" group is open (it is by default) */
   explain: boolean
-  /** the rows steering last pinned to the links pane, which "explanation" explains */
+  /** the decoders "reasoning" needs have loaded once, so it renders with the panel */
+  whyReady: boolean
+  /** bumps per panel render, so a late reasoning fill lands only in the panel it was made for */
+  renderSeq: number
+  /** the rows steering last pinned to the links pane, which "reasoning" explains */
   pinned: number[] | null
   dragFrame: number | null
   panel: HTMLElement
@@ -640,7 +644,7 @@ async function renderPanel(rt: Runtime, st: FeatureState): Promise<void> {
     if (read.length)
       groups.push(section(other.meta.name, `${read.length}`, [featureList(read, st)]))
   }
-  // the explanation sits under what the other dictionaries read in the focus
+  // reasoning sits under what the other dictionaries read in the focus
   const whyAt = groups.length
   if (st.query) {
     const text = dicts.find(d => d.meta.name === 'text') ?? own
@@ -654,6 +658,7 @@ async function renderPanel(rt: Runtime, st: FeatureState): Promise<void> {
       section(`query · ${truncate(st.query.text, 28)}`, `${rows.length}`, [featureList(rows, st)]),
     )
   }
+  const seq = ++st.renderSeq
   const why = await whySection(rt, st, dicts)
   if (rt.signal.aborted) return
   if (why) groups.splice(whyAt, 0, why)
@@ -701,6 +706,22 @@ async function renderPanel(rt: Runtime, st: FeatureState): Promise<void> {
   )
   if (rt.signal.aborted || (rt.focus !== focus && !st.selected)) return
   st.panel.innerHTML = toHtml(groups as never)
+  if (st.panel.querySelector('.lat-why[data-why-pending]')) fillWhy(rt, st, dicts, seq)
+}
+
+/** Build "reasoning" once the browser is idle after a paint, then swap it into the same panel. */
+function fillWhy(rt: Runtime, st: FeatureState, dicts: FeatureDict[], seq: number): void {
+  const run = async () => {
+    if (rt.signal.aborted || st.renderSeq !== seq) return
+    const section = await whySection(rt, st, dicts, true)
+    st.whyReady = true
+    if (rt.signal.aborted || st.renderSeq !== seq) return
+    const slot = st.panel.querySelector('.lat-why[data-why-pending]')
+    if (slot) slot.outerHTML = toHtml(section as never)
+  }
+  const go = () => void run().catch(error => console.warn('[latent] reasoning', error))
+  if ('requestIdleCallback' in window) requestIdleCallback(go, { timeout: 1500 })
+  else setTimeout(go, 200)
 }
 
 // ---- links pane ----------------------------------------------------------------------------
@@ -1035,7 +1056,7 @@ async function applySteer(rt: Runtime, st: FeatureState, drag = false, retry = t
   if (seq !== st.steerSeq) return
   st.pinned = rows.map(([r]) => r)
   await pinLinks(rt, label, rows)
-  // after the pin, so "explanation" explains the steered list
+  // after the pin, so "reasoning" explains the steered list
   if (!drag) void renderPanel(rt, st)
 }
 
@@ -1194,7 +1215,7 @@ function termList(st: FeatureState, dicts: FeatureDict[], hits: TermHit[]): Elem
   )
 }
 
-// ---- explanation ----------------------------------------------------------------------------
+// ---- reasoning ------------------------------------------------------------------------------
 
 /**
  * A link's cosine as an attribution graph. Each row is mean + norm · Σ a_f d_f + error in its
@@ -1293,16 +1314,28 @@ async function explainLinks(
   return out
 }
 
-async function whySection(rt: Runtime, st: FeatureState, dicts: FeatureDict[]): Promise<Element> {
+async function whySection(
+  rt: Runtime,
+  st: FeatureState,
+  dicts: FeatureDict[],
+  now = false,
+): Promise<Element> {
   const head = h('header', [
-    h('span.lat-feat-head', 'explanation'),
+    h('span.lat-feat-head', 'reasoning'),
     h(
       'button.lat-feat-clear',
       { type: 'button', dataWhy: '', ariaExpanded: st.explain ? 'true' : 'false' },
-      st.explain ? 'hide' : 'explain',
+      st.explain ? 'hide' : 'show',
     ),
   ])
   if (!st.explain) return h('section.lat-feat-group.lat-why', [head])
+  // the first time, the decoders (512 KB for text) load after the panel paints: a quiet line
+  // holds the place and fillWhy swaps the section in on idle
+  if (!now && !st.whyReady)
+    return h('section.lat-feat-group.lat-why', { dataWhyPending: '' }, [
+      head,
+      h('p.lat-why-wait', 'reading the links…'),
+    ])
   const links = await explainLinks(rt, st, dicts)
   const previews = await Promise.all(links.map(l => previewOf(rt, l.r)))
   return h('section.lat-feat-group.lat-why', [
@@ -1366,7 +1399,9 @@ export function bindFeatures(rt: Runtime): void {
     tablesNow: null,
     words: null,
     channels: new Set(),
-    explain: false,
+    explain: true,
+    whyReady: false,
+    renderSeq: 0,
     pinned: null,
     dragFrame: null,
     panel,

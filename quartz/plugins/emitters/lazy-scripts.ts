@@ -1,9 +1,10 @@
 import { build, type Plugin } from 'esbuild'
 import { readFile } from 'node:fs/promises'
-import { devFeatureEnabled, type DevFeature } from '../../dev-features'
 import type { QuartzEmitterPlugin } from '../../types/plugin'
+import { devFeatureEnabled, type DevFeature } from '../../dev-features'
 import { FullSlug, joinSegments, QUARTZ } from '../../util/path'
 import { staticScriptsDir } from './component-resources/asset-paths'
+import { prepareClientHighlighter } from './component-resources/highlighter-assets'
 import { applyScriptAssetReferences } from './component-resources/script-assets'
 import { write } from './helpers'
 
@@ -54,6 +55,9 @@ export const LazyScripts: QuartzEmitterPlugin<Options> = opts => {
       const active = scripts.filter(
         script => !script.devFeature || devFeatureEnabled(ctx.argv, script.devFeature),
       )
+      // `import()` of util/highlight-source points at the site's one highlighter chunk instead
+      // of inlining its Wasm (the bundles are single files, so esbuild would)
+      const highlighter = await prepareClientHighlighter(ctx)
       yield* await Promise.all(
         active.map(async ({ name, entry }) => {
           const result = await build({
@@ -63,7 +67,7 @@ export const LazyScripts: QuartzEmitterPlugin<Options> = opts => {
             platform: 'browser',
             format: 'esm',
             write: false,
-            plugins: [pseudocodeBundle],
+            plugins: [pseudocodeBundle, highlighter.plugin],
           })
 
           return write({

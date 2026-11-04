@@ -1207,6 +1207,16 @@
       display: block;
       font-size: inherit;
       padding: 0;
+
+      // highlighted lines (the note pages' markup) sit flush, as plain blocks do
+      & > [data-line] {
+        padding: 0;
+        border-left: 0;
+
+        &:hover {
+          background: none;
+        }
+      }
     }
   }
 

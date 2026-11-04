@@ -602,7 +602,7 @@
 
 // Steering by score fusion (docs/latent-steering.md): each term's strength is a slider in its
 // own unit, tags and axes list beside features in `#` search with their sparse probe under them,
-// and "explanation" splits each link's cosine into feature-pair edges.
+// and "reasoning" splits each link's cosine into feature-pair edges.
 [data-layout='latent'] :where(#quartz-root) .lat-probe .lat-features {
   .lat-steer-amount {
     grid-template-columns: 5.5rem 2.6rem;
@@ -710,6 +710,13 @@
   .lat-feat-word {
     color: var(--dark);
     opacity: calc(0.5 + var(--a) * 0.5);
+  }
+
+  .lat-why-wait {
+    margin: 0;
+    font-family: var(--lat-mono);
+    font-size: var(--lat-micro);
+    color: var(--gray);
   }
 
   .lat-why-links {
