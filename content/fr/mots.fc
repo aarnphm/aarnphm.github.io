@@ -5209,3 +5209,309 @@ N: `À la Baie-James, on prévoit du soleil.` [[fr/mots#situer-les-prévisions-p
 Q: in the Îles-de-la-Madeleine
 A: {{aux Îles-de-la-Madeleine}}
 N: `Aux Îles-de-la-Madeleine, on annonce du vent et des nuages.` [[fr/mots#situer-les-prévisions-par-région]]
+
+---
+
+Q: a recipe
+A: {{une recette}}
+N: `Dans cette recette, il y a du lait.` [[fr/episode-15#décrire-les-recettes|Recipe exercises]]
+
+---
+
+Q: pie dough
+A: {{la pâte à tarte}}
+N: `Il y a de la pâte à tarte.` [[fr/episode-15#décrire-les-recettes|Maple syrup pie]]
+
+---
+
+Q: cream
+A: {{la crème}}
+N: `Il y a de la crème dans la tarte.` [[fr/episode-15#décrire-les-recettes|Recipe ingredients]]
+
+---
+
+Q: macaroni
+A: {{le macaroni}}
+N: `Il y a du macaroni et du fromage.` [[fr/episode-15#décrire-les-recettes|Cheese pasta]]
+
+---
+
+Q: fries
+A: {{des frites}}
+N: `Dans la poutine, il y a des frites.` [[fr/episode-15#décrire-les-recettes|Poutine]]
+
+---
+
+Q: cheese curds
+A: {{le fromage en grains}}
+N: `La poutine contient du fromage en grains.` [[fr/episode-15#décrire-les-recettes|Poutine]]
+
+---
+
+Q: brown gravy
+A: {{la sauce brune}}
+N: `Il y a de la sauce brune dans la poutine.` [[fr/episode-15#décrire-les-recettes|Poutine]]
+
+---
+
+Q: milk
+A: {{le lait}}
+N: `Une tasse de lait.` [[fr/episode-15#décrire-les-recettes|Recipe quantities]]
+
+---
+
+Q: peanut butter
+A: {{le beurre d'arachide}}
+N: `Une tasse de beurre d'arachide.` [[fr/episode-15#décrire-les-recettes|Peanut butter cookies]]
+
+---
+
+Q: sugar
+A: {{le sucre}}
+N: `Une tasse de sucre.` [[fr/episode-15#décrire-les-recettes|Peanut butter cookies]]
+
+---
+
+Q: an egg
+A: {{un œuf}}
+N: `Dans les biscuits, il y a un œuf.` [[fr/episode-15#décrire-les-recettes|Peanut butter cookies]]
+
+---
+
+Q: chicken broth
+A: {{le bouillon de poulet}}
+N: `Quatre tasses de bouillon de poulet.` [[fr/episode-15#décrire-les-recettes|Noodle soup]]
+
+---
+
+Q: salt
+A: {{le sel}}
+N: `Une pincée de sel.` [[fr/episode-15#décrire-les-recettes|Recipe quantities]]
+
+---
+
+Q: pepper
+A: {{le poivre}}
+N: `Une pincée de poivre.` [[fr/episode-15#décrire-les-recettes|Recipe quantities]]
+
+---
+
+Q: hot chocolate
+A: {{le chocolat chaud}}
+N: `Dans le chocolat chaud, il y a du lait et du chocolat.` [[fr/episode-15#décrire-les-recettes|Hot chocolate]]
+
+---
+
+Q: a cup of
+A: {{une tasse de}}
+N: `Une tasse de lait.` Use `de` after this measure. [[fr/episode-15#décrire-les-recettes|Recipe quantities]]
+
+---
+
+Q: a small chocolate bar
+A: {{une petite tablette de chocolat}}
+N: `Une petite tablette de chocolat pour le chocolat chaud.` [[fr/episode-15#décrire-les-recettes|Hot chocolate]]
+
+---
+
+Q: a pinch of
+A: {{une pincée de}}
+N: `Une pincée de sel et de poivre.` [[fr/episode-15#décrire-les-recettes|Recipe quantities]]
+
+---
+
+Q: In …, there is / are …
+A: {{Dans …, il y a …}}
+N: `Dans les pâtes au fromage, il y a du macaroni, du fromage et du lait.` [[fr/episode-15#décrire-les-recettes|Describing ingredients]]
+
+---
+
+Q: tea
+A: {{le thé}}
+N: `Je n'aime pas le thé.` [[fr/lessons/261103#exprimer-ses-gouts--les-huit-images|Taste models]]
+
+---
+
+Q: broccoli
+A: {{le brocoli}}
+N: `J'aime le brocoli.` [[fr/lessons/261103#exprimer-ses-gouts--les-huit-images|Taste models]]
+
+---
+
+Q: sweets
+A: {{les sucreries}}
+N: `J'adore les sucreries.` [[fr/lessons/261103#exprimer-ses-gouts--les-huit-images|Taste models]]
+
+---
+
+Q: to have a sweet tooth
+A: {{avoir le bec sucré}}
+N: `J'ai le bec sucré.` [[fr/lessons/261103#aimer--un-nom-ou-un-infinitif|Class expression]]
+
+---
+
+Q: to like
+A: {{aimer}}
+N: `J'aime les frites.` [[fr/lessons/261103#aimer--un-nom-ou-un-infinitif|Liking nouns and activities]]
+
+---
+
+Q: to love (a food or activity)
+A: {{adorer}}
+N: `J'adore les sucreries.` [[fr/lessons/261103#exprimer-ses-gouts--les-huit-images|Taste models]]
+
+---
+
+Q: dance (the art)
+A: {{la danse}}
+N: `J'aime beaucoup la danse.` [[fr/lessons/261103#aimer--un-nom-ou-un-infinitif|Noun or infinitive]]
+
+---
+
+Q: to dance
+A: {{danser}}
+N: `J'aime beaucoup danser.` [[fr/lessons/261103#aimer--un-nom-ou-un-infinitif|Noun or infinitive]]
+
+---
+
+Q: to cook
+A: {{cuisiner}}
+N: `J'aime cuisiner.` [[fr/lessons/261103#exprimer-ses-gouts--les-huit-images|Taste models]]
+
+---
+
+Q: winter
+A: {{l'hiver}}
+N: `J'aime l'hiver.` The noun is masculine. [[fr/lessons/261103#exprimer-ses-gouts--les-huit-images|Taste models]]
+
+---
+
+Q: a forest
+A: {{une forêt}}
+N: `J'aime me promener en forêt.` [[fr/lessons/261103#exprimer-ses-gouts--les-huit-images|Taste models]]
+
+---
+
+Q: I like + a noun
+A: {{j'aime + le / la / l' / les + nom}}
+N: `J'aime le fromage.` The definite article stays in `Je n'aime pas le fromage`. [[fr/lessons/261103#aimer-manger-et-la-négation|Definite articles with tastes]]
+
+---
+
+Q: I like + an action
+A: {{j'aime + infinitif}}
+N: `J'aime cuisiner.` [[fr/lessons/261103#aimer--un-nom-ou-un-infinitif|Liking activities]]
+
+---
+
+Q: I don't like…
+A: {{je n'aime pas…}}
+N: `Je n'aime pas les sucreries.` [[fr/lessons/261103#aimer-manger-et-la-négation|Negative tastes]]
+
+---
+
+Q: I like… a little
+A: {{j'aime un peu…}}
+N: `J'aime un peu les pommes.` [[fr/lessons/261103#les-nuances-à-connaitre|Taste nuances]]
+
+---
+
+Q: I quite like…
+A: {{j'aime bien…}}
+N: `J'aime bien le chocolat.` [[fr/lessons/261103#les-nuances-à-connaitre|Taste nuances]]
+
+---
+
+Q: I really like…
+A: {{j'aime beaucoup…}}
+N: `J'aime beaucoup le riz.` [[fr/lessons/261103#les-nuances-à-connaitre|Taste nuances]]
+
+---
+
+Q: I'm not too keen on…
+A: {{je n'aime pas trop…}}
+N: `Je n'aime pas trop le thé.` [[fr/lessons/261103#les-nuances-à-connaitre|Taste nuances]]
+
+---
+
+Q: I don't really like…
+A: {{je n'aime pas vraiment…}}
+N: `Je n'aime pas vraiment cuisiner.` [[fr/lessons/261103#les-nuances-à-connaitre|Taste nuances]]
+
+---
+
+Q: I don't like… very much
+A: {{je n'aime pas beaucoup…}}
+N: `Je n'aime pas beaucoup le brocoli.` [[fr/lessons/261103#les-nuances-à-connaitre|Taste nuances]]
+
+---
+
+Q: I don't like… at all
+A: {{je n'aime pas du tout…}}
+N: `Je n'aime pas du tout les champignons.` [[fr/lessons/261103#les-nuances-à-connaitre|Taste nuances]]
+
+---
+
+Q: to hate
+A: {{détester}}
+N: `Je déteste danser.` [[fr/lessons/261103#les-quatre-façons-pour-chaque-image|Four alternatives]]
+
+---
+
+Q: to loathe, to be unable to stand
+A: {{avoir horreur de}}
+N: `J'ai horreur du fromage.` Here `du` contracts `de + le`. [[fr/lessons/261103#les-nuances-à-connaitre|Taste nuances]]
+
+---
+
+Q: to prefer A to B
+A: {{préférer A à B}}
+N: `Je préfère le riz aux pâtes.` [[fr/lessons/261103#exprimer-une-préférence-p-113|Preferences]]
+
+---
+
+Q: my favourite dish
+A: {{mon plat préféré}}
+N: `Mon plat préféré, c'est la poutine.` [[fr/lessons/261103#exprimer-une-préférence-p-113|Preferences]]
+
+---
+
+Q: my favourite drink
+A: {{ma boisson préférée}}
+N: `Ma boisson préférée, c'est l'eau.` [[fr/lessons/261103#exprimer-une-préférence-p-113|Preferences]]
+
+---
+
+Q: What's your favourite dish?
+A: {{Quel est ton plat préféré ?}}
+N: `Mon plat préféré, c'est la poutine.` [[fr/lessons/261103#exprimer-une-préférence-p-113|Preferences]]
+
+---
+
+Q: What's your favourite drink?
+A: {{Quelle est ta boisson préférée ?}}
+N: `Ma boisson préférée, c'est l'eau.` [[fr/lessons/261103#exprimer-une-préférence-p-113|Preferences]]
+
+---
+
+Q: What do you prefer?
+A: {{Qu'est-ce que tu préfères ?}}
+N: `Je préfère le riz.` [[fr/lessons/261103#exprimer-une-préférence-p-113|Preferences]]
+
+---
+
+Q: Do you like…?
+A: {{Est-ce que tu aimes… ?}}
+N: `Est-ce que tu aimes le riz ?` [[fr/lessons/261103#exprimer-une-préférence-p-113|Preferences]]
+
+---
+
+Q: I like A, but I prefer B
+A: {{j'aime A, mais je préfère B}}
+N: `J'aime danser, mais je préfère cuisiner.` [[fr/lessons/261103#exprimer-une-préférence-p-113|Preferences]]
+
+---
+
+Q: elbow
+A: {{le coude}}
+N: `J'ai mal au coude.` [[fr/episode-16#piste-40--les-parties-du-corps|Episode 16, body parts]]

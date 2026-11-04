@@ -2,6 +2,7 @@
 date: '2026-10-20'
 description: bilan des épisodes 13 à 15, santé, souhaits, enveloppes, météo, futur proche, repas et jeu de révision
 id: episode-16
+modified: '2026-11-03'
 tags:
   - fr
   - language
@@ -20,6 +21,17 @@ Réponses vérifiées avec le **corrigé p. 155** et les **transcriptions CD2, p
 **Ordre de la transcription : le coude, le pied, le bras, la jambe, la main, l'épaule.**
 
 Sur le dessin, cases **à gauche**, de haut en bas : **l'épaule, le bras, la jambe**. Cases **à droite** : **la main, le coude, le pied**.
+
+Les positions correspondent aux côtés de la page.
+
+| English  | français          | position dans l'image |
+| -------- | ----------------- | --------------------- |
+| shoulder | {{l'épaule}} (f.) | gauche, en haut       |
+| arm      | {{le bras}} (m.)  | gauche, au milieu     |
+| leg      | {{la jambe}} (f.) | gauche, en bas        |
+| hand     | {{la main}} (f.)  | droite, en haut       |
+| elbow    | {{le coude}} (m.) | droite, au milieu     |
+| foot     | {{le pied}} (m.)  | droite, en bas        |
 
 On conjugue **avoir** selon le sujet, puis la préposition **à** {{sidenotes[se combine avec l'article]: même contraction après `jouer à` : `jouer au soccer` (p. 116). construction : [[fr/episode-13#avoir-mal--la-construction|épisode 13]].}} : **au** dos, **à la** tête, **à l'oreille**, **aux** dents. Exemple : {{`J'ai mal à l'épaule.`}}
 

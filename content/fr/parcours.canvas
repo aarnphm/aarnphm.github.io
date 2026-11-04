@@ -66,7 +66,9 @@
 		{"id":"d9135884a541666b","type":"text","text":"Reprend : [[fr/episode-14|14]].","x":3800,"y":4092,"width":560,"height":66},
 		{"id":"fd45ddafef9e1f96","type":"file","file":"fr/lessons/260817.md","x":4520,"y":1540,"width":560,"height":380,"color":"6"},
 		{"id":"42169daff0e9b136","type":"file","file":"fr/practices/261021.md","x":6040,"y":1840,"width":560,"height":380,"color":"3"},
-		{"id":"f3a5767c3d687abe","type":"file","file":"fr/practices/261025.md","x":6040,"y":2300,"width":560,"height":380,"color":"3"}
+		{"id":"f3a5767c3d687abe","type":"file","file":"fr/practices/261025.md","x":6040,"y":2300,"width":560,"height":380,"color":"3"},
+		{"id":"c6b74d933c4a53c9","type":"file","file":"fr/lessons/261103.md","x":4520,"y":3700,"width":560,"height":380,"color":"6"},
+		{"id":"3aab6b10e1b3172e","type":"text","text":"Reprend : [[fr/episode-15|15]], [[fr/episode-16|16]].","x":4520,"y":4092,"width":560,"height":66}
 	],
 	"edges":[
 		{"id":"c07a292ddcd6bbb3","fromNode":"ddafc8572b51d1ef","fromSide":"bottom","toNode":"826ee21b849d44e1","toSide":"top"},

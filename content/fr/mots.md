@@ -2,7 +2,7 @@
 date: '2026-10-04'
 description: vocabulaire de l'anglais vers le français, classé par thème, avec les variantes du Québec
 id: mots
-modified: 2026-10-25 20:41:38 GMT-04:00
+modified: '2026-11-03'
 permalinks:
   - /mots
 socials:
@@ -192,24 +192,27 @@ French names a sport with `faire de` + article: {{`faire du vélo`}}, {{`faire d
 
 pain uses `avoir mal à`, and `à` contracts with the article: {{`J'ai mal au genou.`}}, {{`J'ai mal à la tête.`}}, {{`J'ai mal à l'épaule.`}}, {{`J'ai mal aux jambes.`}} English uses a possessive (_my knee_); French uses the definite article, because the owner is already the subject.
 
-| English           | Français             | note                  |
-| ----------------- | -------------------- | --------------------- |
-| the body          | {{le corps}}         |                       |
-| head              | {{la tête}}          |                       |
-| shoulder          | {{l'épaule}} (f.)    |                       |
-| back              | {{le dos}}           |                       |
-| arm               | {{le bras}}          |                       |
-| hand              | {{la main}}          |                       |
-| leg               | {{la jambe}}         |                       |
-| thigh             | {{la cuisse}}        |                       |
-| knee              | {{le genou}}         | plural: `les genoux`  |
-| calf (the muscle) | {{le mollet}}        |                       |
-| ankle             | {{la cheville}}      |                       |
-| foot              | {{le pied}}          |                       |
-| heart             | {{le cœur}}          |                       |
-| lungs             | {{les poumons}} (m.) |                       |
-| an injury         | {{une blessure}}     |                       |
-| to get hurt       | {{se blesser}}       | `blesser` = to injure |
+Six labels to review: [[fr/episode-16#piste-40--les-parties-du-corps|episode 16, body parts]].
+
+| English           | Français             | note                   |
+| ----------------- | -------------------- | ---------------------- |
+| the body          | {{le corps}}         |                        |
+| head              | {{la tête}}          |                        |
+| shoulder          | {{l'épaule}} (f.)    | `J'ai mal à l'épaule.` |
+| back              | {{le dos}}           |                        |
+| arm               | {{le bras}}          | `J'ai mal au bras.`    |
+| elbow             | {{le coude}}         | `J'ai mal au coude.`   |
+| hand              | {{la main}}          | `J'ai mal à la main.`  |
+| leg               | {{la jambe}}         | `J'ai mal à la jambe.` |
+| thigh             | {{la cuisse}}        |                        |
+| knee              | {{le genou}}         | plural: `les genoux`   |
+| calf (the muscle) | {{le mollet}}        |                        |
+| ankle             | {{la cheville}}      |                        |
+| foot              | {{le pied}}          | `J'ai mal au pied.`    |
+| heart             | {{le cœur}}          |                        |
+| lungs             | {{les poumons}} (m.) |                        |
+| an injury         | {{une blessure}}     |                        |
+| to get hurt       | {{se blesser}}       | `blesser` = to injure  |
 
 ## la santé
 
@@ -781,6 +784,102 @@ harder kitchen words. two gender pairs bite here: {{`une poêle`}} is a frying p
 | crispy                         | {{croustillant}}, {{croustillante}} |                                                        |
 | raw                            | {{cru}}, {{crue}}                   |                                                        |
 | rare (a steak)                 | {{saignant}}                        | medium: `à point`; well done: `bien cuit`              |
+
+### les recettes et les quantités
+
+Révision des exercices 5 et 6 de [[fr/episode-15#décrire-les-recettes|l'épisode 15]], à partir de la capture du 3 novembre 2026. Voir aussi [[fr/lessons/261103#les-recettes--exercices-5-et-6|les six réponses et les règles de la leçon du 3 novembre]]. **Du / de la / de l' / des** pour une quantité indéterminée ; **une tasse de**, **une tablette de**, **une pincée de** pour préciser la quantité. Le fromage, le poulet, la farine, le sirop d'érable et les nouilles figurent déjà dans les tableaux de cuisine.
+
+| English                | Français                            | exemple                                                                 |
+| ---------------------- | ----------------------------------- | ----------------------------------------------------------------------- |
+| a recipe               | {{une recette}}                     | `Dans cette recette, il y a du lait.`                                   |
+| pie dough              | {{la pâte à tarte}}                 | `Il y a de la pâte à tarte.`                                            |
+| cream                  | {{la crème}}                        | `Il y a de la crème dans la tarte.`                                     |
+| macaroni               | {{le macaroni}}                     | `Il y a du macaroni et du fromage.`                                     |
+| fries                  | {{des frites}}                      | `Dans la poutine, il y a des frites.`                                   |
+| cheese curds           | {{le fromage en grains}}            | `La poutine contient du fromage en grains.`                             |
+| brown gravy            | {{la sauce brune}}                  | `Il y a de la sauce brune dans la poutine.`                             |
+| milk                   | {{le lait}}                         | `Une tasse de lait.`                                                    |
+| peanut butter          | {{le beurre d'arachide}}            | `Une tasse de beurre d'arachide.`                                       |
+| sugar                  | {{le sucre}}                        | `Une tasse de sucre.`                                                   |
+| an egg                 | {{un œuf}}                          | `Dans les biscuits, il y a un œuf.`                                     |
+| chicken broth          | {{le bouillon de poulet}}           | `Quatre tasses de bouillon de poulet.`                                  |
+| salt                   | {{le sel}}                          | `Une pincée de sel.`                                                    |
+| pepper                 | {{le poivre}}                       | `Une pincée de poivre.`                                                 |
+| hot chocolate          | {{le chocolat chaud}}               | `Dans le chocolat chaud, il y a du lait et du chocolat.`                |
+| a cup of               | {{une tasse de}}                    | `Une tasse de lait`, avec **de** après la mesure.                       |
+| a small chocolate bar  | {{une petite tablette de chocolat}} | `Une petite tablette de chocolat pour le chocolat chaud.`               |
+| a pinch of             | {{une pincée de}}                   | `Une pincée de sel et de poivre.`                                       |
+| In …, there is / are … | {{Dans …, il y a …}}                | `Dans les pâtes au fromage, il y a du macaroni, du fromage et du lait.` |
+
+### les ingrédients et les réactions à un plat
+
+Exercices 8 et 9 de [[fr/episode-15#exercice-8-nommer-les-ingrédients|l'épisode 15]], à partir de la capture du 3 novembre 2026. Voir aussi [[fr/lessons/261103#page-111--commenter-un-plat|les réactions B / PB de la leçon du jour]]. **Le bœuf haché** figure aussi avec le verbe **hacher** ci-dessus. Les phrases de recettes sont des modèles ; les réactions reprennent la capture.
+
+| English                     | Français                  | exemple ou usage                                                      |
+| --------------------------- | ------------------------- | --------------------------------------------------------------------- |
+| pizza dough                 | {{la pâte à pizza}}       | `Dans une pizza, il y a de la pâte à pizza.`                          |
+| tomato sauce                | {{la sauce tomate}}       | `Il y a de la sauce tomate dans la sauce à spaghetti.`                |
+| pepperoni                   | {{le peppéroni}}          | `Il y a du peppéroni sur la pizza.`                                   |
+| a mushroom                  | {{un champignon}}         | `Il y a des champignons dans la sauce.`                               |
+| a bell pepper               | {{un poivron}}            | `Du poivron` ; **le poivre** = pepper, the spice, in the table above. |
+| a fresh juice               | {{un jus frais}}          | `Dans un jus frais, il y a des oranges et des pommes.`                |
+| It's delicious!             | {{C'est délicieux !}}     | **B**, bon.                                                           |
+| Yum!                        | {{Miam !}}                | **B**, bon ; exprime le plaisir de manger.                            |
+| It's so tasty!              | {{Que c'est savoureux !}} | **B**, bon ; `savoureux` = tasty, flavourful.                         |
+| It's delicious! (succulent) | {{C'est succulent !}}     | **B**, bon ; `succulent` = delicious.                                 |
+| It's very good!             | {{C'est très bon !}}      | **B**, bon.                                                           |
+| It's super good!            | {{C'est super bon !}}     | **B**, bon ; familier.                                                |
+| It's a delight!             | {{C'est un délice !}}     | **B**, bon ; `Ce gâteau est un délice !`                              |
+| Yuck! (yark)                | {{Yark !}}                | **PB**, pas bon ; exprime le dégout.                                  |
+| Yuck! (ouach)               | {{Ouach !}}               | **PB**, pas bon ; exprime le dégout.                                  |
+| It's disgusting!            | {{C'est dégoutant !}}     | **PB**, pas bon ; orthographe traditionnelle : `dégoûtant`.           |
+| It's inedible!              | {{C'est immangeable !}}   | **PB**, pas bon.                                                      |
+| It's gross! / It's amazing! | {{C'est écœurant !}}      | **B ou PB** selon le contexte ; sens positif familier au Québec.      |
+
+## les gouts et les activités
+
+Modèles et expressions de [[fr/lessons/261103#exprimer-ses-gouts--les-huit-images|la leçon du 3 novembre 2026]]. Les réponses aux images sont personnelles et adaptables. **Les frites** sont déjà dans les recettes ; **se promener** figure dans les activités de plein air.
+
+| English                      | Français                              | exemple                                            |
+| ---------------------------- | ------------------------------------- | -------------------------------------------------- |
+| tea                          | {{le thé}}                            | `Je n'aime pas le thé.`                            |
+| broccoli                     | {{le brocoli}}                        | `J'aime le brocoli.`                               |
+| sweets                       | {{les sucreries}}                     | `J'adore les sucreries.`                           |
+| to have a sweet tooth        | {{avoir le bec sucré}}                | `J'ai le bec sucré.`                               |
+| to like                      | {{aimer}}                             | `J'aime les frites.`                               |
+| to love (a food or activity) | {{adorer}}                            | `J'adore les sucreries.`                           |
+| dance (the art)              | {{la danse}}                          | `J'aime beaucoup la danse.`                        |
+| to dance                     | {{danser}}                            | `J'aime beaucoup danser.`                          |
+| to cook                      | {{cuisiner}}                          | `J'aime cuisiner.`                                 |
+| winter                       | {{l'hiver}}                           | `J'aime l'hiver.` ; nom masculin.                  |
+| a forest                     | {{une forêt}}                         | `J'aime me promener en forêt.`                     |
+| I like + a noun              | {{j'aime + le / la / l' / les + nom}} | `J'aime le fromage.` ; `Je n'aime pas le fromage.` |
+| I like + an action           | {{j'aime + infinitif}}                | `J'aime cuisiner.`                                 |
+| I don't like…                | {{je n'aime pas…}}                    | `Je n'aime pas les sucreries.`                     |
+
+### nuancer ses gouts et ses préférences
+
+Complément de [[fr/lessons/261103#varier-jaime-et-je-naime-pas-p-112|la leçon du 3 novembre]], vérifié avec les pages 112–113 du manuel. **Aimer**, **adorer** et **préférer** ont déjà leurs entrées ; les expressions pour commenter un plat sont dans le tableau précédent. Les phrases ci-dessous sont des modèles à adapter.
+
+| English                          | Français                             | exemple                                             |
+| -------------------------------- | ------------------------------------ | --------------------------------------------------- |
+| I like… a little                 | {{j'aime un peu…}}                   | `J'aime un peu les pommes.`                         |
+| I quite like…                    | {{j'aime bien…}}                     | `J'aime bien le chocolat.`                          |
+| I really like…                   | {{j'aime beaucoup…}}                 | `J'aime beaucoup le riz.`                           |
+| I'm not too keen on…             | {{je n'aime pas trop…}}              | `Je n'aime pas trop le thé.`                        |
+| I don't really like…             | {{je n'aime pas vraiment…}}          | `Je n'aime pas vraiment cuisiner.`                  |
+| I don't like… very much          | {{je n'aime pas beaucoup…}}          | `Je n'aime pas beaucoup le brocoli.`                |
+| I don't like… at all             | {{je n'aime pas du tout…}}           | `Je n'aime pas du tout les champignons.`            |
+| to hate                          | {{détester}}                         | `Je déteste danser.`                                |
+| to loathe, to be unable to stand | {{avoir horreur de}}                 | `J'ai horreur du fromage.` ; **du = de + le**.      |
+| to prefer A to B                 | {{préférer A à B}}                   | `Je préfère le riz aux pâtes.` ; **aux = à + les**. |
+| my favourite dish                | {{mon plat préféré}}                 | `Mon plat préféré, c'est la poutine.`               |
+| my favourite drink               | {{ma boisson préférée}}              | `Ma boisson préférée, c'est l'eau.`                 |
+| What's your favourite dish?      | {{Quel est ton plat préféré ?}}      | `Mon plat préféré, c'est la poutine.`               |
+| What's your favourite drink?     | {{Quelle est ta boisson préférée ?}} | `Ma boisson préférée, c'est l'eau.`                 |
+| What do you prefer?              | {{Qu'est-ce que tu préfères ?}}      | `Je préfère le riz.`                                |
+| Do you like…?                    | {{Est-ce que tu aimes… ?}}           | `Est-ce que tu aimes le riz ?`                      |
+| I like A, but I prefer B         | {{j'aime A, mais je préfère B}}      | `J'aime danser, mais je préfère cuisiner.`          |
 
 ## les adjectifs
 

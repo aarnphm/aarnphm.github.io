@@ -110,7 +110,25 @@ Exemple : {{`Dans les sandwichs au poulet, il y a du poulet, des tortillas, de l
 
 **Vocabulaire à retenir :** {{`la laitue`}} = lettuce ; {{`la moutarde`}} = mustard ; {{`la betterave`}} = beet ; {{`une pincée`}} = a pinch ; {{`une tranche`}} = a slice ; {{`une tasse`}} = a cup ; {{`les bleuets`}} = blueberries ; {{`le melon d'eau`}} = watermelon ; {{`les canneberges`}} = cranberries ; {{`les légumineuses`}} = legumes ; {{`les fines herbes`}} = herbs. Le livre emploie aussi **les ognons**, **le maïs**, **le poivron**, **la semoule** et **le pamplemousse**.
 
+### exercice 8 : nommer les ingrédients
+
 Pour l'exercice 8, réponses personnelles possibles : {{`Dans une soupe aux légumes, il y a des carottes, des ognons et du bouillon.`}} / {{`Dans un jus frais, il y a des oranges et des pommes.`}}
+
+**Exemple du manuel dans la capture :** {{`Dans une pizza, il y a de la pâte à pizza, de la sauce tomate, du peppéroni, des champignons, du poivron et du fromage.`}}
+
+**Modèle pour la sauce à spaghetti :** {{`Dans une sauce à spaghetti, il y a du bœuf haché, de la sauce tomate, des ognons et des champignons.`}} Les ingrédients peuvent varier ; cette réponse est une proposition personnelle. L'annotation de la capture donne **bœuf haché** = **ground beef**.
+
+| français        | anglais       | avec un article de quantité |
+| --------------- | ------------- | --------------------------- |
+| la pâte à pizza | pizza dough   | de la pâte à pizza          |
+| la sauce tomate | tomato sauce  | de la sauce tomate          |
+| le peppéroni    | pepperoni     | du peppéroni                |
+| le champignon   | mushroom      | des champignons             |
+| le poivron      | bell pepper   | du poivron                  |
+| le bœuf haché   | ground beef   | du bœuf haché               |
+| un jus frais    | a fresh juice | du jus frais                |
+
+**Le poivron** est un légume ; **le poivre** est une épice. Pour les quantités, **du poivron** désigne une quantité indéterminée et **un poivron** désigne un légume entier.
 
 ### commenter un plat
 
@@ -119,6 +137,8 @@ Pour l'exercice 8, réponses personnelles possibles : {{`Dans une soupe aux lég
 **PB**, pas bon : **Yark !**, **Ouach !**, **C'est dégoutant !**, **C'est immangeable !**
 
 **C'est écœurant !** peut être **B ou PB selon le contexte** : au Québec, cette expression peut aussi manifester un enthousiasme très fort. Écouter le ton et regarder la situation.
+
+Dans l'exercice 9, **B = bon** et **PB = pas bon**. **Savoureux** signifie « tasty, flavourful » ; **succulent** signifie « delicious » ; **un délice** signifie « a delight ». **Dégoutant** signifie « disgusting » et **immangeable**, « inedible ». **Miam !** exprime le plaisir de manger ; **Yark !** et **Ouach !** expriment le dégout.
 
 ## exprimer ses gouts, p. 112
 
