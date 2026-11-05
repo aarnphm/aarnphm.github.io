@@ -1,0 +1,1 @@
+{"d":1073,"part":1,"chunks":[{"r":59677,"c":0,"text":"Figure 12 Refusal and error rates for Cyber benchmarks. Share of sample-epochs for which the model response was detected to be a refusal or an API error. Such samples are excluded from computation of main benchmark metrics.","p":30,"l":"29","box":[110,642,888,693]}]}
