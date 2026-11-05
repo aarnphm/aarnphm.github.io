@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["numpy", "pyyaml", "mlx; sys_platform == 'darwin' and platform_machine == 'arm64'"]
+# dependencies = ["numpy", "pyyaml", "mlx; sys_platform == 'darwin' and platform_machine == 'arm64'", "torch; sys_platform == 'linux'"]
 # ///
 """Sparse features for the `layout: latent` sidecar: a TopK sparse autoencoder over the 256-d rows.
 
@@ -19,8 +19,8 @@ coefficient to tune; AuxK keeps directions from dying. The dictionary is a Matry
 of the dictionary (features [0, 128), [0, 512), [0, 2048) for text), so the first features have to
 carry the coarse topics alone and the later ones refine them. Each feature gets a level and a
 parent: the feature one level up that fires with it most often. One dictionary per family (DICTS):
-text passages, images, base entries. Training runs on MLX when it imports (Apple silicon), numpy
-otherwise. A row whose text another row holds (canon.u32, from build.py and dedup.py) is encoded
+text passages, images, base entries. Training runs on MLX when it imports (Apple silicon), PyTorch
+when it imports (Linux: CUDA, else CPU), numpy otherwise; `--backend` picks one. A row whose text another row holds (canon.u32, from build.py and dedup.py) is encoded
 but neither trains a dictionary nor counts in its tables.
 
 Output, <sidecar>/feat/<dictionary>/:
@@ -348,16 +348,120 @@ def train_mlx(
   return {name: np.array(v) for name, v in params.items()}, fvu
 
 
-def fit(*args, backend: str = 'auto', **kwargs) -> tuple[dict, float]:
-  if backend in ('auto', 'mlx'):
-    try:
-      import mlx.core  # ruff: ignore[unused-import]
+def train_torch(
+  X: np.ndarray,
+  weights: np.ndarray,
+  M: int,
+  k: int,
+  steps: int,
+  init: dict | None = None,
+  seed: int = 0,
+  batch: int = BATCH,
+  prefixes: tuple[int, ...] = (),
+) -> tuple[dict, float]:
+  """`train_mlx` on PyTorch, for Linux boxes: CUDA when present, else MPS or CPU. Same objective
+  (Matryoshka TopK + AuxK), same decoder-norm projection, same schedule; autodiff."""
+  import torch
 
-      return train_mlx(*args, **kwargs)
-    except ImportError:
-      if backend == 'mlx':
-        raise
-      log('mlx unavailable, training with numpy')
+  dev = (
+    'cuda'
+    if torch.cuda.is_available()
+    else 'mps'
+    if torch.backends.mps.is_available()
+    else 'cpu'
+  )
+  torch.manual_seed(seed)
+  rng = np.random.default_rng(seed)
+  X = np.ascontiguousarray(X, np.float32)
+  N, D = X.shape
+  aux_k = 2 * k
+  dead_after = max(50, N // batch)
+  if init is None:
+    W_dec = rng.standard_normal((M, D)).astype(np.float32)
+    W_dec /= np.linalg.norm(W_dec, axis=1, keepdims=True)
+    init = dict(
+      W_enc=W_dec.T.copy(), b_enc=np.zeros(M, np.float32), W_dec=W_dec
+    )
+  P = {
+    name: torch.tensor(
+      np.asarray(init[name], np.float32), device=dev, requires_grad=True
+    )
+    for name in ('W_enc', 'b_enc', 'W_dec')
+  }
+  prefixes = tuple(prefixes) or (M,)
+  opt = torch.optim.Adam(list(P.values()), lr=LR)
+  Xt = torch.from_numpy(X).to(dev)
+  since = np.zeros(M, np.int64)
+  p = weights / weights.sum()
+  t0 = time.time()
+  fvu = 1.0
+  for step in range(1, steps + 1):
+    rows = rng.choice(N, size=batch, p=p)
+    x = Xt[torch.from_numpy(rows).to(dev)]
+    z = x @ P['W_enc'] + P['b_enc']
+    top = torch.topk(z.detach(), k, dim=1).indices
+    vals = torch.relu(torch.gather(z, 1, top))
+    W = P['W_dec'][top]
+    loss = z.new_zeros(())
+    for m in prefixes:  # nested: the last prefix is the whole dictionary
+      xhat = torch.einsum('bk,bkd->bd', vals * (top < m), W)
+      e = xhat - x
+      loss = loss + (e * e).sum(1).mean()
+    loss = loss / len(prefixes)
+    dead = since > dead_after
+    if dead.any():
+      kk = int(min(aux_k, dead.sum()))
+      zd = torch.where(
+        torch.from_numpy(dead).to(dev)[None, :], z, torch.full_like(z, -1e9)
+      )
+      topd = torch.topk(zd.detach(), kk, dim=1).indices
+      vd = torch.relu(torch.gather(zd, 1, topd))
+      r = (x - xhat).detach()
+      ea = torch.einsum('bk,bkd->bd', vd, P['W_dec'][topd]) - r
+      aux = (ea * ea).sum(1).mean() / ((r * r).sum(1).mean() + 1e-9)
+      loss = loss + aux / 32.0
+    opt.zero_grad(set_to_none=True)
+    loss.backward()
+    with torch.no_grad():
+      Wd, g = P['W_dec'], P['W_dec'].grad
+      g -= (g * Wd).sum(1, keepdim=True) * Wd
+    warm = min(1.0, step / 200)
+    decay = (
+      1.0 if step < 0.8 * steps else max(0.02, (steps - step) / (0.2 * steps))
+    )
+    for group in opt.param_groups:
+      group['lr'] = LR * warm * decay
+    opt.step()
+    with torch.no_grad():
+      P['W_dec'] /= P['W_dec'].norm(dim=1, keepdim=True)
+    top_np, vals_np = top.cpu().numpy(), vals.detach().cpu().numpy()
+    since += 1
+    since[top_np[vals_np > 0]] = 0
+    if step % 500 == 0 or step == steps:
+      e_np, xb = e.detach().cpu().numpy(), X[rows]
+      fvu = float(np.sum(e_np * e_np) / np.sum((xb - xb.mean(0)) ** 2))
+      log(
+        f'step {step}/{steps} fvu {fvu:.3f} dead {int(dead.sum())} {time.time() - t0:.0f}s (torch {dev})'
+      )
+  return {name: v.detach().cpu().numpy() for name, v in P.items()}, fvu
+
+
+def pick_backend(backend: str = 'auto') -> str:
+  """auto: mlx on Apple silicon, torch where it imports (Linux, CUDA or CPU), numpy otherwise."""
+  if backend != 'auto':
+    return backend
+  for name in ('mlx', 'torch'):
+    if importlib.util.find_spec(name) is not None:
+      return name
+  return 'numpy'
+
+
+def fit(*args, backend: str = 'auto', **kwargs) -> tuple[dict, float]:
+  used = pick_backend(backend)
+  if used == 'mlx':
+    return train_mlx(*args, **kwargs)
+  if used == 'torch':
+    return train_torch(*args, **kwargs)
   return train(*args, **kwargs)
 
 
@@ -897,8 +1001,7 @@ def write_dict(
   log(
     f'{name}: {"warm" if init else "cold"} start, {n_own} rows, M={M} k={k} prefixes={prefixes}, {steps} steps'
   )
-  has_mlx = importlib.util.find_spec('mlx') is not None
-  used = 'mlx' if has_mlx and backend != 'numpy' else 'numpy'
+  used = pick_backend(backend)
   w, _ = fit(
     X,
     weights,
@@ -1277,7 +1380,7 @@ def main() -> None:
     '--cold', action='store_true', help='ignore the cached weights'
   )
   ap.add_argument(
-    '--backend', choices=('auto', 'mlx', 'numpy'), default='auto'
+    '--backend', choices=('auto', 'mlx', 'torch', 'numpy'), default='auto'
   )
   ap.add_argument('--steps', type=int, default=None)
   ap.add_argument(

@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["numpy", "pyyaml", "mlx; sys_platform == 'darwin' and platform_machine == 'arm64'"]
+# dependencies = ["numpy", "pyyaml", "mlx; sys_platform == 'darwin' and platform_machine == 'arm64'", "torch; sys_platform == 'linux'"]
 # ///
 """Build the `layout: latent` sidecar for every embedding store under a directory.
 
