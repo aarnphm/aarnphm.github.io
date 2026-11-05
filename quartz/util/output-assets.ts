@@ -32,6 +32,10 @@ declare global {
 
 const manifestPath = path.join('quartz', '.quartz-cache', 'output-assets.json')
 
+export function outputAssetManifestPath(ctx: Pick<BuildCtx, 'argv'>): string {
+  return ctx.argv.outputAssetManifest ?? manifestPath
+}
+
 type SerializedOutputAssetManifest = { version: 1; assets: OutputAssetEntry[] }
 
 function normalizeFilePath(fp: string): FilePath {
@@ -429,7 +433,7 @@ export async function writeCurrentOutputAssetManifest(ctx: BuildCtx): Promise<vo
     ...(ctx.outputAssetClaims ?? []),
     ...dynamicClaims,
   ])
-  await writeOutputAssetManifest(ctx.outputAssetManifest)
+  await writeOutputAssetManifest(ctx.outputAssetManifest, outputAssetManifestPath(ctx))
 }
 
 /** Move output identities with a staged build, retaining original source identities. */

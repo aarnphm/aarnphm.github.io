@@ -180,12 +180,18 @@ export function splitAnchor(link: string): [string, string] {
   return [fp, anchor]
 }
 
-export function slugTag(tag: string) {
+export function legacyTagSlug(tag: string) {
   return tag
     .split('/')
     .map(tagSegment => sluggify(tagSegment))
     .join('/')
 }
+
+export function canonicalTag(tag: string): string {
+  return legacyTagSlug(tag.trim()).normalize('NFC').toLowerCase().normalize('NFC')
+}
+
+export const slugTag = canonicalTag
 
 export function joinSegments(...args: string[]): string {
   if (args.length === 0) {

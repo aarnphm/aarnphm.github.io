@@ -15,7 +15,7 @@ export type TreeWatcherOptions = {
   stabilityMs?: number
 }
 
-export type TreeWatcher = EventEmitter & { close(): Promise<void> }
+export type TreeWatcher = EventEmitter & { close(): Promise<boolean> }
 
 const errorCode = (error: unknown) =>
   typeof error === 'object' && error !== null && 'code' in error ? error.code : undefined
@@ -44,6 +44,7 @@ export function watchTree(roots: readonly string[], options: TreeWatcherOptions 
   const directoryHandles = new Map<string, FSWatcher>()
   const absoluteOutput = new Set<string>()
   let closed = false
+  let settling = 0
 
   const isIgnored = (abs: string, stats?: EntryKind) => options.ignored?.(abs, stats) ?? false
   const display = (abs: string, root: string) =>
@@ -136,7 +137,12 @@ export function watchTree(roots: readonly string[], options: TreeWatcherOptions 
       abs,
       setTimeout(() => {
         timers.delete(abs)
-        settle(abs, root).catch(error => console.warn(`Could not inspect ${abs}:`, error))
+        settling += 1
+        settle(abs, root)
+          .catch(error => console.warn(`Could not inspect ${abs}:`, error))
+          .finally(() => {
+            settling -= 1
+          })
       }, stabilityMs),
     )
   }
@@ -183,10 +189,12 @@ export function watchTree(roots: readonly string[], options: TreeWatcherOptions 
   }
 
   emitter.close = async () => {
+    const hadPending = timers.size > 0 || settling > 0
     closed = true
     for (const timer of timers.values()) clearTimeout(timer)
     timers.clear()
     for (const handle of [...handles, ...directoryHandles.values()]) handle.close()
+    return hadPending
   }
   start().then(
     () => {
