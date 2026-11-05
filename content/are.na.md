@@ -5390,6 +5390,86 @@ title: are.na
 
 ## places
 
+- https://www.leserpent.ca/ -- Le Serpent
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [restaurant]
+    - coord: [45.4976507, -73.5571233]
+    - address: 257 Rue Prince, Montréal, QC H3C 2N4, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfIa3Essz-_/
+- https://www.lefilet.ca/ -- Le Filet
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [restaurant]
+    - coord: [45.5180412, -73.588493]
+    - address: 219 Avenue du Mont-Royal Ouest, Montréal, QC H2T 2T2, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfIa3Essz-_/
+- https://www.laspadamtl.com/ -- La Spada
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [restaurant]
+    - coord: [45.4797894, -73.58038599999999]
+    - address: 3580 Rue Notre-Dame Ouest, Montréal, QC H4C 1P4, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfIa3Essz-_/
+- https://www.barbaravin.com/ -- BarBara
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [bar, restaurant, coffee shop]
+    - coord: [45.4743389, -73.5871971]
+    - address: 4450 Rue Notre-Dame Ouest, Montréal, QC H4C 1S1, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfIa3Essz-_/
+- https://www.google.com/maps?cid=13243268340385218595 -- Arthurs Nosh Bar Saint-Henri
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [restaurant]
+    - coord: [45.473441, -73.5883083]
+    - address: 4621 Rue Notre-Dame Ouest, Montréal, QC H4C 1S5, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfIa3Essz-_/
+- https://joebeef.com/ -- Joe Beef
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [restaurant]
+    - coord: [45.4830556, -73.5752778]
+    - address: 2491 Rue Notre-Dame Ouest, Montréal, QC H3J 1N6, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfIa3Essz-_/
+- https://liverpoolhouse.ca/ -- Liverpool House
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [restaurant]
+    - coord: [45.4829994, -73.575425]
+    - address: 2501 Rue Notre-Dame Ouest, Montréal, QC H3J 1N6, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfIa3Essz-_/
+- https://bambinomtl.com/ -- Bambino Montréal
+  - [meta]:
+    - date: 11/04/2026
+    - tags: [restaurant, bar]
+    - coord: [45.5022198, -73.5565793]
+    - address: 428 Rue Saint-Nicolas, Montréal, QC, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DeCESR7xjhq/
+- https://www.companybagel.com/ -- Company Bagel
+  - [meta]:
+    - date: 11/04/2026
+    - tags: [bakery, coffee shop]
+    - coord: [43.646238, -79.4197164]
+    - address: 92 Ossington Ave, Toronto, ON M6J 2Z4, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfVdamEKWdo/
+- https://www.thisiscasarubia.com/ -- Casa Rubia
+  - [meta]:
+    - date: 11/04/2026
+    - tags: [restaurant, bar]
+    - coord: [43.6556816, -79.40982509999999]
+    - address: 293 Palmerston Ave, Toronto, ON M6J 2J3, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DePN5OuJVN6/
 - https://aisle3bar.ca/ -- Aisle 3 Bar
   - [meta]:
     - date: 11/02/2026

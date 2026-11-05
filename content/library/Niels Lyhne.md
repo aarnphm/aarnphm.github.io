@@ -14,3 +14,5 @@ status: to read
 title: Niels Lyhne
 year: 1880
 ---
+
+Also recommended in [ribbonedby’s reading reel](https://www.instagram.com/reel/DfVM_QCohH6/), creator’s caption.
