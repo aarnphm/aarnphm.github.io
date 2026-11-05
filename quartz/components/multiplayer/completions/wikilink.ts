@@ -6,37 +6,12 @@ import { isStreamHostname } from '../../../util/stream-host'
 import { getContentIndex } from './data'
 import { frecencyStore } from './frecency'
 import { fuzzyMatch } from './fuzzy'
+import { referenceCompletionContext, fragmentCompletions } from './reference-context'
 
 function extractNamespace(query: string): { prefix: string; remainder: string } {
   const slashIdx = query.lastIndexOf('/')
   if (slashIdx === -1) return { prefix: '', remainder: query }
   return { prefix: query.slice(0, slashIdx + 1), remainder: query.slice(slashIdx + 1) }
-}
-
-function isInsideWikilink(context: CompletionContext): {
-  inside: boolean
-  start: number
-  query: string
-  hasClosingBracket: boolean
-} {
-  const { state, pos } = context
-  const line = state.doc.lineAt(pos)
-  const textBefore = line.text.slice(0, pos - line.from)
-  const textAfter = line.text.slice(pos - line.from)
-
-  const openBracketIndex = textBefore.lastIndexOf('[[')
-  const closeBracketIndex = textBefore.lastIndexOf(']]')
-
-  if (openBracketIndex === -1 || closeBracketIndex > openBracketIndex) {
-    return { inside: false, start: 0, query: '', hasClosingBracket: false }
-  }
-
-  return {
-    inside: true,
-    start: line.from + openBracketIndex + 2,
-    query: textBefore.slice(openBracketIndex + 2),
-    hasClosingBracket: textAfter.startsWith(']]'),
-  }
 }
 
 interface IndexedWikilinkEntry {
@@ -81,10 +56,13 @@ let lastSurvivorCache: {
 export async function wikilinkCompletionSource(
   context: CompletionContext,
 ): Promise<CompletionResult | null> {
-  const wikiCtx = isInsideWikilink(context)
-  if (!wikiCtx.inside) return null
+  const wikiCtx = referenceCompletionContext(context.state, context.pos)
+  if (!wikiCtx) return null
 
   const data = await getContentIndex()
+  const baseUrl = isStreamHostname(window.location.hostname) ? 'https://aarnphm.xyz' : ''
+  if (wikiCtx.field !== 'target')
+    return fragmentCompletions(wikiCtx, data, document.body.dataset.slug ?? '', baseUrl)
   const allEntries = getIndexedEntries(data)
 
   const query = wikiCtx.query.trim()
@@ -183,7 +161,6 @@ export async function wikilinkCompletionSource(
 
   if (limited.length === 0) return null
 
-  const baseUrl = isStreamHostname(window.location.hostname) ? 'https://aarnphm.xyz' : ''
   const closingSuffix = wikiCtx.hasClosingBracket ? '' : ']]'
 
   const completions: Completion[] = limited.map(

@@ -78,6 +78,20 @@ The presence of `collapsed` requests a collapsible wrapper. Boolean `true` start
 
 The source note's `transclude` frontmatter can override title and heading presentation. That is a separate page-level option, not an arbitrary wikilink setting.
 
+### Embedded note trails
+
+Embed a notes-page stack with its encoded root and ordered `stackedNotes` parameters:
+
+```markdown
+![[notes#cGVyc29uYWwtY2Fub24?stackedNotes=dGhvdWdodHMvV2l0dGdlbnN0ZWlu&stackedNotes=ZnJpZW5kcw&stackedNotes=dGhvdWdodHMvbG92ZQ]]
+```
+
+This trail contains `personal-canon`, `thoughts/Wittgenstein`, `friends`, and `thoughts/love`. Each value uses the same base64url slug encoding as the notes page. Duplicate slugs keep their first position. Invalid encodings or unsupported parameters produce an invalid-trail message.
+
+The reader shows one note at a time within `min(36rem, 70svh)`, including its toolbar. Swipe horizontally, select a note title, or use the previous and next buttons. Focus a title and use Left, Right, Home, or End to move through the trail. Each note scrolls vertically and keeps its reading position. The title links to its source; **open** opens the full trail. Printed pages and pages without JavaScript show every note in order.
+
+Members use the ordinary transclusion pipeline, including nested embeds, scoped IDs, dependency updates, and expansion limits. Missing, private, draft, unpublished, and protected notes show an unavailable placeholder. Their content and titles are withheld. Ordinary headings on `notes` keep their existing behavior.
+
 ## PDF embeds
 
 ```markdown
@@ -109,10 +123,13 @@ The alias supplies the viewer title. A final dimension-like alias segment is rem
 | `![[audio.mp3\|Caption]]`                                         | Audio player with caption. Also `.wav`, `.m4a`, `.ogg`, `.3gp`, `.flac`.                                                |
 | `![[https://www.youtube.com/watch?v=ID#transcripts]]`             | YouTube embed with transcript opt-in. Raw timestamp fragments such as `#t=35` are preserved.                            |
 | `![[https://example.com\|600x400]]`                               | External webpage embed; external embed dimensions also accept percentages. Provider embedding restrictions still apply. |
+| `![[curius#11-03-2026]]`, `![[curius#today]]`                     | Saved Curius links for the selected day in the reader's timezone. Dates use `MM-DD-YYYY`; omit `!` for a regular link.  |
 | `![[triathlon#calendar#2026#display=year]]`                       | Calendar view; `list` and `year` displays are supported. The year is optional.                                          |
 | `![[triathlon#2026-10-31#analytics#settings=display:simplified]]` | Activity trace settings in anchor segments, separate from `#{...}` object/CSS settings.                                 |
 
 Triathlon embeds also use `filter=` and boolean trace switches in `settings=`, joined by `&`. Their grammar is owned by [the day-card parser](../../../quartz/components/triathlon-day-card.tsx) and [trace settings](../../../quartz/util/triathlon-trace-settings.ts). Calendar handling lives in [transclude-triathlon](../../../quartz/components/renderPage/transclude-triathlon.tsx).
+
+Curius dates use `MM-DD-YYYY` (November 3 is `11-03-2026`). Triathlon dates use `YYYY-MM-DD` (`2026-11-03`). Each feature owns its date format; reference parsing preserves the authored fragment.
 
 ## Tables and escaping
 
@@ -129,7 +146,7 @@ Backslashes escape Markdown punctuation in targets and aliases. An escaped pipe 
 ## Owners and verification
 
 - [Wikilink tokenizer and Markdown annotations](../../../quartz/extensions/micromark-extension-ofm-wikilinks/): syntax, captions, dimensions, object settings, image CSS, media routing.
-- [String parser](../../../quartz/util/wikilinks.ts): extraction and target resolution outside the Markdown compiler.
+- [String parser](../../util/references/literal.ts): extraction and target resolution outside the Markdown compiler.
 - [OFM transformer](../../../quartz/plugins/transformers/ofm.ts): image grids and rendered captions.
 - [Profile transformer](../../../quartz/plugins/transformers/profile.ts): newspaper framing and explicit-style precedence.
 - [Link transformer](../../../quartz/plugins/transformers/links.ts): preview opt-outs and URL rewriting.

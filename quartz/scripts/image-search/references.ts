@@ -3,14 +3,19 @@ import matter from 'gray-matter'
 import { fromHtml } from 'hast-util-from-html'
 import yaml from 'js-yaml'
 import { fromMarkdown } from 'mdast-util-from-markdown'
+import { mathFromMarkdown } from 'mdast-util-math'
+import { math } from 'micromark-extension-math'
 import { visit } from 'unist-util-visit'
 import {
   isWikilink,
   wikilink,
   wikilinkFromMarkdown,
 } from '../../extensions/micromark-extension-ofm-wikilinks'
+import { dialectFromMarkdown } from '../../plugins/transformers/ofm/dialect'
+import { dialectSyntax } from '../../plugins/transformers/ofm/dialect-syntax'
 import { parseNotebookDoc } from '../../util/notebook/parse'
 import { isNotebookParseError } from '../../util/notebook/types'
+import { referenceFields } from '../../util/references/request'
 import { isRecord } from '../../util/type-guards'
 
 export const IMAGE_EXTENSION = /\.(?:jpe?g|png|webp|gif|svg|avif|heic|heif|bmp|tiff?|ico)$/i
@@ -21,10 +26,18 @@ export interface ImageReference {
   source: ImageReferenceSource
 }
 
-function markdownReferences(text: string, source: ImageReferenceSource): ImageReference[] {
-  const tree = fromMarkdown(text.replace(/%%[\s\S]*?%%/g, ''), {
-    extensions: [wikilink()],
-    mdastExtensions: [wikilinkFromMarkdown({ obsidian: false })],
+function markdownReferences(
+  text: string,
+  source: ImageReferenceSource,
+  includeBare = false,
+): ImageReference[] {
+  const tree = fromMarkdown(text, {
+    extensions: [
+      dialectSyntax({ comments: true, enableInlineFootnotes: true }),
+      math(),
+      wikilink(),
+    ],
+    mdastExtensions: [dialectFromMarkdown(), mathFromMarkdown(), wikilinkFromMarkdown()],
   })
   const references: ImageReference[] = []
   const definitions = new Map<string, string>()
@@ -53,9 +66,11 @@ function markdownReferences(text: string, source: ImageReferenceSource): ImageRe
     }
   })
   visit(tree, (node: Node) => {
-    if (isWikilink(node) && node.data?.wikilink.embed) {
-      const link = node.data.wikilink
-      references.push({ target: link.target, caption: link.alias, source })
+    if (!isWikilink(node)) return
+    const reference = node.data?.reference
+    if (reference && (includeBare || reference.embed)) {
+      const fields = node.data?.referenceFields ?? referenceFields(reference)
+      references.push({ target: fields.target, caption: fields.label, source })
     }
   })
   return references
@@ -65,17 +80,7 @@ function valueReferences(value: unknown, source: ImageReferenceSource): ImageRef
   if (Array.isArray(value)) return value.flatMap(item => valueReferences(item, source))
   if (isRecord(value)) return Object.values(value).flatMap(item => valueReferences(item, source))
   if (typeof value !== 'string') return []
-  const references = markdownReferences(value, source)
-  // Base and poster values commonly contain a bare wikilink rather than an embed.
-  const tree = fromMarkdown(value, {
-    extensions: [wikilink()],
-    mdastExtensions: [wikilinkFromMarkdown({ obsidian: false })],
-  })
-  visit(tree, (node: Node) => {
-    if (!isWikilink(node)) return
-    const link = node.data?.wikilink
-    if (link && !link.embed) references.push({ target: link.target, caption: link.alias, source })
-  })
+  const references = markdownReferences(value, source, true)
   if (!references.length && IMAGE_EXTENSION.test(value.split(/[?#]/)[0]))
     references.push({ target: value, source })
   return references

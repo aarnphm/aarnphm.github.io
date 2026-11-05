@@ -106,6 +106,7 @@ declare module 'micromark-util-types' {
     wikilinkMetadataMarker: 'wikilinkMetadataMarker'
     wikilinkMetadata: 'wikilinkMetadata'
     wikilinkMetadataChunk: 'wikilinkMetadataChunk'
+    wikilinkMetadataCloseMarker: 'wikilinkMetadataCloseMarker'
     wikilinkAliasMarker: 'wikilinkAliasMarker'
     wikilinkAlias: 'wikilinkAlias'
     wikilinkAliasChunk: 'wikilinkAliasChunk'

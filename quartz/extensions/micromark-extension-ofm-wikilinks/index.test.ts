@@ -5,9 +5,11 @@
 
 import type { Root } from 'mdast'
 import { fromMarkdown } from 'mdast-util-from-markdown'
+import { toHast } from 'mdast-util-to-hast'
 import { toMarkdown } from 'mdast-util-to-markdown'
 import assert from 'node:assert'
 import test, { describe } from 'node:test'
+import { referenceHastHandler } from '../../util/references/render'
 import { wikilinkFromMarkdown, Wikilink, isWikilink } from './fromMarkdown'
 import { wikilink } from './syntax'
 import { wikilinkToMarkdown } from './toMarkdown'
@@ -15,13 +17,10 @@ import { wikilinkToMarkdown } from './toMarkdown'
 /**
  * helper to parse markdown with wikilink extension.
  */
-function parse(
-  markdown: string,
-  options?: { obsidian?: boolean; stripExtensions?: string[]; hasSlug?: (slug: string) => boolean },
-): Root {
+function parse(markdown: string): Root {
   return fromMarkdown(markdown, {
     extensions: [wikilink()],
-    mdastExtensions: [wikilinkFromMarkdown(options)],
+    mdastExtensions: [wikilinkFromMarkdown()],
   })
 }
 
@@ -48,6 +47,12 @@ function serialize(tree: Root): string {
   return toMarkdown(tree, { extensions: [wikilinkToMarkdown()] })
 }
 
+function render(node: Wikilink) {
+  const element = toHast(node, { handlers: { wikilink: referenceHastHandler } })
+  assert(element?.type === 'element')
+  return element
+}
+
 describe('micromark wikilink extension', () => {
   describe('edge cases', () => {
     test('parses empty alias', () => {
@@ -55,9 +60,9 @@ describe('micromark wikilink extension', () => {
       const wikilink = extractWikilink(tree)
 
       assert(wikilink, 'wikilink node should exist')
-      assert.strictEqual(wikilink.data?.wikilink.target, 'target')
-      // empty alias results in undefined (no content after |)
-      assert.strictEqual(wikilink.data?.wikilink.alias, undefined)
+      assert.strictEqual(wikilink.data?.referenceFields?.target, 'target')
+      // Empty authored labels retain their source delimiter.
+      assert.strictEqual(wikilink.data?.referenceFields?.label, '')
     })
 
     test('parses empty anchor', () => {
@@ -65,19 +70,19 @@ describe('micromark wikilink extension', () => {
       const wikilink = extractWikilink(tree)
 
       assert(wikilink, 'wikilink node should exist')
-      assert.strictEqual(wikilink.data?.wikilink.target, 'target')
+      assert.strictEqual(wikilink.data?.referenceFields?.target, 'target')
       // empty anchor results in undefined (no content after #)
-      assert.strictEqual(wikilink.data?.wikilink.anchor, undefined)
+      assert.deepStrictEqual(wikilink.data?.referenceFields?.fragments, [])
     })
 
     test('handles multiple anchors (subheadings)', () => {
-      const tree = parse('[[file#heading#subheading]]', { obsidian: false })
+      const tree = parse('[[file#heading#subheading]]')
       const wikilink = extractWikilink(tree)
 
       assert(wikilink, 'wikilink node should exist')
-      assert.strictEqual(wikilink.data?.wikilink.target, 'file')
-      // non-obsidian mode preserves anchor as-is
-      assert.strictEqual(wikilink.data?.wikilink.anchor, '#heading#subheading')
+      assert.strictEqual(wikilink.data?.referenceFields?.target, 'file')
+      // Parsing retains every fragment before target interpretation.
+      assert.deepStrictEqual(wikilink.data?.referenceFields?.fragments, ['heading', 'subheading'])
     })
   })
 
@@ -88,8 +93,8 @@ describe('micromark wikilink extension', () => {
 
       assert(wikilink, 'wikilink node should exist')
       // backslash is consumed, and the pipe acts as an alias delimiter
-      assert.strictEqual(wikilink.data?.wikilink.target, 'file')
-      assert.strictEqual(wikilink.data?.wikilink.alias, 'name')
+      assert.strictEqual(wikilink.data?.referenceFields?.target, 'file')
+      assert.strictEqual(wikilink.data?.referenceFields?.label, 'name')
     })
 
     test('handles escaped hash in target', () => {
@@ -98,8 +103,8 @@ describe('micromark wikilink extension', () => {
 
       assert(wikilink, 'wikilink node should exist')
       // backslash is consumed during parsing
-      assert.strictEqual(wikilink.data?.wikilink.target, 'file#name')
-      assert.strictEqual(wikilink.data?.wikilink.anchor, undefined)
+      assert.strictEqual(wikilink.data?.referenceFields?.target, 'file#name')
+      assert.deepStrictEqual(wikilink.data?.referenceFields?.fragments, [])
     })
 
     test('handles escaped pipe with alias', () => {
@@ -108,8 +113,8 @@ describe('micromark wikilink extension', () => {
 
       assert(wikilink, 'wikilink node should exist')
       // the first escaped pipe acts as an alias delimiter, the second is just text in the alias
-      assert.strictEqual(wikilink.data?.wikilink.target, 'file')
-      assert.strictEqual(wikilink.data?.wikilink.alias, 'name|alias')
+      assert.strictEqual(wikilink.data?.referenceFields?.target, 'file')
+      assert.strictEqual(wikilink.data?.referenceFields?.label, 'name|alias')
     })
 
     test('handles escaped bracket in alias', () => {
@@ -117,9 +122,9 @@ describe('micromark wikilink extension', () => {
       const wikilink = extractWikilink(tree)
 
       assert(wikilink, 'wikilink node should exist')
-      assert.strictEqual(wikilink.data?.wikilink.target, 'file')
+      assert.strictEqual(wikilink.data?.referenceFields?.target, 'file')
       // backslash is consumed, bracket is part of alias
-      assert.strictEqual(wikilink.data?.wikilink.alias, 'alias]text')
+      assert.strictEqual(wikilink.data?.referenceFields?.label, 'alias]text')
     })
   })
   describe('context awareness', () => {
@@ -231,235 +236,180 @@ describe('micromark wikilink extension', () => {
     })
   })
 
-  describe('obsidian mode', () => {
+  describe('syntax and standalone target interpretation', () => {
     describe('nested heading anchors', () => {
-      test('uses last segment when option not specified (defaults to obsidian: true)', () => {
+      test('uses the final heading for standalone fallback rendering', () => {
         const tree = parse('[[file#Parent#Child]]')
         const wikilink = extractWikilink(tree)
 
         assert(wikilink, 'wikilink node should exist')
-        assert.strictEqual(wikilink.data?.wikilink.target, 'file')
-        // default mode (obsidian: true): uses last segment
-        assert.strictEqual(wikilink.data?.wikilink.anchor, '#child')
+        assert.strictEqual(wikilink.data?.referenceFields?.target, 'file')
+        // Standalone rendering has no destination heading index.
+        assert.strictEqual(render(wikilink).properties.href, 'file#child')
       })
     })
 
     describe('anchor slugification', () => {
       test('preserves math without adjacent spaces', () => {
-        const tree = parse('[[file#$mu$ value]]', { obsidian: true })
+        const tree = parse('[[file#$mu$ value]]')
         const wikilink = extractWikilink(tree)
 
         assert(wikilink, 'wikilink node should exist')
-        assert.strictEqual(wikilink.data?.wikilink.target, 'file')
+        assert.strictEqual(wikilink.data?.referenceFields?.target, 'file')
         // no spaces to remove around $
-        assert.strictEqual(wikilink.data?.wikilink.anchor, '#mu-value')
+        assert.strictEqual(render(wikilink).properties.href, 'file#mu-value')
       })
 
       test('handles mixed spacing patterns', () => {
-        const tree = parse('[[file#test $ a$ and $b $ plus $c$]]', { obsidian: true })
+        const tree = parse('[[file#test $ a$ and $b $ plus $c$]]')
         const wikilink = extractWikilink(tree)
 
         assert(wikilink, 'wikilink node should exist')
-        assert.strictEqual(wikilink.data?.wikilink.target, 'file')
+        assert.strictEqual(wikilink.data?.referenceFields?.target, 'file')
         // "$ a$" → "$a$", "$b $" → "$b$", "$c$" unchanged
-        assert.strictEqual(wikilink.data?.wikilink.anchor, '#test-a-and-b-plus-c')
+        assert.strictEqual(render(wikilink).properties.href, 'file#test-a-and-b-plus-c')
       })
 
-      test('preserves anchors without obsidian mode', () => {
-        const tree = parse('[[file#Section Title]]', { obsidian: false })
+      test('preserves authored heading text in syntax', () => {
+        const tree = parse('[[file#Section Title]]')
         const wikilink = extractWikilink(tree)
 
         assert(wikilink, 'wikilink node should exist')
-        assert.strictEqual(wikilink.data?.wikilink.target, 'file')
-        // non-obsidian mode: preserves anchor as-is
-        assert.strictEqual(wikilink.data?.wikilink.anchor, '#Section Title')
+        assert.strictEqual(wikilink.data?.referenceFields?.target, 'file')
+        // Decoded fields retain the authored heading text.
+        assert.deepStrictEqual(wikilink.data?.referenceFields?.fragments, ['Section Title'])
       })
     })
-    describe('block references with obsidian mode', () => {
-      test('does not process # in block reference content', () => {
-        const tree = parse('[[file#^block#with#hashes]]', { obsidian: true })
+    describe('block reference fragments', () => {
+      test('preserves each authored block-reference fragment', () => {
+        const tree = parse('[[file#^block#with#hashes]]')
         const wikilink = extractWikilink(tree)
 
         assert(wikilink, 'wikilink node should exist')
-        assert.strictEqual(wikilink.data?.wikilink.target, 'file')
-        // should extract last segment "hashes" but keep block marker
-        assert.strictEqual(wikilink.data?.wikilink.anchor, '#^hashes')
+        assert.strictEqual(wikilink.data?.referenceFields?.target, 'file')
+        // The block marker stays with its authored fragment.
+        assert.deepStrictEqual(wikilink.data?.referenceFields?.fragments, [
+          '^block',
+          'with',
+          'hashes',
+        ])
       })
     })
 
-    describe('edge cases with obsidian mode', () => {
+    describe('fragment edge cases', () => {
       test('handles empty segments in nested path', () => {
-        const tree = parse('[[file#Parent##Child]]', { obsidian: true })
+        const tree = parse('[[file#Parent##Child]]')
         const wikilink = extractWikilink(tree)
 
         assert(wikilink, 'wikilink node should exist')
-        assert.strictEqual(wikilink.data?.wikilink.target, 'file')
+        assert.strictEqual(wikilink.data?.referenceFields?.target, 'file')
         // last segment is "Child", empty segment is ignored
-        assert.strictEqual(wikilink.data?.wikilink.anchor, '#child')
+        assert.strictEqual(render(wikilink).properties.href, 'file#child')
       })
 
       test('works with embeds', () => {
-        const tree = parse('![[file#Parent#Child]]', { obsidian: true })
+        const tree = parse('![[file#Parent#Child]]')
         const wikilink = extractWikilink(tree)
 
         assert(wikilink, 'wikilink node should exist')
-        assert.strictEqual(wikilink.data?.wikilink.target, 'file')
-        assert.strictEqual(wikilink.data?.wikilink.anchor, '#child')
-        assert.strictEqual(wikilink.data?.wikilink.embed, true)
+        assert.strictEqual(wikilink.data?.referenceFields?.target, 'file')
+        const element = render(wikilink)
+        const inner = element.children[0]
+        assert(inner.type === 'element')
+        assert.strictEqual(inner.properties.href, 'file#child')
+        assert.strictEqual(wikilink.data?.reference?.embed, true)
       })
 
-      test('handles anchors with path context (Obsidian format)', () => {
-        const tree = parse('[[#thoughts/Epistemology epistemic humility]]', { obsidian: true })
+      test('keeps authored path-context text in the default label', () => {
+        const tree = parse('[[#thoughts/Epistemology epistemic humility]]')
         const wikilink = extractWikilink(tree)
 
         assert(wikilink, 'wikilink node should exist')
-        assert.strictEqual(wikilink.data?.wikilink.target, '')
+        assert.strictEqual(wikilink.data?.referenceFields?.target, '')
         // should extract "epistemic humility" from after the last /
-        assert.strictEqual(wikilink.data?.wikilink.anchor, '#epistemic-humility')
-        assert.strictEqual(wikilink.data?.wikilink.anchorText, 'epistemic humility')
-        assert.deepStrictEqual(wikilink.data?.hChildren, [{ type: 'text', value: '' }])
+        assert.strictEqual(render(wikilink).properties.href, '#epistemic-humility')
+        assert.deepStrictEqual(wikilink.data?.referenceFields?.fragments, [
+          'thoughts/Epistemology epistemic humility',
+        ])
+        assert.deepStrictEqual(render(wikilink).children, [
+          { type: 'text', value: 'thoughts/Epistemology epistemic humility' },
+        ])
       })
     })
   })
 
-  describe('hName annotation (automatic hast conversion)', () => {
+  describe('explicit HAST conversion', () => {
     describe('image embeds', () => {
       test('annotates image with multi-part caption', () => {
-        const tree = parse('![[photo.jpg|Caption with|multiple|pipes]]', { obsidian: true })
+        const tree = parse('![[photo.jpg|Caption with|multiple|pipes]]')
         const wikilink = extractWikilink(tree)
 
         assert(wikilink, 'wikilink node should exist')
-        assert.strictEqual(wikilink.data?.hName, 'img')
+        assert.strictEqual(render(wikilink).tagName, 'img')
 
-        const figcaption = wikilink.data?.hProperties?.alt
+        const figcaption = render(wikilink).properties?.alt
         assert.strictEqual(figcaption, 'Caption with|multiple|pipes')
       })
 
       test('annotates image with multi-part caption and dimensions', () => {
-        const tree = parse('![[photo.jpg|Caption with|multiple parts|800x600]]', { obsidian: true })
+        const tree = parse('![[photo.jpg|Caption with|multiple parts|800x600]]')
         const wikilink = extractWikilink(tree)
 
         assert(wikilink, 'wikilink node should exist')
-        assert.strictEqual(wikilink.data?.hName, 'img')
+        assert.strictEqual(render(wikilink).tagName, 'img')
 
-        assert.strictEqual(wikilink?.data.hProperties?.width, '800')
-        assert.strictEqual(wikilink?.data.hProperties?.height, '600')
-        assert.strictEqual(wikilink?.data.hProperties?.alt, 'Caption with|multiple parts')
+        assert.strictEqual(String(render(wikilink).properties?.width), '800')
+        assert.strictEqual(String(render(wikilink).properties?.height), '600')
+        assert.strictEqual(render(wikilink).properties?.alt, 'Caption with|multiple parts')
       })
     })
-    describe('without explicit options', () => {
-      test('does not annotate when explicitly obsidian: false', () => {
-        const tree = parse('[[target]]', { obsidian: false })
+    describe('parser data', () => {
+      test('keeps parsed nodes independent of HAST rendering', () => {
+        const tree = parse('[[target]]')
         const wikilink = extractWikilink(tree)
 
         assert(wikilink, 'wikilink node should exist')
         assert.strictEqual(wikilink.data?.hName, undefined)
         assert.strictEqual(wikilink.data?.hProperties, undefined)
         assert.strictEqual(wikilink.data?.hChildren, undefined)
-        assert.strictEqual(wikilink.data?.wikilink.target, 'target')
+        assert.strictEqual(wikilink.data?.referenceFields?.target, 'target')
       })
-    })
-  })
-
-  describe('stripExtensions option', () => {
-    test('only strips first matching extension', () => {
-      const tree = parse('[[file.md.backup]]', { obsidian: true, stripExtensions: ['.backup'] })
-      const wikilink = extractWikilink(tree)
-
-      assert(wikilink, 'wikilink node should exist')
-      assert.strictEqual(wikilink.data?.hName, 'a')
-      // slugAnchor removes dots, so file.md becomes filemd
-      assert.strictEqual(wikilink.data?.hProperties?.href, 'file.md')
-    })
-  })
-
-  describe('implicit alias from space in target', () => {
-    const implicitAliasSlugs = new Set(['Target', 'thoughts/Epistemology', 'folder/file', 'file'])
-    const hasSlug = (slug: string) => implicitAliasSlugs.has(slug)
-
-    test('extracts display text after space in simple target', () => {
-      const tree = parse('[[Target display text]]', { obsidian: true, hasSlug })
-      const wikilink = extractWikilink(tree)
-
-      assert(wikilink, 'wikilink node should exist')
-      assert.strictEqual(wikilink.data?.wikilink.target, 'Target')
-      assert.strictEqual(wikilink.data?.wikilink.alias, 'display text')
-      assert.deepStrictEqual(wikilink.data?.hChildren, [{ type: 'text', value: 'display text' }])
-    })
-
-    test('extracts display text after space in path with slashes', () => {
-      const tree = parse('[[thoughts/Epistemology epistemic humility]]', {
-        obsidian: true,
-        hasSlug,
-      })
-      const wikilink = extractWikilink(tree)
-
-      assert(wikilink, 'wikilink node should exist')
-      assert.strictEqual(wikilink.data?.wikilink.target, 'thoughts/Epistemology')
-      assert.strictEqual(wikilink.data?.wikilink.alias, 'epistemic humility')
-      assert.deepStrictEqual(wikilink.data?.hChildren, [
-        { type: 'text', value: 'epistemic humility' },
-      ])
-    })
-
-    test('handles multiple words in display text', () => {
-      const tree = parse('[[folder/file this is the display]]', { obsidian: true, hasSlug })
-      const wikilink = extractWikilink(tree)
-
-      assert(wikilink, 'wikilink node should exist')
-      assert.strictEqual(wikilink.data?.wikilink.target, 'folder/file')
-      assert.strictEqual(wikilink.data?.wikilink.alias, 'this is the display')
-    })
-
-    test('does not extract when explicit alias is present', () => {
-      const tree = parse('[[target with space|explicit alias]]', { obsidian: true, hasSlug })
-      const wikilink = extractWikilink(tree)
-
-      assert(wikilink, 'wikilink node should exist')
-      assert.strictEqual(wikilink.data?.wikilink.target, 'target with space')
-      assert.strictEqual(wikilink.data?.wikilink.alias, 'explicit alias')
-    })
-
-    test('works with anchors', () => {
-      const tree = parse('[[file name display#section]]', { obsidian: true, hasSlug })
-      const wikilink = extractWikilink(tree)
-
-      assert(wikilink, 'wikilink node should exist')
-      assert.strictEqual(wikilink.data?.wikilink.target, 'file')
-      assert.strictEqual(wikilink.data?.wikilink.alias, 'name display')
-      assert.strictEqual(wikilink.data?.wikilink.anchor, '#section')
     })
   })
 
   describe('anchor display text', () => {
     test('keeps original anchor text in data when no alias', () => {
-      const tree = parse('[[page#Section Title]]', { obsidian: true })
+      const tree = parse('[[page#Section Title]]')
       const wikilink = extractWikilink(tree)
 
       assert(wikilink, 'wikilink node should exist')
-      assert.strictEqual(wikilink.data?.wikilink.anchor, '#section-title')
-      assert.strictEqual(wikilink.data?.wikilink.anchorText, 'Section Title')
-      assert.deepStrictEqual(wikilink.data?.hChildren, [{ type: 'text', value: 'page' }])
+      assert.strictEqual(render(wikilink).properties.href, 'page#section-title')
+      assert.deepStrictEqual(wikilink.data?.referenceFields?.fragments, ['Section Title'])
+      assert.deepStrictEqual(render(wikilink).children, [
+        { type: 'text', value: 'page > Section Title' },
+      ])
     })
 
     test('keeps anchor text for same-file reference', () => {
-      const tree = parse('[[#knowledge]]', { obsidian: true })
+      const tree = parse('[[#knowledge]]')
       const wikilink = extractWikilink(tree)
 
       assert(wikilink, 'wikilink node should exist')
-      assert.strictEqual(wikilink.data?.wikilink.target, '')
-      assert.strictEqual(wikilink.data?.wikilink.anchor, '#knowledge')
-      assert.strictEqual(wikilink.data?.wikilink.anchorText, 'knowledge')
-      assert.deepStrictEqual(wikilink.data?.hChildren, [{ type: 'text', value: '' }])
+      assert.strictEqual(wikilink.data?.referenceFields?.target, '')
+      assert.strictEqual(render(wikilink).properties.href, '#knowledge')
+      assert.deepStrictEqual(wikilink.data?.referenceFields?.fragments, ['knowledge'])
+      assert.deepStrictEqual(render(wikilink).children, [{ type: 'text', value: 'knowledge' }])
     })
 
     test('keeps anchor text for block reference', () => {
-      const tree = parse('[[file#^block-id]]', { obsidian: true })
+      const tree = parse('[[file#^block-id]]')
       const wikilink = extractWikilink(tree)
 
       assert(wikilink, 'wikilink node should exist')
-      assert.strictEqual(wikilink.data?.wikilink.anchorText, 'block-id')
-      assert.deepStrictEqual(wikilink.data?.hChildren, [{ type: 'text', value: 'file' }])
+      assert.deepStrictEqual(wikilink.data?.referenceFields?.fragments, ['^block-id'])
+      assert.deepStrictEqual(render(wikilink).children, [
+        { type: 'text', value: 'file > block-id' },
+      ])
     })
   })
 })

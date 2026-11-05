@@ -1,4 +1,4 @@
-import type { Parent, PhrasingContent, BlockContent } from 'mdast'
+import type { Parent, PhrasingContent, BlockContent, DefinitionContent } from 'mdast'
 import type { Point } from 'unist'
 
 declare module 'micromark-util-types' {
@@ -62,7 +62,7 @@ export interface SidenoteDefinition extends Parent {
   type: 'sidenoteDefinition'
   label: string
   labelNodes?: PhrasingContent[]
-  children: BlockContent[]
+  children: (BlockContent | DefinitionContent)[]
 }
 
 declare module 'mdast' {

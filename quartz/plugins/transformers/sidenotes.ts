@@ -3,7 +3,6 @@ import { Element as HastElement, Text as HastText, ElementContent, Root as HastR
 import { h } from 'hastscript'
 import isAbsoluteUrl from 'is-absolute-url'
 import { Root as MdastRoot } from 'mdast'
-import path from 'path'
 import { visit } from 'unist-util-visit'
 import { VFile } from 'vfile'
 import type {
@@ -15,8 +14,13 @@ import script from '../../components/scripts/sidenotes.inline'
 import content from '../../components/styles/sidenotes.inline.scss'
 import { QuartzTransformerPlugin } from '../../types/plugin'
 import { BuildCtx } from '../../util/ctx'
-import { FullSlug, transformLink } from '../../util/path'
-import { extractWikilinks, resolveWikilinkTarget } from '../../util/wikilinks'
+import { resolveRelative } from '../../util/path'
+import { referenceSourcePath } from '../../util/references/context'
+import { labelToHast, parseReferenceLabel } from '../../util/references/label'
+import { extractLiteralReferences, referenceLabelSource } from '../../util/references/literal'
+import { recordReferenceDependency } from '../../util/references/markdown'
+import { referenceRequest } from '../../util/references/request'
+import { missingReferenceRoute } from '../../util/references/route'
 
 const isSidenoteNode = (node: Node): node is Sidenote | SidenoteReference =>
   node.type === 'sidenote' || node.type === 'sidenoteReference'
@@ -197,44 +201,41 @@ function renderInternalLinks(
   ctx: BuildCtx,
 ): ElementContent[] {
   if (!wikilinks || wikilinks.length === 0) return []
+  const fileSlug = file.data.slug
+  if (!fileSlug) return []
+  const origin = referenceSourcePath(file.data)
 
   const links: HastElement[] = []
 
   for (const wl of wikilinks) {
-    for (const parsed of extractWikilinks(wl)) {
-      const resolved = resolveWikilinkTarget(parsed, file.data.slug as FullSlug)
-      const anchor = parsed.anchor ?? ''
-      let destination = parsed.target + anchor
-      let dataSlug: string | undefined
-
-      if (resolved) {
-        dataSlug = resolved.slug
-        const destWithAnchor = `${resolved.slug}${anchor}`
-        destination = transformLink(file.data.slug as FullSlug, destWithAnchor, {
-          allSlugs: ctx.allSlugs,
-          strategy: 'absolute',
-        })
-      } else if (!isAbsoluteUrl(destination, { httpOnly: false })) {
-        destination = transformLink(file.data.slug as FullSlug, destination, {
-          allSlugs: ctx.allSlugs,
-          strategy: 'absolute',
-        })
+    for (const parsed of extractLiteralReferences(wl)) {
+      const request = referenceRequest(parsed, origin)
+      const record = recordReferenceDependency(ctx, file, request)
+      const route =
+        record.route ??
+        (record.status === 'missing'
+          ? missingReferenceRoute(request.target, origin, request.fragments)
+          : undefined)
+      const label = labelToHast(
+        parseReferenceLabel(referenceLabelSource(parsed, 'link', record.implicitLabel)),
+      )
+      const external = isAbsoluteUrl(request.target, { httpOnly: false })
+      if (!route && !external) {
+        links.push(h('span', label))
+        continue
       }
-
-      const display =
-        parsed.alias ||
-        path.basename(parsed.target, path.extname(parsed.target)) ||
-        parsed.target ||
-        'link'
+      const destination = route
+        ? `${resolveRelative(fileSlug, route.slug)}${(route.anchor ?? '').replace(/^#\^/, '#')}`
+        : request.target + (request.fragments.length ? `#${request.fragments.join('#')}` : '')
 
       const link = h(
         'a',
         {
           href: destination,
-          className: ['internal'],
-          ...(dataSlug ? { 'data-slug': dataSlug } : {}),
+          className: [external ? 'external' : 'internal'],
+          ...(route ? { 'data-slug': route.slug } : {}),
         },
-        [h('span.indicator-hook'), display],
+        [h('span.indicator-hook'), ...label],
       )
 
       links.push(link)
@@ -263,13 +264,12 @@ function deriveLabel(rawLabel: string): ElementContent[] {
   let labelText = rawLabel.trim()
   if (!labelText) return []
 
-  const parsed = extractWikilinks(labelText)[0]
+  const parsed = extractLiteralReferences(labelText)[0]
   if (parsed) {
-    labelText =
-      parsed.alias || path.basename(parsed.target, path.extname(parsed.target)) || parsed.target
+    labelText = referenceLabelSource(parsed)
   }
 
-  return [{ type: 'text', value: labelText }]
+  return labelToHast(parseReferenceLabel(labelText))
 }
 
 export function buildSidenoteHast(

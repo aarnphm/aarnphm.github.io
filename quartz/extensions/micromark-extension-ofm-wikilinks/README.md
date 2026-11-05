@@ -1,612 +1,82 @@
-# ofm-wikilink
+# OFM wikilinks
 
-For Garden authoring syntax, image CSS, captions, dimensions, PDF options, previews, transclusions, and table escaping, see [Wikilinks and embed settings](authoring.md).
+This extension parses Garden wiki references into lossless Markdown nodes. The [authoring guide](authoring.md) covers links, embeds, captions, image CSS, PDF settings, transclusions and table escaping. The [compatibility profile](../../compatibility/README.md) records the supported Obsidian behavior and Garden extensions.
 
-[micromark](https://github.com/micromark/micromark) extensions to support Obsidian-flavored wikilinks with proper tokenization.
+## Parsing and source identity
 
-## what is this?
-
-this package contains extensions to add support for Obsidian-style wikilink syntax to [`micromark`](https://github.com/micromark/micromark) through first-class AST nodes instead of regex-based text replacement.
-
-the package provides a complete tokenizer state machine that handles wikilinks during markdown parsing, creating structured metadata for downstream processing. it supports the full range of Obsidian wikilink features including embeds, anchors, aliases, and complex path structures.
-
-as there is no formal specification, this extension follows the behavior described in [Obsidian's help documentation](https://help.obsidian.md/Linking+notes+and+files/Internal+links) while handling edge cases and whitespace according to markdown conventions.
-
-## when to use this
-
-this project is useful if you want to support Obsidian-flavored wikilinks in your markdown pipeline.
-
-you can use these extensions when working with [`micromark`](https://github.com/micromark/micromark) or [`unified`](https://github.com/unifiedjs/unified)/[`remark`](https://github.com/remarkjs/remark). the package provides both low-level micromark extensions and high-level remark plugins.
-
-## install
-
-this package is ESM only. in Node.js (version 22+), install with `pnpm`:
-
-```sh
-pnpm install ofm-wikilink
-```
-
-## use
-
-### standalone with micromark
+`wikilink()` supplies the micromark tokenizer. `wikilinkFromMarkdown()` compiles its tokens. `remarkWikilink` registers both with a Unified processor.
 
 ```typescript
 import { fromMarkdown } from 'mdast-util-from-markdown'
-import { wikilink, wikilinkFromMarkdown } from 'ofm-wikilink'
+import { wikilink, wikilinkFromMarkdown } from './index'
 
-const tree = fromMarkdown('[[page#section|alias]]', {
+const tree = fromMarkdown('[[page#Section|**label**]]', {
   extensions: [wikilink()],
-  mdastExtensions: [wikilinkFromMarkdown()], // obsidian: true by default
+  mdastExtensions: [wikilinkFromMarkdown()],
 })
 ```
 
-yields:
+A `wikilink` node holds:
 
-```javascript
-{
-  type: 'wikilink',
-  value: '[[page#section|alias]]',
-  data: {
-    wikilink: {
-      raw: '[[page#section|alias]]',
-      target: 'page',
-      anchor: '#section',
-      alias: 'alias',
-      embed: false
-    }
-  }
-}
-```
+- `value`: the authored reference, including delimiters.
+- `data.reference`: immutable `ReferenceSyntax`, with the raw target, each fragment, settings, label, embed flag and UTF-16 source spans.
+- `data.referenceFields`: compiler-decoded target, fragments, settings and label. Markdown character references and escapes are decoded here. An explicit empty label remains `''`.
 
-### with unified/remark
+Parsing performs no catalog lookup and emits no HTML annotations. Code and escaped literals keep their Markdown meaning. Generated fragments are marked `source: 'generated'`; they cannot claim local fragment offsets as positions in the containing document.
+
+For literal properties outside Markdown, use `parseLiteralReference` or `extractLiteralReferences` from `quartz/util/references/literal.ts`. Those helpers share the grammar and keep their own escape-decoding policy. Editor callers use `parseReference` to distinguish complete, incomplete and invalid input.
+
+## Resolution and rendering
+
+Garden indexes document headings, blocks and Base views before resolving references. `resolveDocumentReferences` records found, missing, ambiguous, external and unsupported outcomes. A found record carries source identity, a typed selector, interpreted settings and its published route. Resolution leaves authored syntax unchanged.
+
+`referenceHastHandler` from `quartz/util/references/render.ts` converts a node to a link, media element, Canvas placeholder or typed transclusion placeholder. Garden installs it in `mdastToHastRoot`. Standalone consumers install it explicitly:
 
 ```typescript
 import { unified } from 'unified'
 import remarkParse from 'remark-parse'
 import remarkRehype from 'remark-rehype'
 import rehypeStringify from 'rehype-stringify'
-import { remarkWikilink } from 'ofm-wikilink'
+import { remarkWikilink } from './index'
+import { referenceHastHandler } from '../../util/references/render'
 
 const processor = unified()
   .use(remarkParse)
-  .use(remarkWikilink) // obsidian: true by default
-  .use(remarkRehype)
-  .use(rehypeStringify)
-
-const html = await processor.process('[[page|link]] and ![[image.png|caption]]')
-```
-
-yields:
-
-```html
-<a href="page">link</a> and
-<figure>
-  <img src="image.png" />
-  <figcaption>caption</figcaption>
-</figure>
-```
-
-## api
-
-this package exports the identifiers `wikilink`, `wikilinkFromMarkdown`, and `remarkWikilink`.
-there is no default export.
-
-### `wikilink()`
-
-creates an extension for `micromark` to enable wikilink syntax.
-
-###### parameters
-
-- `none`
-
-###### returns
-
-extension for `micromark` that can be passed in `extensions`, to enable wikilink syntax parsing ([`Extension`](https://github.com/micromark/micromark#syntaxextension)).
-
-### `wikilinkFromMarkdown(options?)`
-
-creates an extension for `micromark` to support wikilinks when building mdast.
-
-###### parameters
-
-- `options` (`RemarkWikilinkOptions`, optional) - configuration object
-
-###### returns
-
-extension for `micromark` that can be passed in `mdastExtensions`, to support wikilinks when constructing mdast ([`FromMarkdownExtension`](https://github.com/syntax-tree/mdast-util-from-markdown#extension)).
-
-### `remarkWikilink(options?)`
-
-unified/remark plugin to support wikilinks.
-
-###### parameters
-
-- `options` (`RemarkWikilinkOptions`, optional) - configuration object
-
-###### returns
-
-unified plugin that can be passed to `.use()`.
-
-### `RemarkWikilinkOptions`
-
-configuration options for wikilink processing:
-
-```typescript
-interface RemarkWikilinkOptions {
-  /**
-   * enable Obsidian-style nested anchor handling and automatic hast conversion.
-   * default: true
-   *
-   * when true: uses internal slugification and annotates nodes for automatic HTML conversion
-   * when false: returns raw wikilink nodes without hName annotations
-   */
-  obsidian?: boolean
-
-  /**
-   * file extensions to strip before slugifying.
-   * default: ['.md', '.base']
-   * only applies when obsidian: true
-   */
-  stripExtensions?: string[]
-}
-```
-
-#### obsidian mode
-
-when `obsidian: true` (default), two key behaviors are enabled:
-
-**1. automatic hast conversion** - nodes are annotated with `hName`, `hProperties`, and `hChildren` for automatic HTML conversion:
-
-```typescript
-// obsidian: true (default)
-unified().use(remarkWikilink).use(remarkRehype)
-// [[Page]] → <a href="page">page</a>
-
-// obsidian: false - no annotations, raw wikilink nodes only
-unified().use(remarkWikilink, { obsidian: false }).use(remarkRehype)
-// [[Page]] → raw wikilink node (user must handle conversion)
-```
-
-**2. obsidian-style anchor handling:**
-
-**nested heading resolution** - anchors with multiple `#` segments use only the last segment:
-
-```typescript
-// obsidian: true (default)
-"[[NVIDIA#cuda]]" → anchor: "#cuda"
-"[[file#Parent#Child#Grandchild]]" → anchor: "#grandchild"
-
-// obsidian: false
-"[[NVIDIA#cuda]]" → anchor: "#cuda"
-"[[file#Parent#Child#Grandchild]]" → anchor: "#Parent#Child#Grandchild"
-```
-
-**anchor slugification** - anchors are normalized using github-slugger:
-
-```typescript
-// obsidian: true (default)
-"[[file#Section Title]]" → anchor: "#section-title"
-"[[file#architectural skeleton of $ mu$]]" → anchor: "#architectural-skeleton-of-mu"
-
-// obsidian: false
-"[[file#Section Title]]" → anchor: "#Section Title"
-```
-
-**PDF support**: We support options for customizing viewport via metadata parsing here.
-
-```markdown
-![[paper.pdf#{page: 3, fit: 'page', scale: '125%', height: 720, overscan: 4}|slides]]
-```
-
-#### strip extensions
-
-strips file extensions before slugifying paths (only applies when obsidian mode is enabled):
-
-```typescript
-const processor = unified()
-  .use(remarkParse)
-  .use(remarkWikilink, {
-    stripExtensions: ['.md', '.mdx', '.base'], // default: ['.md', '.base']
-  })
-
-// input: [[notes.md]]
-// output: <a href="notes">notes</a>
-
-// input: [[data.base]]
-// output: <a href="data">data</a>
-
-// input: [[notes.mdx]]
-// output: <a href="notes">notes</a> (with custom stripExtensions)
-```
-
-## features
-
-### syntax support
-
-- basic links: `[[target]]`
-- aliases: `[[target|display text]]`
-- anchors: `[[target#heading]]`
-- block references: `[[target#^block-id]]`
-- embeds: `![[file]]`
-- combined: `[[target#anchor|alias]]`
-- escaping: `[[file\|name]]`, `[[file\#hash]]`
-- complex paths: `[[path/to/file]]`, `[[file (with) parens]]`
-- multiple anchors: `[[file#h1#h2#h3]]` (Obsidian subheading style)
-
-### edge cases handled
-
-- empty components: `[[]]`, `[[#anchor]]`, `[[|alias]]`
-- whitespace normalization: `[[ spaced ]]` → target is `spaced`
-- special characters in paths
-- context awareness (doesn't parse inside code blocks/inline code)
-
-## html
-
-when using the unified pipeline with `remarkRehype`, wikilinks are automatically converted to appropriate HTML elements based on their type:
-
-### regular links
-
-wikilinks are expressed as standard anchor tags:
-
-```typescript
-// input: [[target]]
-// output: <a href="target">target</a>
-
-// input: [[target|alias]]
-// output: <a href="target">alias</a>
-
-// input: [[target#heading]]
-// output: <a href="target#heading">target</a>
-```
-
-### image embeds
-
-image embeds with dimensions or captions become figures:
-
-```typescript
-// input: ![[photo.jpg|400x300]]
-// output: <img src="photo.jpg" width="400" height="300">
-
-// input: ![[photo.jpg|A beautiful sunset]]
-// output: <figure><img src="photo.jpg"><figcaption>A beautiful sunset</figcaption></figure>
-
-// input: ![[photo.jpg|A beautiful sunset|400x300]]
-// output: <figure><img src="photo.jpg" width="400" height="300"><figcaption>A beautiful sunset</figcaption></figure>
-```
-
-### media embeds
-
-video and audio files are converted to appropriate HTML5 elements:
-
-```typescript
-// input: ![[demo.mp4]]
-// output: <video src="demo.mp4" controls loop></video>
-
-// input: ![[song.mp3]]
-// output: <audio src="song.mp3" controls></audio>
-```
-
-### pdf embeds
-
-pdf files are embedded as iframes:
-
-```typescript
-// input: ![[paper.pdf]]
-// output: <iframe src="paper.pdf" class="pdf"></iframe>
-```
-
-### block transcludes
-
-embedded sections and blocks become blockquotes with metadata:
-
-```typescript
-// input: ![[notes#summary]]
-// output: <blockquote class="transclude" data-url="notes" data-block="#summary">
-//           <a href="notes#summary" class="transclude-inner">Transclude of notes #summary</a>
-//         </blockquote>
-```
-
-the conversion to HTML happens automatically through mdast annotations (`data.hName`, `data.hProperties`, `data.hChildren`) that `mdast-util-to-hast` uses during the remark-to-rehype transformation.
-
-## css
-
-wikilinks rendered as links can be styled using standard selectors:
-
-```css
-a {
-  color: #ff00ff;
-}
-```
-
-figure elements with captions can be styled:
-
-```css
-figure {
-  margin: 1em 0;
-}
-
-figcaption {
-  font-style: italic;
-  text-align: center;
-}
-```
-
-transcluded blocks have dedicated classes:
-
-```css
-blockquote.transclude {
-  border-left: 3px solid #ccc;
-  padding-left: 1em;
-}
-
-a.transclude-inner {
-  text-decoration: none;
-}
-```
-
-## syntax
-
-wikilinks form with the following structure:
-
-```bnf
-<wikilink> ::= <embed>? "[[" <target>? <anchor>? <alias>? "]]"
-
-<embed>    ::= "!"
-<target>   ::= <content>
-<anchor>   ::= "#" <content>
-<alias>    ::= "|" <content>
-
-<content>  ::= (<char> | <escaped>)+
-<escaped>  ::= "\" <char>
-<char>     ::= any character except "]", "|", "#" (unless escaped)
-```
-
-the tokenizer implements a state machine that processes wikilinks in a single pass:
-
-**states**:
-
-1. `start` - detect `!` embed marker or `[` opening
-2. `openFirst` - consume first `[`
-3. `openSecond` - consume second `[`
-4. `targetStart` - begin target consumption
-5. `targetInside` - consume target chars, handle escaping, detect delimiters
-6. `anchorMarker` - consume `#`
-7. `anchorStart` - begin anchor consumption
-8. `anchorInside` - consume anchor chars (allows multiple `#`)
-9. `aliasMarker` - consume `|`
-10. `aliasStart` - begin alias consumption
-11. `aliasInside` - consume alias chars (allows any content)
-12. `closeFirst` - consume first `]`
-13. `closeSecond` - consume second `]`, finalize
-
-**escaping**: backslash `\` escapes the next character in target and anchor sections. the backslash is consumed during tokenization (not included in output).
-
-**whitespace**: prefix and suffix whitespace in all components is stripped during parsing: `[[ target | alias ]]` becomes `target` and `alias`.
-
-## types
-
-the package defines custom mdast node types:
-
-### `Wikilink`
-
-```typescript
-interface Wikilink extends Node {
-  type: 'wikilink'
-  value: string // original text: "[[target#anchor|alias]]"
-  data: {
-    wikilink: {
-      raw: string // same as value
-      target: string // "target"
-      anchor?: string // "#anchor"
-      alias?: string // "alias"
-      embed: boolean // false
-    }
-    // hast conversion annotations (set when obsidian mode is enabled)
-    hName?: string // target HTML element: 'a', 'img', 'video', 'audio', 'iframe', 'blockquote'
-    hProperties?: Record<string, any> // HTML attributes
-    hChildren?: (HastElement | HastText)[] // nested hast nodes
-  }
-}
-```
-
-the `Wikilink` node extends the standard mdast `Node` interface and includes structured metadata. when processed through the unified pipeline, the `hName`, `hProperties`, and `hChildren` fields enable automatic conversion to HTML via `mdast-util-to-hast`.
-
-## architecture
-
-### tokenizer state machine
-
-the tokenizer processes wikilinks through a finite state machine:
-
-```
-start → (embed?) → [ → [ → target → (anchor?) → (alias?) → ] → ] → ok
-                              ↓          ↓          ↓
-                           consume    consume    consume
-                              ↓          ↓          ↓
-                           chunks     chunks     chunks
-```
-
-### token types
-
-defined in `types.ts`:
-
-- `wikilink` - container
-- `wikilinkEmbedMarker` - `!` prefix
-- `wikilinkOpenMarker` - `[[`
-- `wikilinkTarget` - file path
-- `wikilinkAnchorMarker` - `#` delimiter
-- `wikilinkAnchor` - heading/block text
-- `wikilinkAliasMarker` - `|` delimiter
-- `wikilinkAlias` - display text
-- `wikilinkCloseMarker` - `]]`
-
-chunk tokens (`wikilinkTargetChunk`, etc.) are used internally by micromark for buffering.
-
-### performance characteristics
-
-- single-pass tokenization (no backtracking)
-- O(n) complexity where n = input length
-- minimal allocations (chunk buffering reuses strings)
-- context-aware (skips code blocks automatically via micromark)
-
-## examples
-
-### basic usage
-
-```typescript
-import { fromMarkdown } from 'mdast-util-from-markdown'
-import { wikilink, wikilinkFromMarkdown } from 'ofm-wikilink'
-
-// simple link
-const tree1 = fromMarkdown('[[page]]', {
-  extensions: [wikilink()],
-  mdastExtensions: [wikilinkFromMarkdown()],
-})
-// → wikilink.data.wikilink = { target: 'page', embed: false }
-
-// with alias
-const tree2 = fromMarkdown('[[page|display text]]', {
-  extensions: [wikilink()],
-  mdastExtensions: [wikilinkFromMarkdown()],
-})
-// → wikilink.data.wikilink = { target: 'page', alias: 'display text', embed: false }
-
-// with anchor
-const tree3 = fromMarkdown('[[page#section]]', {
-  extensions: [wikilink()],
-  mdastExtensions: [wikilinkFromMarkdown()],
-})
-// → wikilink.data.wikilink = { target: 'page', anchor: '#section', embed: false }
-
-// embed with all features
-const tree4 = fromMarkdown('![[file#heading|caption]]', {
-  extensions: [wikilink()],
-  mdastExtensions: [wikilinkFromMarkdown()],
-})
-// → wikilink.data.wikilink = { target: 'file', anchor: '#heading', alias: 'caption', embed: true }
-```
-
-### with unified pipeline
-
-```typescript
-import { unified } from 'unified'
-import remarkParse from 'remark-parse'
-import remarkRehype from 'remark-rehype'
-import rehypeStringify from 'rehype-stringify'
-import { remarkWikilink } from 'ofm-wikilink'
-
-// default usage with obsidian mode (automatic)
-const processor = unified()
-  .use(remarkParse)
-  .use(remarkWikilink) // obsidian: true by default
-  .use(remarkRehype)
-  .use(rehypeStringify)
-
-const html = await processor.process('[[Page1|link]] and ![[image.png|caption|100x200]]')
-// → <a href="page1">link</a> and <figure><img src="image.png" width="100" height="200"><figcaption>caption</figcaption></figure>
-
-// with custom strip extensions
-const customProcessor = unified()
-  .use(remarkParse)
-  .use(remarkWikilink, { stripExtensions: ['.md', '.mdx'] })
-  .use(remarkRehype)
+  .use(remarkWikilink)
+  .use(remarkRehype, { handlers: { wikilink: referenceHastHandler } })
   .use(rehypeStringify)
 ```
 
-### raw mode (obsidian: false)
+Standalone rendering projects a destination without claiming that a file exists. Catalog resolution supplies duplicate-heading identity, implicit labels and selected Base views in the full pipeline. Garden's HTML transformers add captions, media controls, URL decoration and browser resources after conversion.
 
-if you explicitly set `obsidian: false`, nodes won't be annotated with `hName`/`hProperties`/`hChildren`:
+The HTML pipeline normalizes raw HTML before semantic transformers run. A private document identity reconnects normalized elements to typed records. The pipeline removes that transport attribute before publication and retains the typed record for cache restoration and transclusion copies. Serialized semantic-looking HTML attributes cannot authorize a transclusion.
+
+## Edits and serialization
+
+`wikilinkToMarkdown()` writes the captured reference bytes. Use `editWikilink(node, patch)` for deliberate changes; it validates the patch and returns a replacement node or diagnostics. Patches contain raw component text, with reserved delimiters escaped.
 
 ```typescript
-const tree = fromMarkdown('[[target]]', {
-  extensions: [wikilink()],
-  mdastExtensions: [wikilinkFromMarkdown({ obsidian: false })],
+const result = editWikilink(node, {
+  target: 'new-page',
+  fragments: ['Parent', 'Child'],
+  label: '**new label**',
 })
-
-// tree contains:
-// {
-//   type: 'wikilink',
-//   value: '[[target]]',
-//   data: {
-//     wikilink: { raw: '[[target]]', target: 'target', embed: false }
-//     // no hName/hProperties/hChildren - user must handle hast conversion
-//   }
-// }
+if (result.kind === 'complete') {
+  // Replace the authored node with result.node.
+}
 ```
 
-this is useful if you want to handle wikilink conversion yourself in a custom rehype plugin.
+Routing, heading selection, label projection and provider interpretation must leave serialization unchanged. The syntax owner also exposes `editReference` for callers that work directly with `ReferenceSyntax`.
 
-## compatibility
+## Ownership and verification
 
-this package was tested to work with:
+| Owner                                                             | Responsibility                                                              |
+| ----------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `syntax.ts`, `fromMarkdown.ts`, `toMarkdown.ts`, `edit.ts`        | Markdown tokenization, compilation, source serialization and explicit edits |
+| `quartz/util/references/model.ts`, `scan.ts`, `syntax.ts`         | Shared grammar, raw fields, spans and incomplete editor input               |
+| `request.ts`, `literal.ts`                                        | Host decoding, typed requests and literal-property helpers                  |
+| `catalog.ts`, `document.ts`, `target.ts`, `route.ts`              | Source identity, indexed selectors, settings and publication routes         |
+| `markdown.ts`, `render.ts`, `render-media.ts`, `hast.ts`          | Document resolution, shared HAST conversion and transient binding           |
+| `quartz/util/transclude-props.ts`, `quartz/components/renderPage` | Typed selection, occurrence scoping, cycle limits and expansion             |
 
-- micromark version 4+
-- mdast-util-from-markdown version 2+
-- unified version 11+
-- Node.js version 22+
-- TypeScript strict mode
-
-## security
-
-this package is safe. it performs no file system operations and does not execute arbitrary code. wikilink targets are parsed as strings and passed through to the mdast tree without modification (beyond whitespace normalization and escape sequence processing).
-
-## testing
-
-comprehensive test suite in `index.test.ts` covers:
-
-- basic links (simple, alias, anchor, block ref)
-- embeds (prefix, with anchor, with alias)
-- edge cases (empty components, multiple anchors)
-- escaping (pipes, hashes, brackets)
-- complex paths (slashes, spaces, special chars)
-- multiple wikilinks in text
-- context awareness (code blocks, inline code)
-- malformed input handling
-- position tracking
-
-run tests:
-
-```bash
-pnpm exec tsx --test quartz/extensions/micromark-extension-ofm-wikilinks/index.test.ts
-```
-
-## design decisions
-
-### why consume backslashes during tokenization?
-
-standard markdown behavior: escape characters are processed during parsing, not preserved in the AST. this matches how other micromark extensions work (e.g., `\*` becomes `*`).
-
-consumers get clean data: `[[file\|name]]` → `target: "file|name"`, not `"file\\|name"`.
-
-### why undefined for empty components?
-
-semantic clarity: `[[target|]]` means "no alias provided", not "alias is empty string". undefined makes this explicit and prevents confusion with intentional empty strings.
-
-consistency: matches how optional fields work throughout the mdast ecosystem.
-
-### why allow multiple `#` in anchors?
-
-Obsidian supports nested headings via `[[file#h1#h2]]` syntax. the tokenizer treats everything after `#` as anchor text, allowing this pattern naturally.
-
-### why separate Wikilink from Link?
-
-preserves metadata: wikilink-specific data (embed flag, original syntax) is maintained for downstream processing.
-
-enables transformation: transformers can convert `Wikilink` → `Link`/`Image`/`Html` based on context.
-
-backward compatibility: existing code using regex-based parsing can migrate gradually.
-
-## related
-
-- [micromark](https://github.com/micromark/micromark) - markdown parser
-- [mdast](https://github.com/syntax-tree/mdast) - markdown abstract syntax tree
-- [unified](https://github.com/unifiedjs/unified) - interface for parsing and transforming content
-- [remark](https://github.com/remarkjs/remark) - markdown processor
-- [Obsidian internal links](https://help.obsidian.md/Linking+notes+and+files/Internal+links) - official documentation
-
-## contribute
-
-contributions welcome. open issues for bugs or feature requests. pull requests should include tests and maintain existing code style.
-
-## license
-
-MIT
+The [adapter-removal record](../../compatibility/adapter-removal.md) lists the phase gates and replay evidence. Run affected parser suites and real pipeline fixtures when changing this boundary. Browser behavior requires the matching fixture watcher's `build:ready`, HTTP availability and a fresh served-browser inspection.

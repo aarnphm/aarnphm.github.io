@@ -1,4 +1,3 @@
-import type { Root } from 'mdast'
 /**
  * ofm-wikilink - micromark extension for Obsidian-flavored wikilinks.
  *
@@ -26,36 +25,12 @@ import type { Processor } from 'unified'
 import { wikilinkFromMarkdown, isWikilink } from './fromMarkdown'
 import { wikilink } from './syntax'
 import { wikilinkToMarkdown } from './toMarkdown'
+export { editWikilink } from './edit'
 
 export { wikilink, wikilinkToMarkdown, wikilinkFromMarkdown, isWikilink }
-export type { Wikilink, WikilinkData, FromMarkdownOptions } from './fromMarkdown'
+export type { Wikilink } from './fromMarkdown'
 
-export interface RemarkWikilinkOptions {
-  /**
-   * enable Obsidian-style nested anchor handling and automatic hast conversion.
-   * default: true
-   *
-   * when true: uses internal slugification and annotates nodes for automatic HTML conversion
-   * when false: returns raw wikilink nodes without hName annotations
-   */
-  obsidian?: boolean
-
-  /**
-   * file extensions to strip before slugifying.
-   * default: ['.md', '.base']
-   * only applies when obsidian: true
-   */
-  stripExtensions?: string[]
-
-  /**
-   * function to check if a slug exists in the content index.
-   * used to validate implicit alias splitting: only split "[[file text]]"
-   * if "file" exists but "file text" doesn't.
-   */
-  hasSlug?: (slug: string) => boolean
-}
-
-export function remarkWikilink(this: Processor<Root>, options: RemarkWikilinkOptions = {}): void {
+export function remarkWikilink(this: Processor): void {
   const data = this.data()
 
   data.micromarkExtensions ??= []
@@ -64,7 +39,7 @@ export function remarkWikilink(this: Processor<Root>, options: RemarkWikilinkOpt
   data.toMarkdownExtensions ??= []
 
   data.micromarkExtensions.push(wikilink())
-  data.fromMarkdownExtensions.push(wikilinkFromMarkdown(options))
+  data.fromMarkdownExtensions.push(wikilinkFromMarkdown())
   //@ts-ignore
   data.toMarkdownExtensions.push(wikilinkToMarkdown())
 }
