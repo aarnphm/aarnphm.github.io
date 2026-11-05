@@ -122,7 +122,15 @@ def reviewed_region_text(
       'review_reference': 'docs/verification/ocr-aside-recovery/source-review.md#thinking-with-type-page-119',
       'review_approval': 'Standing marked-partial specimen recovery authorization, 2026-11-03; monitor recovery instruction, 2026-11-04',
     }
-  if number in (140, 141, 143) and bounds == {140: [101, 121, 903, 535], 141: [63, 120, 869, 503], 143: [60, 109, 870, 518]}[number]:
+  if (
+    number in (140, 141, 143)
+    and bounds
+    == {
+      140: [101, 121, 903, 535],
+      141: [63, 120, 869, 503],
+      143: [60, 109, 870, 518],
+    }[number]
+  ):
     source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
     if (
       source_hash
@@ -130,7 +138,11 @@ def reviewed_region_text(
     ):
       return None
     return {
-      'content': (Path(__file__).parent / 'reviewed-specimens' / f'type-{number}.txt').read_text().strip(),
+      'content': (
+        Path(__file__).parent / 'reviewed-specimens' / f'type-{number}.txt'
+      )
+      .read_text()
+      .strip(),
       'recovery': 'reviewed-region-text-v1',
       'review_status': 'reviewed-partial',
       'review_recognition': 'approved-transcription-before-ocr',

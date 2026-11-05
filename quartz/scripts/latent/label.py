@@ -292,6 +292,11 @@ def main() -> None:
     todo = []
     for row in sorted(table, key=lambda r: (r.get('level', 0), r['f'])):
       if row['n'] < MIN_FIRES or not row['top']:
+        # too rare to label; a record left from an earlier dictionary describes other rows (and
+        # can name rows that have since left the store), so it goes. Hand labels stay.
+        if isinstance(have.get(str(row['f'])), dict):
+          del have[str(row['f'])]
+          log(f'{name} {row["f"]}: fires {row["n"]}x, stale label dropped')
         continue
       shown = [r for r, _ in row['top'][:SHOWN]]
       keys = [key(r) for r in shown]

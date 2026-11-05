@@ -199,8 +199,9 @@ def check(lm, ids: list[int]) -> float:
   return diff / max(span, 1e-6)
 
 
-def corpus(content: Path, directory: str, seed: int):
-  """(sidecar hash, [(row, text)]): canonical note and pdf chunks of the live sidecar, shuffled."""
+def corpus(content: Path, directory: str, seed: int, use=('note', 'pdf')):
+  """(sidecar hash, [(row, text)]): canonical chunks of the given kinds in the live sidecar,
+  shuffled."""
   from features import Texts, load_canon, load_side
 
   root = content / directory / 'latent'
@@ -210,7 +211,7 @@ def corpus(content: Path, directory: str, seed: int):
   canon = load_canon(side, len(doc_of))
   texts = Texts(side, docs, index['part'], kinds)
   rows = np.flatnonzero(
-    (canon == np.arange(len(doc_of))) & np.isin(kinds, ['note', 'pdf'])
+    (canon == np.arange(len(doc_of))) & np.isin(kinds, list(use))
   )
   rows = np.random.default_rng(seed).permutation(rows)
   out = []
@@ -366,6 +367,9 @@ def main() -> None:
   ap.add_argument('--content', default='content')
   ap.add_argument('--directory', default='embeddings')
   ap.add_argument('--site', choices=sorted(D_SITES), default='mlp')
+  ap.add_argument(
+    '--kinds', default='note,pdf', help='sidecar row kinds to read'
+  )
   ap.add_argument(
     '--layers',
     default='5,11,17,23,29,35,41',

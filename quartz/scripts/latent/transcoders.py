@@ -164,7 +164,7 @@ class Transcoder:
     )
     self.step += 1
     self.tokens += x.shape[0]
-    warm = min(1.0, self.step / 500)
+    warm = min(1.0, self.step / max(1.0, min(500, 0.05 * total_steps)))
     decay = (
       1.0
       if self.step < 0.8 * total_steps
@@ -256,12 +256,23 @@ def main() -> None:
   ap.add_argument(
     '--layers', default='0-13', help="e.g. 0-13, 14-27,5 or 'all'"
   )
+  ap.add_argument(
+    '--kinds', default='note,pdf', help='sidecar row kinds to train on'
+  )
   ap.add_argument('--width', type=int, default=8192)
   ap.add_argument('-k', type=int, default=64)
   ap.add_argument(
     '--tokens', type=float, default=20e6, help='training tokens per layer'
   )
-  ap.add_argument('--batch', type=int, default=4096)
+  ap.add_argument(
+    '--batch', type=int, default=4096, help='tokens per optimiser step'
+  )
+  ap.add_argument(
+    '--forward-tokens',
+    type=int,
+    default=8192,
+    help='tokens per Gemma forward batch',
+  )
   ap.add_argument('--lr', type=float, default=LR)
   ap.add_argument('--ctx', type=int, default=1024)
   ap.add_argument(
@@ -310,7 +321,10 @@ def main() -> None:
     d, n_layers = lm.args.hidden_size, len(lm.model.layers)
     layers = layer_list(args.layers, n_layers)
     digest, rows = acts.corpus(
-      Path(args.content).resolve(), args.directory, args.seed
+      Path(args.content).resolve(),
+      args.directory,
+      args.seed,
+      args.kinds.split(','),
     )
     log(f'{len(rows)} rows from sidecar {digest[:8]}')
     source = acts.stream(
@@ -320,7 +334,7 @@ def main() -> None:
       layers,
       'mlp',
       ctx=args.ctx,
-      batch_tokens=max(args.batch, 8192),
+      batch_tokens=max(args.batch, args.forward_tokens),
       keep=args.keep,
       seed=args.seed,
     )
