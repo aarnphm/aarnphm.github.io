@@ -17,11 +17,11 @@ export const plannedTabForm = (hasShortcut: boolean, text: string): PlannedTabFo
 export const plannedTabStyle = (label: string): string =>
   `--tri-map-tab-shortcut-width: ${PLANNED_SHORT_LABEL.length}ch; --tri-map-tab-label-width: ${label.length}ch`
 
-/** The section builder names its tabs `tri-workout-analysis-<activity id>-<view>-tab`. */
+/** Keep an occurrence prefix when a card is embedded or transcluded. */
 export const workoutAnalysisOwner = (
   tabId: string | undefined,
 ): { base: string; activityId: number } | null => {
-  const match = /^(tri-workout-analysis-(\d+))-[a-z-]+-tab$/.exec(tabId ?? '')
+  const match = /^((?:.+-)?tri-workout-analysis-(\d+))-[a-z-]+-tab$/.exec(tabId ?? '')
   return match ? { base: match[1], activityId: Number(match[2]) } : null
 }
 

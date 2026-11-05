@@ -6,6 +6,7 @@ export const dayExtrasFromDataset = (data: DOMStringMap): DayCardExtras => {
   const excludedActivityIds = parseExcludedActivityIds(data.triathlonFilter)
   const settings = parseTriathlonTraceSettings(data.triathlonSettings)
   return {
+    occurrence: data.triathlonOccurrence,
     location: data.triathlonLoc,
     event: data.triathlonEvent,
     sport: data.triathlonSport as DayCardExtras['sport'],

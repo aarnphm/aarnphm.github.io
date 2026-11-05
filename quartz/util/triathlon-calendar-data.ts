@@ -100,7 +100,7 @@ export const TRIATHLON_CALENDAR_CATALOG: Readonly<Record<number, TriathlonCalend
         format: 'HYROX',
         date: '2027-03-26',
         endDate: '2027-03-28',
-        note: 'Provisional',
+        note: null,
       },
       'https://www.ironman.com/races/im-lanzarote/register': {
         name: 'IRONMAN Lanzarote',

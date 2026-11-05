@@ -6,6 +6,7 @@ import { i18n } from '../../i18n'
 import { ATHLETE } from '../../plugins/stores/analytics'
 import { QuartzPluginData } from '../../plugins/vfile'
 import { joinSegments, pathToRoot } from '../../util/path'
+import { scopeHastIds } from '../../util/scope-element-ids'
 import { loadStravaPayloadSync } from '../../util/strava-payload'
 import { buildTriathlonCalcCard, decodeCalcShare } from '../../util/triathlon-calculator'
 import { parseTriathlonCalendar, parseTriathlonCalendars } from '../../util/triathlon-calendar'
@@ -23,8 +24,7 @@ import {
   triathlonDayCard,
   triathlonDayExtras,
   triathlonDayProps,
-  triathlonEmbedAnchorFromBlockRef,
-  triathlonEmbedAnchorFromSource,
+  triathlonEmbedAnchor,
   triathlonEmbedDayHref,
 } from '../triathlon-day-card'
 import { CalendarPanel } from '../triathlon/calendar/Calendar'
@@ -32,34 +32,34 @@ import { wrapCollapsible, type TranscludeScope } from './transclude-scope'
 
 const CALC_ANCHOR_RE = /#(calculator-[a-z0-9-]+)$/
 
+function triathlonOccurrence(scope: TranscludeScope): string {
+  let prefix = `triathlon-${scope.expansion.occurrence}`
+  while ([...scope.expansion.ids].some(id => id === prefix || id.startsWith(`${prefix}-`)))
+    prefix += '-1'
+  scope.expansion.ids.add(prefix)
+  return prefix
+}
+
 export function calendarEmbedView(
-  blockRef: string | undefined,
-  anchorPath: string | undefined,
+  segments: readonly string[],
 ): { view: 'list' | 'year'; year?: number } | undefined {
-  if (anchorPath) {
-    let segments: unknown
-    try {
-      segments = JSON.parse(anchorPath)
-    } catch {
-      return undefined
-    }
-    if (!Array.isArray(segments) || segments[0] !== 'calendar') return undefined
-    const display = segments.at(-1)
-    const view =
-      display === 'list' || display === 'display=list'
-        ? 'list'
-        : display === 'year' || display === 'display=year'
-          ? 'year'
-          : undefined
-    if (segments.length === 2 && view) return { view }
-    const year = segments[1]
-    if (typeof year !== 'string' || !/^\d{4}$/.test(year) || Number(year) === 0) return undefined
-    if (segments.length === 2) return { view: 'list', year: Number(year) }
-    if (segments.length === 3 && view) return { view, year: Number(year) }
-    return undefined
+  if (segments.length === 1) {
+    if (segments[0] === 'calendar' || segments[0] === 'calendar-list') return { view: 'list' }
+    if (segments[0] === 'calendar-year') return { view: 'year' }
   }
-  if (blockRef === '#calendar' || blockRef === '#calendar-list') return { view: 'list' }
-  if (blockRef === '#calendar-year') return { view: 'year' }
+  if (segments[0] !== 'calendar') return undefined
+  const display = segments.at(-1)
+  const view =
+    display === 'list' || display === 'display=list'
+      ? 'list'
+      : display === 'year' || display === 'display=year'
+        ? 'year'
+        : undefined
+  if (segments.length === 2 && view) return { view }
+  const year = segments[1]
+  if (!year || !/^\d{4}$/.test(year) || Number(year) === 0) return undefined
+  if (segments.length === 2) return { view: 'list', year: Number(year) }
+  if (segments.length === 3 && view) return { view, year: Number(year) }
   return undefined
 }
 
@@ -125,11 +125,11 @@ export function transcludeTriathlonCard(
   scope: TranscludeScope,
   node: Element,
   page: QuartzPluginData,
-  blockRef: string | undefined,
-  anchorPath: string | undefined,
+  fragments: readonly string[],
   inner: Element,
 ): boolean {
   const { slug, componentData } = scope
+  const blockRef = fragments.length > 0 ? `#${fragments.join('#')}` : undefined
   const { cfg, fileData } = componentData
   let triathlonDate: string | undefined
   let triathlonEmbedExtras: Pick<
@@ -138,9 +138,7 @@ export function transcludeTriathlonCard(
   > | null = null
   let triathlonPayload: ReturnType<typeof loadStravaPayloadSync> | null = null
   if (page.frontmatter?.layout === 'triathlon') {
-    const anchor =
-      triathlonEmbedAnchorFromBlockRef(blockRef) ??
-      triathlonEmbedAnchorFromSource(anchorPath, fileData.rawMarkdownSource)
+    const anchor = triathlonEmbedAnchor(fragments)
     if (anchor) {
       const since = page.frontmatter?.['strava']
       triathlonPayload = loadStravaPayloadSync(
@@ -166,6 +164,7 @@ export function transcludeTriathlonCard(
     )
     if (!dayHref) return true
     const extras: DayCardExtras = {
+      occurrence: triathlonOccurrence(scope),
       ...triathlonDayExtras(page, triathlonDate),
       ...triathlonEmbedExtras,
       embedded: true,
@@ -223,6 +222,7 @@ export function transcludeTriathlonCard(
       : null
   const comparisonIds = comparisonAnchor ? decodeActivityComparisonAnchor(comparisonAnchor) : null
   if (comparisonIds && comparisonAnchor) {
+    const occurrence = triathlonOccurrence(scope)
     const since = page.frontmatter?.['strava']
     const payload = loadStravaPayloadSync(
       typeof since === 'string' ? since : undefined,
@@ -244,6 +244,7 @@ export function transcludeTriathlonCard(
         '.tri-compare-embed',
         {
           'data-compare-anchor': comparisonAnchor,
+          'data-triathlon-occurrence': occurrence,
           'data-detail-path': joinSegments(pathToRoot(slug), 'static/strava-detail.json'),
         },
         [
@@ -268,6 +269,7 @@ export function transcludeTriathlonCard(
         ],
       ),
     ]
+    if (children[0].type === 'element') scopeHastIds(children[0], occurrence)
     if (fileData.frontmatter?.pageLayout !== 'reflection') {
       children.push(
         h('a', { href: inner.properties?.href, class: 'internal transclude-src' }, [
@@ -289,11 +291,15 @@ export function transcludeTriathlonCard(
       : undefined
   const calcShare = calcAnchor ? decodeCalcShare(calcAnchor) : null
   if (calcAnchor && calcShare) {
+    const occurrence = triathlonOccurrence(scope)
     const children: ElementContent[] = [
-      h('.tri-calc-embed', { 'data-calc-hash': calcAnchor }, [
-        buildTriathlonCalcCard(triathlonCardFactory, calcShare),
-      ]),
+      h(
+        '.tri-calc-embed',
+        { 'data-calc-hash': calcAnchor, 'data-triathlon-occurrence': occurrence },
+        [buildTriathlonCalcCard(triathlonCardFactory, calcShare)],
+      ),
     ]
+    if (children[0].type === 'element') scopeHastIds(children[0], occurrence)
     if (fileData.frontmatter?.pageLayout !== 'reflection') {
       children.push(
         h('a', { href: inner.properties?.href, class: 'internal transclude-src' }, [

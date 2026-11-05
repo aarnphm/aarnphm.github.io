@@ -3,7 +3,8 @@ import { fromHtmlIsomorphic } from 'hast-util-from-html-isomorphic'
 import { h, s } from 'hastscript'
 import type { QuartzPluginData } from '../plugins/vfile'
 import { renderInlineMath } from '../util/math-text'
-import { joinSegments, slugAnchor } from '../util/path'
+import { joinSegments } from '../util/path'
+import { scopeHastIds } from '../util/scope-element-ids'
 import {
   buildDayCard,
   type DayCardExtras,
@@ -30,9 +31,6 @@ const TRIATHLON_SPORT_ANCHOR: Record<string, NonNullable<DayCardExtras['sport']>
   walk: 'walk',
   hike: 'hike',
 }
-const isStringArray = (value: unknown): value is string[] =>
-  Array.isArray(value) && value.every(segment => typeof segment === 'string')
-const TRIATHLON_EMBED_RE = /!\[\[triathlon#([^\]|]+)(?:\|[^\]]*)?\]\]/g
 
 type TriathlonDateEmbedAnchor = {
   date: string
@@ -46,15 +44,10 @@ type TriathlonActivityEmbedAnchor = { activityId: string }
 
 export type TriathlonEmbedAnchor = TriathlonDateEmbedAnchor | TriathlonActivityEmbedAnchor
 
-export const triathlonEmbedAnchor = (value: string | undefined): TriathlonEmbedAnchor | null => {
-  if (!value) return null
-  let segments: unknown
-  try {
-    segments = JSON.parse(value)
-  } catch {
-    return null
-  }
-  if (!isStringArray(segments) || segments.length < 1) return null
+export const triathlonEmbedAnchor = (
+  segments: readonly string[] | undefined,
+): TriathlonEmbedAnchor | null => {
+  if (!segments || segments.length < 1) return null
   const [reference, ...options] = segments
   if (triathlonDaySlug(reference) === null) {
     return options.length === 0 && triathlonActivityAnchor(reference) !== null
@@ -101,30 +94,6 @@ export const triathlonEmbedAnchor = (value: string | undefined): TriathlonEmbedA
     ...(settings ? { settings } : {}),
     ...(analytics ? { analytics: true } : {}),
   }
-}
-
-export const triathlonEmbedAnchorFromBlockRef = (
-  value: string | undefined,
-): TriathlonEmbedAnchor | null => {
-  if (!value) return null
-  const reference = value.startsWith('#') ? value.slice(1) : value
-  return triathlonEmbedAnchor(JSON.stringify([reference]))
-}
-
-export const triathlonEmbedAnchorFromSource = (
-  value: string | undefined,
-  source: string | undefined,
-): TriathlonEmbedAnchor | null => {
-  const parsed = triathlonEmbedAnchor(value)
-  if (parsed || !value || !source) return parsed
-
-  for (const match of source.matchAll(TRIATHLON_EMBED_RE)) {
-    const segments = match[1].split('#').map(segment => segment.trim())
-    if (JSON.stringify(segments.map(segment => slugAnchor(segment))) !== value) continue
-    const recovered = triathlonEmbedAnchor(JSON.stringify(segments))
-    if (recovered) return recovered
-  }
-  return null
 }
 
 export const resolveTriathlonEmbedDate = (
@@ -184,6 +153,7 @@ export const triathlonDayExtras = (page: QuartzPluginData, date: string): DayCar
 
 export const triathlonDayProps = (extras: DayCardExtras, date: string): Record<string, string> => {
   const props: Record<string, string> = { 'data-triathlon-date': date }
+  if (extras.occurrence) props['data-triathlon-occurrence'] = extras.occurrence
   if (extras.location) props['data-triathlon-loc'] = extras.location
   if (extras.event) props['data-triathlon-event'] = extras.event
   if (extras.sport) props['data-triathlon-sport'] = extras.sport
@@ -222,5 +192,6 @@ export const triathlonDayCard = (
 ): Element => {
   const card = buildDayCard(triathlonCardFactory, date, payload, extras, undefined, ctx)
   filterTriathlonTraceElements(card, extras.settings)
+  if (extras.occurrence) scopeHastIds(card, extras.occurrence)
   return card
 }

@@ -13,8 +13,6 @@ import {
   triathlonDayProps,
   triathlonCardFactory,
   triathlonEmbedAnchor,
-  triathlonEmbedAnchorFromBlockRef,
-  triathlonEmbedAnchorFromSource,
   triathlonEmbedDayHref,
 } from './triathlon-day-card'
 import { dayExtrasFromDataset } from './triathlon/activity/embed-settings'
@@ -34,22 +32,23 @@ test('renders inline math in server-side triathlon card nodes', () => {
 
 test('parses triathlon embed sport and activity exclusions', () => {
   assert.deepEqual(
-    triathlonEmbedAnchor('["2026-07-26","cycling","filter=19471122670&19476629599"]'),
+    triathlonEmbedAnchor(['2026-07-26', 'cycling', 'filter=19471122670&19476629599']),
     { date: '2026-07-26', sport: 'bike', excludedActivityIds: ['19471122670', '19476629599'] },
   )
 })
 
 test('parses a direct triathlon activity ID block reference', () => {
-  assert.deepEqual(triathlonEmbedAnchor('["19731411847"]'), { activityId: '19731411847' })
-  assert.deepEqual(triathlonEmbedAnchorFromBlockRef('#19731411847'), { activityId: '19731411847' })
-  assert.deepEqual(triathlonEmbedAnchorFromBlockRef('#2026-08-13'), { date: '2026-08-13' })
+  assert.deepEqual(triathlonEmbedAnchor(['19731411847']), { activityId: '19731411847' })
+  assert.deepEqual(triathlonEmbedAnchor(['2026-08-13']), { date: '2026-08-13' })
 })
 
 test('parses ampersand-separated triathlon trace settings', () => {
   assert.deepEqual(
-    triathlonEmbedAnchor(
-      '["2026-08-10","cycling","settings=matched-rides:false&power-balance:true"]',
-    ),
+    triathlonEmbedAnchor([
+      '2026-08-10',
+      'cycling',
+      'settings=matched-rides:false&power-balance:true',
+    ]),
     {
       date: '2026-08-10',
       sport: 'bike',
@@ -59,40 +58,37 @@ test('parses ampersand-separated triathlon trace settings', () => {
 })
 
 test('parses dated analytics embeds with settings and activity filters', () => {
-  assert.deepEqual(triathlonEmbedAnchor('["2026-08-16","analytics"]'), {
+  assert.deepEqual(triathlonEmbedAnchor(['2026-08-16', 'analytics']), {
+    date: '2026-08-16',
+    analytics: true,
+  })
+  assert.deepEqual(triathlonEmbedAnchor(['2026-08-16', 'analytics']), {
     date: '2026-08-16',
     analytics: true,
   })
   assert.deepEqual(
-    triathlonEmbedAnchorFromSource(
-      '["2026-08-16","analytics"]',
-      '![[triathlon#2026-08-16#analytics]]',
-    ),
-    { date: '2026-08-16', analytics: true },
-  )
-  assert.deepEqual(
-    triathlonEmbedAnchor('["2026-08-16","analytics","settings=display:simplified"]'),
+    triathlonEmbedAnchor(['2026-08-16', 'analytics', 'settings=display:simplified']),
     { date: '2026-08-16', settings: TRIATHLON_TRACE_DISPLAY_SETTINGS.simplified, analytics: true },
   )
-  assert.deepEqual(triathlonEmbedAnchor('["2026-08-16","analytics","settings=display:detailed"]'), {
+  assert.deepEqual(triathlonEmbedAnchor(['2026-08-16', 'analytics', 'settings=display:detailed']), {
     date: '2026-08-16',
     settings: TRIATHLON_TRACE_DISPLAY_SETTINGS.detailed,
     analytics: true,
   })
   assert.deepEqual(
-    triathlonEmbedAnchor('["2026-08-18","analytics","settings=display:simplified&expanded:true"]'),
+    triathlonEmbedAnchor(['2026-08-18', 'analytics', 'settings=display:simplified&expanded:true']),
     {
       date: '2026-08-18',
       settings: { ...TRIATHLON_TRACE_DISPLAY_SETTINGS.simplified, expanded: true },
       analytics: true,
     },
   )
-  assert.deepEqual(triathlonEmbedAnchor('["2026-08-16","analytics","cycling"]'), {
+  assert.deepEqual(triathlonEmbedAnchor(['2026-08-16', 'analytics', 'cycling']), {
     date: '2026-08-16',
     sport: 'bike',
     analytics: true,
   })
-  assert.deepEqual(triathlonEmbedAnchor('["2026-08-16","analytics","filter=19771722076"]'), {
+  assert.deepEqual(triathlonEmbedAnchor(['2026-08-16', 'analytics', 'filter=19771722076']), {
     date: '2026-08-16',
     excludedActivityIds: ['19771722076'],
     analytics: true,
@@ -100,13 +96,10 @@ test('parses dated analytics embeds with settings and activity filters', () => {
 })
 
 test('carries focused analytics from its source anchor through hydration', () => {
-  const anchor = triathlonEmbedAnchorFromSource(
-    '["2026-09-08","analytics","settingsdisplayfocused"]',
-    '![[triathlon#2026-09-08#analytics#settings=display:focused]]',
-  )
+  const anchor = triathlonEmbedAnchor(['2026-09-08', 'analytics', 'settings=display:focused'])
   assert.deepEqual(anchor, { date: '2026-09-08', analytics: true, settings: { focused: true } })
   assert.deepEqual(
-    triathlonEmbedAnchor('["2026-09-08","analytics","settings=display:focused"]'),
+    triathlonEmbedAnchor(['2026-09-08', 'analytics', 'settings=display:focused']),
     anchor,
   )
   assert.ok(anchor && 'date' in anchor)
@@ -120,23 +113,23 @@ test('carries focused analytics from its source anchor through hydration', () =>
 })
 
 test('rejects malformed triathlon embed options', () => {
-  assert.equal(triathlonEmbedAnchor('["2026-02-29","cycling"]'), null)
-  assert.equal(triathlonEmbedAnchor('["2026-07-26","filter=19471122670&&19476629599"]'), null)
-  assert.equal(triathlonEmbedAnchor('["2026-07-26","filter="]'), null)
-  assert.equal(triathlonEmbedAnchor('["2026-07-26","settings=matched rides:false"]'), null)
-  assert.equal(triathlonEmbedAnchor('["2026-07-26","settings=matched-rides:0"]'), null)
+  assert.equal(triathlonEmbedAnchor(['2026-02-29', 'cycling']), null)
+  assert.equal(triathlonEmbedAnchor(['2026-07-26', 'filter=19471122670&&19476629599']), null)
+  assert.equal(triathlonEmbedAnchor(['2026-07-26', 'filter=']), null)
+  assert.equal(triathlonEmbedAnchor(['2026-07-26', 'settings=matched rides:false']), null)
+  assert.equal(triathlonEmbedAnchor(['2026-07-26', 'settings=matched-rides:0']), null)
   assert.equal(
-    triathlonEmbedAnchor('["2026-07-26","settings=matched-rides:false&matched-rides:true"]'),
+    triathlonEmbedAnchor(['2026-07-26', 'settings=matched-rides:false&matched-rides:true']),
     null,
   )
-  assert.equal(triathlonEmbedAnchor('["2026-07-26","unknown"]'), null)
-  assert.equal(triathlonEmbedAnchor('["2026-07-26","analytics","analytics"]'), null)
-  assert.equal(triathlonEmbedAnchor('["2026-07-26","analytics","cycling","bike"]'), null)
-  assert.equal(triathlonEmbedAnchor('["19731411847","cycling"]'), null)
+  assert.equal(triathlonEmbedAnchor(['2026-07-26', 'unknown']), null)
+  assert.equal(triathlonEmbedAnchor(['2026-07-26', 'analytics', 'analytics']), null)
+  assert.equal(triathlonEmbedAnchor(['2026-07-26', 'analytics', 'cycling', 'bike']), null)
+  assert.equal(triathlonEmbedAnchor(['19731411847', 'cycling']), null)
 })
 
 test('resolves a direct activity embed to the activity date', () => {
-  const anchor = triathlonEmbedAnchor('["19731411847"]')
+  const anchor = triathlonEmbedAnchor(['19731411847'])
   assert.ok(anchor)
   assert.equal(
     resolveTriathlonEmbedDate(anchor, { details: { 19731411847: { date: '2026-08-13' } } }),
@@ -145,25 +138,20 @@ test('resolves a direct activity embed to the activity date', () => {
   assert.equal(resolveTriathlonEmbedDate(anchor, { details: {} }), null)
 })
 
-test('recovers activity exclusions from source when the cached anchor is slugged', () => {
-  assert.deepEqual(
-    triathlonEmbedAnchorFromSource(
-      '["2026-07-26","filter1947112267019476629599"]',
-      [
-        '![[triathlon#2026-07-20#cycling]]',
-        '![[triathlon#2026-07-26#filter=19471122670&19476629599]]',
-      ].join('\n'),
-    ),
-    { date: '2026-07-26', excludedActivityIds: ['19471122670', '19476629599'] },
-  )
+test('retains activity exclusions in authored selector segments', () => {
+  assert.deepEqual(triathlonEmbedAnchor(['2026-07-26', 'filter=19471122670&19476629599']), {
+    date: '2026-07-26',
+    excludedActivityIds: ['19471122670', '19476629599'],
+  })
 })
 
-test('recovers trace settings from source when the cached anchor is slugged', () => {
+test('retains trace settings in authored selector segments', () => {
   assert.deepEqual(
-    triathlonEmbedAnchorFromSource(
-      '["2026-08-10","cycling","settingsmatched-ridesfalsematched-runstrue"]',
-      '![[triathlon#2026-08-10#cycling#settings=matched-rides:false&matched-runs:true]]',
-    ),
+    triathlonEmbedAnchor([
+      '2026-08-10',
+      'cycling',
+      'settings=matched-rides:false&matched-runs:true',
+    ]),
     {
       date: '2026-08-10',
       sport: 'bike',

@@ -20,6 +20,7 @@ export interface TriNodeFactory<N> {
 }
 
 export type DayCardExtras = {
+  occurrence?: string
   location?: string
   event?: string
   sport?: ActivityKind
