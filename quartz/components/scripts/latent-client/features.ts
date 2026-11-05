@@ -262,6 +262,19 @@ export function bindFeatures(rt: Runtime): void {
   const input = rt.links.querySelector<HTMLInputElement>('form.lat-search input')
   const tab = rt.probe.querySelector<HTMLButtonElement>('.lat-tab[data-tab="features"]')
   let timer: number | null = null
+  // the panel re-renders once typing pauses, not on every key: a render rewrites the panel, and
+  // the site's :has() rules restyle the whole page for it
+  let typing: number | null = null
+  const refreshSoon = () => {
+    if (typing !== null) window.clearTimeout(typing)
+    typing = window.setTimeout(() => {
+      typing = null
+      refresh()
+    }, 90)
+  }
+  rt.signal.addEventListener('abort', () => typing !== null && window.clearTimeout(typing), {
+    once: true,
+  })
   const commit = async () => {
     timer = null
     if (!st.needle) return
@@ -289,7 +302,7 @@ export function bindFeatures(rt: Runtime): void {
       }
       // a bench showing features keeps the probe: the match lands on it as heat or a ring
       if (!open() && rt.probe.dataset.benchFeats === undefined) tab?.click()
-      else refresh()
+      else refreshSoon()
       timer = window.setTimeout(() => void commit(), 350)
     },
     { signal: rt.signal },

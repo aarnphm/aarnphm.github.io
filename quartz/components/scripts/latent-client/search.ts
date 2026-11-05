@@ -30,17 +30,20 @@ export async function renderLinks(rt: Runtime, row: number): Promise<void> {
     links.neighbours.map(n => [n.r, n.score]),
   )
   // A typed query or open goto list holds the pane until it is cleared.
-  if (!rt.query && rt.links.dataset.goto === undefined) {
-    const filter = rt.filter
-    if (filter) {
-      // `filter:` alone: the focus's nearest chunks of the kept kinds, from the whole store
-      const rows = await filteredNeighbours(rt, row).catch(error => {
-        console.warn('[latent] filter', error)
-        return null
-      })
-      if (rt.signal.aborted || rt.focus !== row || rt.filter !== filter) return
-      items = rows ? linkItems(rt, rows) : items.filter(item => filter.kinds.includes(item.doc.s))
-    }
+  const owns = !rt.query && rt.links.dataset.goto === undefined
+  const filter = rt.filter
+  if (owns && filter) {
+    // `filter:` alone: the focus's nearest chunks of the kept kinds, from the whole store
+    const rows = await filteredNeighbours(rt, row).catch(error => {
+      console.warn('[latent] filter', error)
+      return null
+    })
+    if (rt.signal.aborted || rt.focus !== row || rt.filter !== filter) return
+    items = rows ? linkItems(rt, rows) : items.filter(item => filter.kinds.includes(item.doc.s))
+  }
+  // the rail measures its pane, so it goes before the list's writes: one restyle, not two
+  renderRail(rt, rt.query ? rt.query.items : items)
+  if (owns) {
     const focusPreview = linkItems(rt, [[row, 255]])[0]?.preview
     if (focusPreview)
       renderDocumentLinks(
@@ -70,7 +73,6 @@ export async function renderLinks(rt: Runtime, row: number): Promise<void> {
     tick.setAttribute('x2', x)
   })
   void ticks
-  renderRail(rt, rt.query ? rt.query.items : items)
   if (rt.bench) drawBench(rt)
   rt.root.dispatchEvent(new CustomEvent('latent:focus', { detail: row }))
 }
@@ -160,7 +162,27 @@ function linksBody(rt: Runtime): HTMLElement {
   return rt.links.querySelector<HTMLElement>('.lat-links-body') ?? rt.links
 }
 
-/** The site's query encoder, in its own worker; loads on the first query. */
+interface Encoder {
+  seq: number
+  /** a request is with the worker; it answers requests one at a time, in order */
+  busy: boolean
+  /** the newest text typed while the worker was busy; any older one waiting was dropped */
+  next: { text: string; resolve: (v: Float32Array) => void; reject: (e: Error) => void } | null
+  status: (text: string) => void
+  /** phrase → vector, newest last; backspacing to an earlier phrase skips the encoder */
+  cache: Map<string, Float32Array>
+}
+
+const encoders = new WeakMap<Runtime, Encoder>()
+const ENCODER_CACHE = 48
+
+class Superseded extends Error {}
+
+/**
+ * The site's query encoder, in its own worker; loads on the first query. The worker queues every
+ * request and runs them in order, so text typed while it works waits here instead: only the
+ * newest waits, older ones are dropped, and a pause in typing costs one encoding, not a backlog.
+ */
 function embedQuery(
   rt: Runtime,
   text: string,
@@ -171,13 +193,39 @@ function embedQuery(
     rt.signal.addEventListener('abort', () => rt.semantic?.terminate())
   }
   const worker = rt.semantic
-  const seq = Date.now()
-  return new Promise((resolve, reject) => {
+  let enc = encoders.get(rt)
+  if (!enc) {
+    enc = { seq: 0, busy: false, next: null, status, cache: new Map() }
+    encoders.set(rt, enc)
+  }
+  const state = enc
+  state.status = status
+  const hit = state.cache.get(text)
+  if (hit) {
+    state.cache.delete(text)
+    state.cache.set(text, hit)
+    // the caller hands its copy's buffer to the vectors worker
+    return Promise.resolve(hit.slice())
+  }
+  const send = (
+    text: string,
+    resolve: (v: Float32Array) => void,
+    reject: (e: Error) => void,
+  ): void => {
+    state.busy = true
+    const seq = ++state.seq
+    const settle = () => {
+      worker.removeEventListener('message', onMessage)
+      state.busy = false
+      const queued = state.next
+      state.next = null
+      if (queued && !rt.signal.aborted) send(queued.text, queued.resolve, queued.reject)
+    }
     const onMessage = (event: MessageEvent<SemanticWorkerResponse>) => {
       const data = event.data
       if (data.type === 'model-progress') {
         // `phase · loaded/total unit` so the status flap swaps digits in place
-        status(
+        state.status(
           data.phase === 'loading' && data.totalBytes
             ? `encoder · ${megabytes(data.loadedBytes)}/${megabytes(data.totalBytes)} MB`
             : 'starting the encoder…',
@@ -185,10 +233,13 @@ function embedQuery(
         return
       }
       if (data.type === 'embedding' && data.seq === seq) {
-        worker.removeEventListener('message', onMessage)
+        state.cache.set(text, data.vector.slice())
+        if (state.cache.size > ENCODER_CACHE)
+          state.cache.delete(state.cache.keys().next().value as string)
+        settle()
         resolve(data.vector)
       } else if (data.type === 'error' && data.seq === seq) {
-        worker.removeEventListener('message', onMessage)
+        settle()
         reject(new Error(data.message))
       }
     }
@@ -202,8 +253,18 @@ function embedQuery(
       queryDtype: 'q4',
     }
     worker.postMessage(message)
+  }
+  return new Promise((resolve, reject) => {
+    if (!state.busy) {
+      send(text, resolve, reject)
+      return
+    }
+    state.next?.reject(new Superseded('superseded'))
+    state.next = { text, resolve, reject }
   })
 }
+
+const firstAxis = new WeakMap<Runtime, HTMLElement | null>()
 
 /** Probe axes whose name or pole terms contain the query: "search for features". */
 function matchAxes(rt: Runtime, text: string): number {
@@ -212,16 +273,19 @@ function matchAxes(rt: Runtime, text: string): number {
   let count = 0
   for (const card of rt.probe.querySelectorAll<HTMLElement>('.lat-axis')) {
     const hit = needle.length > 1 && (card.textContent ?? '').toLowerCase().includes(needle)
+    if (hit !== (card.dataset.match !== undefined)) card.toggleAttribute('data-match', hit)
     if (hit) {
-      card.dataset.match = ''
       count++
       first ??= card
-    } else delete card.dataset.match
+    }
   }
+  // the carousel slides when the first match changes, not on every key that keeps it
+  const moved = first !== firstAxis.get(rt)
+  firstAxis.set(rt, first)
   // an open features tab keeps the probe: it lists the features whose terms match. Otherwise
   // the 3-d tab opens and its axis carousel slides to the first match
   const features = rt.probe.querySelector<HTMLElement>('.lat-panel[data-panel="features"]')
-  if (first && (!features || features.hidden)) {
+  if (first && moved && (!features || features.hidden)) {
     const bench = rt.probe.querySelector<HTMLButtonElement>('.lat-tab[data-tab="bench"]')
     if (bench && bench.getAttribute('aria-selected') !== 'true') bench.click()
     showAxis(first)
@@ -313,6 +377,8 @@ export async function runQuery(rt: Runtime, text: string): Promise<void> {
         : [...result.hits].map((row, i) => [row, Math.round(Math.max(0, result.scores[i]) * 255)]),
     )
     rt.query = { text, items }
+    // the rail measures its pane, so it goes before the list's writes: one restyle, not two
+    renderRail(rt, items)
     renderDocumentLinks(
       rt,
       { r: -1, d: -1, s: 'note', t: text, c: 0, p: null, l: '', x: '' },
@@ -323,10 +389,10 @@ export async function runQuery(rt: Runtime, text: string): Promise<void> {
     status.done(
       `${items.length} chunks · ${(performance.now() - t0).toFixed(0)} ms${axes ? ` · ${axes} ${axes === 1 ? 'axis' : 'axes'} match` : ''}${unknownTypes(filter.unknown)}`,
     )
-    renderRail(rt, items)
     rt.root.dispatchEvent(new CustomEvent('latent:query', { detail: { text, vector: kept } }))
   } catch (error) {
-    if (!stale()) status.fail(error instanceof Error ? error.message : String(error))
+    if (!stale() && !(error instanceof Superseded))
+      status.fail(error instanceof Error ? error.message : String(error))
   }
 }
 
@@ -337,10 +403,14 @@ const unknownTypes = (names: string[]) =>
 function clearQuery(rt: Runtime, force = false): void {
   for (const card of rt.probe.querySelectorAll<HTMLElement>('.lat-axis[data-match]'))
     delete card.dataset.match
+  firstAxis.set(rt, null)
   rt.toast?.dismiss()
   rt.toast = null
+  // the features tab re-renders (and steering re-fuses) on this, so an empty box that had no
+  // query, or a key inside `filter:`, says nothing
+  if (rt.wanted || rt.query || rt.links.dataset.query)
+    rt.root.dispatchEvent(new CustomEvent('latent:query', { detail: null }))
   rt.wanted = ''
-  rt.root.dispatchEvent(new CustomEvent('latent:query', { detail: null }))
   if (!force && !rt.query && !rt.links.dataset.query && rt.links.dataset.goto === undefined) return
   rt.query = null
   delete rt.links.dataset.query
@@ -356,12 +426,21 @@ function gotoMode(rt: Runtime, input: HTMLInputElement) {
   let index: GotoIndex | null = null
   let hits: LatentDoc[] = []
   let active = 0
+  // what the pane shows now: a key that lands on the same list writes nothing
+  let shown = ''
+  let frame = 0
   const items = () => [...rt.links.querySelectorAll<HTMLElement>('.lat-goto-item')]
   const show = (needle: string) => {
+    if (frame) cancelAnimationFrame(frame)
+    frame = 0
     index ??= gotoIndex(rt.docs)
     const kinds = rt.filter?.kinds
     const keep = kinds ? (doc: LatentDoc) => kinds.includes(doc.s) : undefined
-    hits = matchDocs(index, needle, 60, keep)
+    const next = matchDocs(index, needle, 60, keep)
+    const key = `${needle}\u0000${kinds?.join(',') ?? ''}\u0000${next.map(doc => doc.d).join(',')}`
+    if (key === shown && linksBody(rt).querySelector('.lat-goto, .lat-goto-empty')) return
+    shown = key
+    hits = next
     active = 0
     // a query still embedding drops its result, and its status line goes with it
     rt.wanted = ''
@@ -378,10 +457,28 @@ function gotoMode(rt: Runtime, input: HTMLInputElement) {
       doc => !inScope(doc.id, rt.scope),
       kinds ? `goto · ${filterLabel(kinds)}` : 'goto',
     )
+    // scroll first: writing scrollTop after the new list would force a restyle of the page
+    if (rt.links.scrollTop) rt.links.scrollTop = 0
     linksBody(rt).innerHTML = toHtml(pane as never, { allowDangerousHtml: false })
-    rt.links.scrollTop = 0
+  }
+  // Typing renders the list once a frame: each render rewrites the pane, and the site's :has()
+  // rules restyle the whole page for it. The box is in goto mode at once, so keys route here.
+  const showSoon = (needle: string) => {
+    rt.links.dataset.goto = needle
+    if (frame) return
+    frame = requestAnimationFrame(() => {
+      frame = 0
+      const now = rt.links.dataset.goto
+      if (now !== undefined && !rt.signal.aborted) show(now)
+    })
+  }
+  const leave = () => {
+    if (frame) cancelAnimationFrame(frame)
+    frame = 0
+    shown = ''
   }
   const pick = (next: number) => {
+    if (frame && rt.links.dataset.goto !== undefined) show(rt.links.dataset.goto)
     const all = items()
     if (all.length === 0) return
     active = (next + all.length) % all.length
@@ -389,8 +486,11 @@ function gotoMode(rt: Runtime, input: HTMLInputElement) {
     all[active].scrollIntoView({ block: 'nearest' })
   }
   const open = async (i = active) => {
+    // Enter right after a key: render that key's list first, so the pick matches the box
+    if (frame && rt.links.dataset.goto !== undefined) show(rt.links.dataset.goto)
     const doc = hits[i]
     if (!doc) return
+    leave()
     input.value = ''
     input.blur()
     delete rt.links.dataset.goto
@@ -406,6 +506,7 @@ function gotoMode(rt: Runtime, input: HTMLInputElement) {
     if (same && !rt.signal.aborted) void renderLinks(rt, rt.focus)
   }
   const fill = (): boolean => {
+    if (frame && rt.links.dataset.goto !== undefined) show(rt.links.dataset.goto)
     const doc = hits[active]
     if (!doc) return false
     // Tab keeps the box's `filter:` tokens in front of the filled path
@@ -430,6 +531,8 @@ function gotoMode(rt: Runtime, input: HTMLInputElement) {
   return {
     active: () => rt.links.dataset.goto !== undefined,
     show,
+    showSoon,
+    leave,
     pick: (step: number) => pick(active + step),
     open: () => void open(),
     fill,
@@ -523,6 +626,7 @@ export function bindSearch(rt: Runtime): void {
         run()
       } else if (event.key === 'Escape') {
         cancel()
+        goto.leave()
         input.value = ''
         clearQuery(rt, setFilter(rt, null))
         input.blur()
@@ -544,9 +648,10 @@ export function bindSearch(rt: Runtime): void {
       const filtered = setFilter(rt, filter.kinds)
       const needle = parseGoto(filter.rest)
       if (needle !== null) {
-        goto.show(needle)
+        goto.showSoon(needle)
         return
       }
+      goto.leave()
       // `filter:` alone narrows the focus's links at once; with words it waits for the query
       if (!filter.rest) {
         clearQuery(rt, filtered)

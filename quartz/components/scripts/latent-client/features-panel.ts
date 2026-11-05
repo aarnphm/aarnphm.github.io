@@ -145,6 +145,19 @@ function fillWhy(rt: Runtime, st: FeatureState, dicts: FeatureDict[], seq: numbe
   else setTimeout(go, 200)
 }
 
+const loweredRows = new WeakMap<object, { label: string; about: string; tokens: string[] }>()
+
+/** A row's label and description, lowercased and split once per row. */
+function lowered(row: { label?: string; about?: string }) {
+  let entry = loweredRows.get(row)
+  if (!entry) {
+    const label = row.label?.toLowerCase() ?? ''
+    entry = { label, about: row.about?.toLowerCase() ?? '', tokens: label.split(/\W+/) }
+    loweredRows.set(row, entry)
+  }
+  return entry
+}
+
 /**
  * `#` search: a feature by id (`#99`, `#image 4`, `#base:12`) or by its label, description and
  * terms. A whole-word hit in the label ranks above a prefix, a prefix above the description and
@@ -162,17 +175,17 @@ export function findFeatures(
       .map(dict => ({ dict, f, score: 1 }))
   }
   const words = needle.split(/\s+/).filter(Boolean)
+  // one pattern per word, not one per word per row
+  const wholes = words.map(w => new RegExp(`\\b${w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`))
   const out: { dict: FeatureDict; f: number; score: number; n: number }[] = []
   for (const dict of dicts)
     for (const row of dict.table) {
-      const label = row.label?.toLowerCase() ?? ''
-      const about = row.about?.toLowerCase() ?? ''
+      const { label, about, tokens } = lowered(row)
       let score = 0
-      for (const w of words) {
-        const whole = new RegExp(`\\b${w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`)
-        const s = whole.test(label)
+      for (const [i, w] of words.entries()) {
+        const s = wholes[i].test(label)
           ? 1
-          : label.split(/\W+/).some(t => t.startsWith(w))
+          : tokens.some(t => t.startsWith(w))
             ? 0.75
             : row.terms.some(t => t.startsWith(w))
               ? 0.5

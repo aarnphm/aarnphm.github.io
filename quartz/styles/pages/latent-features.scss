@@ -46,10 +46,12 @@
     white-space: nowrap;
   }
 
+  // the focused passage's title, set like an axis pole's words: italic text face
   .lat-feat-where {
     margin: 0 0 0.25rem;
-    font-family: var(--lat-mono);
-    font-size: var(--lat-micro);
+    font-family: var(--lat-text);
+    font-style: italic;
+    font-size: var(--text-meta);
     color: var(--darkgray);
   }
 
@@ -835,7 +837,8 @@
     }
   }
 
-  .lat-feat-word {
+  // the row's label rule greys every span; the words keep the ink, faded by their share
+  .lat-feat-words > .lat-feat-word {
     color: var(--dark);
     opacity: calc(0.5 + var(--a) * 0.5);
   }

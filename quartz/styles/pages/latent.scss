@@ -827,7 +827,7 @@
     }
 
     // both ends on one grid: column b starts on the histogram's zero, and the two ends share
-    // row lines (subgrid), so a term list that wraps on one side moves both lists together
+    // row lines (subgrid), so a pole name that wraps on one side moves both lists together
     .lat-poles {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -855,12 +855,14 @@
       color: var(--dark);
     }
 
+    // one line; words past the column end in an ellipsis and scroll into view on hover
+    // (latent-client/marquee.ts)
     .lat-pole-terms {
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 2;
-      line-clamp: 2;
+      display: block;
+      min-width: 0;
       overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
       font-style: italic;
       color: var(--darkgray);
       font-size: var(--text-meta);

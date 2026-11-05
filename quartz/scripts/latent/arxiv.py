@@ -827,7 +827,14 @@ def convert(arxiv_id: str, root: Path, figures: Path) -> str | None:
     for d in macro_defs(preamble) + local_macros(root, preamble)
     if not re.match(r'\\\w+\*?\s*\{?\\[A-Za-z]*@', d)
   ]
-  macros = Macros('\n'.join(defs))
+  # a section file can define its own macros after `\\begin{document}` (`\\Hid` in SpecDec++);
+  # pandoc reads those in the body, but an algorithm is held aside as TeX and expands by hand
+  inline = [
+    d
+    for d in macro_defs(body)
+    if not re.match(r'\\\w+\*?\s*\{?\\[A-Za-z]*@', d)
+  ]
+  macros = Macros('\n'.join(defs + inline))
   folders = [
     base / f
     for m in re.finditer(r'\\graphicspath\s*\{((?:\{[^}]*\})+)\}', preamble)

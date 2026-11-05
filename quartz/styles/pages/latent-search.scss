@@ -76,9 +76,40 @@
     outline-offset: 1px;
   }
 
+  .lat-rail {
+    container-type: inline-size;
+    --lat-track-width: calc(100cqw - 0.75rem);
+    --lat-track-height: calc(100vh - var(--lat-top) - var(--lat-head) - 1.5rem);
+
+    @media all and ($mobile) {
+      --lat-track-width: 100cqw;
+      --lat-track-height: 42vh;
+    }
+  }
+
   .lat-rail svg.lat-track {
     cursor: pointer;
     touch-action: none;
+
+    // The SSR track fills both dimensions; keep glyphs uniform before hydration measures it.
+    text {
+      transform-box: fill-box;
+      transform-origin: left center;
+      transform: scale(
+        min(
+          1,
+          calc(200 * var(--lat-track-height) / (var(--lat-rail-height) * var(--lat-track-width)))
+        ),
+        min(
+          1,
+          calc(var(--lat-rail-height) * var(--lat-track-width) / (200 * var(--lat-track-height)))
+        )
+      );
+    }
+
+    .lat-year:not(.lat-undated) {
+      transform-origin: right center;
+    }
   }
 
   // the dated lanes as density strips, the undated band as one row per kind

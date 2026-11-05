@@ -275,14 +275,21 @@ def batches(
       idx = mx.array(flat.astype(np.int32))
       got = {k: v.reshape(B * L, -1)[idx] for k, v in taps.items()}
       mx.eval(got)
+      # the padded (B, L, d) taps would otherwise stay alive while the generator waits at yield
+      # (3.5 GB at 21 layers x 16k tokens), pushing a 32 GB Mac into swap under a trainer
+      del taps
       bb, ll = np.divmod(flat, L)
-      yield (
-        got,
-        grid.ravel()[flat].astype(np.uint32),
-        np.array([enc[group[b]][0] for b in bb], np.uint32),
-        ll.astype(np.uint16),
-        i + len(window) if a >= len(order) else i,
-      )
+      box = [
+        (
+          got,
+          grid.ravel()[flat].astype(np.uint32),
+          np.array([enc[group[b]][0] for b in bb], np.uint32),
+          ll.astype(np.uint16),
+          i + len(window) if a >= len(order) else i,
+        )
+      ]
+      del got
+      yield box.pop()  # hand over the only reference, so the consumer decides when it dies
     i += len(window)
 
 
@@ -303,10 +310,12 @@ def stream(
   want = {l: D_SITES[site] for l in layers}
   epoch = 0
   while True:
-    for got, *_ in batches(
+    for item in batches(
       lm, tok, rows, want, ctx, batch_tokens, keep, seed + 7919 * epoch
     ):
-      yield got
+      box = [item[0]]
+      del item
+      yield box.pop()
     epoch += 1
 
 
@@ -430,7 +439,10 @@ def main() -> None:
   want = {l: parts for l in layers}
 
   digest, rows = corpus(
-    Path(args.content).resolve(), args.directory, args.seed
+    Path(args.content).resolve(),
+    args.directory,
+    args.seed,
+    args.kinds.split(','),
   )
   log(f'{len(rows)} rows from sidecar {digest[:8]}, {n_layers} layers, d {d}')
 

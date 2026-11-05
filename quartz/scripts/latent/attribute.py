@@ -574,16 +574,16 @@ def main() -> None:
   nodes.extend(
     dict(id=f'err:{l}.{p}', kind='error', layer=l, pos=p) for l, p in err_ids
   )
-  for p in range(P):
-    nodes.append(
-      dict(
-        id='bos' if p == 0 else f'emb:{p}',
-        kind='embedding',
-        layer=-1,
-        pos=p,
-        token=t.decode([ids[p]]),
-      )
+  nodes.extend(
+    dict(
+      id='bos' if p == 0 else f'emb:{p}',
+      kind='embedding',
+      layer=-1,
+      pos=p,
+      token=t.decode([ids[p]]),
     )
+    for p in range(P)
+  )
   K, nf = len(keep), len(S)
   N = len(nodes)
   A = np.zeros((N, N), np.float32)
