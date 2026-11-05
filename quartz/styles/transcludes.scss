@@ -11,8 +11,6 @@
   box-sizing: border-box;
   margin: 1rem 0;
 
-  --transclude-icon-fold: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"%3E%3Cpolyline points="6 9 12 15 18 9"%3E%3C/polyline%3E%3C/svg%3E');
-
   & > .transclude-content {
     display: grid;
     transition: grid-template-rows 0.1s cubic-bezier(0.02, 0.01, 0.47, 1);
@@ -25,7 +23,7 @@
   }
 
   &.is-collapsed {
-    & > .transclude-title > .transclude-fold {
+    & > .transclude-title > .transclude-fold > .fold-icon {
       transform: rotateZ(-90deg);
     }
   }
@@ -37,41 +35,71 @@
   gap: 8px;
   padding: 0.75rem 2rem 1rem 1rem;
   color: var(--darkgray);
-  cursor: pointer;
   user-select: none;
 
   --icon-size: 16px;
 
   & .transclude-fold {
-    transition: transform 0.15s ease;
-    opacity: 0.8;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    width: var(--icon-size);
-    height: var(--icon-size);
+    width: 1.5rem;
+    height: 1.5rem;
     flex-shrink: 0;
-    --transclude-icon: var(--transclude-icon-fold);
+    padding: 0;
+    color: var(--darkgray);
+    background: transparent;
+    border: 0;
+    border-radius: var(--radius-none);
+    appearance: none;
 
-    // icon support
-    background-size: var(--icon-size) var(--icon-size);
-    background-position: center;
-    background-color: var(--darkgray);
-    mask-image: var(--transclude-icon);
-    mask-size: var(--icon-size) var(--icon-size);
-    mask-position: center;
-    mask-repeat: no-repeat;
+    & > .fold-icon {
+      width: var(--icon-size);
+      height: var(--icon-size);
+      transition: transform 150ms ease;
+      pointer-events: none;
+    }
 
-    &:hover {
-      opacity: 1;
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: 2px;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        background: color-mix(in srgb, var(--light) 94%, var(--dark));
+      }
+    }
+
+    @media (pointer: coarse) {
+      width: 44px;
+      height: 44px;
     }
   }
 
   .transclude-title-text {
+    min-width: 0;
     font-weight: $semiBoldWeight;
     font-size: 0.95rem;
     flex: 1;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .transclude-collapsible > .transclude-content,
+  .transclude-title .transclude-fold > .fold-icon,
+  .transclude-content {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .transclude-title .transclude-fold:focus-visible {
+    outline-color: Highlight;
   }
 }
 

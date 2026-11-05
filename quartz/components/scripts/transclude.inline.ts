@@ -1,34 +1,28 @@
-function toggleTransclude(this: HTMLElement) {
-  const outerBlock = this.closest('.transclude-collapsible') as HTMLElement
+function toggleTransclude(this: HTMLButtonElement) {
+  const outerBlock = this.closest<HTMLElement>('.transclude-collapsible')
   if (!outerBlock) return
-
-  outerBlock.classList.toggle('is-collapsed')
-  const content = outerBlock.querySelector('.transclude-content') as HTMLElement
+  const content = outerBlock.querySelector<HTMLElement>(':scope > .transclude-content')
   if (!content) return
-
+  outerBlock.classList.toggle('is-collapsed')
   const collapsed = outerBlock.classList.contains('is-collapsed')
 
-  // update aria-expanded attribute
   this.setAttribute('aria-expanded', (!collapsed).toString())
-
-  // use grid-template-rows for smooth animation
   content.style.gridTemplateRows = collapsed ? '0fr' : '1fr'
 }
 
 function setupTranscludes() {
-  const collapsibleTranscludes = document.querySelectorAll(
-    '.transclude-collapsible',
-  ) as NodeListOf<HTMLElement>
+  const collapsibleTranscludes = document.querySelectorAll<HTMLElement>('.transclude-collapsible')
 
   for (const transclude of collapsibleTranscludes) {
-    const foldButton = transclude.querySelector('.transclude-fold') as HTMLElement
-    const content = transclude.querySelector('.transclude-content') as HTMLElement
+    const foldButton = transclude.querySelector<HTMLButtonElement>(
+      ':scope > .transclude-title > button.transclude-fold',
+    )
+    const content = transclude.querySelector<HTMLElement>(':scope > .transclude-content')
     if (!foldButton || !content) continue
 
     foldButton.addEventListener('click', toggleTransclude)
     window.addCleanup(() => foldButton.removeEventListener('click', toggleTransclude))
 
-    // set initial grid-template-rows based on collapsed state
     const collapsed = transclude.classList.contains('is-collapsed')
     content.style.gridTemplateRows = collapsed ? '0fr' : '1fr'
   }

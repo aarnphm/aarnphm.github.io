@@ -1,18 +1,16 @@
 import { Element, ElementContent } from 'hast'
+import { headingRank } from 'hast-util-heading-rank'
 import { h } from 'hastscript'
 import type { TranscludeOptions } from '../../plugins/transformers/frontmatter'
 import { i18n } from '../../i18n'
 import { renderBaseViewsForFile } from '../../util/base/render'
 import { FilePath, FullSlug, normalizeHastElement, slugifyFilePath } from '../../util/path'
-import {
-  findHeadingSectionBounds,
-  hasHastClass,
-  readTranscludeTarget,
-  transcludeVisitKey,
-} from '../../util/transclude-props'
+import { referenceSourcePath } from '../../util/references/context'
+import { hasHastClass, readTranscludeTarget } from '../../util/transclude-props'
 import { buildBaseEmbedNodes, type BaseRenderedView, type BaseRenderResult } from './base-embeds'
-import { appendTranscludedNotes, isTrailingNoteSection } from './footnotes-citations'
 import { transcludeCurius } from './transclude-curius'
+import { transcludeNoteStack, transcludePageStatus } from './transclude-note-stack'
+import { occurrenceContent } from './transclude-occurrence'
 import {
   pruneLeadingHeading,
   renderNotebookCellTransclude,
@@ -20,6 +18,7 @@ import {
   wrapCollapsible,
   type TranscludeScope,
 } from './transclude-scope'
+import { selectTransclusion } from './transclude-selection'
 import {
   calendarEmbedView,
   transcludeCalendar,
@@ -27,7 +26,7 @@ import {
 } from './transclude-triathlon'
 
 export function transcludeBlockquote(scope: TranscludeScope, node: Element): void {
-  const { componentData, root, slug, opts, visited, stats, features, renderData } = scope
+  const { componentData, slug, opts, stats, renderData } = scope
   const { cfg, allFiles, fileData } = componentData
   if (!hasHastClass(node, 'transclude')) {
     return
@@ -37,11 +36,25 @@ export function transcludeBlockquote(scope: TranscludeScope, node: Element): voi
   }
   const transclude = readTranscludeTarget(node)
   if (!transclude) return
-  const { anchorPath, inner, targetSlug: transcludeTarget, url, alias } = transclude
+  const { fragments, selector, inner, targetSlug: transcludeTarget, url, alias } = transclude
+  if (transcludeNoteStack(scope, node, transclude.request)) return
+  if (node.data?.noteStackMember) {
+    node.tagName = 'div'
+    node.properties.className = ['note-stack-content']
+  }
   let blockRef = transclude.blockRef
+  const showSource =
+    fileData.frontmatter?.pageLayout !== 'reflection' && !node.data?.noteStackMember
 
-  let baseViewSlug: FullSlug | undefined
+  let baseViewSlug: FullSlug | undefined =
+    selector.kind === 'base' && transcludeTarget !== transclude.request.resolvedSlug
+      ? transcludeTarget
+      : undefined
   let page = renderData.bySlug.get(transcludeTarget)
+  if (!page && transclude.request.resolvedPath) {
+    const source = transclude.request.resolvedPath
+    page = allFiles.find(file => referenceSourcePath(file) === source)
+  }
   if (!page) {
     const baseMatch = renderData.baseFiles.find(
       f => f.slug && transcludeTarget.startsWith(`${f.slug}/`),
@@ -54,26 +67,15 @@ export function transcludeBlockquote(scope: TranscludeScope, node: Element): voi
   if (!page) {
     return
   }
+  const status = transcludePageStatus(page)
+  if (status) {
+    node.properties['data-transclude-status'] = status
+    return
+  }
 
   const calendarView =
-    page.frontmatter?.layout === 'triathlon' ? calendarEmbedView(blockRef, anchorPath) : undefined
-  const curiusDateView = page.slug === 'curius' && blockRef?.startsWith('#')
-  if (!calendarView && !curiusDateView) {
-    const visitKey = transcludeVisitKey(transclude)
-    if (visited.has(visitKey)) return
-    visited.add(visitKey)
-  }
-
-  // parse metadata to check for collapsed flag
-  let transcludeMetadata: Record<string, unknown> | undefined
-  const rawMetadata = transclude.rawMetadata
-  if (rawMetadata) {
-    try {
-      transcludeMetadata = JSON.parse(rawMetadata)
-    } catch {
-      // ignore parsing errors
-    }
-  }
+    page.frontmatter?.layout === 'triathlon' ? calendarEmbedView(fragments) : undefined
+  const transcludeMetadata = transclude.metadata ? { ...transclude.metadata } : undefined
 
   let transcludePageOpts: TranscludeOptions
   if (page.frontmatter?.transclude) {
@@ -93,7 +95,8 @@ export function transcludeBlockquote(scope: TranscludeScope, node: Element): voi
     stats.files.add(page.filePath!)
   }
 
-  const { title, headings } = transcludePageOpts
+  const { headings } = transcludePageOpts
+  const title = transcludePageOpts.title && !node.data?.noteStackMember
 
   if (
     page.htmlAst &&
@@ -103,7 +106,8 @@ export function transcludeBlockquote(scope: TranscludeScope, node: Element): voi
       page.htmlAst,
       transcludeTarget,
       page.frontmatter?.title,
-      blockRef,
+      selector,
+      fragments,
       inner,
       alias,
       transcludeMetadata,
@@ -112,53 +116,50 @@ export function transcludeBlockquote(scope: TranscludeScope, node: Element): voi
     return
   }
 
-  if (transcludeCurius(node, transcludeTarget, blockRef, inner, alias)) return
-  if (transcludeTriathlonCard(scope, node, page, blockRef, anchorPath, inner)) return
+  if (transcludeCurius(node, transcludeTarget, fragments, inner, alias)) return
+  if (transcludeTriathlonCard(scope, node, page, fragments, inner)) return
 
   if (blockRef?.startsWith('#^')) {
-    // block transclude
+    const selected = selectTransclusion(page, blockRef)
+    const content = selected && occurrenceContent(scope, selected, transcludeTarget)
+    if (!content) {
+      if (selected) node.properties['data-transclude-status'] = 'budget'
+      return
+    }
     blockRef = blockRef.slice('#^'.length)
-    let blockNode = page.blocks?.[blockRef]
-    if (blockNode) {
-      if (blockNode.tagName === 'li') blockNode = h('ul', blockNode)
+    const children = [...content]
+    if (showSource) {
+      children.push(
+        h('a', { href: inner.properties?.href, class: 'internal transclude-src' }, [
+          {
+            type: 'text',
+            value:
+              page.frontmatter?.title ?? i18n(cfg.locale).components.transcludes.linkToOriginal,
+          },
+        ]),
+      )
+    }
 
-      const children = [normalizeHastElement(blockNode, slug, transcludeTarget)]
-      if (fileData.frontmatter?.pageLayout !== 'reflection') {
-        children.push(
-          h('a', { href: inner.properties?.href, class: 'internal transclude-src' }, [
-            {
-              type: 'text',
-              value:
-                page.frontmatter?.title ?? i18n(cfg.locale).components.transcludes.linkToOriginal,
-            },
-          ]),
-        )
-      }
-
-      if (transcludeMetadata && 'collapsed' in transcludeMetadata) {
-        const titleText = alias || `Block: ${blockRef}`
-        wrapCollapsible(
-          node,
-          children.filter(c => c !== null) as ElementContent[],
-          titleText,
-          Boolean(transcludeMetadata.collapsed),
-        )
-      } else {
-        node.children = children.filter(c => c !== null) as ElementContent[]
-      }
+    if (transcludeMetadata && 'collapsed' in transcludeMetadata) {
+      const titleText = alias || `Block: ${blockRef}`
+      wrapCollapsible(node, children, titleText, Boolean(transcludeMetadata.collapsed))
+    } else {
+      node.children = children
     }
   } else if (blockRef?.startsWith('#') && page.htmlAst) {
-    // header transclude
+    const selected = selectTransclusion(page, blockRef)
+    const normalizedSection = selected && occurrenceContent(scope, selected, transcludeTarget)
+    if (!normalizedSection) {
+      if (selected) node.properties['data-transclude-status'] = 'budget'
+      return
+    }
     blockRef = blockRef.slice(1)
-    const bounds = findHeadingSectionBounds(page.htmlAst.children, blockRef)
-    if (!bounds) return
-
-    const normalizedSection = page.htmlAst.children
-      .slice(bounds.startIdx, bounds.endIdx)
-      .filter((child): child is Element => child.type === 'element')
-      .filter(child => !isTrailingNoteSection(child))
-      .map(child => normalizeHastElement(child, slug, transcludeTarget) as ElementContent)
-
+    if (!headings) {
+      const heading = normalizedSection.find(
+        (child): child is Element => child.type === 'element' && headingRank(child) !== undefined,
+      )
+      if (typeof heading?.properties.id === 'string') node.properties.id = heading.properties.id
+    }
     const sectionContent = headings ? normalizedSection : pruneLeadingHeading(normalizedSection)
 
     const children = [
@@ -166,7 +167,7 @@ export function transcludeBlockquote(scope: TranscludeScope, node: Element): voi
       ...sectionContent,
     ]
 
-    if (fileData.frontmatter?.pageLayout !== 'reflection') {
+    if (showSource) {
       children.push(
         h('a', { href: inner.properties?.href, class: 'internal transclude-src' }, [
           {
@@ -185,8 +186,6 @@ export function transcludeBlockquote(scope: TranscludeScope, node: Element): voi
     } else {
       node.children = validChildren
     }
-
-    appendTranscludedNotes(root, features, node, page.htmlAst)
   } else if (page.htmlAst || page.bases) {
     let baseTree = page.htmlAst
     let baseRendered: BaseRenderResult | undefined
@@ -238,6 +237,12 @@ export function transcludeBlockquote(scope: TranscludeScope, node: Element): voi
       node.children = [...normalizedBarNodes, ...normalizedViewNodes]
       return
     }
+    const selected = selectTransclusion({ ...page, htmlAst: baseTree }, undefined)
+    const content = selected && occurrenceContent(scope, selected, transcludeTarget)
+    if (!content) {
+      if (selected) node.properties['data-transclude-status'] = 'budget'
+      return
+    }
     const children = [
       transcludeAnchor(inner.properties?.href as string, url, alias, title),
       title
@@ -250,12 +255,10 @@ export function transcludeBlockquote(scope: TranscludeScope, node: Element): voi
             },
           ])
         : null,
-      ...(baseTree.children as ElementContent[]).map(child =>
-        normalizeHastElement(child as Element, slug, transcludeTarget),
-      ),
+      ...content,
     ]
 
-    if (fileData.frontmatter?.pageLayout !== 'reflection') {
+    if (showSource) {
       children.push(
         h('a', { href: inner.properties?.href, class: 'internal transclude-src' }, [
           {

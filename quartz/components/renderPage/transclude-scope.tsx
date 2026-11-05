@@ -3,22 +3,23 @@ import { headingRank } from 'hast-util-heading-rank'
 import { h, s } from 'hastscript'
 import type { TranscludeOptions } from '../../plugins/transformers/frontmatter'
 import type { RenderData } from '../../util/ctx'
+import type { ReferenceSelector } from '../../util/references/catalog-types'
 import { i18n } from '../../i18n'
 import { QuartzComponentProps } from '../../types/component'
 import {
-  notebookCellRef,
+  notebookCellSelection,
   notebookCellRuntimeNodes,
   resolveNotebookCell,
 } from '../../util/notebook/transclude'
-import { FullSlug, normalizeHastElement } from '../../util/path'
+import { FullSlug } from '../../util/path'
 import { getHastClassNames } from '../../util/transclude-props'
 import { svgOptions } from '../svg'
+import { occurrenceContent } from './transclude-occurrence'
 
 export type RenderTreeFeatures = {
   hasTranscludeBlockquote: boolean
   hasReferences: boolean
   hasFootnotes: boolean
-  hasNestedAnchor: boolean
   hasDateAnchor: boolean
   hasDataSlugAnchor: boolean
 }
@@ -35,24 +36,19 @@ export interface TranscludeScope {
   root: Root
   slug: FullSlug
   opts: TranscludeOptions
-  visited: Set<FullSlug>
+  visited: Set<string>
   stats: TranscludeStats
   features: RenderTreeFeatures
   renderData: RenderData
   notebookRuntimeTranscludes: Map<string, number>
   calendarEmbedCount: number
+  expansion: { occurrence: number; remainingNodes: number; ids: Set<string> }
 }
 
 export function pruneLeadingHeading(nodes: ElementContent[]): ElementContent[] {
   let removed = false
   return nodes.filter(node => {
-    if (
-      !removed &&
-      node &&
-      typeof node === 'object' &&
-      (node as Element).type === 'element' &&
-      headingRank(node as Element)
-    ) {
+    if (!removed && node && node.type === 'element' && headingRank(node)) {
       removed = true
       return false
     }
@@ -107,10 +103,6 @@ export function transcludeAnchor(
   ])
 }
 
-/**
- * wrap transclude content in collapsible structure.
- * creates a title bar with fold button and content area.
- */
 export function wrapCollapsible(
   node: Element,
   children: ElementContent[],
@@ -118,13 +110,8 @@ export function wrapCollapsible(
   collapsed: boolean,
 ): void {
   const foldButton = h(
-    'span.transclude-fold',
-    {
-      role: 'button',
-      type: 'button',
-      ariaExpanded: !collapsed,
-      ariaLabel: 'Toggle transclude visibility',
-    },
+    'button.transclude-fold',
+    { type: 'button', ariaExpanded: String(!collapsed), ariaLabel: 'toggle transclusion' },
     [
       s(
         'svg',
@@ -135,7 +122,7 @@ export function wrapCollapsible(
           strokeWidth: '2',
           class: 'fold-icon',
         },
-        [s('use', { href: collapsed ? '#chevron-right' : '#chevron-down' })],
+        [s('use', { href: '#chevron-down' })],
       ),
     ],
   )
@@ -175,18 +162,24 @@ export function renderNotebookCellTransclude(
   pageTree: Root,
   transcludeTarget: FullSlug,
   pageTitle: string | undefined,
-  blockRef: string | undefined,
+  selector: ReferenceSelector | undefined,
+  fragments: readonly string[],
   inner: Element,
   alias: string,
   transcludeMetadata: Record<string, unknown> | undefined,
 ): boolean {
   const { slug } = scope
   const { cfg, fileData } = scope.componentData
-  const ref = notebookCellRef(blockRef)
+  const ref = notebookCellSelection(selector, fragments)
   if (!ref) return false
   const resolved = resolveNotebookCell(pageTree, ref)
   if (!resolved) return false
   const { id: cellId, frame: cell } = resolved
+  const selected = occurrenceContent(scope, [structuredClone(cell)], transcludeTarget)
+  if (!selected) {
+    node.properties['data-transclude-status'] = 'budget'
+    return true
+  }
 
   const children: (ElementContent | null)[] = [
     ...notebookCellRuntimeNodes(pageTree, {
@@ -195,7 +188,7 @@ export function renderNotebookCellTransclude(
       cellId,
       count: notebookRuntimeTranscludeCount(scope, transcludeTarget, cellId),
     }),
-    normalizeHastElement(cell, slug, transcludeTarget) as ElementContent,
+    ...selected,
   ]
   if (fileData.frontmatter?.pageLayout !== 'reflection') {
     children.push(

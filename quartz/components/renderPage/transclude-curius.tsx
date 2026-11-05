@@ -5,12 +5,12 @@ import { h } from 'hastscript'
 export function transcludeCurius(
   node: Element,
   slug: string,
-  blockRef: string | undefined,
+  fragments: readonly string[],
   inner: Element,
   alias: string,
 ): boolean {
-  if (slug !== 'curius' || !blockRef?.startsWith('#')) return false
-  const date = blockRef.slice(1)
+  if (slug !== 'curius' || fragments.length !== 1) return false
+  const date = fragments[0]
   node.children = [
     h(
       'section.curius-date-view',
