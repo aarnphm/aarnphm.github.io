@@ -146,7 +146,20 @@ $pet-looks: (
 
 // Dressed for the page's section, as its site icon is (quartz/util/section-icon.ts).
 @each $section
-  in (triathlon, fr, posts, legal, art, library, slides, stream, courses, engineering, cinema)
+  in (
+    triathlon,
+    fr,
+    posts,
+    legal,
+    art,
+    library,
+    slides,
+    stream,
+    courses,
+    engineering,
+    cinema,
+    embeddings
+  )
 {
   .pet-svg[data-outfit='#{$section}'] [data-part^='outfit-#{$section}'] {
     display: inline;
@@ -253,6 +266,30 @@ $pet-looks: (
   to {
     translate: -0.04px -0.3px;
     opacity: 0;
+  }
+}
+
+// The surveyor's constellation twinkles: each point swells and dims on its own beat.
+.pet-svg[data-outfit='embeddings'] .pet-star {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: pet-twinkle 2.6s steps(5) infinite alternate;
+
+  @for $i from 2 through 5 {
+    &:nth-child(#{$i} of .pet-star) {
+      animation-delay: #{-0.5 * ($i - 1)}s;
+    }
+  }
+}
+
+@keyframes pet-twinkle {
+  from {
+    scale: 0.8;
+    opacity: 0.55;
+  }
+  to {
+    scale: 1.15;
+    opacity: 1;
   }
 }
 

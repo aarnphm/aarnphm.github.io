@@ -42,6 +42,7 @@ export { lawyer } from './mascot/legal-outfit'
 export { artist, cinephile } from './mascot/creative-outfits'
 export { librarian, presenter, reader } from './mascot/reading-outfits'
 export { engineer, student } from './mascot/academic-outfits'
+export { surveyor } from './mascot/latent-outfit'
 
 type MascotOptions = { line: number; seed: number; paper?: string; ink?: string; points?: number }
 

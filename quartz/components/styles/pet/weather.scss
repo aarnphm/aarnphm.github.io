@@ -446,7 +446,8 @@
       [data-outfit='stream'],
       [data-outfit='courses'],
       [data-outfit='cinema'],
-      [data-outfit='engineering']
+      [data-outfit='engineering'],
+      [data-outfit='embeddings']
     )
     [data-part='lantern'] {
     display: inline;
@@ -457,7 +458,8 @@
       [data-outfit='stream'],
       [data-outfit='courses'],
       [data-outfit='cinema'],
-      [data-outfit='engineering']
+      [data-outfit='engineering'],
+      [data-outfit='embeddings']
     ):not([data-rain], [data-pet-state='thumb'])
     [data-part='lantern-back'] {
     display: inline;

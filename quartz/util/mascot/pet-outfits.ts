@@ -1,5 +1,6 @@
 import { engineer, student } from './academic-outfits'
 import { artist, cinephile } from './creative-outfits'
+import { surveyor } from './latent-outfit'
 import { lawyer } from './legal-outfit'
 import { part, type PetPen } from './pen'
 import { librarian, presenter, reader } from './reading-outfits'
@@ -14,7 +15,8 @@ export function petOutfits(s: PetPen) {
   // triathlon pages, the beret and baguettes on French ones, a quill tucked behind the head on
   // posts, the wig, tie and briefcase on the terms and privacy pages, the palette and brush on
   // quotes and images, glasses and books on bases, a bow tie and pointer on slides, a sheet to read
-  // on the stream, a mortarboard, notepad and pencil on courses. `-back` parts sit behind the body.
+  // on the stream, a mortarboard, notepad and pencil on courses, a spyglass trained on a
+  // constellation on the embeddings map. `-back` parts sit behind the body.
   const outfit = {
     front: [
       part('outfit-triathlon', sweatband(w, ink, pink)),
@@ -51,11 +53,16 @@ export function petOutfits(s: PetPen) {
           engineer(w, paper, ink, pink),
         ),
       ),
+      part(
+        'outfit-embeddings',
+        (({ spyglass, stars }) => `${spyglass}${stars}`)(surveyor(w, paper, ink, pink)),
+      ),
     ].join(''),
     back: [
       part('outfit-fr-back', baguette([0.3, 1.02], [1.46, -0.2], 223, w, ink)),
       part('outfit-posts-back', quill([0.42, 0.25], [0.95, -0.5], [1.32, -1.6], w, ink, pink).svg),
       part('outfit-art-back', artist(w, paper, ink, pink).brush),
+      part('outfit-embeddings-back', surveyor(w, paper, ink, pink).chart),
     ].join(''),
   }
   // Reading glasses for reader mode, the stream and technical pages: the librarian's pair.
