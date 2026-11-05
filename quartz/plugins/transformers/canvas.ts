@@ -1,25 +1,26 @@
+import type { Element } from 'hast'
 import path from 'path'
 import { visit } from 'unist-util-visit'
 import { QuartzTransformerPlugin } from '../../types/plugin'
 import { BuildCtx } from '../../util/ctx'
-import {
-  slugifyFilePath,
-  slugAnchor,
-  FilePath,
-  FullSlug,
-  isFullSlug,
-  resolveRelative,
-  simplifySlug,
-} from '../../util/path'
-import {
-  extractWikilinks,
-  extractWikilinksWithPositions,
-  resolveWikilinkTarget,
-  Wikilink,
-} from '../../util/wikilinks'
+import { FullSlug, isFullSlug, resolveRelative, simplifySlug } from '../../util/path'
+import { referenceCatalogFor } from '../../util/references/context'
+import { extractLiteralReferences } from '../../util/references/literal'
+import { referenceFields, referenceRequest } from '../../util/references/request'
+import { missingReferenceRoute, referenceRoute } from '../../util/references/route'
+import { referenceFromParts } from '../../util/references/syntax'
+import { interpretReference } from '../../util/references/target'
 import { parseJsonCanvas } from './jcast'
-import { JcastCanvas, isJcastCanvasNode } from './jcast/types'
+import { JcastCanvas, JcastResolvedWikilink, isJcastCanvasNode } from './jcast/types'
 import { visitJcast } from './jcast/visitor'
+
+function stringProperty(node: Element, ...names: string[]): string | undefined {
+  for (const name of names) {
+    const value = node.properties[name]
+    if (typeof value === 'string') return value
+  }
+  return undefined
+}
 
 export const JsonCanvas: QuartzTransformerPlugin = () => {
   return {
@@ -28,24 +29,6 @@ export const JsonCanvas: QuartzTransformerPlugin = () => {
       return [
         () => {
           return (tree, file) => {
-            // handle canvas wikilink embeds (for any file)
-            visit(tree, 'wikilink', (node: Wikilink) => {
-              const wikilink = node.data?.wikilink
-              if (!wikilink?.target) return
-
-              if (!wikilink.target.endsWith('.canvas')) return
-              if (wikilink.embed) {
-                const hProperties: Record<string, any> = {
-                  'data-canvas-file': wikilink.target,
-                  'data-canvas-anchor': wikilink.anchor,
-                  'data-canvas-title': wikilink.target,
-                  'data-canvas-embed': true,
-                  'data-slug': wikilink.target.replace('.canvas', ''),
-                }
-                node.data = { ...node.data!, hName: 'div', hProperties }
-              }
-            })
-
             const isCanvasFile = file.path?.endsWith('.canvas')
 
             if (!isCanvasFile) {
@@ -120,11 +103,15 @@ export const JsonCanvas: QuartzTransformerPlugin = () => {
           }
 
           visit(tree, 'element', node => {
-            if (node.properties?.['data-canvas-embed'] === true) {
+            const marker = node.properties.dataCanvasEmbed ?? node.properties['data-canvas-embed']
+            if (marker === true || marker === '' || marker === 'true') {
               try {
-                const canvasFile = node.properties['data-canvas-file']
-                const canvasTitle = node.properties['data-canvas-title'] || canvasFile
-                const canvasSlug = node.properties['data-slug']
+                const canvasFile = stringProperty(node, 'dataCanvasFile', 'data-canvas-file')
+                const canvasTitle =
+                  stringProperty(node, 'dataCanvasTitle', 'data-canvas-title') || canvasFile
+                const canvasSlug =
+                  node.data?.referenceRequest?.route?.slug ??
+                  stringProperty(node, 'dataSlug', 'data-slug')
 
                 // strip .canvas extension for slug and link
                 const linkHref = canvasSlug || canvasFile?.replace(/\.canvas$/, '') || ''
@@ -158,7 +145,8 @@ export const JsonCanvas: QuartzTransformerPlugin = () => {
                 ]
               } catch (error) {
                 const target =
-                  node.properties?.['data-canvas-file'] || node.properties?.['data-canvas-title']
+                  stringProperty(node, 'dataCanvasFile', 'data-canvas-file') ||
+                  stringProperty(node, 'dataCanvasTitle', 'data-canvas-title')
                 console.error(`Failed to embed canvas ${target}:`, error)
                 node.tagName = 'div'
                 node.properties = {
@@ -176,14 +164,24 @@ export const JsonCanvas: QuartzTransformerPlugin = () => {
   }
 }
 
-export function collectCanvasMeta(jcast: JcastCanvas): Record<string, any> {
-  const meta: Record<string, any> = {}
+interface CanvasNodeMeta {
+  slug?: string
+  href?: string
+  displayName?: string
+  description?: string
+  content?: string
+  resolvedText?: string
+  wikilinks?: { resolvedSlug?: string; resolvedHref?: string; missing: boolean }[]
+}
+
+export function collectCanvasMeta(jcast: JcastCanvas): Record<string, CanvasNodeMeta> {
+  const meta: Record<string, CanvasNodeMeta> = {}
   for (const [id, node] of jcast.data.nodeMap) {
     if (!node.data) {
       continue
     }
 
-    const entry: Record<string, any> = {}
+    const entry: CanvasNodeMeta = {}
 
     if (node.data.resolved) {
       entry.slug = node.data.resolved.slug
@@ -203,7 +201,6 @@ export function collectCanvasMeta(jcast: JcastCanvas): Record<string, any> {
 
     if (node.data.wikilinks && node.data.wikilinks.length > 0) {
       entry.wikilinks = node.data.wikilinks.map(w => ({
-        ...w.link,
         resolvedSlug: w.resolvedSlug,
         resolvedHref: w.resolvedHref,
         missing: Boolean(w.missing),
@@ -224,6 +221,7 @@ export async function processCanvasFile(
   currentSlug: FullSlug,
 ): Promise<JcastCanvas> {
   const jcast = parseJsonCanvas(canvasContent)
+  const catalog = referenceCatalogFor(ctx)
 
   // resolve file nodes
   visitJcast(jcast, 'canvasNode', node => {
@@ -234,67 +232,42 @@ export async function processCanvasFile(
 
     if (canvasNode.type === 'file') {
       let filePath = canvasNode.file
-      if (!filePath) return
-
-      // Optional subpath (e.g., "#Heading" or "^block-id") provided by Obsidian Canvas
-      // Obsidian stores anchors separately in `subpath`. In some cases, users may
-      // have persisted the `#anchor` inside `file` – handle both robustly.
-      let rawSubpath = canvasNode.subpath || ''
-      if (!rawSubpath && filePath.includes('#')) {
-        const idx = filePath.indexOf('#')
-        rawSubpath = filePath.slice(idx)
-        filePath = filePath.slice(0, idx)
+      if (!filePath || !node.data) return
+      let subpath = canvasNode.subpath
+      let resolution = catalog.resolve(filePath, currentSlug)
+      if (resolution.kind === 'missing' && !subpath && filePath.includes('#')) {
+        const separator = filePath.indexOf('#')
+        subpath = filePath.slice(separator)
+        filePath = filePath.slice(0, separator)
+        resolution = catalog.resolve(filePath, currentSlug)
       }
-
-      // normalize and resolve file path following wikilink procedures
-      let normalizedPath = filePath.trim()
-
-      // ensure .md extension if not present and not already another extension
-      if (!normalizedPath.includes('.')) {
-        normalizedPath = normalizedPath + '.md'
-      }
-
-      // convert to slug using same logic as wikilinks
-      const slug = slugifyFilePath(normalizedPath as FilePath)
-      const fileExists = ctx.allSlugs?.includes(slug)
-
-      // extract display name (just the filename without extension)
-      const displayName = normalizedPath.split('/').pop()?.replace(/\.md$/, '') || filePath
-
-      // Normalize subpath to an anchor Obsidian-style
-      let resolvedAnchor = ''
-      if (rawSubpath) {
-        // rawSubpath could be "#Heading", "#Heading#Sub", or "^block-id" (with or without leading '#')
-        let sp = rawSubpath.trim()
-        // Ensure leading marker is present
-        if (!sp.startsWith('#') && !sp.startsWith('^')) {
-          sp = '#' + sp
-        }
-        if (sp.startsWith('^')) {
-          // Block reference – store as #^id
-          resolvedAnchor = `#${sp}`
-        } else {
-          // Heading anchor – may contain nested headings; follow Obsidian's last-segment behavior
-          const withoutHash = sp.slice(1)
-          const lastSegment = withoutHash.split('#').pop()!.trim()
-          const slugged = slugAnchor(lastSegment)
-          resolvedAnchor = `#${slugged}`
-        }
-      }
-
-      if (node.data) {
-        node.data.resolvedPath = slug
-        node.data.fileExists = fileExists
-        // keep normalized path in raw canvas data for round-tripping
-        if (node.data.canvas) {
-          node.data.canvas.file = normalizedPath
-        }
-        // structured resolved info
+      const request = referenceFromParts({ target: filePath, subpath, embed: true })
+      node.data.fileExists = resolution.kind === 'found'
+      if (resolution.kind !== 'found') {
+        if (resolution.kind !== 'missing') return
+        const route = missingReferenceRoute(
+          request.parts.target,
+          currentSlug,
+          request.parts.subpath?.replace(/^#/, '').split('#'),
+        )
+        if (!route) return
+        node.data.resolvedPath = route.slug
         node.data.resolved = {
-          slug,
-          href: resolvedAnchor ? `${slug}${resolvedAnchor}` : slug,
-          displayName,
+          slug: route.slug,
+          href: `${route.slug}${route.anchor ?? ''}`,
+          displayName: filePath.split('/').at(-1)?.replace(/\.md$/, '') ?? filePath,
         }
+        return
+      }
+      const interpreted = interpretReference(resolution.entry, {
+        fragments: request.parts.subpath?.replace(/^#/, '').split('#'),
+      })
+      const route = referenceRoute(resolution.entry, interpreted.selector)
+      node.data.resolvedPath = route.slug
+      node.data.resolved = {
+        slug: route.slug,
+        href: `${route.slug}${route.anchor ?? ''}`,
+        displayName: resolution.entry.path.split('/').at(-1)?.replace(/\.md$/, '') ?? filePath,
       }
       return
     }
@@ -305,51 +278,63 @@ export async function processCanvasFile(
         return
       }
 
-      const wikilinks = extractWikilinks(rawText)
-      if (wikilinks.length === 0) {
+      const references = extractLiteralReferences(rawText)
+      if (references.length === 0) {
         return
       }
 
-      const resolvedLinks = wikilinks.map(link => {
-        const resolved = resolveWikilinkTarget(link, currentSlug)
-        if (!resolved) {
-          return { link, missing: true }
-        }
-
+      const resolvedLinks: JcastResolvedWikilink[] = references.map(reference => {
+        const request = referenceRequest(reference, currentSlug)
+        const resolution = catalog.resolve(request.target, currentSlug, { implicitAlias: true })
+        if (resolution.kind !== 'found') return { reference, missing: true }
+        const interpreted = interpretReference(resolution.entry, {
+          fragments: request.fragments,
+          settings: request.settings,
+        })
+        const resolved = referenceRoute(resolution.entry, interpreted.selector)
         const baseHref = resolveRelative(currentSlug, resolved.slug)
         const href = resolved.anchor ? `${baseHref}${resolved.anchor}` : baseHref
-
-        return { link, resolvedSlug: resolved.slug, resolvedHref: href, missing: false }
+        return {
+          reference,
+          implicitLabel: resolution.implicitLabel,
+          resolvedSlug: resolved.slug,
+          resolvedHref: href,
+          missing: false,
+        }
       })
 
-      const ranges = extractWikilinksWithPositions(rawText)
       let idx = 0
       let rewrittenText = ''
       let lastIndex = 0
 
-      for (const range of ranges) {
-        if (range.start > lastIndex) {
-          rewrittenText += rawText.slice(lastIndex, range.start)
+      for (const reference of references) {
+        const { start, end } = reference.span
+        if (start > lastIndex) {
+          rewrittenText += rawText.slice(lastIndex, start)
         }
 
         const info = resolvedLinks[idx++]
-        const value = rawText.slice(range.start, range.end)
+        const value = rawText.slice(start, end)
         if (!info) {
           rewrittenText += value
-          lastIndex = range.end
+          lastIndex = end
           continue
         }
 
-        const display = (info.link.alias ?? info.link.target ?? value).trim()
+        const display = (
+          reference.label?.raw ??
+          info.implicitLabel ??
+          referenceFields(reference).target
+        ).trim()
         if (!info.resolvedHref) {
-          rewrittenText += display.length > 0 ? display : info.link.raw
-          lastIndex = range.end
+          rewrittenText += display.length > 0 ? display : reference.raw
+          lastIndex = end
           continue
         }
 
         const label = display.length > 0 ? display : info.resolvedHref
         rewrittenText += `[${label}](${info.resolvedHref})`
-        lastIndex = range.end
+        lastIndex = end
       }
 
       if (lastIndex < rawText.length) {

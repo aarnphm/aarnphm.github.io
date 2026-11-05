@@ -84,7 +84,15 @@ function testContext(): BuildCtx {
       plugins: { transformers: [], filters: [], emitters: [] },
     },
     allSlugs: ['fr/index', 'fr/episode-1', 'fr/phrases', 'fr/parcours'].map(slug),
-    allFiles: [],
+    allFiles: [
+      'content/fr/index.md',
+      'content/fr/episode-1.md',
+      'content/fr/phrases.md',
+      'content/fr/parcours.canvas',
+    ].map(value => {
+      assert.ok(isFilePath(value))
+      return value
+    }),
     incremental: false,
   }
 }
@@ -324,4 +332,49 @@ test('Description resolves canvas descriptions from content/description.json, pr
   assert.equal(unlistedCanvas.data.text, 'raw node label')
   assert.equal(unlistedCanvas.data.description, '')
   assert.equal(unlistedCanvas.data.rawDescription, '')
+})
+
+test('structured Canvas files preserve authored paths while resolving short names and selectors', async () => {
+  const { processCanvasFile } = await import('./canvas')
+  const ctx = testContext()
+  ctx.allSlugs = ['folder/Target', 'fr/parcours'].map(slug)
+  ctx.allFiles = ['content/folder/Target.md', 'content/fr/parcours.canvas'].map(value => {
+    assert.ok(isFilePath(value))
+    return value
+  })
+  const source = {
+    nodes: [
+      {
+        id: 'short',
+        type: 'file',
+        file: 'Target.md',
+        subpath: '#Parent#Repeated',
+        x: 0,
+        y: 0,
+        width: 200,
+        height: 100,
+      },
+      {
+        id: 'extensionless',
+        type: 'file',
+        file: 'folder/Target',
+        subpath: '^Mixed-ID',
+        x: 200,
+        y: 0,
+        width: 200,
+        height: 100,
+      },
+    ],
+    edges: [],
+  }
+  const canvas = await processCanvasFile(JSON.stringify(source), ctx, slug('fr/parcours'))
+  const short = canvas.data.nodeMap.get('short')
+  const extensionless = canvas.data.nodeMap.get('extensionless')
+  assert.equal(short?.data?.canvas?.file, 'Target.md')
+  assert.equal(short?.data?.canvas?.subpath, '#Parent#Repeated')
+  assert.equal(short?.data?.fileExists, true)
+  assert.equal(short?.data?.resolved?.slug, 'folder/Target')
+  assert.equal(short?.data?.resolved?.href, 'folder/Target#repeated')
+  assert.equal(extensionless?.data?.canvas?.file, 'folder/Target')
+  assert.equal(extensionless?.data?.resolved?.href, 'folder/Target#^Mixed-ID')
 })
