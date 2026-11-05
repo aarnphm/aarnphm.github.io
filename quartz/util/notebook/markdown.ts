@@ -77,21 +77,21 @@ function markdownHeadingTitle(line: string): string | undefined {
   return title.length > 0 ? title : undefined
 }
 
-function titleFromMarkdown(source: string): string | undefined {
-  for (const line of source.split(/\r?\n/)) {
-    const title = markdownHeadingTitle(line)
-    if (title) return title
+export function notebookTitleHeading(doc: NotebookDoc): string | undefined {
+  for (const cell of doc.cells) {
+    if (cell.cellType !== 'markdown') continue
+    for (const line of cell.source.split(/\r?\n/)) {
+      if (markdownHeadingTitle(line)) return line
+    }
   }
 }
 
 export function notebookTitle(doc: NotebookDoc, sourcePath: string): string {
-  for (const cell of doc.cells) {
-    if (cell.cellType === 'markdown') {
-      const title = titleFromMarkdown(cell.source)
-      if (title) return title
-    }
-  }
-  return path.basename(sourcePath, path.extname(sourcePath))
+  const heading = notebookTitleHeading(doc)
+  return (
+    (heading && markdownHeadingTitle(heading)) ||
+    path.basename(sourcePath, path.extname(sourcePath))
+  )
 }
 
 function frontmatter(title: string): string {

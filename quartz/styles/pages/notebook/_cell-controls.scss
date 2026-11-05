@@ -1,6 +1,6 @@
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@use './scope' as notebook-scope;
+
+@include notebook-scope.surface {
   .notebook-language-badge {
     --notebook-language-color: var(--secondary);
     --notebook-language-badge-width: 1.42rem;
@@ -25,148 +25,112 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-language-badge-python {
     --notebook-language-color: #3776ab;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-language-badge-python .notebook-language-icon {
     height: 1.05rem;
     background: transparent;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-language-badge-javascript {
     --notebook-language-color: #c7922b;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-language-badge-typescript {
     --notebook-language-color: #3178c6;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-language-badge-java {
     --notebook-language-color: #b7472a;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-language-badge-go {
     --notebook-language-color: #007d9c;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-language-badge-c,
   .notebook-language-badge-cpp {
     --notebook-language-color: #555a9b;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-language-badge-rust {
     --notebook-language-color: #8c4a2f;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-language-badge-bash {
     --notebook-language-color: #4f7d3f;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-language-badge-wasm {
     --notebook-language-color: #654ff0;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-language-badge-html {
     --notebook-language-color: #d94a25;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-language-badge-css {
     --notebook-language-color: #1572b6;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-language-badge-json,
   .notebook-language-badge-csv {
     --notebook-language-color: #5b6472;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-language-badge-markdown {
     --notebook-language-color: #46637f;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-language-badge-zig {
     --notebook-language-color: #d88a27;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-language-badge-ocaml {
     --notebook-language-color: #c75f22;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-language-badge-text {
     --notebook-language-color: #69707a;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-language-icon {
     display: inline-grid;
     place-items: center;
@@ -184,9 +148,7 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-language-svg {
     display: block;
     width: 0.72rem;
@@ -195,27 +157,21 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-python-icon {
     width: 0.92rem;
     height: 0.98rem;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-go-icon {
     width: 1.18rem;
     height: 0.45rem;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-c-icon,
   .notebook-cpp-icon {
     width: 0.72rem;
@@ -223,27 +179,21 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-rust-icon {
     width: 0.82rem;
     height: 0.82rem;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-ocaml-icon {
     width: 0.84rem;
     height: 0.74rem;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-language-text {
     display: block;
     max-width: 100%;
@@ -252,9 +202,7 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-language-label {
     position: absolute;
     width: 1px;
@@ -268,9 +216,7 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-cell-actions {
     position: absolute;
     top: calc(var(--notebook-shell-padding) - var(--notebook-action-height) + 1px);
@@ -292,17 +238,13 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-code-cell[data-notebook-editing] > .notebook-cell-actions {
     background: var(--notebook-editor-surface);
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-execution-prompt {
     display: inline-flex;
     align-items: center;
@@ -316,9 +258,7 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-runtime button {
     display: inline-flex;
     align-items: center;
@@ -342,9 +282,7 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-runtime button:hover:not(:disabled),
   .notebook-runtime button:focus-visible {
     border-color: var(--darkgray);
@@ -352,9 +290,7 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-runtime button[aria-pressed='true'] {
     border-color: var(--darkgray);
     background: var(--highlight);
@@ -362,26 +298,20 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-runtime button:active:not(:disabled) {
     scale: 0.96;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-runtime button:disabled {
     cursor: not-allowed;
     opacity: 0.45;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-runtime button[hidden],
   .notebook-cell-actions button[hidden],
   .notebook-local-source-status[hidden] {
@@ -389,9 +319,7 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-cell-actions button {
     display: inline-grid;
     place-items: center;
@@ -412,17 +340,13 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-cell-actions button:active:not(:disabled) {
     scale: 0.96;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-code-cell:not([data-notebook-editing])
     > .notebook-cell-actions
     button[data-notebook-vim-cell] {
@@ -430,17 +354,13 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-cell-actions button[data-notebook-vim-cell] {
     opacity: 0.45;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-cell-actions button[data-notebook-vim-cell][aria-pressed='true'] {
     background: color-mix(in srgb, #7db643 18%, var(--notebook-code-surface));
     color: #367533;
@@ -448,9 +368,7 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-code-cell[data-notebook-editing]
     > .notebook-cell-actions
     button[data-notebook-vim-cell][aria-pressed='true'] {
@@ -458,9 +376,7 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-cell-actions button:hover:not(:disabled),
   .notebook-cell-actions button:focus-visible {
     background: var(--highlight);
@@ -468,17 +384,13 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-cell-actions button:disabled {
     opacity: 0.35;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-icon-button svg {
     display: block;
     width: 0.82rem;
@@ -487,18 +399,14 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-icon-button .notebook-vim-icon {
     width: 0.68rem;
     height: 0.82rem;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-icon-button svg path {
     fill: none;
     stroke: currentColor;
@@ -508,42 +416,32 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-icon-button .notebook-vim-icon path {
     fill: currentColor;
     stroke: none;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-icon-button[aria-pressed='true'] .notebook-vim-icon-left {
     fill: #16b0ed;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-icon-button[aria-pressed='true'] .notebook-vim-icon-cross {
     fill: #7db643;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-icon-button[aria-pressed='true'] .notebook-vim-icon-right {
     fill: #367533;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-icon-button .notebook-debug-icon-core {
     fill: var(--color-orange);
     stroke: none;
@@ -552,17 +450,13 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-icon-button[aria-pressed='true'] .notebook-debug-icon-core {
     opacity: 1;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-local-source-status {
     display: inline-flex;
     align-items: center;
@@ -577,17 +471,13 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-local-source-status[data-notebook-source-state='edited'] {
     background: var(--secondary);
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-runtime-status {
     display: inline-flex;
     align-items: center;

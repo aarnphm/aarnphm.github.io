@@ -129,7 +129,7 @@ test('mayAffectNotebookPages and affectedNotebookFiles use cached dependencies f
         { type: 'change', path: 'thoughts/post.md' as FilePath },
         { type: 'change', path: 'university/deck.fc' as FilePath },
       ]),
-      false,
+      true,
     )
 
     const noneAffected = await affectedNotebookFiles(ctx, fps, [

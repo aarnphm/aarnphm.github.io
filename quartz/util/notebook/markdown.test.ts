@@ -19,7 +19,7 @@ import { parseNotebookDoc } from './parse'
 import { renderRuntimeOutputHtml } from './render/runtime-output-to-hast'
 import {
   findNotebookCellFrame,
-  notebookCellRef,
+  notebookCellSelection,
   notebookCellRuntimeNodes,
   resolveNotebookCell,
 } from './transclude'
@@ -802,8 +802,8 @@ describe('notebook parser', () => {
       ],
     }
 
-    assert.strictEqual(notebookCellRef('#cell-1'), 'cell-1')
-    assert.strictEqual(notebookCellRef('#^cell-1'), 'cell-1')
+    assert.strictEqual(notebookCellSelection({ kind: 'notebook', cells: ['cell-1'] }), 'cell-1')
+    assert.strictEqual(notebookCellSelection({ kind: 'notebook', cells: ['^cell-1'] }), 'cell-1')
     assert.strictEqual(findNotebookCellFrame(sourceTree, 'cell-1'), sourceCell)
 
     const nodes = notebookCellRuntimeNodes(sourceTree, {

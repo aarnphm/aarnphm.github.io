@@ -15,6 +15,8 @@ export type NotebookCacheReason =
   | 'blob-unavailable'
   | 'blob-invalid'
   | 'assets-unavailable'
+  | 'reference-resolution-changed'
+  | 'prepared-reference-reused'
 
 export function notebookCacheMiss(
   expected: string | undefined,

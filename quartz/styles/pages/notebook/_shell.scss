@@ -1,3 +1,5 @@
+@use './scope' as notebook-scope;
+
 .page-body-grid:has(article.notebook-page) [data-article-title] {
   grid-column: var(--layout-wide-column);
 }
@@ -7,9 +9,7 @@ article.notebook-runtime-page {
   grid-column: var(--layout-wide-column);
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   hr {
     background-color: var(--lightgray);
     overflow: hidden;
@@ -22,17 +22,13 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-runtime:not(:empty) {
     margin: 0.75rem 0 1.25rem;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-markdown-cell-boundary {
     display: block;
     clear: both;
@@ -45,17 +41,13 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   figure[class*='--float-end'] {
     max-width: min(22rem, 48%);
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   @media (max-width: 640px) {
     figure[class*='--float-end'] {
       float: none;
@@ -66,9 +58,7 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-runtime-toolbar {
     display: flex;
     position: relative;
@@ -82,9 +72,7 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-runtime-toolbar .notebook-icon-button {
     display: inline-grid;
     position: relative;
@@ -109,9 +97,7 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-runtime-toolbar .notebook-icon-button:hover:not(:disabled),
   .notebook-runtime-toolbar .notebook-icon-button:focus-visible {
     border-color: var(--gray);
@@ -120,44 +106,34 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-runtime-toolbar .notebook-icon-button:active:not(:disabled) {
     scale: 0.96;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-runtime-toolbar .notebook-icon-button:disabled {
     cursor: default;
     opacity: 0.35;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-runtime-toolbar .notebook-icon-button[aria-pressed='true'] {
     border-color: var(--gray);
     background: color-mix(in srgb, var(--lightgray) 70%, transparent);
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-runtime-toolbar .notebook-icon-button svg {
     width: 1rem;
     height: 1rem;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-runtime-toolbar .notebook-icon-button[data-notebook-tooltip]::after {
     content: attr(data-notebook-tooltip);
     display: block;
@@ -184,9 +160,7 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-runtime-toolbar .notebook-icon-button[data-notebook-tooltip]:hover::after,
   .notebook-runtime-toolbar .notebook-icon-button[data-notebook-tooltip]:focus-visible::after {
     opacity: 1;
@@ -194,9 +168,7 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-code-cell {
     --notebook-code-gap: 0.85rem;
     --notebook-gutter-width: 4.6rem;
@@ -451,17 +423,13 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .callout:not(.is-collapsed) > .callout-content > .notebook-code-cell {
     overflow: visible;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-code-cell > .notebook-runtime-cell {
     grid-column: 1;
     grid-row: 1;
@@ -475,9 +443,7 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-code-cell > .notebook-runtime-cell > p {
     margin: 0;
   }

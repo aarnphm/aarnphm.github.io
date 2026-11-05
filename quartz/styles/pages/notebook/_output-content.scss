@@ -1,6 +1,6 @@
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@use './scope' as notebook-scope;
+
+@include notebook-scope.surface {
   .notebook-runtime-frame {
     position: absolute;
     width: 0;
@@ -10,17 +10,13 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   figure[data-rehype-pretty-code-figure] + .notebook-output {
     margin-top: 0.5rem;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-output {
     box-sizing: border-box;
     width: 100%;
@@ -29,9 +25,7 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   pre.notebook-output {
     padding: 0.6rem 0.75rem;
     background: color-mix(in srgb, var(--light) 82%, var(--lightgray));
@@ -43,9 +37,7 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-output-latex {
     padding: 0.6rem 0.75rem;
     background: color-mix(in srgb, var(--light) 82%, var(--lightgray));
@@ -59,9 +51,7 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   pre.notebook-output-stream,
   pre.notebook-output-json {
     max-height: min(18rem, 45vh);
@@ -70,9 +60,7 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-output-tabs pre.notebook-output-stream,
   .notebook-output-tabs pre.notebook-output-json {
     max-height: none;
@@ -81,17 +69,13 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   pre.notebook-output-stream {
     --notebook-output-scroll-fade-size: 1.2rem;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   pre.notebook-output-stream[data-notebook-scroll-before] {
     -webkit-mask-image: linear-gradient(
       to bottom,
@@ -106,9 +90,7 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   pre.notebook-output-stream[data-notebook-scroll-after] {
     -webkit-mask-image: linear-gradient(
       to bottom,
@@ -123,9 +105,7 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   pre.notebook-output-stream[data-notebook-scroll-before][data-notebook-scroll-after] {
     -webkit-mask-image: linear-gradient(
       to bottom,
@@ -144,9 +124,7 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-output > samp {
     display: block;
     font: inherit;
@@ -155,9 +133,7 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-output[data-output-name]::before {
     content: attr(data-output-name);
     display: block;
@@ -169,9 +145,7 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-output-tabs .notebook-output[data-output-name]::before,
   .notebook-code-cell > .notebook-output[data-output-name]::before,
   .notebook-code-cell > .notebook-runtime-output > .notebook-output[data-output-name]::before,
@@ -180,26 +154,20 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-output-debug {
     background: color-mix(in srgb, var(--light) 88%, var(--lightgray));
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-output-html,
   .notebook-output-svg {
     padding: 0.5rem 0;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .lean-infoview {
     display: flex;
     flex-direction: column;
@@ -211,9 +179,7 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .lean-infoview-goal,
   .lean-infoview-message {
     display: flex;
@@ -229,9 +195,7 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .lean-infoview-header {
     display: flex;
     align-items: center;
@@ -242,35 +206,27 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .lean-infoview-badge {
     font-weight: 600;
     color: var(--secondary);
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .lean-infoview-case {
     color: var(--darkgray);
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .lean-infoview-pos {
     margin-left: auto;
     font-variant-numeric: tabular-nums;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .lean-infoview-hypotheses {
     display: flex;
     flex-direction: column;
@@ -278,26 +234,20 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .lean-infoview-hyp-name {
     color: var(--tertiary);
     font-weight: 500;
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .lean-infoview-hyp-sep {
     color: var(--gray);
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .lean-infoview-hyp-type,
   .lean-infoview-target-type {
     background: transparent;
@@ -307,9 +257,7 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .lean-infoview-target {
     display: flex;
     align-items: baseline;
@@ -318,9 +266,7 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .lean-infoview-turnstile {
     color: var(--secondary);
     font-weight: 700;
@@ -328,9 +274,7 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .lean-infoview-code {
     margin: 0;
     padding: 0;
@@ -339,9 +283,7 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-output-image {
     margin: 0.75rem 0 1rem;
     padding: 0;
@@ -350,9 +292,7 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   .notebook-output-image img,
   .notebook-output-svg svg {
     max-width: 100%;
@@ -360,9 +300,7 @@ article.notebook-runtime-page,
   }
 }
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   li > pre,
   li > figure[data-rehype-pretty-code-figure] {
     margin-inline-start: 1.5rem;

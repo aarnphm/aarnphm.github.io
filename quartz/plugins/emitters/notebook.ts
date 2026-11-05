@@ -1,4 +1,3 @@
-import { Root as MdRoot } from 'mdast'
 import fs from 'node:fs/promises'
 import { availableParallelism } from 'node:os'
 import path from 'node:path'
@@ -9,8 +8,9 @@ import { FullPageLayout } from '../../cfg'
 import * as Component from '../../components'
 import HeaderConstructor from '../../components/Header'
 import { pageResources, renderPage } from '../../components/renderPage'
-import { createHtmlProcessor, createMdProcessor, mdastToHastRoot } from '../../processors/parse'
+import { transformMarkdownSource } from '../../processors/markdown-source'
 import '../../runtime/notebook/registry'
+import { createHtmlProcessor, createMdProcessor, mdastToHastRoot } from '../../processors/parse'
 import { ChangeEvent, QuartzEmitterPlugin } from '../../types/plugin'
 import { mapConcurrent } from '../../util/async-pool'
 import { BuildCtx, contentDataFor } from '../../util/ctx'
@@ -19,23 +19,26 @@ import {
   extractInlineNotebookAssets,
 } from '../../util/notebook/extract-assets'
 import { embedLocalSvgImages, themeNotebookSvgs } from '../../util/notebook/inline-svg'
-import { notebookToMarkdownChunks } from '../../util/notebook/markdown'
+import { notebookTitleHeading, notebookToMarkdownChunks } from '../../util/notebook/markdown'
 import { parseNotebookDoc } from '../../util/notebook/parse'
 import { isNotebookParseError } from '../../util/notebook/types'
 import { FilePath, FullSlug, joinSegments, pathToRoot, slugifyFilePath } from '../../util/path'
 import { logBuildSpan, PerfTimer } from '../../util/perf'
+import { updateReferenceCatalog } from '../../util/references/context'
+import { indexReferenceDocument } from '../../util/references/document'
+import { resolveDocumentReferences } from '../../util/references/markdown'
 import { StaticResources } from '../../util/resources'
-import {
-  annotateNotebookSource,
-  notebookCellRecords,
-  type PublishedCodeBlock,
-} from '../transformers/code-search-blocks'
+import { transclusionChangeEvents } from '../../util/transclusion-dependencies'
+import { notebookCellRecords, type PublishedCodeBlock } from '../transformers/code-search-blocks'
 import { ProcessedContent, QuartzPluginData } from '../vfile'
 import { write } from './helpers'
 import { notebookCacheMiss, notebookCacheReceipt } from './notebook-cache-receipts'
 import { affectedNotebookFiles, isNotebookPath } from './notebook-dependencies'
+import { parseNotebookMarkdownChunks } from './notebook-markdown'
 import {
   compactNotebookPluginData,
+  notebookPageCacheSalt,
+  notebookReferenceCacheValid,
   notebookPageCacheEntries,
   readNotebookPageBlob,
   writeNotebookPageBlob,
@@ -78,19 +81,6 @@ type NotebookPageResult = { page: NotebookPage; cacheHit: boolean }
 
 const defaultOptions: ResolvedOptions = { executeTimeoutSeconds: 120, runtime: false }
 
-const notebookCacheSourcePaths: FilePath[] = [
-  'quartz/plugins/transformers/code-search-blocks.ts' as FilePath,
-  'quartz/plugins/transformers/code-search.ts' as FilePath,
-  'quartz/util/notebook-preview.ts' as FilePath,
-  'quartz/util/notebook/cell-html.ts' as FilePath,
-  'quartz/util/notebook/code-language.ts' as FilePath,
-  'quartz/util/notebook/extract-assets.ts' as FilePath,
-  'quartz/util/notebook/inline-svg.ts' as FilePath,
-  'quartz/util/notebook/markdown.ts' as FilePath,
-  'quartz/util/notebook/parse.ts' as FilePath,
-  'quartz/util/notebook/render/icons.ts' as FilePath,
-]
-
 function resolveOptions(userOpts?: Options): ResolvedOptions {
   const runtime: ResolvedOptions['runtime'] =
     userOpts?.runtime === false ||
@@ -118,42 +108,8 @@ function notebookFiles(ctx: BuildCtx): FilePath[] {
   return ctx.allFiles.filter(isNotebookPath).sort()
 }
 
-function isMarkdownContentPath(fp: FilePath): boolean {
-  const ext = path.extname(fp)
-  return (
-    ext === '.md' || ext === '.base' || ext === '.canvas' || ext === '.fc' || ext === '.flashcards'
-  )
-}
-
 export function mayAffectNotebookPages(changeEvents: ChangeEvent[]): boolean {
-  return changeEvents.some(
-    changeEvent => isNotebookPath(changeEvent.path) || !isMarkdownContentPath(changeEvent.path),
-  )
-}
-
-function applyTextTransforms(ctx: BuildCtx, markdown: string): string {
-  let transformed = markdown
-  for (const plugin of ctx.cfg.plugins.transformers) {
-    if (plugin.textTransform) {
-      transformed = plugin.textTransform(ctx, transformed)
-    }
-  }
-  return transformed
-}
-
-function parseNotebookMarkdownChunks(
-  mdProcessor: ReturnType<typeof createMdProcessor>,
-  chunks: string[],
-  sourceRecords: ReadonlyMap<number, PublishedCodeBlock[]>,
-): MdRoot {
-  const children: MdRoot['children'] = []
-  for (const [index, chunk] of chunks.entries()) {
-    const tree = mdProcessor.parse(chunk)
-    const records = sourceRecords.get(index)
-    if (records) annotateNotebookSource(tree, records)
-    children.push(...tree.children)
-  }
-  return { type: 'root', children }
+  return changeEvents.length > 0
 }
 
 function notebookContext(ctx: BuildCtx, fps: FilePath[]): BuildCtx {
@@ -180,11 +136,6 @@ async function notebookSourceSignature(fp: FilePath): Promise<string> {
   } catch {
     return `${fp}:missing`
   }
-}
-
-async function notebookPageCacheSalt(ctx: BuildCtx): Promise<string | undefined> {
-  if (ctx.argv.force) return undefined
-  return (await Promise.all(notebookCacheSourcePaths.map(notebookSourceSignature))).join('|')
 }
 
 function notebookRuntimeCacheKey(opts: ResolvedOptions): string {
@@ -246,21 +197,29 @@ async function notebookProcessedContent(
     },
     runtime:
       opts.runtime === false ? false : { ...opts.runtime, sourcePath: fp, importableModules },
-  }).map(chunk => applyTextTransforms(ctx, chunk))
+  }).map(chunk => transformMarkdownSource(ctx, chunk))
   const svgChunks = await embedLocalSvgImages(rawChunks, ctx.argv.directory)
   const { chunks: markdownChunks, extracted: extractedAssets } = await extractInlineNotebookAssets(
     svgChunks,
     ctx,
   )
-  const markdown = markdownChunks.join('\n\n').trim()
+  const { ast, source: markdown } = parseNotebookMarkdownChunks(
+    mdProcessor,
+    markdownChunks,
+    sourceRecords,
+  )
 
   const file = new VFile({ path: src, value: markdown })
   file.data.filePath = src
   file.data.relativePath = fp
   file.data.slug = slug
 
-  const ast = parseNotebookMarkdownChunks(mdProcessor, markdownChunks, sourceRecords)
   const mdAst = await mdProcessor.run(ast, file)
+  // The page layout renders the authored first heading as ArticleTitle outside the body.
+  const title = mdProcessor.parse(notebookTitleHeading(notebook) ?? '').children
+  indexReferenceDocument({ ...mdAst, children: [...title, ...mdAst.children] }, file)
+  updateReferenceCatalog(ctx, [file.data])
+  resolveDocumentReferences(ctx, mdAst, file)
   const htmlAst = await htmlProcessor.run(mdastToHastRoot(mdAst), file)
   themeNotebookSvgs(htmlAst)
   if (file.data.frontmatter) {
@@ -441,6 +400,11 @@ async function* emitNotebookPages(
       try {
         const src = joinSegments(localCtx.argv.directory, fp) as FilePath
         const slug = slugifyFilePath(fp, true)
+        const reference = ctx.referenceContent?.get(fp)
+        if (reference) {
+          notebookCacheReceipt(ctx, fp, 'prepare', 'hit', 'prepared-reference-reused')
+          return { fp, src, slug, data: reference[1].data, page: { fp, slug, content: reference } }
+        }
         const importableModules = importableNotebookModules(fp, contextFps)
         const sourceSignature = await notebookSourceSignature(src)
         const cacheKey = cacheOptions.salt
@@ -461,15 +425,24 @@ async function* emitNotebookPages(
         if (cacheKey && cacheOptions.read) {
           const cached = candidate
           if (cached && !miss) {
+            const referencesValid =
+              cached.data && notebookReferenceCacheValid(localCtx, cached.data)
             if (
               cached.data &&
+              referencesValid &&
               (await ensureExtractedNotebookAssets(localCtx, cached.extractedAssets))
             ) {
               cacheHits += 1
               return { fp, src, slug, data: cached.data, cached }
             }
             if (cached.data)
-              notebookCacheReceipt(localCtx, fp, 'prepare', 'miss', 'assets-unavailable')
+              notebookCacheReceipt(
+                localCtx,
+                fp,
+                'prepare',
+                'miss',
+                referencesValid ? 'assets-unavailable' : 'reference-resolution-changed',
+              )
             const page = await readNotebookPageBlob(localCtx, cached, fp, src, slug)
             if (page && cached.data) {
               cacheHits += 1
@@ -543,8 +516,10 @@ async function* emitNotebookPages(
         page = fallback.page
       }
       const out = await emitNotebookPage(localCtx, page, allFiles, resources)
-      ;(page.content as unknown[])[0] = undefined
-      delete page.content[1].data.htmlAst
+      if (ctx.referenceContent?.get(item.fp) !== page.content) {
+        ;(page.content as unknown[])[0] = undefined
+        delete page.content[1].data.htmlAst
+      }
       item.page = undefined
       return out
     } catch (error) {
@@ -597,6 +572,18 @@ export const NotebookViewer: QuartzEmitterPlugin<Options> = userOpts => {
 
   return {
     name: 'NotebookViewer',
+    async prepareReferences(ctx, targets) {
+      const fps = targets.filter(isNotebookPath)
+      const localCtx = notebookContext(ctx, notebookFiles(ctx))
+      const { pages } = await parseNotebookPages(
+        localCtx,
+        fps,
+        ctx.argv.concurrency ?? 1,
+        opts,
+        notebookFiles(ctx),
+      )
+      return pages.map(page => page.content)
+    },
     getQuartzComponents() {
       return [
         Head,
@@ -623,7 +610,11 @@ export const NotebookViewer: QuartzEmitterPlugin<Options> = userOpts => {
       }
 
       const fps = notebookFiles(ctx)
-      const affected = await affectedNotebookFiles(ctx, fps, changeEvents)
+      const events = transclusionChangeEvents(content, changeEvents, ctx.argv.directory)
+      const entries = await notebookPageCacheEntries()
+      const metadata = new Map<FilePath, QuartzPluginData>()
+      for (const [fp, entry] of entries) if (entry.data) metadata.set(fp, entry.data)
+      const affected = await affectedNotebookFiles(ctx, fps, events, metadata)
       yield* emitNotebookPages(ctx, content, resources, affected, opts, fps)
     },
     async *emit(ctx, content, resources) {
