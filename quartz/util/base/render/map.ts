@@ -2,7 +2,9 @@ import { h } from 'hastscript'
 import type { MarkerData } from '../../../components/scripts/base-map-data'
 import { QuartzPluginData } from '../../../plugins/vfile'
 import { FullSlug } from '../../path'
+import { referenceCatalogFromFiles, referenceSourcePath } from '../../references/context'
 import { BaseView, PropertyConfig } from '../types'
+import { projectPopupValue } from './popup-reference'
 import {
   resolveValueWithFormulas,
   type EvalContextFactory,
@@ -68,13 +70,18 @@ export function buildMap(
     const slug = (file.slug || '') as FullSlug
 
     const popupFields: Record<string, unknown> = {}
+    const context = getContext(file)
+    const referenceOptions = {
+      catalog: referenceCatalogFromFiles(context.allFiles),
+      origin: referenceSourcePath(file),
+    }
     const order = Array.isArray(view.order) ? view.order : []
     for (const field of order) {
       if (typeof field !== 'string') continue
       if (field === 'title' || field === 'file.title' || field === 'note.title') continue
       const value = resolveValueWithFormulas(file, field, getContext, getPropertyExpr)
       if (hasRenderableValue(value)) {
-        popupFields[field] = value
+        popupFields[field] = projectPopupValue(value, file.slug ?? currentSlug, referenceOptions)
       }
     }
 
@@ -95,7 +102,7 @@ export function buildMap(
       color: color ? String(color) : undefined,
       description:
         typeof file.frontmatter?.description === 'string'
-          ? plainTextDescription(file.frontmatter.description, slug)
+          ? plainTextDescription(file.frontmatter.description)
           : typeof file.description === 'string'
             ? file.description
             : undefined,

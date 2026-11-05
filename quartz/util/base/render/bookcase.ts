@@ -112,7 +112,7 @@ export function buildBookcase(
       getFileDisplayName(file) ??
       fallbackNameFromSlug(slug)
     const author = listValueToPlainText(resolve(file, authorField))
-    const cover = resolveCardImage(resolve(file, imageField), currentSlug)
+    const cover = resolveCardImage(resolve(file, imageField), currentSlug, allFiles, file)
     const explicit = listValueToPlainText(resolve(file, colorField))
     const path = String(file.relativePath ?? file.filePath ?? slug)
     const spine = explicit && SPINE_HEX.test(explicit) ? expandHex(explicit) : fallbackSpine(path)
@@ -248,7 +248,7 @@ export function buildBookcase(
     for (const field of order) {
       const value = resolve(entry.file, field)
       if (!hasRenderableValue(value)) continue
-      const rendered = renderPropertyValueNodes(value, currentSlug, allFiles)
+      const rendered = renderPropertyValueNodes(value, currentSlug, allFiles, entry.file)
       if (rendered.length === 0) continue
       rows.push(
         h('div.bookcase-prop', [
@@ -261,9 +261,7 @@ export function buildBookcase(
     if (rows.length > 0) nodes.push(h('dl.bookcase-props', rows))
     const description = entry.file.frontmatter?.description
     if (pageContent && typeof description === 'string' && description.trim()) {
-      nodes.push(
-        h('p.bookcase-description', plainTextDescription(description, entry.slug as FullSlug)),
-      )
+      nodes.push(h('p.bookcase-description', plainTextDescription(description)))
     }
     return nodes
   }

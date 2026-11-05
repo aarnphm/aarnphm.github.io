@@ -48,7 +48,7 @@ export function buildVaultView(
   const entries = grouped.flatMap(([group, members]) =>
     members.map(file => {
       const slug = (file.slug || '') as FullSlug
-      const cover = resolveCardImage(get(file, 'image'), currentSlug)
+      const cover = resolveCardImage(get(file, 'image'), currentSlug, allFiles, file)
       const description = file.frontmatter?.description
       return {
         slug,
@@ -66,7 +66,7 @@ export function buildVaultView(
         watched: text(file, 'labelWatched'),
         runtime: num(file, 'labelRuntime'),
         description:
-          typeof description === 'string' ? plainTextDescription(description, slug) : undefined,
+          typeof description === 'string' ? plainTextDescription(description) : undefined,
         cover: cover?.url,
         coverSlug: cover?.slug,
         group,
@@ -74,7 +74,7 @@ export function buildVaultView(
           const value = resolveValueWithFormulas(file, key, getContext, getPropertyExpr)
           if (!hasRenderableValue(value)) return []
           const label = getPropertyDisplayName(key, properties)
-          const rendered = renderPropertyValueNodes(value, currentSlug, allFiles)
+          const rendered = renderPropertyValueNodes(value, currentSlug, allFiles, file)
           return [{ key: key.replace(/^note\./, ''), label, value: rendered }]
         }),
       }

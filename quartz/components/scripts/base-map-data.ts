@@ -1,14 +1,12 @@
 import { escapeHTML } from '../../util/escape'
-import {
-  type FullSlug,
-  getFileExtension,
-  isFilePath,
-  isFullSlug,
-  resolveRelative,
-  slugifyFilePath,
-  splitAnchor,
-} from '../../util/path'
+import { type FullSlug, isFullSlug, resolveRelative } from '../../util/path'
 import { isRecord, readNumber, readString } from '../../util/type-guards'
+
+export interface PopupReference {
+  kind: 'reference'
+  href: string
+  label: string
+}
 
 export interface MarkerData {
   lat: number
@@ -60,6 +58,19 @@ function parseJson(raw: string | undefined): unknown {
 
 function isIconToken(value: unknown): value is IconToken {
   return isRecord(value) && value.kind === 'icon' && typeof value.value === 'string'
+}
+
+function isPopupReference(value: unknown): value is PopupReference {
+  if (
+    !isRecord(value) ||
+    value.kind !== 'reference' ||
+    typeof value.href !== 'string' ||
+    typeof value.label !== 'string' ||
+    !value.href.startsWith('/') ||
+    value.href.startsWith('//')
+  )
+    return false
+  return URL.parse(value.href, 'https://base-map.invalid')?.origin === 'https://base-map.invalid'
 }
 
 function parseMarker(value: unknown): MarkerData | undefined {
@@ -180,61 +191,6 @@ export function readPopupFields(value: unknown): Record<string, unknown> {
   return isRecord(parsed) ? parsed : {}
 }
 
-function parseWikilinkValue(raw: string) {
-  let text = raw.trim()
-  if (!text.startsWith('[[')) {
-    if (text.startsWith('![[') && text.endsWith(']]')) {
-      text = text.slice(1)
-    } else {
-      return undefined
-    }
-  }
-  if (!text.endsWith(']]')) return undefined
-
-  const inner = text.slice(2, -2)
-  let target = ''
-  let alias: string | undefined
-  let escaped = false
-  for (let index = 0; index < inner.length; index += 1) {
-    const character = inner[index]
-    if (escaped) {
-      target += character
-      escaped = false
-    } else if (character === '\\') {
-      escaped = true
-    } else if (character === '|' && alias === undefined) {
-      alias = inner
-        .slice(index + 1)
-        .replace(/\\\|/g, '|')
-        .trim()
-      break
-    } else {
-      target += character
-    }
-  }
-
-  const [path, anchor] = splitAnchor(target.trim())
-  return {
-    target: path,
-    alias: alias && alias.length > 0 ? alias : undefined,
-    anchor: anchor.length > 0 ? anchor : undefined,
-  }
-}
-
-function resolveWikilinkSlug(target: string, currentSlug: FullSlug): FullSlug | undefined {
-  if (target.length === 0) return currentSlug
-
-  const normalized = target.replace(/\\/g, '/').replace(/^\/+/, '')
-  const candidate = normalized.endsWith('/')
-    ? `${normalized}index.md`
-    : getFileExtension(normalized)
-      ? normalized
-      : `${normalized}.md`
-  if (!isFilePath(candidate)) return undefined
-
-  return slugifyFilePath(candidate)
-}
-
 function splitIconClasses(raw: string): string[] {
   return raw.trim().split(/\s+/).filter(Boolean)
 }
@@ -257,26 +213,18 @@ function renderIconHtml(raw: string): string {
   return classes.length === 0 ? '' : `<i class="${classes.join(' ')}" aria-hidden="true"></i>`
 }
 
-function formatPropertyValue(value: unknown, currentSlug: FullSlug): string {
+function formatPropertyValue(value: unknown): string {
   if (value === undefined || value === null) return ''
   if (isIconToken(value)) return renderIconHtml(value.value)
   if (Array.isArray(value)) {
-    return value.map(item => formatPropertyValue(item, currentSlug)).join(', ')
+    return value.map(item => formatPropertyValue(item)).join(', ')
   }
   if (value instanceof Date) return value.toISOString().split('T')[0]
-  if (typeof value !== 'string') return escapeHTML(String(value))
-
-  const wikilink = parseWikilinkValue(value)
-  if (!wikilink) return escapeHTML(value)
-
-  const slug = resolveWikilinkSlug(wikilink.target, currentSlug)
-  if (!slug) return escapeHTML(value)
-
-  const hrefBase = resolveRelative(currentSlug, slug)
-  const href = wikilink.anchor ? `${hrefBase}${wikilink.anchor}` : hrefBase
-  const dataSlug = wikilink.anchor ? `${slug}${wikilink.anchor}` : slug
-  const label = wikilink.alias ?? (wikilink.target.length > 0 ? wikilink.target : currentSlug)
-  return `<a href="${escapeHTML(href)}" class="internal" data-slug="${escapeHTML(dataSlug)}">${escapeHTML(label)}</a>`
+  if (isPopupReference(value)) {
+    const dataSlug = value.href.slice(1)
+    return `<a href="${escapeHTML(value.href)}" class="internal" data-slug="${escapeHTML(dataSlug)}">${escapeHTML(value.label)}</a>`
+  }
+  return escapeHTML(String(value))
 }
 
 export function createPopupContent(
@@ -295,7 +243,7 @@ export function createPopupContent(
       (field === 'type' && marker.categories?.length)
     )
       return []
-    const formattedValue = formatPropertyValue(value, currentSlug)
+    const formattedValue = formatPropertyValue(value)
     if (formattedValue.length === 0) return []
 
     const displayName =
