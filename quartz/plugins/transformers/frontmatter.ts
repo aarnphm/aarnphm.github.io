@@ -1,45 +1,51 @@
+import type { VFile } from 'vfile'
 import matter from 'gray-matter'
 import yaml from 'js-yaml'
 import remarkFrontmatter from 'remark-frontmatter'
+import type { BuildCtx } from '../../util/ctx'
+import type { ReferenceSyntax } from '../../util/references/model'
 import { i18n } from '../../i18n'
 import { QuartzTransformerPlugin } from '../../types/plugin'
-import { FilePath, FullSlug, slugifyFilePath, slugTag, getFileExtension } from '../../util/path'
-import { extractWikilinks, resolveWikilinkTarget } from '../../util/wikilinks'
+import { FullSlug } from '../../util/path'
+import { referenceCatalogFor, referenceSourcePath } from '../../util/references/context'
+import {
+  extractLiteralReferences,
+  resolveLiteralReference,
+  type LiteralReferenceResolutionOptions,
+} from '../../util/references/literal'
+import { recordReferenceDependency } from '../../util/references/markdown'
+import { referenceFields, referenceRequest } from '../../util/references/request'
+import { missingReferenceRoute } from '../../util/references/route'
+import { tagMetadata } from '../../util/tags'
+import { isRecord } from '../../util/type-guards'
 import { ContentLayout } from '../emitters/contentIndex'
 import { QuartzPluginData } from '../vfile'
 
 function getAliasSlugs(aliases: string[]): FullSlug[] {
-  const res: FullSlug[] = []
-  for (const alias of aliases) {
-    const isMd = getFileExtension(alias) === 'md'
-    const mockFp = isMd ? alias : alias + '.md'
-    const slug = slugifyFilePath(mockFp as FilePath)
-    res.push(slug)
-  }
-  return res
+  return aliases.flatMap(alias => {
+    const route = missingReferenceRoute(alias, 'index')
+    return route ? [route.slug] : []
+  })
 }
 
-function coalesceAliases(data: { [key: string]: any }, aliases: string[]) {
+function coalesceAliases(data: Record<string, unknown>, aliases: string[]) {
   for (const alias of aliases) {
     if (data[alias] !== undefined && data[alias] !== null) return data[alias]
   }
 }
 
-function coerceToArray(input: string | string[]): string[] | undefined {
+function coerceToArray(input: unknown): string[] | undefined {
   if (input === undefined || input === null) return undefined
-
-  // coerce to array
-  if (!Array.isArray(input)) {
-    input = input
-      .toString()
-      .split(',')
-      .map((tag: string) => tag.trim())
-  }
-
-  // remove all non-strings
-  return input
-    .filter((tag: unknown) => typeof tag === 'string' || typeof tag === 'number')
-    .map((tag: string | number) => tag.toString())
+  const values: unknown[] = Array.isArray(input)
+    ? input
+    : String(input)
+        .split(',')
+        .map(value => value.trim())
+  return values
+    .filter(
+      (value): value is string | number => typeof value === 'string' || typeof value === 'number',
+    )
+    .map(String)
 }
 
 function coerceToBoolean(input: unknown): boolean | undefined {
@@ -71,14 +77,20 @@ export interface FrontmatterLink {
   alias?: string
 }
 
-function collectValueLinks(value: unknown, currentSlug: FullSlug): FrontmatterLink[] {
+function collectValueLinks(
+  value: unknown,
+  currentSlug: FullSlug,
+  options: LiteralReferenceResolutionOptions,
+  record?: (link: ReferenceSyntax) => void,
+): FrontmatterLink[] {
   const results: FrontmatterLink[] = []
   const seen = new Set<string>()
 
   const visitValue = (val: unknown) => {
     if (typeof val === 'string') {
-      for (const link of extractWikilinks(val)) {
-        const resolved = resolveWikilinkTarget(link, currentSlug)
+      for (const link of extractLiteralReferences(val)) {
+        record?.(link)
+        const resolved = resolveLiteralReference(link, currentSlug, options)
         if (!resolved) continue
 
         const fingerprint = `${resolved.slug}${resolved.anchor ?? ''}`
@@ -89,15 +101,15 @@ function collectValueLinks(value: unknown, currentSlug: FullSlug): FrontmatterLi
           raw: link.raw,
           slug: resolved.slug,
           anchor: resolved.anchor,
-          alias: link.alias,
+          alias: referenceFields(link).label,
         })
       }
     } else if (Array.isArray(val)) {
       for (const item of val) {
         visitValue(item)
       }
-    } else if (val && typeof val === 'object' && val.constructor === Object) {
-      for (const inner of Object.values(val as Record<string, unknown>)) {
+    } else if (isRecord(val)) {
+      for (const inner of Object.values(val)) {
         visitValue(inner)
       }
     }
@@ -110,11 +122,13 @@ function collectValueLinks(value: unknown, currentSlug: FullSlug): FrontmatterLi
 function collectFrontmatterLinks(
   data: Record<string, unknown>,
   currentSlug: FullSlug,
+  options: LiteralReferenceResolutionOptions,
+  record?: (link: ReferenceSyntax) => void,
 ): Record<string, FrontmatterLink[]> | undefined {
   const result: Record<string, FrontmatterLink[]> = {}
 
   for (const [key, value] of Object.entries(data)) {
-    const links = collectValueLinks(value, currentSlug)
+    const links = collectValueLinks(value, currentSlug, options, record)
     if (links.length > 0) {
       result[key] = links
     }
@@ -141,126 +155,163 @@ function buildFrontmatterLinkLookup(
   return Object.keys(lookup).length > 0 ? lookup : undefined
 }
 
+function refreshFrontmatterLinks(ctx: BuildCtx, file: VFile, record: boolean): void {
+  const currentSlug = file.data.slug
+  const data = file.data.authoredProperties ?? file.data.frontmatter
+  if (!currentSlug || !isRecord(data)) return
+  const options = { catalog: referenceCatalogFor(ctx), origin: referenceSourcePath(file.data) }
+  const links = collectFrontmatterLinks(
+    data,
+    currentSlug,
+    options,
+    record
+      ? link => {
+          recordReferenceDependency(ctx, file, referenceRequest(link, options.origin))
+        }
+      : undefined,
+  )
+  if (links) file.data.frontmatterLinks = links
+  else delete file.data.frontmatterLinks
+  const lookup = buildFrontmatterLinkLookup(links)
+  if (lookup) file.data.frontmatterLinkLookup = lookup
+  else delete file.data.frontmatterLinkLookup
+}
+
 export const FrontMatter: QuartzTransformerPlugin = () => ({
   name: 'FrontMatter',
-  markdownPlugins: ({ cfg, allSlugs }) => [
-    [remarkFrontmatter, ['yaml', 'toml']],
-    () => {
-      return (_, file) => {
-        const { data } = matter(Buffer.from(file.value), {
-          delimiters: '---',
-          language: 'yaml',
-          engines: { yaml: s => yaml.load(s, { schema: yaml.JSON_SCHEMA }) as object },
-        })
+  markdownPlugins: ctx => {
+    const { cfg } = ctx
+    return [
+      [remarkFrontmatter, ['yaml', 'toml']],
+      () => {
+        return (_, file) => {
+          const { data } = matter(Buffer.from(file.value), {
+            delimiters: '---',
+            language: 'yaml',
+            engines: { yaml: s => yaml.load(s, { schema: yaml.JSON_SCHEMA }) as object },
+          })
+          const authoredProperties: Record<string, unknown> = structuredClone(data)
+          file.data.authoredProperties = authoredProperties
 
-        if (data.title != null && data.title.toString() !== '') {
-          data.title = data.title.toString()
-        } else {
-          data.title = file.stem ?? i18n(cfg.configuration.locale).propertyDefaults.title
-        }
-
-        const tags = coerceToArray(coalesceAliases(data, ['tags']))
-        if (tags) data.tags = [...new Set(tags.map((tag: string) => slugTag(tag)))]
-
-        const aliases = coerceToArray(coalesceAliases(data, ['aliases', 'alias']))
-        if (aliases) {
-          data.aliases = aliases
-          file.data.aliases = getAliasSlugs(aliases)
-          allSlugs.push(...file.data.aliases)
-        }
-        const permalinks = coerceToArray(coalesceAliases(data, ['permalink', 'permalinks']))
-
-        if (permalinks) {
-          data.permalinks = permalinks as FullSlug[]
-          const aliases = file.data.aliases ?? []
-          aliases.push(...data.permalinks)
-          file.data.aliases = aliases
-          allSlugs.push(data.permalinks)
-        }
-
-        const cssclasses = coerceToArray(coalesceAliases(data, ['cssclasses']))
-        if (cssclasses) data.cssclasses = cssclasses
-
-        const noindex = coerceToBoolean(coalesceAliases(data, ['noindex', 'unlisted']))
-        if (noindex !== undefined) data.noindex = noindex
-
-        const settings: unknown = data.settings
-        if (settings && typeof settings === 'object' && !Array.isArray(settings)) {
-          data.settings = {
-            ...settings,
-            'heading-toggle': coerceToBoolean(
-              'heading-toggle' in settings ? settings['heading-toggle'] : undefined,
-            ),
+          if (data.title != null && data.title.toString() !== '') {
+            data.title = data.title.toString()
+          } else {
+            data.title = file.stem ?? i18n(cfg.configuration.locale).propertyDefaults.title
           }
-        } else {
-          delete data.settings
-        }
 
-        const currentSlug = file.data.slug as FullSlug | undefined
+          const tags = coerceToArray(coalesceAliases(data, ['tags']))
+          if (tags) {
+            const normalized = tagMetadata(tags)
+            data.tags = normalized.tags
+            file.data.tagDisplay = normalized.display
+            file.data.tagAliases = normalized.aliases
+          }
 
-        const socialImage = coalesceAliases(data, ['socialImage', 'image', 'cover'])
-        if (socialImage) {
-          // Check if socialImage contains wikilinks
-          const wikilinks = extractWikilinks(socialImage)
-          if (wikilinks.length > 0 && currentSlug) {
-            const resolved = resolveWikilinkTarget(wikilinks[0], currentSlug)
-            if (resolved) {
-              data.socialImage = `https://${cfg.configuration.baseUrl}/${resolved.slug}`
+          const aliases = coerceToArray(coalesceAliases(data, ['aliases', 'alias']))
+          if (aliases) {
+            data.aliases = aliases
+            file.data.aliases = getAliasSlugs(aliases)
+          }
+          const permalinks = coerceToArray(coalesceAliases(data, ['permalink', 'permalinks']))
+
+          if (permalinks) {
+            data.permalinks = permalinks
+            const aliases = file.data.aliases ?? []
+            aliases.push(...permalinks)
+            file.data.aliases = aliases
+          }
+
+          const cssclasses = coerceToArray(coalesceAliases(data, ['cssclasses']))
+          if (cssclasses) data.cssclasses = cssclasses
+
+          const noindex = coerceToBoolean(coalesceAliases(data, ['noindex', 'unlisted']))
+          if (noindex !== undefined) data.noindex = noindex
+
+          const settings: unknown = data.settings
+          if (settings && typeof settings === 'object' && !Array.isArray(settings)) {
+            data.settings = {
+              ...settings,
+              'heading-toggle': coerceToBoolean(
+                'heading-toggle' in settings ? settings['heading-toggle'] : undefined,
+              ),
+            }
+          } else {
+            delete data.settings
+          }
+
+          const currentSlug = file.data.slug
+          const referenceOptions = {
+            catalog: referenceCatalogFor(ctx),
+            origin: referenceSourcePath(file.data),
+          }
+
+          const socialImage = coalesceAliases(data, ['socialImage', 'image', 'cover'])
+          if (typeof socialImage === 'string') {
+            // Check if socialImage contains wikilinks
+            const wikilinks = extractLiteralReferences(socialImage)
+            if (wikilinks.length > 0 && currentSlug) {
+              const resolved = resolveLiteralReference(wikilinks[0], currentSlug, referenceOptions)
+              if (resolved) {
+                data.socialImage = `https://${cfg.configuration.baseUrl}/${resolved.slug}`
+              } else {
+                data.socialImage = socialImage
+              }
             } else {
               data.socialImage = socialImage
             }
-          } else {
-            data.socialImage = socialImage
+          } else if (socialImage !== undefined && socialImage !== null) {
+            delete data.socialImage
+            file.message('Social image metadata must be a string; quote wikilinks in YAML.', {
+              source: 'frontmatter',
+              ruleId: 'social-image',
+            })
           }
-        }
 
-        const description = coalesceAliases(data, ['description', 'socialDescription'])
-        if (description) data.description = description
+          const description = coalesceAliases(data, ['description', 'socialDescription'])
+          if (description) data.description = description
 
-        const transclude = coalesceAliases(data, ['transclude', 'transclusion'])
-        if (transclude) data.transclude = transclude
+          const transclude = coalesceAliases(data, ['transclude', 'transclusion'])
+          if (transclude) data.transclude = transclude
 
-        const socials = coalesceAliases(data, ['social', 'socials'])
-        if (socials) data.socials = socials
+          const socials = coalesceAliases(data, ['social', 'socials'])
+          if (socials) data.socials = socials
 
-        const authors = coalesceAliases(data, ['author', 'authors'])
-        if (authors) data.authors = authors
+          const authors = coalesceAliases(data, ['author', 'authors'])
+          if (authors) data.authors = authors
 
-        const slides = coalesceAliases(data, ['slides', 'slide', 'ppt', 'powerpoint'])
-        if (slides) data.slides = slides
+          const slides = coalesceAliases(data, ['slides', 'slide', 'ppt', 'powerpoint'])
+          if (slides) data.slides = slides
 
-        const created = coalesceAliases(data, ['date', 'created'])
-        if (created) {
-          data.created = created
-        }
-        const modified = coalesceAliases(data, ['lastmod', 'updated', 'last-modified', 'modified'])
-        if (modified) data.modified = modified
-        data.modified ||= created // if modified is not set, use created
-
-        const published = coalesceAliases(data, ['publishDate', 'published', 'date'])
-        if (published) data.published = published
-
-        let layout = coalesceAliases(data, ['pageLayout', 'folderLayout', 'layout'])
-        layout ||= 'default'
-        data.pageLayout = layout
-
-        if (currentSlug) {
-          const frontmatterLinks = collectFrontmatterLinks(
-            data as Record<string, unknown>,
-            currentSlug,
-          )
-          if (frontmatterLinks) {
-            file.data.frontmatterLinks = frontmatterLinks
-            const lookup = buildFrontmatterLinkLookup(frontmatterLinks)
-            if (lookup) {
-              file.data.frontmatterLinkLookup = lookup
-            }
+          const created = coalesceAliases(data, ['date', 'created'])
+          if (created) {
+            data.created = created
           }
-        }
+          const modified = coalesceAliases(data, [
+            'lastmod',
+            'updated',
+            'last-modified',
+            'modified',
+          ])
+          if (modified) data.modified = modified
+          data.modified ||= created // if modified is not set, use created
 
-        // fill in frontmatter
-        file.data.frontmatter = data as QuartzPluginData['frontmatter']
-      }
+          const published = coalesceAliases(data, ['publishDate', 'published', 'date'])
+          if (published) data.published = published
+
+          let layout = coalesceAliases(data, ['pageLayout', 'folderLayout', 'layout'])
+          layout ||= 'default'
+          data.pageLayout = layout
+
+          // fill in frontmatter
+          file.data.frontmatter = data as QuartzPluginData['frontmatter']
+          refreshFrontmatterLinks(ctx, file, false)
+        }
+      },
+    ]
+  },
+  htmlPlugins: ctx => [
+    () => (_tree, file) => {
+      refreshFrontmatterLinks(ctx, file, true)
     },
   ],
 })
@@ -274,7 +325,7 @@ export type TranscludeOptions = {
 
 declare module 'vfile' {
   interface DataMap {
-    aliases: FullSlug[]
+    aliases: string[]
     frontmatter: { [key: string]: unknown } & {
       title: string
       pageLayout: ContentLayout

@@ -1,4 +1,4 @@
-import { readFile, rm } from 'node:fs/promises'
+import { readFile } from 'node:fs/promises'
 import { defaultListPageLayout, sharedPageComponents } from '../../../quartz.layout'
 import { FullPageLayout, GlobalConfiguration } from '../../cfg'
 import { TagContent } from '../../components'
@@ -23,9 +23,10 @@ import {
 } from '../../util/path'
 import { logBuildSpan, PerfTimer } from '../../util/perf'
 import { StaticResources } from '../../util/resources'
+import { canonicalTag, canonicalTagRoute, tagLabels } from '../../util/tags'
 import { PageTitlePatch, pageTitlePatchEvents } from '../../util/title-patch'
 import { ProcessedContent, QuartzPluginData, defaultProcessedContent } from '../vfile'
-import { write, writeKnownChanged } from './helpers'
+import { removeWritten, write, writeKnownChanged } from './helpers'
 
 interface TagPageOptions extends FullPageLayout {
   sort?: SortFn
@@ -38,18 +39,19 @@ type TagIndexData = {
 
 type TagInfo = {
   tags: Set<string>
-  tagDescriptions: Record<string, ProcessedContent>
+  tagDescriptions: Map<string, ProcessedContent>
   tagItemMap: Map<string, QuartzPluginData[]>
   tagContentMap: Map<string, QuartzPluginData>
+  tagDisplay: Record<string, string>
 }
 
 type HtmlPatchResult = { html: string; patched: boolean }
 
-function defaultTagContent(tag: string, cfg: GlobalConfiguration): ProcessedContent {
+function defaultTagContent(tag: string, cfg: GlobalConfiguration, label = tag): ProcessedContent {
   const title =
     tag === 'index'
       ? i18n(cfg.locale).pages.tagContent.tagIndex
-      : `${i18n(cfg.locale).pages.tagContent.tag}: ${tag}`
+      : `${i18n(cfg.locale).pages.tagContent.tag}: ${label}`
   return defaultProcessedContent({
     slug: joinSegments('tags', tag) as FullSlug,
     frontmatter: { title, tags: [], pageLayout: 'default', description: `generated tags/${tag}` },
@@ -57,12 +59,16 @@ function defaultTagContent(tag: string, cfg: GlobalConfiguration): ProcessedCont
 }
 
 function tagPrefixes(fileData: QuartzPluginData | undefined): string[] {
-  return (fileData?.frontmatter?.tags ?? []).flatMap(getAllSegmentPrefixes)
+  return [
+    ...new Set(
+      (fileData?.frontmatter?.tags ?? []).map(canonicalTag).flatMap(getAllSegmentPrefixes),
+    ),
+  ]
 }
 
 function tagPageTag(fileData: QuartzPluginData | undefined): string | undefined {
   const slug = fileData?.slug
-  return slug?.startsWith('tags/') ? slug.slice('tags/'.length) : undefined
+  return slug?.startsWith('tags/') ? canonicalTag(slug.slice('tags/'.length)) : undefined
 }
 
 function tagItemSlugs(info: TagInfo, tag: string): string[] {
@@ -174,13 +180,13 @@ function processedBySlug(content: ProcessedContent[]): Map<string, ProcessedCont
   const processed = new Map<string, ProcessedContent>()
   for (const entry of content) {
     const slug = entry[1].data.slug
-    if (slug) processed.set(slug, entry)
+    if (slug) processed.set(canonicalTagRoute(slug), entry)
   }
   return processed
 }
 
 async function deleteTagPage(ctx: BuildCtx, tag: string): Promise<void> {
-  await rm(joinSegments(ctx.argv.output, 'tags', `${tag}.html`) as FilePath, { force: true })
+  await removeWritten(ctx, joinSegments('tags', tag), '.html')
 }
 
 function computeTagInfo(
@@ -192,7 +198,7 @@ function computeTagInfo(
   const tagItemMap = new Map<string, QuartzPluginData[]>()
   const tagContentMap = new Map<string, QuartzPluginData>()
   for (const data of allFiles) {
-    for (const tag of (data.frontmatter?.tags ?? []).flatMap(getAllSegmentPrefixes)) {
+    for (const tag of tagPrefixes(data)) {
       const pages = tagItemMap.get(tag)
       if (pages) {
         pages.push(data)
@@ -205,20 +211,21 @@ function computeTagInfo(
   for (const [tag, pages] of tagItemMap) {
     tagItemMap.set(tag, [...pages].sort(sorter))
   }
+  const tagDisplay = tagLabels(allFiles)
   const tags = new Set(tagItemMap.keys())
 
   tags.add('index')
 
-  const tagDescriptions: Record<string, ProcessedContent> = Object.fromEntries(
-    [...tags].map(tag => [tag, defaultTagContent(tag, cfg)]),
+  const tagDescriptions = new Map<string, ProcessedContent>(
+    [...tags].map(tag => [tag, defaultTagContent(tag, cfg, tagDisplay[tag] ?? tag)]),
   )
 
   for (const [tree, file] of content) {
     const slug = file.data.slug!
     if (slug.startsWith('tags/')) {
-      const tag = slug.slice('tags/'.length)
+      const tag = canonicalTag(slug.slice('tags/'.length))
       if (tags.has(tag)) {
-        tagDescriptions[tag] = [tree, file]
+        tagDescriptions.set(tag, [tree, file])
         tagContentMap.set(tag, file.data)
         if (file.data.frontmatter?.title === tag) {
           file.data.frontmatter.title = `${i18n(cfg.locale).pages.tagContent.tag}: ${tag}`
@@ -227,7 +234,7 @@ function computeTagInfo(
     }
   }
 
-  return { tags, tagDescriptions, tagItemMap, tagContentMap }
+  return { tags, tagDescriptions, tagItemMap, tagContentMap, tagDisplay }
 }
 
 function isTagRelevantChange(changeEvent: ChangeEvent): boolean {
@@ -266,8 +273,11 @@ function updateTagInfo(
   const processed = processedBySlug(content)
 
   for (const changeEvent of changeEvents) {
-    const current = changeEvent.file?.data
-    const previous = changeEvent.previousFile?.data
+    const current = changeEvent.type === 'delete' ? undefined : changeEvent.file?.data
+    const previous =
+      changeEvent.type === 'delete'
+        ? (changeEvent.file?.data ?? changeEvent.previousFile?.data)
+        : changeEvent.previousFile?.data
     const currentTagPage = tagPageTag(current)
     const previousTagPage = tagPageTag(previous)
 
@@ -298,24 +308,25 @@ function updateTagInfo(
     info.tagItemMap.set(tag, [...pages].sort(sorter))
   }
 
+  info.tagDisplay = tagLabels(content.map(([, file]) => file.data))
   info.tags = new Set(info.tagItemMap.keys())
   info.tags.add('index')
   affectedTags.add('index')
 
   for (const tag of affectedTags) {
     if (!info.tags.has(tag)) {
-      delete info.tagDescriptions[tag]
+      info.tagDescriptions.delete(tag)
       continue
     }
     const contentPage = processed.get(joinSegments('tags', tag))
     if (contentPage) {
-      info.tagDescriptions[tag] = contentPage
+      info.tagDescriptions.set(tag, contentPage)
       info.tagContentMap.set(tag, contentPage[1].data)
       if (contentPage[1].data.frontmatter?.title === tag) {
         contentPage[1].data.frontmatter.title = `${i18n(cfg.locale).pages.tagContent.tag}: ${tag}`
       }
     } else {
-      info.tagDescriptions[tag] = defaultTagContent(tag, cfg)
+      info.tagDescriptions.set(tag, defaultTagContent(tag, cfg, info.tagDisplay[tag] ?? tag))
     }
   }
 
@@ -338,7 +349,7 @@ async function processTagPage(
   const externalResources = pageResources(pathToRoot(slug), resources, ctx)
   const componentData: QuartzComponentProps = {
     ctx,
-    fileData: file.data,
+    fileData: { ...file.data, slug },
     externalResources,
     cfg,
     children: [],
@@ -349,7 +360,7 @@ async function processTagPage(
   }
 
   const content = renderPage(ctx, slug, componentData, opts, externalResources, true)
-  return write({ ctx, content, slug: file.data.slug!, ext: '.html' })
+  return write({ ctx, content, slug, ext: '.html' })
 }
 
 export const TagPage: QuartzEmitterPlugin<Partial<TagPageOptions>> = userOpts => {
@@ -387,7 +398,8 @@ export const TagPage: QuartzEmitterPlugin<Partial<TagPageOptions>> = userOpts =>
         return processTagPage(
           ctx,
           tag,
-          tagDescriptions[tag],
+          tagDescriptions.get(tag) ??
+            defaultTagContent(tag, cfg, cachedTagInfo?.tagDisplay[tag] ?? tag),
           allFiles,
           tagPageFiles,
           tag === 'index' ? tagIndexData : undefined,
@@ -459,7 +471,7 @@ export const TagPage: QuartzEmitterPlugin<Partial<TagPageOptions>> = userOpts =>
           return undefined
         }
 
-        const tagDescription = tagDescriptions[tag]
+        const tagDescription = tagDescriptions.get(tag)
         if (!tagDescription) return undefined
 
         const tagPageFiles = tag === 'index' ? undefined : (tagItemMap.get(tag) ?? [])

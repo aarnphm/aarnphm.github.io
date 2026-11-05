@@ -4,6 +4,7 @@ import { QuartzEmitterPlugin } from '../../types/plugin'
 import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
 import { BuildCtx } from '../../util/ctx'
 import { FilePath, FullSlug, isRelativeURL, resolveRelative, simplifySlug } from '../../util/path'
+import { tagRouteAliases } from '../../util/tags'
 import { ProcessedContent } from '../vfile'
 import { write, removeWritten } from './helpers'
 
@@ -82,6 +83,13 @@ export function aliasRedirectRules(content: ProcessedContent[]): string {
     }
   }
 
+  for (const [legacy, canonical] of tagRouteAliases(content.map(([, file]) => file.data))) {
+    addRule(`/tags/${legacy}`, `/tags/${canonical}`)
+    addRule(`/tags/${legacy}.html`, `/tags/${canonical}`)
+    addRule(encodeURI(`/tags/${legacy}`), encodeURI(`/tags/${canonical}`))
+    addRule(encodeURI(`/tags/${legacy}.html`), encodeURI(`/tags/${canonical}`))
+  }
+
   if (rules.size > 2000) {
     throw new Error(`static alias redirects exceed the 2,000 rule limit: ${rules.size}`)
   }
@@ -110,7 +118,18 @@ async function deleteAliases(
 
 function aliasesChanged(file: VFile, previousFile: VFile | undefined): boolean {
   if (!previousFile || file.data.slug !== previousFile.data.slug) return true
-  return JSON.stringify(file.data.aliases ?? []) !== JSON.stringify(previousFile.data.aliases ?? [])
+  return (
+    JSON.stringify({
+      aliases: file.data.aliases ?? [],
+      tags: file.data.frontmatter?.tags,
+      tagAliases: file.data.tagAliases,
+    }) !==
+    JSON.stringify({
+      aliases: previousFile.data.aliases ?? [],
+      tags: previousFile.data.frontmatter?.tags,
+      tagAliases: previousFile.data.tagAliases,
+    })
+  )
 }
 
 export const AliasRedirects: QuartzEmitterPlugin = () => ({

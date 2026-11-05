@@ -247,6 +247,21 @@ export const LLM: QuartzTransformerPlugin = () => {
               bullet: '-',
               emphasis: '_',
               rule: '-',
+              handlers: {
+                ofmHighlight(
+                  node: Extract<PhrasingContent, { type: 'ofmHighlight' }>,
+                  _parent,
+                  state,
+                  info,
+                ) {
+                  const content = state.containerPhrasing(node, {
+                    ...info,
+                    before: '>',
+                    after: '<',
+                  })
+                  return `<mark>${content}</mark>`
+                },
+              },
               extensions: [
                 mathToMarkdown(),
                 gfmToMarkdown(),

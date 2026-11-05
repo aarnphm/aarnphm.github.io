@@ -1,5 +1,5 @@
 import { Node as UnistNode, Data as UnistData, Parent } from 'unist'
-import type { WikilinkData } from '../../../util/wikilinks'
+import type { ReferenceSyntax } from '../../../util/references/model'
 
 /**
  * jcast - JSON Canvas Abstract Syntax Tree
@@ -117,7 +117,8 @@ export interface JcastData extends UnistData {
 }
 
 export interface JcastResolvedWikilink {
-  link: WikilinkData
+  reference: ReferenceSyntax
+  implicitLabel?: string
   resolvedSlug?: string
   resolvedHref?: string
   missing?: boolean

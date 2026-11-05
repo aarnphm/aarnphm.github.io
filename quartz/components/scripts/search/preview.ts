@@ -1,7 +1,9 @@
+import type { ContentDetails } from '../../../plugins'
 import { documentPreviewUrl, readDocumentPreview } from '../../../util/document-preview'
 import { fetchCanonical } from '../../../util/fetch-canonical'
 import { FullSlug, isFullSlug, normalizeRelativeURLs, resolveRelative } from '../../../util/path'
 import { tokenizeTerm } from '../../../util/search-text'
+import { tagLabel } from '../../../util/tags'
 import { codeMatchLabel, codeMatchLocation } from '../code-search-controls'
 import { renderCodeMatch } from '../code-search-preview'
 import { renderCoursePreview } from '../course-preview-card'
@@ -228,7 +230,7 @@ export async function displayPreview(s: SearchSession, el: HTMLElement | null) {
     }
 
     if (documentType || el.dataset.directFile === 'true') {
-      const fileData = requireData(s)[slug]
+      const fileData: ContentDetails | undefined = requireData(s)[slug]
       if (
         await renderFilePreview(
           resolveUrl(s, slug),
@@ -264,7 +266,7 @@ export async function displayPreview(s: SearchSession, el: HTMLElement | null) {
       }
 
       if (fileData?.tags && fileData.tags.length > 0) {
-        metadata('Tags', fileData.tags.join(', '))
+        metadata('Tags', fileData.tags.map(tag => tagLabel(tag, fileData)).join(', '))
       }
 
       previewInner.appendChild(metaContainer)

@@ -1,4 +1,3 @@
-import type { ComponentChild } from 'preact'
 import { ArenaData } from '../../plugins/transformers/arena'
 import {
   QuartzComponent,
@@ -8,8 +7,8 @@ import {
 import { toArenaHeadingInlineJsx, arenaBlockTimestamp } from '../../util/arena'
 import { classNames } from '../../util/lang'
 import { resolveRelative, joinSegments, FullSlug } from '../../util/path'
-import { extractWikilinksWithPositions, resolveWikilinkTarget } from '../../util/wikilinks'
 import { ArenaReaderLink } from '../arena/reader-link'
+import { arenaReferenceText } from '../arena/reference-text'
 // @ts-ignore
 import script from '../scripts/arena.inline'
 import style from '../styles/arena.scss'
@@ -29,52 +28,8 @@ export default (() => {
 
     const sortedChannels = [...arenaData.channels].sort((a, b) => b.blocks.length - a.blocks.length)
 
-    const renderInlineText = (text: string) => {
-      if (!text) return ''
-      const parts: ComponentChild[] = []
-      const ranges = extractWikilinksWithPositions(text)
-      let lastIndex = 0
-      for (const range of ranges) {
-        const start = range.start
-        if (start > lastIndex) {
-          parts.push(text.slice(lastIndex, start))
-        }
-
-        const parsed = range.wikilink
-        const resolved = resolveWikilinkTarget(parsed, '' as FullSlug)
-        const raw = text.slice(range.start, range.end)
-
-        if (resolved) {
-          const hrefBase = resolveRelative(fileData.slug! as FullSlug, resolved.slug)
-          const href = parsed.anchor ? `${hrefBase}${parsed.anchor}` : hrefBase
-          parts.push(
-            <a
-              href={href}
-              class="internal"
-              data-no-popover
-              data-slug={resolved.slug}
-              key={`arena-wikilink-${parts.length}`}
-            >
-              {parsed.alias ?? parsed.target ?? raw}
-            </a>,
-          )
-        } else {
-          parts.push(parsed.alias ?? parsed.target ?? raw)
-        }
-
-        lastIndex = range.end
-      }
-
-      if (lastIndex < text.length) {
-        parts.push(text.slice(lastIndex))
-      }
-
-      if (parts.length === 1) {
-        return parts[0]
-      }
-
-      return <>{parts}</>
-    }
+    const renderInlineText = (text: string) =>
+      arenaReferenceText(text, componentData, { links: false })
 
     return (
       <article class="arena-index main-col popover-hint">

@@ -7,8 +7,9 @@ import {
 } from '../types/component'
 import { classNames } from '../util/lang'
 import { FullSlug, pathToRoot, resolveRelative, slugTag } from '../util/path'
+import { stripReferenceFormatting } from '../util/references/literal'
+import { tagLabel } from '../util/tags'
 import { isRecord } from '../util/type-guards'
-import { stripWikilinkFormatting } from '../util/wikilinks'
 import style from './styles/tags.scss'
 
 export default (() => {
@@ -48,11 +49,12 @@ export default (() => {
             <h2>{i18n(cfg.locale).pages.tagContent.tag}</h2>
             <ul>
               {tags.map(tag => {
-                const wikiLink = linkLookup?.[tag]
+                const display = tagLabel(tag, fileData)
+                const wikiLink = linkLookup?.[display] ?? linkLookup?.[tag]
 
                 if (wikiLink) {
                   const href = buildHref(wikiLink)
-                  const label = wikiLink.alias ?? stripWikilinkFormatting(tag)
+                  const label = wikiLink.alias ?? stripReferenceFormatting(tag)
 
                   return (
                     <li>
@@ -67,7 +69,7 @@ export default (() => {
                 return (
                   <li>
                     <a href={linkDest} class="internal tag-link">
-                      {tag}
+                      {display}
                     </a>
                   </li>
                 )

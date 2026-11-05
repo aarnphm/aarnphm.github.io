@@ -1,7 +1,7 @@
 @use '../variables.scss' as *;
 
 body[data-slug='nytimes'] {
-  section.collapsible-header#connections {
+  section.collapsible-header#collapsible-header-connections {
     .collapsible-header-content {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr));
@@ -59,7 +59,7 @@ body[data-slug='nytimes'] {
   }
 
   @media all and ($mobile) {
-    section.collapsible-header#connections .collapsible-header-content {
+    section.collapsible-header#collapsible-header-connections .collapsible-header-content {
       grid-template-columns: repeat(auto-fit, minmax(min(100%, 8.75rem), 1fr));
       gap: 0.6rem;
     }

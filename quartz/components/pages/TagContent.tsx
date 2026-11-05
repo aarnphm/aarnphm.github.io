@@ -10,6 +10,7 @@ import { inheritComponentSourceNames } from '../../util/component-source'
 import { htmlToJsx } from '../../util/jsx'
 import { FullSlug, getAllSegmentPrefixes, simplifySlug } from '../../util/path'
 import { concatenateResources } from '../../util/resources'
+import { canonicalTag, tagLabels } from '../../util/tags'
 import PageListConstructor, { SortFn } from '../PageList'
 import PageListSearchConstructor from '../PageListSearch'
 import SeeAlsoComponent from '../SeeAlso'
@@ -30,10 +31,12 @@ function collectTagIndex(allFiles: QuartzPluginData[]): {
   const tagContentMap = new Map<string, QuartzPluginData>()
   for (const file of allFiles) {
     if (file.slug?.startsWith('tags/')) {
-      tagContentMap.set(file.slug.slice('tags/'.length), file)
+      tagContentMap.set(canonicalTag(file.slug.slice('tags/'.length)), file)
     }
 
-    for (const tag of (file.frontmatter?.tags ?? []).flatMap(getAllSegmentPrefixes)) {
+    for (const tag of new Set(
+      (file.frontmatter?.tags ?? []).map(canonicalTag).flatMap(getAllSegmentPrefixes),
+    )) {
       const pages = tagItemMap.get(tag)
       if (pages) {
         pages.push(file)
@@ -60,7 +63,7 @@ function pagesWithTag(allFiles: QuartzPluginData[], tag: string): QuartzPluginDa
   const pages: QuartzPluginData[] = []
   for (const file of allFiles) {
     for (const candidate of file.frontmatter?.tags ?? []) {
-      if (getAllSegmentPrefixes(candidate).includes(tag)) {
+      if (getAllSegmentPrefixes(canonicalTag(candidate)).includes(canonicalTag(tag))) {
         pages.push(file)
         break
       }
@@ -90,6 +93,7 @@ export default ((opts?: Partial<TagContentOptions>) => {
       throw new Error(`Component "TagContent" tried to render a non-tag page: ${slug}`)
     }
 
+    const displays = tagLabels(allFiles)
     const tag = simplifySlug(slug.slice('tags/'.length) as FullSlug)
 
     const content =
@@ -131,7 +135,7 @@ export default ((opts?: Partial<TagContentOptions>) => {
                 <div>
                   <h2>
                     <a class="internal tag-link" data-no-popover href={`../tags/${tag}`}>
-                      {tag}
+                      {displays[tag] ?? tag}
                     </a>
                   </h2>
                   {content}

@@ -7,6 +7,7 @@ import {
 } from '../types/component'
 import { unwrapTitleQuotes } from '../util/listing-title'
 import { resolveRelative } from '../util/path'
+import { canonicalTag, tagLabel } from '../util/tags'
 import { Date as DateComponent, getDate } from './Date'
 
 export type SortFn = (f1: QuartzPluginData, f2: QuartzPluginData) => number
@@ -105,7 +106,9 @@ export default ((userOpts?: Options) => {
         {list.map((page, idx) => {
           const title = unwrapTitleQuotes(page.frontmatter?.title ?? '')
           const tags = page.frontmatter?.tags ?? []
-          const highlightedTags = opts.highlightTags.filter(tag => tags.includes(tag))
+          const highlightedTags = opts.highlightTags
+            .map(canonicalTag)
+            .filter(tag => tags.includes(tag))
           const date = getDate(cfg, page) ?? new Date(0)
           const isPdf = /\.pdf$/i.test(page.slug ?? '')
           const isFolder = tags.includes('folder')
@@ -135,7 +138,7 @@ export default ((userOpts?: Options) => {
                     <menu class="tag-highlights">
                       {highlightedTags.map(el => (
                         <li class="tag" data-tag={el}>
-                          {el}
+                          {tagLabel(el, page)}
                         </li>
                       ))}
                     </menu>

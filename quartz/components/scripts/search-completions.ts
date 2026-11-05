@@ -48,23 +48,79 @@ export function createSearchCompletions(
   let choices: SearchCompletion[] = []
   let selected = 0
 
+  // The site's :has() rules turn any attribute flip or insertion here into a restyle of the whole
+  // page, so every write is skipped when it would not change anything, and typing that keeps the
+  // same suggestions touches no DOM.
+  const attr = (element: Element, name: string, value: string | null) => {
+    if (element.getAttribute(name) === value) return
+    if (value === null) element.removeAttribute(name)
+    else element.setAttribute(name, value)
+  }
+  const same = (a: SearchCompletion[], b: SearchCompletion[]) =>
+    a.length === b.length &&
+    a.every(
+      (choice, i) =>
+        choice.insert === b[i].insert &&
+        choice.value === b[i].value &&
+        choice.operator === b[i].operator &&
+        choice.description === b[i].description &&
+        choice.from === b[i].from &&
+        choice.to === b[i].to,
+    )
   const clear = () => {
     choices = []
-    panel.hidden = true
-    list.replaceChildren()
-    input.setAttribute('aria-expanded', 'false')
-    input.removeAttribute('aria-activedescendant')
+    if (!panel.hidden) panel.hidden = true
+    attr(input, 'aria-expanded', 'false')
+    attr(input, 'aria-activedescendant', null)
   }
-  const select = (index: number) => {
+  // Rows are kept and rewritten in place: a new button, or a textContent write, inserts nodes,
+  // while a Text node's data and an inline display are invisible to selectors. Unused rows hide.
+  interface Row {
+    item: HTMLButtonElement
+    token: HTMLElement
+    value: HTMLElement
+    description: HTMLElement
+  }
+  const rows: Row[] = []
+  const span = (className: string) => {
+    const element = document.createElement('span')
+    element.className = className
+    element.append(document.createTextNode(''))
+    return element
+  }
+  const setText = (element: HTMLElement, text: string) => {
+    const node = element.firstChild as Text
+    if (node.data !== text) node.data = text
+  }
+  const option = (index: number): Row => {
+    const item = document.createElement('button')
+    item.type = 'button'
+    item.tabIndex = -1
+    item.id = `${list.id}-${index}`
+    item.className = 'search-completion'
+    item.setAttribute('role', 'option')
+    item.setAttribute('aria-selected', 'false')
+    const row = {
+      item,
+      token: span('search-completion-token'),
+      value: span('search-completion-value'),
+      description: span('search-completion-description'),
+    }
+    item.append(row.token, row.value, row.description)
+    item.addEventListener('pointerdown', event => event.preventDefault())
+    item.addEventListener('click', () => apply(index))
+    list.append(item)
+    return row
+  }
+  const select = (index: number, reveal = true) => {
     selected = (index + choices.length) % choices.length
-    const items = [...list.querySelectorAll<HTMLElement>('[role="option"]')]
-    items.forEach((item, position) =>
-      item.setAttribute('aria-selected', String(position === selected)),
-    )
+    const items = rows.slice(0, choices.length).map(row => row.item)
+    items.forEach((item, position) => attr(item, 'aria-selected', String(position === selected)))
     const item = items[selected]
     if (item) {
-      input.setAttribute('aria-activedescendant', item.id)
-      item.scrollIntoView({ block: 'nearest' })
+      attr(input, 'aria-activedescendant', item.id)
+      // a forced layout of the whole page; a fresh list already shows its first row
+      if (reveal) item.scrollIntoView({ block: 'nearest' })
     }
   }
   const apply = (index: number) => {
@@ -76,45 +132,37 @@ export function createSearchCompletions(
     input.dispatchEvent(new Event('input', { bubbles: true }))
   }
   const update = () => {
-    clear()
-    if (!enabled()) return false
-    if (input.selectionStart !== input.selectionEnd) return false
-    choices = (options.source ?? searchCompletions)(
+    if (!enabled() || input.selectionStart !== input.selectionEnd) {
+      clear()
+      return false
+    }
+    const next = (options.source ?? searchCompletions)(
       input.value,
       input.selectionStart ?? input.value.length,
       options,
     )
-    if (!choices.length) return false
-    list.replaceChildren(
-      ...choices.map((choice, index) => {
-        const item = document.createElement('button')
-        item.type = 'button'
-        item.tabIndex = -1
-        item.id = `${list.id}-${index}`
-        item.className = 'search-completion'
-        item.title = choice.insert
-        item.setAttribute('role', 'option')
-        const token = document.createElement('span')
-        token.className = 'search-completion-token'
-        token.textContent = choice.operator
-        const value = document.createElement('span')
-        value.className = 'search-completion-value'
-        value.textContent = choice.value
-        item.append(token, value)
-        if (choice.description) {
-          const description = document.createElement('span')
-          description.className = 'search-completion-description'
-          description.textContent = choice.description
-          item.append(description)
-        }
-        item.addEventListener('pointerdown', event => event.preventDefault())
-        item.addEventListener('click', () => apply(index))
-        return item
-      }),
-    )
-    panel.hidden = false
-    input.setAttribute('aria-expanded', 'true')
-    select(0)
+    if (!next.length) {
+      clear()
+      return false
+    }
+    // the same suggestions as before: keep the list, and the pick, as they are
+    if (!panel.hidden && same(next, choices)) return true
+    choices = next
+    // back to the top before the rebuild: scrollTop after it would force a layout of the page
+    if (list.scrollTop) list.scrollTop = 0
+    choices.forEach((choice, index) => {
+      const row = (rows[index] ??= option(index))
+      if (row.item.style.display) row.item.style.display = ''
+      if (row.item.title !== choice.insert) row.item.title = choice.insert
+      setText(row.token, choice.operator)
+      setText(row.value, choice.value)
+      setText(row.description, choice.description)
+      row.description.style.display = choice.description ? '' : 'none'
+    })
+    for (const row of rows.slice(choices.length)) row.item.style.display = 'none'
+    if (panel.hidden) panel.hidden = false
+    attr(input, 'aria-expanded', 'true')
+    select(0, false)
     return true
   }
   input.addEventListener(

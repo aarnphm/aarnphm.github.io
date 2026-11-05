@@ -63,6 +63,23 @@ mark {
   padding: 0 0.1rem;
   border-radius: var(--radius-none);
   color: inherit;
+
+  @each $name,
+    $token
+      in (
+        'red': color-red,
+        'orange': color-orange,
+        'yellow': color-yellow,
+        'green': color-green,
+        'blue': color-blue,
+        'purple': code-value
+      )
+  {
+    &[data-highlight-color='#{$name}'] {
+      background-color: color-mix(in srgb, var(--#{$token}) 20%, var(--light));
+      color: var(--dark);
+    }
+  }
 }
 
 ::selection {

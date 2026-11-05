@@ -1,18 +1,18 @@
 import { Element, Root, Node } from 'hast'
 import { fromHtml } from 'hast-util-from-html'
+import { toText } from 'hast-util-to-text'
 import path from 'path'
-import { EXIT, visit } from 'unist-util-visit'
+import { EXIT, SKIP, visit } from 'unist-util-visit'
 import { FullPageLayout } from '../../../cfg'
 import { Content, Head } from '../../../components'
 import { pageResources, renderPage } from '../../../components/renderPage'
 import { QuartzComponent, QuartzComponentProps } from '../../../types/component'
 import { BuildCtx } from '../../../util/ctx'
-import { FilePath, FullSlug, getFileExtension, joinSegments, pathToRoot } from '../../../util/path'
+import { FullSlug, pathToRoot } from '../../../util/path'
+import { labelToText, parseReferenceLabel } from '../../../util/references/label'
 import { StaticResources } from '../../../util/resources'
-import { extractWikilinksWithPositions, resolveWikilinkTarget } from '../../../util/wikilinks'
 import { QuartzPluginData } from '../../vfile'
 
-const imageExtensions = new Set(['.avif', '.gif', '.jpg', '.jpeg', '.png', '.svg', '.webp'])
 export type EmailAttachment = {
   contentId: string
   filename: string
@@ -211,40 +211,49 @@ export const applySignatureStyles = (root: Root, stroke: string) => {
   })
 }
 
-export const formatPlainText = (body: string, slug: FullSlug, baseUrl?: string): string => {
-  const ranges = extractWikilinksWithPositions(body)
-  if (ranges.length === 0) return body
-  let result = ''
-  let lastIndex = 0
-  for (const range of ranges) {
-    if (range.start > lastIndex) {
-      result += body.slice(lastIndex, range.start)
+export function formatPlainText(root: Root, slug: FullSlug, baseUrl?: string): string {
+  const tree = structuredClone(root)
+  const base = baseUrl
+    ? URL.parse(/^[a-z][a-z\d+.-]*:/i.test(baseUrl) ? baseUrl : `https://${baseUrl}`)
+    : URL.parse('https://email.invalid')
+  const page = base ? URL.parse(slug, `${base.href.replace(/\/$/, '')}/`) : null
+  visit(tree, 'element', (node, index, parent) => {
+    if (!parent || index === undefined) return
+    if (
+      ['script', 'style'].includes(node.tagName) ||
+      node.properties.hidden === true ||
+      String(node.properties.ariaHidden) === 'true'
+    ) {
+      parent.children[index] = { type: 'text', value: '' }
+      return SKIP
     }
-    const link = range.wikilink
-    const raw = link.raw ?? body.slice(range.start, range.end)
-    const target = link.target ?? ''
-    const ext = getFileExtension(target as FilePath) ?? ''
-    const isImage = link.embed && ext.length > 0 && imageExtensions.has(ext)
-    if (isImage) {
-      const cleaned = target.split(/[?#]/)[0] ?? ''
-      const filename = cleaned ? path.basename(cleaned) : 'image'
-      result += `[image: ${filename}]`
-    } else {
-      const resolved = resolveWikilinkTarget(link, slug)
-      if (!resolved) {
-        result += link.alias ?? link.anchorText ?? link.target ?? raw
-      } else {
-        const base = baseUrl ? `https://${baseUrl}` : ''
-        const path = base ? joinSegments(base, resolved.slug) : `/${resolved.slug}`
-        const url = resolved.anchor ? `${path}${resolved.anchor}` : path
-        const label = link.alias ?? link.anchorText ?? link.target ?? resolved.slug
-        result += `${label} <${url}>`
-      }
+    if (node.tagName === 'img') {
+      const src = typeof node.properties.src === 'string' ? node.properties.src : ''
+      const filename = path.basename(src.split(/[?#]/)[0]) || 'image'
+      const caption =
+        typeof node.properties.alt === 'string'
+          ? labelToText(parseReferenceLabel(node.properties.alt)) || filename
+          : filename
+      parent.children[index] = { type: 'text', value: `[image: ${caption}]` }
+      return SKIP
     }
-    lastIndex = range.end
-  }
-  if (lastIndex < body.length) {
-    result += body.slice(lastIndex)
-  }
-  return result
+    if (
+      node.tagName !== 'a' ||
+      typeof node.properties.href !== 'string' ||
+      !page ||
+      node.properties.dataFootnoteRef !== undefined ||
+      node.properties.dataFootnoteBackref !== undefined
+    )
+      return
+    const href = node.properties.href
+    const url = URL.parse(href, page)
+    if (!url || !['https:', 'http:', 'mailto:', 'tel:'].includes(url.protocol)) return
+    const absolute = /^[a-z][a-z\d+.-]*:/i.test(href) || href.startsWith('//')
+    const target = baseUrl || absolute ? url.href : `${url.pathname}${url.search}${url.hash}`
+    parent.children[index] = { type: 'text', value: `${toText(node)} <${target}>` }
+    return SKIP
+  })
+  return toText(tree)
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
 }

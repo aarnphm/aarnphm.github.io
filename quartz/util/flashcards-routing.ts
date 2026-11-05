@@ -15,8 +15,8 @@ import {
   pathToRoot,
   simplifySlug,
 } from './path'
+import { extractLiteralReferences, resolveLiteralReference } from './references/literal'
 import { hasHastClass } from './transclude-props'
-import { extractWikilinksWithPositions, resolveWikilinkTarget } from './wikilinks'
 
 export interface FlashcardRoute {
   noteSlug: FullSlug
@@ -24,7 +24,7 @@ export interface FlashcardRoute {
   /** Persistent review-state key, independent of the drill's current URL. */
   deckSlug: FullSlug
   default: boolean
-  aliases: FullSlug[]
+  aliases: string[]
 }
 
 function fullSlug(value: string): FullSlug {
@@ -198,15 +198,15 @@ function routeMarkdown(
   original: FullSlug,
 ): string | undefined {
   if (text === undefined) return undefined
-  for (const range of extractWikilinksWithPositions(text).reverse()) {
-    const target = resolveWikilinkTarget(range.wikilink, original)
+  for (const range of [...extractLiteralReferences(text)].reverse()) {
+    const target = resolveLiteralReference(range, original)
     if (!target) continue
     const slug = isFlashcardPath(target.slug)
       ? flashcardsSlug(sourceSlugForDeck(target.slug))
       : target.slug
-    const mapped = targetSlug(slug, routes, Boolean(range.wikilink.embed || target.anchor))
+    const mapped = targetSlug(slug, routes, Boolean(range.embed || target.anchor))
     if (mapped === target.slug) continue
-    text = `${text.slice(0, range.start)}<ref slug="${mapped}${target.anchor ?? ''}">${text.slice(range.end)}`
+    text = `${text.slice(0, range.span.start)}<ref slug="${mapped}${target.anchor ?? ''}">${text.slice(range.span.end)}`
   }
   return text.replace(
     /(<ref slug=["']?)([^"'>\s]+)(["']?)( transclude)?>/g,

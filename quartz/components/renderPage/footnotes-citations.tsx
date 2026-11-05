@@ -1,323 +1,197 @@
-import { Element, ElementContent, Root, Text } from 'hast'
-import { h, s } from 'hastscript'
-import { EXIT, visit } from 'unist-util-visit'
-import type { RenderTreeFeatures } from './transclude-scope'
-import { checkBib, checkBibSection } from '../../plugins/transformers/citations'
-import { checkFootnoteRef, checkFootnoteSection } from '../../plugins/transformers/gfm'
-import { clone } from '../../util/clone'
-import { svgOptions } from '../svg'
-
-export function mergeReferences(root: Root, appendSuffix?: string | undefined): void {
-  const finalRefs: Element[] = []
-  const toRemove: Element[] = []
-
-  // visit all references with bib to update suffix
-  visit(
-    root,
-    //@ts-ignore
-    (node: Element) => checkBib(node as Element),
-    (node: Element) => {
-      node.properties.href = `${(node as Element).properties.href}${appendSuffix !== undefined ? '-' + appendSuffix : ''}`
-    },
-  )
-
-  // Find all reference divs and collect their entries
-  visit(root, 'element', (node: Element) => {
-    if (
-      node.type === 'element' &&
-      node.tagName === 'section' &&
-      node.properties.dataReferences == ''
-    ) {
-      toRemove.push(node)
-      const items = (node.children as Element[]).filter(val => val.tagName === 'ul')[0] // The ul is in here
-      finalRefs.push(
-        ...(items.children as Element[]).map(li => {
-          li.properties.id = `${li.properties?.id}${appendSuffix ? '-' + appendSuffix : ''}`
-          return li
-        }),
-      )
-    }
-  })
-
-  // we don't want to remove the last nodes
-  toRemove.pop()
-  if (toRemove.length === 0) return
-
-  // Remove all reference divs except the last one
-  visit(root, 'element', (node: Element, index, parent) => {
-    if (toRemove.includes(node)) {
-      parent!.children.splice(index!, 1)
-    }
-  })
-
-  // finally, update the final position
-  visit(root, { tagName: 'section' }, (node: Element, index, parent) => {
-    if (node.properties.dataReferences == '') {
-      // @ts-ignore
-      node.children[1].children = finalRefs
-      parent!.children.splice(index as number, 1, node)
-    }
-  })
-}
+import type { Element, ElementContent, Root, RootContent, Text } from 'hast'
+import { h } from 'hastscript'
 
 export const getFootnotesList = (node: Element) =>
-  (node.children as Element[]).filter(val => val.tagName === 'ol')[0]
+  node.children.find(
+    (child): child is Element => child.type === 'element' && child.tagName === 'ol',
+  )!
 
 export const getBibList = (node: Element) =>
-  (node.children as Element[]).filter(val => val.tagName === 'ul')[0]
+  node.children.find(
+    (child): child is Element => child.type === 'element' && child.tagName === 'ul',
+  )!
 
 export const isTrailingNoteSection = (node: ElementContent): boolean =>
   node.type === 'element' &&
   node.tagName === 'section' &&
-  (node.properties?.dataFootnotes != null || node.properties?.dataReferences != null)
+  (node.properties.dataFootnotes != null || node.properties.dataReferences != null)
 
-type FootnoteInfo = {
-  originalHref: string
-  index: number
-  footnoteId: string
-  referenceIds: string[]
+function walk(node: Root | RootContent, callback: (node: Element) => void): void {
+  if (node.type === 'element') callback(node)
+  if ('children' in node) for (const child of node.children) walk(child, callback)
 }
 
-export function mergeFootnotes(root: Root, appendSuffix?: string | undefined): void {
-  const notesByHref = new Map<string, FootnoteInfo>()
-  const noteOrder: FootnoteInfo[] = []
-  const finalRefs: Element[] = []
-  const toRemove: Element[] = []
-  const suffixFragment = appendSuffix ? `-${appendSuffix}` : ''
+function removeSections(root: Root, sections: Set<Element>): void {
+  function prune(node: Root | RootContent): void {
+    if (!('children' in node)) return
+    node.children = node.children.filter(child => child.type !== 'element' || !sections.has(child))
+    for (const child of node.children) prune(child)
+  }
+  prune(root)
+}
 
-  visit(
-    root,
-    // @ts-ignore
-    (node: Element) => {
-      if (checkFootnoteRef(node)) {
-        const originalHref = node.properties.href as string
-        let info = notesByHref.get(originalHref)
-        if (!info) {
-          const index = notesByHref.size + 1
-          info = {
-            originalHref,
-            index,
-            footnoteId: `fn-${index}${suffixFragment}`,
-            referenceIds: [],
-          }
-          notesByHref.set(originalHref, info)
-          noteOrder.push(info)
-        }
+function noteSections(root: Root, property: 'dataFootnotes' | 'dataReferences'): Element[] {
+  const sections: Element[] = []
+  walk(root, node => {
+    if (node.tagName === 'section' && node.properties[property] != null) sections.push(node)
+  })
+  const direct = new Set(root.children)
+  return [
+    ...sections.filter(section => direct.has(section)),
+    ...sections.filter(section => !direct.has(section)),
+  ]
+}
 
-        const refId = `fnref-${info.index}-${info.referenceIds.length + 1}${suffixFragment}`
-        info.referenceIds.push(refId)
-
-        node.properties.href = `#${info.footnoteId}`
-        node.properties.id = refId
-
-        const current = info
-        if (current) {
-          visit(node, 'text', (textNode: Text) => {
-            textNode.value = `${current.index}`
-          })
-        }
-      }
-    },
+function mergeSectionLabels(root: Root, sections: Element[]): string | undefined {
+  const labels = sections.flatMap(section =>
+    section.children.flatMap(node =>
+      node.type === 'element' &&
+      /^h[1-6]$/.test(node.tagName) &&
+      typeof node.properties.id === 'string'
+        ? [node.properties.id]
+        : [],
+    ),
   )
-
-  visit(root, function (node) {
-    if (checkFootnoteSection(node as Element)) {
-      toRemove.push(node as Element)
-      finalRefs.push(...(getFootnotesList(node as Element).children as Element[]))
+  const label = labels[0]
+  if (!label) return undefined
+  const removed = new Set(labels.slice(1))
+  walk(root, node => {
+    for (const property of ['href', 'xLinkHref']) {
+      const value = node.properties[property]
+      if (typeof value === 'string' && value.startsWith('#') && removed.has(value.slice(1)))
+        node.properties[property] = '#' + label
+    }
+    for (const property of ['ariaDescribedBy', 'ariaLabelledBy', 'ariaControls']) {
+      const value = node.properties[property]
+      if (Array.isArray(value))
+        node.properties[property] = value.map(id =>
+          typeof id === 'string' && removed.has(id) ? label : id,
+        )
+      else if (typeof value === 'string')
+        node.properties[property] = value
+          .split(/\s+/)
+          .map(id => (removed.has(id) ? label : id))
+          .join(' ')
     }
   })
+  return label
+}
 
-  // we don't want to remove the last nodes
-  toRemove.pop()
-  if (noteOrder.length === 0) return
+export function mergeReferences(root: Root): void {
+  const sections = noteSections(root, 'dataReferences')
+  if (sections.length < 2) return
+  const entries = new Map<string, ElementContent>()
+  for (const section of sections) {
+    for (const entry of getBibList(section)?.children ?? []) {
+      if (entry.type === 'element' && typeof entry.properties.id === 'string')
+        entries.set(entry.properties.id, entry)
+    }
+  }
+  const section = sections[0]
+  const list = getBibList(section)
+  if (!list) return
+  mergeSectionLabels(root, sections)
+  list.children = [...entries.values()]
+  removeSections(root, new Set(sections))
+  root.children.push(section)
+}
 
-  // Remove all reference divs except the last one
-  visit(root, { tagName: 'section' }, (node: Element, index, parent) => {
-    if (toRemove.includes(node)) {
-      parent!.children.splice(index as number, 1)
+type Footnote = { id: string; number: number; references: Element[]; entry: Element }
+
+export function mergeFootnotes(root: Root): void {
+  const sections = noteSections(root, 'dataFootnotes')
+  const section = sections[0]
+  if (!section) return
+  const list = getFootnotesList(section)
+  if (!list) return
+  const definitions = new Map<string, Element>()
+  for (const section of sections) {
+    for (const entry of getFootnotesList(section)?.children ?? []) {
+      if (entry.type === 'element' && typeof entry.properties.id === 'string')
+        definitions.set(entry.properties.id, entry)
+    }
+  }
+  const notes = new Map<string, Footnote>()
+  const reservedIds = new Set<string>()
+  const owners = new Map<string, Element[]>()
+  const footnoteNodes = new Set(definitions.values())
+  walk(root, node => {
+    if (node.tagName === 'a' && node.properties.dataFootnoteRef != null) footnoteNodes.add(node)
+    const id = node.properties.id
+    if (typeof id === 'string') {
+      reservedIds.add(id)
+      const candidates = owners.get(id) ?? []
+      candidates.push(node)
+      owners.set(id, candidates)
     }
   })
-
-  const sortedRefs: Element[] = []
-  const seenOriginal = new Set<string>()
-
-  for (const note of noteOrder) {
-    const originalId = note.originalHref.replace('#', '')
-    if (seenOriginal.has(originalId)) {
-      continue
+  function allocate(id: string): string {
+    while (reservedIds.has(id)) id += '-1'
+    reservedIds.add(id)
+    return id
+  }
+  function retainOrAllocate(node: Element, fallback: string): string {
+    const id = node.properties.id
+    if (typeof id !== 'string' || id.length === 0) return allocate(fallback)
+    const candidates = owners.get(id) ?? []
+    const retained = candidates.find(candidate => !footnoteNodes.has(candidate)) ?? candidates[0]
+    return retained === node ? id : allocate(id)
+  }
+  const labelId = mergeSectionLabels(root, sections)
+  walk(root, node => {
+    if (
+      node.tagName !== 'a' ||
+      node.properties.dataFootnoteRef == null ||
+      typeof node.properties.href !== 'string'
+    )
+      return
+    const originalId = node.properties.href.replace(/^#/, '')
+    const entry = definitions.get(originalId)
+    if (!entry) return
+    let note = notes.get(originalId)
+    if (!note) {
+      const number = notes.size + 1
+      note = { id: retainOrAllocate(entry, `fn-${number}`), number, references: [], entry }
+      notes.set(originalId, note)
     }
-    const refIdx = finalRefs.findIndex(ref => ref.properties?.id === originalId)
-    if (refIdx === -1) {
-      continue
+    note.references.push(node)
+    node.properties.href = `#${note.id}`
+    node.properties.id = retainOrAllocate(node, `fnref-${note.number}-${note.references.length}`)
+    if (labelId) node.properties.ariaDescribedBy = [labelId]
+    const number = note.number
+    function replaceNumber(child: ElementContent): void {
+      if (child.type === 'text') child.value = String(number)
+      else if ('children' in child) for (const nested of child.children) replaceNumber(nested)
     }
-    const ref = finalRefs[refIdx]
-    seenOriginal.add(originalId)
-
-    ref.properties = ref.properties ?? {}
-    ref.properties.id = note.footnoteId
-
-    const anchorsToRemove: { parent: Element; index: number }[] = []
-    visit(ref, 'element', (child: Element, index, parent) => {
-      if (child.tagName === 'a' && child.properties?.dataFootnoteBackref === '') {
-        anchorsToRemove.push({ parent: parent as Element, index: index as number })
-      }
-    })
-
-    anchorsToRemove.sort((a, b) => b.index - a.index)
-    for (const { parent, index } of anchorsToRemove) {
-      parent.children.splice(index, 1)
-      const maybeText = parent.children[index - 1] as Text | undefined
-      if (maybeText && maybeText.type === 'text' && maybeText.value.trim() === '') {
-        parent.children.splice(index - 1, 1)
-      }
+    for (const child of node.children) replaceNumber(child)
+  })
+  if (notes.size === 0) return
+  for (const note of notes.values()) {
+    note.entry.properties.id = note.id
+    function removeBacklinks(node: Element): void {
+      node.children = node.children.filter(
+        child =>
+          child.type !== 'element' ||
+          child.tagName !== 'a' ||
+          child.properties.dataFootnoteBackref == null,
+      )
+      for (const child of node.children) if (child.type === 'element') removeBacklinks(child)
     }
-
-    let container: Element = ref
-    for (let i = ref.children.length - 1; i >= 0; i--) {
-      const child = ref.children[i]
-      if (child.type === 'element') {
-        container = child as Element
-        break
-      }
-    }
-
-    note.referenceIds.forEach((refId, ordinal) => {
-      if (container.children.length > 0) {
-        container.children.push({ type: 'text', value: ' ' } as Text)
-      }
+    removeBacklinks(note.entry)
+    let container = note.entry
+    for (const child of note.entry.children) if (child.type === 'element') container = child
+    for (const [ordinal, ref] of note.references.entries()) {
+      container.children.push({ type: 'text', value: ' ' } satisfies Text)
       container.children.push(
         h(
           'a',
-          { href: `#${refId}`, dataFootnoteBackref: '', ariaLabel: 'Back to content' },
+          { href: `#${ref.properties.id}`, dataFootnoteBackref: '', ariaLabel: 'Back to content' },
           `↩︎${ordinal === 0 ? '' : ordinal + 1}`,
-        ) as Element,
-      )
-    })
-
-    sortedRefs.push(ref)
-  }
-
-  // finally, update the final position
-  visit(root, { tagName: 'section' }, (node: Element) => {
-    if (node.properties.dataFootnotes == '') {
-      // HACK: The node.children will have length 4, and ol is the 3rd items
-      const ol = node.children[2] as Element
-      ol.children = sortedRefs
-    }
-  })
-}
-
-/** support transcluding footnote and bib data */
-export function appendTranscludedNotes(
-  root: Root,
-  features: RenderTreeFeatures,
-  node: Element,
-  pageTree: Root,
-): void {
-  let footnoteSection: Element | undefined = undefined
-  let bibSection: Element | undefined = undefined
-  visit(root, node => {
-    if (checkFootnoteSection(node as Element)) {
-      footnoteSection = node as Element
-      return EXIT
-    } else if (checkBibSection(node as Element)) {
-      bibSection = node as Element
-      return EXIT
-    }
-  })
-
-  const transcludeFootnoteBlock: Element[] = []
-  const transcludeBibBlock: Element[] = []
-
-  visit(node, function (el) {
-    const node = el as Element
-    const { properties } = node
-    if (checkFootnoteRef(node)) {
-      visit(pageTree, { tagName: 'section' }, node => {
-        if (node.properties?.dataFootnotes != null) {
-          const noteId = (properties.href! as string).replace('#', '')
-          transcludeFootnoteBlock.push(
-            getFootnotesList(node).children.find(
-              ref => (ref as Element).properties?.id === noteId,
-            ) as Element,
-          )
-        }
-      })
-    } else if (node.tagName === 'cite' && node.children) {
-      const linkId = (
-        (node.children as Element[]).find(v => v.tagName === 'a')!.properties.href as string
-      ).replace('#', '')
-      visit(pageTree, { tagName: 'section' }, node => {
-        if (node.properties.dataReferences == '') {
-          transcludeBibBlock.push(
-            getBibList(node).children.find(
-              ref => (ref as Element).properties?.id === linkId,
-            ) as Element,
-          )
-        }
-      })
-    }
-  })
-
-  // Footer packing rewrites IDs and backlinks, so each host needs private nodes.
-  const filteredFootnotes = transcludeFootnoteBlock
-    .filter((ref): ref is Element => ref !== undefined && ref !== null)
-    .map(ref => clone(ref))
-  const filteredBibs = transcludeBibBlock
-    .filter((ref): ref is Element => ref !== undefined && ref !== null)
-    .map(ref => clone(ref))
-
-  if (filteredFootnotes.length !== 0) {
-    if (!footnoteSection) {
-      footnoteSection = h(
-        'section.footnotes.main-col',
-        { dataFootnotes: '', dataTransclude: '' },
-        h(
-          'h2.sr-only#footnote-label',
-          { dir: 'auto' },
-          h('span.highlight-span', [{ type: 'text', value: 'remarque' }]),
-          h(
-            'a.internal#footnote-label',
-            { 'data-role': 'anchor', 'data-no-popover': 'true' },
-            s(
-              'svg',
-              { ...svgOptions, fill: 'none', stroke: 'currentColor', strokeWidth: '2' },
-              s('use', { href: '#github-anchor' }),
-            ),
-          ),
         ),
-        { type: 'text', value: '\n' },
-        h('ol', { dir: 'auto' }, [...filteredFootnotes]),
-        { type: 'text', value: '\n' },
       )
-      root.children.push(footnoteSection)
-      features.hasFootnotes = true
-    } else {
-      visit(footnoteSection, { tagName: 'ol' }, (node: Element) => {
-        node.children.push(...filteredFootnotes)
-      })
     }
   }
-  if (filteredBibs.length !== 0) {
-    if (!bibSection) {
-      bibSection = h(
-        'section.bibliography.main-col',
-        { dataReferences: '', dataTransclude: '' },
-        h(
-          'h2#reference-label',
-          { dir: 'auto' },
-          h('span.highlight-span', [{ type: 'text', value: 'bibliographie' }]),
-        ),
-        { type: 'text', value: '\n' },
-        h('ul', { dir: 'auto' }, [...filteredBibs]),
-        { type: 'text', value: '\n' },
-      )
-      root.children.push(bibSection)
-      features.hasReferences = true
-    } else {
-      visit(bibSection, { tagName: 'ul' }, (node: Element) => {
-        node.children.push(...filteredBibs)
-      })
-    }
-  }
+  list.children = [...notes.values()].map(note => note.entry)
+  removeSections(root, new Set(sections))
+  root.children.push(section)
 }

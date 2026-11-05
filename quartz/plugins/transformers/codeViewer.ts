@@ -5,7 +5,8 @@ import { readFile } from 'fs/promises'
 import path from 'path'
 import { visit, SKIP } from 'unist-util-visit'
 import type { NotebookRuntimeCell, NotebookRuntimeData } from '../../runtime/notebook/types'
-import type { Wikilink } from '../../util/wikilinks'
+import type { ReferenceRequestRecord } from '../../util/references/dependencies'
+import { isWikilink } from '../../extensions/micromark-extension-ofm-wikilinks/node'
 import {
   backendFor,
   backendForShellMagic,
@@ -35,33 +36,14 @@ import {
   notebookSourceEditor,
 } from '../../util/notebook/cell-html'
 import { notebookId } from '../../util/notebook/identity'
-import { FilePath } from '../../util/path'
+import { isFilePath, type FilePath } from '../../util/path'
+import { referenceCatalogFor, referenceSourcePath } from '../../util/references/context'
+import { referenceRequest } from '../../util/references/request'
 import '../../runtime/notebook/registry'
 
 type Options = { exts?: string[]; indexUrls?: Readonly<Record<string, string>> }
 
 type ResolvedOptions = { exts: string[]; indexUrls: Map<string, string> }
-
-function resolveToRelativePath(
-  ctx: BuildCtx,
-  target: string,
-  currentMdRel: string,
-): FilePath | null {
-  const relDir = path.posix.dirname(currentMdRel)
-  const targetBase = path.posix.basename(target)
-
-  const sibling = path.posix.join(relDir, target)
-  if (ctx.allFiles.includes(sibling as FilePath)) {
-    return sibling as FilePath
-  }
-
-  if (target.includes('/') && ctx.allFiles.includes(target as FilePath)) {
-    return target as FilePath
-  }
-
-  const match = ctx.allFiles.find(fp => path.posix.basename(fp) === targetBase)
-  return (match ?? null) as FilePath | null
-}
 
 async function readCodeFile(ctx: BuildCtx, resolvedRel: FilePath) {
   const abs = path.posix.join(ctx.argv.directory, resolvedRel)
@@ -81,6 +63,7 @@ interface GithubCodeTransclude {
 
 type CodeNodeData = {
   codeTranscludeTarget?: unknown
+  referenceRequest?: ReferenceRequestRecord
   githubCodeTransclude?: GithubCodeTransclude
   hProperties?: Record<string, string>
 }
@@ -344,30 +327,48 @@ export const CodeViewer: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
               'wikilink',
               (node: unknown, index: number | undefined, parent: Parent | undefined) => {
                 if (index === undefined || !parent) return
-                const wikilinkNode = node as unknown as Wikilink
-                const data = wikilinkNode.data?.wikilink
-                if (!data?.embed) return
-
-                const fp = (data.target ?? '').trim()
-                if (!fp) return
-
-                const remoteCodeNode = githubCodeNode(fp, data.anchorText, exts)
+                if (!isWikilink(node) || !node.data?.reference?.embed) return
+                const reference = node.data.reference
+                const request = referenceRequest(
+                  reference,
+                  referenceSourcePath(file.data),
+                  node.data.referenceFields,
+                )
+                const fragments = request.fragments
+                const resolution = referenceCatalogFor(ctx).resolve(
+                  request.target,
+                  request.origin,
+                  { implicitAlias: true },
+                )
+                const remoteCodeNode = githubCodeNode(
+                  request.target,
+                  fragments.join('#') || undefined,
+                  exts,
+                )
                 if (remoteCodeNode) {
                   if (!hasRootChildren(parent)) return
+                  codeNodeData(remoteCodeNode).referenceRequest = request
                   parent.children.splice(index, 1, remoteCodeNode)
                   return [SKIP, index]
                 }
-
-                if (/^https?:\/\//i.test(fp)) return
+                if (resolution.kind !== 'found' || !isFilePath(resolution.entry.path)) return
+                const fp = resolution.entry.path
                 const ext = path.extname(fp).toLowerCase()
                 if (!ext || !exts.has(ext)) return
-
                 const lang = languageFromExt(ext)
                 const base = path.posix.basename(fp)
-                const codeNode: Code = { type: 'code', lang, meta: titleMeta(base), value: '' }
-
+                const meta = [titleMeta(base), lineRangeMeta(parseLineRange(fragments.join('#')))]
+                  .filter(Boolean)
+                  .join(' ')
+                const codeNode: Code = {
+                  type: 'code',
+                  lang,
+                  meta,
+                  value: '',
+                  position: node.position,
+                }
                 codeNodeData(codeNode).codeTranscludeTarget = fp
-
+                codeNodeData(codeNode).referenceRequest = request
                 if (!hasRootChildren(parent)) return
                 parent.children.splice(index, 1, codeNode)
                 return [SKIP, index]
@@ -388,9 +389,8 @@ export const CodeViewer: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
 
               const target = codeTranscludeTarget(node)
               if (!target) return
-              const currentRel = sourcePathFromFile(file.data, file.path)
-              const resolved = resolveToRelativePath(ctx, target, currentRel)
-              if (!resolved) return
+              if (!isFilePath(target)) return
+              const resolved = target
               const titleBase = path.posix.basename(resolved)
               const ext = path.extname(resolved)
               node.lang = languageFromExt(ext)

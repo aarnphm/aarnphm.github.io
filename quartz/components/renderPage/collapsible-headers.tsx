@@ -18,7 +18,6 @@ function headerElement(
 ): Element {
   const buttonId = `collapsible-header-${node.properties?.id ?? idx}`
 
-  const id = node.properties?.id ?? idx
   const rank = headingRank(node) as number
 
   const originalChildren = [...node.children]
@@ -108,8 +107,13 @@ function headerElement(
   const title = toString({ type: 'root', children: headingContent } as Root)
 
   return h(
-    `section.${className.join('.')}#${id}`,
-    { 'data-level': rank, 'data-title': title, 'data-heading-toggle': headingToggle },
+    `section.${className.join('.')}#${buttonId}`,
+    {
+      'data-level': rank,
+      'data-title': title,
+      'data-heading-toggle': headingToggle,
+      'data-heading-anchor': node.properties.id,
+    },
     [
       h(
         'div.collapse-shell.is-open',

@@ -185,9 +185,8 @@ blockquote.callout:is(
     padding-bottom: var(--space-3);
   }
 
-  & > .callout-title > .fold-callout-icon {
-    color: var(--darkgray);
-    margin-left: auto;
+  & > .callout-title > .callout-fold-toggle {
+    color: var(--dark);
   }
 
   .callout-title > .callout-title-inner {

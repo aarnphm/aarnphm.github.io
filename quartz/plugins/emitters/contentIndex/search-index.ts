@@ -23,6 +23,13 @@ export function serializeContentDetails(content: ContentDetails, includeContent:
   if (!includeContent) {
     delete serializable.content
   }
+  if (content.protected || content.fileData?.frontmatter?.protected === true)
+    delete serializable.referenceTargets
+  else if (content.fileData)
+    serializable.referenceTargets = {
+      headings: (content.fileData.toc ?? []).map(({ text, slug }) => ({ text, anchor: slug })),
+      blocks: Object.keys(content.fileData.blocks ?? {}),
+    }
   delete serializable.fileData
   delete serializable.richContent
   return JSON.stringify(serializable)

@@ -33,6 +33,8 @@ function searchFrontmatter(frontmatter?: ListingFrontmatter) {
 export function pageListingSignature(data: QuartzPluginData): string {
   return JSON.stringify({
     slug: data.slug,
+    tagDisplay: data.tagDisplay,
+    tagAliases: data.tagAliases,
     dates: data.dates,
     description: data.description,
     frontmatter: listingFrontmatter(data.frontmatter),
@@ -68,6 +70,8 @@ export function pageNavigationChanged(
 export function pageSearchSignature(data: QuartzPluginData): string {
   return JSON.stringify({
     slug: data.slug,
+    tagDisplay: data.tagDisplay,
+    tagAliases: data.tagAliases,
     dates: data.dates,
     description: data.description,
     frontmatter: searchFrontmatter(data.frontmatter),
@@ -89,6 +93,8 @@ export function pageSitemapSignature(data: QuartzPluginData): string {
   const frontmatter = data.frontmatter
   return JSON.stringify({
     slug: data.slug,
+    tagDisplay: data.tagDisplay,
+    tagAliases: data.tagAliases,
     dates: data.dates,
     date: frontmatter?.date,
     published: frontmatter?.published,
