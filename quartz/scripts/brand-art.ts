@@ -21,6 +21,7 @@ import {
   student,
   engineer,
   cinephile,
+  surveyor,
   mascot,
   PAPER,
   quill,
@@ -142,6 +143,13 @@ function presenterIcon() {
   return icon(screen, `${bow}${pointer}`, 262, 620)
 }
 
+// Embeddings: the surveyor, a spyglass up to its eye, trained on a constellation of points, a
+// rolled chart over its shoulder.
+function surveyorIcon() {
+  const { spyglass, stars, chart } = surveyor(ICON_PEN)
+  return icon(chart, `${spyglass}${stars}`, 320, 560)
+}
+
 const SECTION_ICONS = {
   triathlon: triathlonIcon,
   fr: frenchIcon,
@@ -154,6 +162,7 @@ const SECTION_ICONS = {
   courses: studentIcon,
   engineering: engineerIcon,
   cinema: cinephileIcon,
+  embeddings: surveyorIcon,
 } as const
 
 async function main() {

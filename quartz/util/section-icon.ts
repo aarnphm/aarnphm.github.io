@@ -15,6 +15,7 @@ export const SECTIONS = [
   'courses',
   'engineering',
   'cinema',
+  'embeddings',
 ] as const
 
 export type Section = (typeof SECTIONS)[number]
@@ -23,7 +24,7 @@ export type Section = (typeof SECTIONS)[number]
 // data-slug, data-is-base and data-slides.
 export type SectionPage = { slug: string; base?: boolean; slides?: boolean }
 
-const FOLDERS: readonly Section[] = ['triathlon', 'fr', 'posts', 'stream', 'courses']
+const FOLDERS: readonly Section[] = ['triathlon', 'fr', 'posts', 'stream', 'courses', 'embeddings']
 
 // Single pages that wear a section's icon.
 const PAGES: Record<string, Section> = {
