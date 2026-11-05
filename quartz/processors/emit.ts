@@ -11,6 +11,7 @@ import { flashcardPages, flashcardPageChanges } from '../util/flashcards-routing
 import { QuartzLogger } from '../util/log'
 import { recordOutput, withOutputOwner } from '../util/output-receipt-context'
 import { logBuildSpan, logBuildStage, PerfTimer } from '../util/perf'
+import { ensureReferenceContent, referenceChangeEvents } from '../util/references/preparation'
 import { getStaticResourcesFromPlugins } from '../util/static-resources'
 import { trace } from '../util/trace'
 import { transclusionChangeEvents } from '../util/transclusion-dependencies'
@@ -109,10 +110,12 @@ export async function emitPartialEmitter(
   changeEvents: ChangeEvent[] | undefined,
   emitterName: string,
 ): Promise<void> {
+  await ensureReferenceContent(ctx, content)
   const emitter = ctx.cfg.plugins.emitters.find(candidate => candidate.name === emitterName)
   if (!emitter) throw new Error(`missing emitter: ${emitterName}`)
 
   if (changeEvents) {
+    changeEvents = referenceChangeEvents(ctx, changeEvents)
     const projected = flashcardPageChanges(content, changeEvents, ctx.cfg.configuration.baseUrl)
     content = projected.content
     changeEvents = projected.changes
@@ -205,6 +208,7 @@ export async function emitContent(
   },
 ) {
   const { argv, cfg } = ctx
+  await ensureReferenceContent(ctx, content)
   const stages = new PerfTimer()
   await pruneCitationCaches(content)
   logBuildStage(argv, ctx.buildId, 'emit.citation-pruning', stages.elapsedMs())
@@ -213,7 +217,11 @@ export async function emitContent(
     inputChangeEvents &&
     transclusionChangeEvents(
       content,
-      trackedWahooChangeEvents(content, inputChangeEvents, argv.directory),
+      trackedWahooChangeEvents(
+        content,
+        referenceChangeEvents(ctx, inputChangeEvents),
+        argv.directory,
+      ),
       argv.directory,
     )
   logBuildStage(argv, ctx.buildId, 'emit.change-dependencies', stages.elapsedMs('dependencies'))
