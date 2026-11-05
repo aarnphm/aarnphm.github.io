@@ -27,4 +27,3 @@ external: https://www.arts.gov/initiatives/nea-big-read/lesson-dying
 Source: [ribbonedby’s reading recommendations](https://www.instagram.com/reel/DfVM_QCohH6/), creator’s caption.
 
 Bibliography: [book reference](https://www.arts.gov/initiatives/nea-big-read/lesson-dying).
-

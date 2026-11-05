@@ -32,4 +32,3 @@ Source: [ribbonedby’s reading recommendations](https://www.instagram.com/reel/
 Bibliography: [book reference](https://fitzcarraldoeditions.com/books/melancholy-i-ii/).
 
 The two Norwegian volumes appeared in 1995 and 1996. This entry collects both in the 2023 Fitzcarraldo English edition. The year field records the first volume’s original publication. [Publication history](https://fitzcarraldo-editions.s3.amazonaws.com/files/Spring-2023-catalogue-1663770735566.pdf).
-
