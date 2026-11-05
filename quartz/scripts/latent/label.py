@@ -299,7 +299,11 @@ def main() -> None:
       if isinstance(prev, str):
         continue  # written by hand
       # a resumed --force run: what this run already labelled stays
-      if args.since and isinstance(prev, dict) and str(prev.get('at') or '') >= args.since:
+      if (
+        args.since
+        and isinstance(prev, dict)
+        and str(prev.get('at') or '') >= args.since
+      ):
         continue
       if not args.force and isinstance(prev, dict):
         a, b = set(prev.get('rows') or []), set(keys)

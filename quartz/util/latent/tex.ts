@@ -10,6 +10,36 @@
 const DOUBLE =
   /(([_^])\s*(?:\{(?:[^{}]|\{(?:[^{}]|\{[^{}]*\})*\})*\}|\\[a-zA-Z]+|[a-zA-Z0-9]))\s*(?=\2)/g
 
+// a group's body, nested two deep
+const BODY = String.raw`(?:[^{}]|\{(?:[^{}]|\{[^{}]*\})*\})*`
+
+// `W \in \mathbb{R}^{d_h^R} \times d`: OCR closes a space's exponent before the last factor of
+// its shape. ℝⁿ times a bare dimension name (`d`, `n_{h}`) ending the formula is never a product
+// of sets, it is the shape `\mathbb{R}^{d_h^R \times d}`; `\times \{t\}` and `\times (0,T)` stay
+const SHAPE = new RegExp(
+  String.raw`(\\mathbb\s*\{\s*R\s*\}\s*\^\s*)\{(${BODY})\}\s*\\times\s*([a-z](?:\s*_\s*(?:\{[^{}]*\}|[a-zA-Z0-9]))?)(?=\s*(?:[,.;]\s*)?$)`,
+  'g',
+)
+
+// `\begin{array}{c - 2 \\ 1 }`: OCR lost the brace that ends the column spec
+const ARRAY_SPEC = /(\\begin\s*\{array\}\s*\{\s*[lcr|](?:[\s|]*[lcr|])*)(?=\s*[^\s{}lcr|:@p*])/g
+
+// OCR spellings KaTeX lacks
+const SPELLINGS: [RegExp, string][] = [
+  [/\\§\s*/g, '\\S '],
+  [/\\notrightarrow(?![a-zA-Z])/g, '\\nrightarrow'],
+  [/\\triangleledown(?![a-zA-Z])/g, '\\triangledown'],
+  [/\\bigsqcap(?![a-zA-Z])/g, '\\mathop{\\large\\sqcap}'],
+  [/\\circled\s*\{\s*\+\s*\}/g, '\\oplus'],
+]
+
+/** Repairs both inline and display TeX share: `#` escaped, stacked scripts split, spellings, shapes. */
+function ocrTex(tex: string): string {
+  let out = tex.replace(/(?<!\\)#/g, '\\#').replace(DOUBLE, '$1{}')
+  for (const [from, to] of SPELLINGS) out = out.replace(from, to)
+  return out.replace(SHAPE, '$1{$2 \\times $3}').replace(ARRAY_SPEC, '$1}')
+}
+
 const TAG = /\\tag(\*?)\s*\{((?:[^{}]|\{[^{}]*\})*)\}/g
 
 // the tokens that open or close something: environments, \left/\right with their delimiter,
@@ -78,16 +108,13 @@ export function balanceTex(tex: string): string {
 
 /**
  * A display equation's TeX for KaTeX: lines joined; `#` escaped (OCR'd assembly listings write
- * `#3` for an immediate, which TeX reads as a macro parameter); stacked scripts split; of several
+ * `#3` for an immediate, which TeX reads as a macro parameter); stacked scripts split; OCR
+ * spellings and shapes repaired (`ocrTex`); of several
  * `\tag`s the last kept, at the end; braces and delimiters balanced. TeX that already typesets
  * comes out the same.
  */
 export function displayTex(raw: string): string {
-  let tex = raw
-    .replace(/\s*\n\s*/g, ' ')
-    .replace(/(?<!\\)#/g, '\\#')
-    .replace(DOUBLE, '$1{}')
-    .trim()
+  let tex = ocrTex(raw.replace(/\s*\n\s*/g, ' ')).trim()
   const tags = [...tex.matchAll(TAG)]
   if (tags.length > 1) {
     const [, star, label] = tags[tags.length - 1]
@@ -99,4 +126,12 @@ export function displayTex(raw: string): string {
     tex = `${body} \\tag${star}{${label.trim()}}`
   }
   return balanceTex(tex)
+}
+
+/**
+ * An inline span's TeX for KaTeX: the display repairs without the tag handling. OCR drops the
+ * opener of `\boxed{…}` and leaves `$\mathbf{k}_{t}^{R}}$`; the stray `}` goes.
+ */
+export function inlineTex(raw: string): string {
+  return balanceTex(ocrTex(raw))
 }

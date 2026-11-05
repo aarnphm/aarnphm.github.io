@@ -45,7 +45,7 @@ export function stepDocumentLinks(rt: Runtime, step: number): void {
   row?.scrollIntoView({ block: 'nearest' })
 }
 
-/** Rows have one fixed line; only the visible document window remains in the DOM. */
+/** Keep the viewport window and its focused row; spacers preserve their document positions. */
 export function renderDocumentLinks(
   rt: Runtime,
   focus: LatentPreview,
@@ -71,46 +71,81 @@ export function renderDocumentLinks(
     state.rows.push(...own.map(group => group.doc.d))
     const find = (doc: number) =>
       list.querySelector<HTMLElement>(`.lat-link-document[data-doc="${doc}"]`)
+    const mounted = new Map<number, HTMLElement>()
     const sample = list.firstElementChild
     if (!(sample instanceof HTMLElement)) continue
     let rowHeight = sample.getBoundingClientRect().height
-    let viewportHeight = rt.links.clientHeight
-    const windowRows = () => Math.ceil(viewportHeight / rowHeight) + 2 * OVERSCAN
-    if (!rowHeight) {
-      for (const group of own) state.reveal.set(group.doc.d, () => find(group.doc.d))
-      continue
-    }
     let start = -1
-    const before = document.createElement('li')
-    const after = document.createElement('li')
-    for (const spacer of [before, after]) {
-      spacer.className = 'lat-list-spacer'
-      spacer.setAttribute('aria-hidden', 'true')
+    let end = -1
+    let keptFocus = -1
+    const spacer = (count: number) => {
+      const item = document.createElement('li')
+      item.className = 'lat-list-spacer'
+      item.setAttribute('aria-hidden', 'true')
+      item.style.height = `${count * rowHeight}px`
+      return item
     }
     const paint = (at?: number) => {
-      const top = rt.links.getBoundingClientRect().top - list.getBoundingClientRect().top
+      const first = mounted.values().next().value ?? sample
+      const height = first.getBoundingClientRect().height
+      if (!height) return
+      const changedHeight = height !== rowHeight
+      rowHeight = height
+      const pane = rt.links.getBoundingClientRect()
+      const viewportTop = Math.max(0, pane.top)
+      const viewportHeight = Math.max(0, Math.min(window.innerHeight, pane.bottom) - viewportTop)
+      const windowRows = Math.max(1, Math.ceil(viewportHeight / rowHeight)) + 2 * OVERSCAN
+      const top = viewportTop - list.getBoundingClientRect().top
       const next = Math.min(
-        Math.max(0, own.length - windowRows()),
+        Math.max(0, own.length - windowRows),
         Math.max(0, at ?? Math.floor(top / rowHeight) - OVERSCAN),
       )
-      if (next === start) return
-      if (at === undefined && list.contains(document.activeElement) && start >= 0) return
+      const until = Math.min(own.length, next + windowRows)
+      const focused = [...mounted].find(([, row]) => row.contains(document.activeElement))
+      const focusedIndex = focused?.[0] ?? -1
+      if (next === start && until === end && focusedIndex === keptFocus && !changedHeight) return
       start = next
-      const end = Math.min(own.length, start + windowRows())
-      before.style.height = `${start * rowHeight}px`
-      after.style.height = `${(own.length - end) * rowHeight}px`
-      list.innerHTML = own
-        .slice(start, end)
-        .map((group, index) => {
-          const row = documentLink(group, focus.d)
-          row.properties.ariaSetSize = own.length
-          row.properties.ariaPosInSet = start + index + 1
-          return toHtml(row as never)
-        })
-        .join('')
-      list.prepend(before)
-      list.append(after)
-      list.start = start + 1
+      end = until
+      keptFocus = focusedIndex
+      const indices = Array.from({ length: end - start }, (_, i) => start + i)
+      if (focusedIndex >= 0 && (focusedIndex < start || focusedIndex >= end))
+        indices.push(focusedIndex)
+      indices.sort((a, b) => a - b)
+      const desired: HTMLElement[] = []
+      const retained = new Map<number, HTMLElement>()
+      let previous = -1
+      for (const index of indices) {
+        if (index > previous + 1) desired.push(spacer(index - previous - 1))
+        let row = mounted.get(index)
+        if (!row) {
+          const node = documentLink(own[index], focus.d)
+          node.properties.ariaSetSize = own.length
+          node.properties.ariaPosInSet = index + 1
+          const template = document.createElement('template')
+          template.innerHTML = toHtml(node as never)
+          const element = template.content.firstElementChild
+          if (!(element instanceof HTMLElement)) continue
+          row = element
+        }
+        row.toggleAttribute('data-keyboard-active', state.rows[state.active] === own[index].doc.d)
+        desired.push(row)
+        retained.set(index, row)
+        previous = index
+      }
+      if (previous < own.length - 1) desired.push(spacer(own.length - previous - 1))
+      const wanted = new Set(desired)
+      for (const child of Array.from(list.children)) {
+        if (child instanceof HTMLElement && !wanted.has(child)) child.remove()
+      }
+      // Retained rows keep their order and remain connected, including the focused row.
+      let cursor = list.firstElementChild
+      for (const child of desired) {
+        if (child === cursor) cursor = cursor.nextElementSibling
+        else list.insertBefore(child, cursor)
+      }
+      mounted.clear()
+      for (const [index, row] of retained) mounted.set(index, row)
+      list.start = indices[0] + 1
     }
     own.forEach((group, index) =>
       state.reveal.set(group.doc.d, () => {
@@ -143,24 +178,19 @@ export function renderDocumentLinks(
           paint()
         })
     }
-    const resize = new ResizeObserver(() => {
-      const mounted = list.querySelector<HTMLElement>('.lat-link-document')
-      const height = mounted?.getBoundingClientRect().height
-      const viewport = rt.links.clientHeight
-      if (!height || (height === rowHeight && viewport === viewportHeight)) return
-      rowHeight = height
-      viewportHeight = viewport
-      start = -1
-      schedule()
-    })
+    const resize = new ResizeObserver(schedule)
     resize.observe(rt.links)
     rt.links.addEventListener('scroll', schedule, { passive: true, signal: rt.signal })
+    window.addEventListener('scroll', schedule, { passive: true, signal: rt.signal })
+    window.addEventListener('resize', schedule, { signal: rt.signal })
     list.addEventListener('focusout', schedule, { signal: rt.signal })
     list.addEventListener('keydown', onTab, { signal: rt.signal })
     cleanups.push(() => {
       resize.disconnect()
       cancelAnimationFrame(frame)
       rt.links.removeEventListener('scroll', schedule)
+      window.removeEventListener('scroll', schedule)
+      window.removeEventListener('resize', schedule)
       list.removeEventListener('focusout', schedule)
       list.removeEventListener('keydown', onTab)
     })

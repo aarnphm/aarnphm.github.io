@@ -58,8 +58,19 @@ function hold(): void {
   if (Math.abs(moved) > 0.5) window.scrollBy({ top: moved, behavior: 'instant' })
 }
 
+function toolAnchor(): HTMLElement | null {
+  const active = document.activeElement
+  if (!(active instanceof HTMLElement) || !active.closest('.lat-links, .lat-probe')) return null
+  const popup = active.closest<HTMLElement>('.lat-chunk-preview')
+  if (!popup) return active
+  return document.querySelector<HTMLElement>(
+    `[data-lat-chunk][aria-details~="${CSS.escape(popup.id)}"]`,
+  )
+}
+
 /** Keep the text under the reading line still when something above it grows or shrinks. */
 export function keepLine(anchor: HTMLElement | null, mutate: () => void): void {
+  anchor = toolAnchor() ?? anchor
   if (anchor?.isConnected && anchor !== steady.el) anchorTo(anchor)
   const el = steady.el
   // read the anchor's place on screen before the change: dropping documents above can shorten
@@ -144,7 +155,7 @@ function rowChunk(rt: Runtime, row: number): HTMLElement | null {
   return (first && rt.reader.querySelector<HTMLElement>(`.lat-chunk[data-row="${first}"]`)) || chunk
 }
 
-function setFocus(rt: Runtime, row: number, options: { push?: boolean } = {}): void {
+async function setFocus(rt: Runtime, row: number, options: { push?: boolean } = {}): Promise<void> {
   if (rt.focus === row) return
   rt.focus = row
   rt.open = docOfRow(rt, row).d
@@ -159,7 +170,7 @@ function setFocus(rt: Runtime, row: number, options: { push?: boolean } = {}): v
     url.searchParams.set('focus', String(row))
     history.replaceState(history.state, '', url)
   }
-  void renderLinks(rt, row).catch(error => {
+  await renderLinks(rt, row).catch(error => {
     if (!rt.signal.aborted) console.warn('[latent]', error)
   })
 }
@@ -291,6 +302,7 @@ export async function goTo(rt: Runtime, row: number): Promise<void> {
   const intent = {}
   navigation.set(rt, intent)
   const stale = () => rt.signal.aborted || navigation.get(rt) !== intent
+  const control = document.activeElement
   const doc = docOfRow(rt, row)
   let chunk = rowChunk(rt, row)
   if (!chunk) {
@@ -309,10 +321,16 @@ export async function goTo(rt: Runtime, row: number): Promise<void> {
     chunk = rowChunk(rt, row)
   }
   if (!chunk) return
+  if (
+    control instanceof HTMLElement &&
+    document.activeElement === control &&
+    (rt.links.contains(control) || rt.probe.contains(control))
+  )
+    control.blur()
   const top = chunk.getBoundingClientRect().top + window.scrollY - readingLineY() + 8
   window.scrollTo({ top, behavior: 'instant' })
   anchorTo(chunk)
-  setFocus(rt, row)
+  await setFocus(rt, row)
   // a scroll clamped at 0 fires no scroll event; let the reader look for stubs to mount anyway
   window.dispatchEvent(new Event('scroll'))
 }
@@ -326,50 +344,68 @@ export function bindReader(rt: Runtime): void {
   }
   const update = () => {
     frame = 0
-    const chunk = chunkUnderLine(rt)
-    if (!chunk) {
-      syncReaderHead(rt)
-      return
-    }
-    if (chunk !== steady.el) anchorTo(chunk)
-    const row = Number(chunk.dataset.row)
-    if (row !== rt.focus) {
-      const open = rt.open
-      setFocus(rt, row)
-      // crossing into another document moves the one-stub-either-side window with it; without
-      // this the reader runs out of page above a document mounted from its stub
-      if (rt.open !== open) ensureStubs(rt)
+    const bounds = rt.reader.getBoundingClientRect()
+    const line = readingLineY()
+    const active = document.activeElement
+    const usingTools = rt.links.contains(active) || rt.probe.contains(active)
+    const tool = usingTools ? toolAnchor() : null
+    if (tool && tool !== steady.el) anchorTo(tool)
+    // Focusing a tool can scroll the page while the reader's tail still crosses the line.
+    // Preserve that control until focus leaves it; explicit navigation still selects its row.
+    const chunk =
+      !usingTools && bounds.top <= line && bounds.bottom >= line ? chunkUnderLine(rt) : null
+    if (chunk) {
+      if (chunk !== steady.el) anchorTo(chunk)
+      const row = Number(chunk.dataset.row)
+      if (row !== rt.focus) {
+        const open = rt.open
+        setFocus(rt, row)
+        // crossing into another document moves the one-stub-either-side window with it; without
+        // this the reader runs out of page above a document mounted from its stub
+        if (rt.open !== open) ensureStubs(rt)
+      }
     }
     syncReaderHead(rt)
+    // Holding a tool in view also holds nearby reader sentinels in view. Defer their
+    // prefetch until interaction returns to the reader so they cannot pull the corpus along.
+    if (usingTools) return
     const near = (el: HTMLElement) => {
       const rect = el.getBoundingClientRect()
       return rect.top < window.innerHeight * 1.5 && rect.bottom > -window.innerHeight * 0.5
     }
     // approach the rest of the open document: fill the part sentinel within one viewport
     for (const more of rt.reader.querySelectorAll<HTMLElement>('.lat-more')) {
-      if (near(more)) void fillMore(rt, more).catch(reportError)
+      if (more.dataset.loading === undefined && near(more))
+        void fillMore(rt, more).then(schedule).catch(reportError)
     }
-    // approach the neighbours: mount the stub that is within one viewport
+    // A short document can expose another stub without a scroll, so recheck after each mount.
     for (const stub of rt.reader.querySelectorAll<HTMLElement>('.lat-doc-stub')) {
       if (near(stub)) {
         const d = Number(stub.dataset.doc)
         void mountDocument(rt, d, d < rt.open ? 'last' : 0)
           .then(() => {
-            if (!rt.signal.aborted) ensureStubs(rt)
+            if (!rt.signal.aborted) {
+              ensureStubs(rt)
+              schedule()
+            }
           })
           .catch(reportError)
       }
     }
   }
   const schedule = () => {
-    if (!frame) frame = requestAnimationFrame(update)
+    if (!rt.signal.aborted && !frame) frame = requestAnimationFrame(update)
   }
   window.addEventListener('scroll', schedule, { passive: true, signal: rt.signal })
+  rt.root.addEventListener('focusout', schedule, { signal: rt.signal })
   // at the top of the page a scroll up fires no scroll event, so the stub above the opening
   // document would never mount; look once on arrival
   schedule()
   // every change of the reader's height, whatever made it, is held against the anchor
-  const sizes = new ResizeObserver(() => hold())
+  const sizes = new ResizeObserver(() => {
+    hold()
+    schedule()
+  })
   sizes.observe(rt.reader)
   rt.signal.addEventListener('abort', () => {
     sizes.disconnect()

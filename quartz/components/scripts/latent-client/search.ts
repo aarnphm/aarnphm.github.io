@@ -14,6 +14,7 @@ import { railSvg, type LinkItem } from '../../../util/latent/markup'
 import { RAIL_WIDTH } from '../../../util/latent/rail'
 import { inScope, type LatentDoc, type LatentKind } from '../../../util/latent/types'
 import { setStatusText } from '../status-flap'
+import { showAxis } from './axes-carousel'
 import { drawBench } from './bench-canvas'
 import { bindChunkPreview } from './chunk-preview'
 import { linkItems, renderDocumentLinks, stepDocumentLinks } from './document-list'
@@ -52,8 +53,9 @@ export async function renderLinks(rt: Runtime, row: number): Promise<void> {
   }
   // probe ticks
   const ticks = rt.probe.querySelectorAll<SVGLineElement>('.lat-axis .lat-focus-tick')
-  rt.probe.querySelectorAll<SVGSVGElement>('.lat-axis').forEach((card, i) => {
-    const value = links.axes[i]
+  rt.probe.querySelectorAll<HTMLElement>('.lat-axis').forEach(card => {
+    // the carousel puts the pcs first; the index is the axis's place in probe.json
+    const value = links.axes[Number(card.dataset.axisIndex)]
     if (value === undefined) return
     const x = (64 + (value / 127) * 64).toFixed(1)
     let tick = card.querySelector<SVGLineElement>('.lat-focus-tick')
@@ -96,6 +98,41 @@ export async function filterMask(rt: Runtime): Promise<Uint8Array | undefined> {
 
 /** The precomputed links keep at most this many chunks of the focus's own document. */
 const SAME_DOC = 4
+/** Chunks a filtered list scores, so its documents fill the pane; and chunks kept per document. */
+const FILL_K = 384
+const FILL_PER_DOC = 8
+
+/** Documents the links pane shows without scrolling, plus a few to scroll into. */
+function paneDocs(rt: Runtime): number {
+  const row =
+    rt.links.querySelector<HTMLElement>('.lat-link-document')?.getBoundingClientRect().height || 48
+  return Math.max(rt.k, Math.ceil(rt.links.clientHeight / row) + 4)
+}
+
+/**
+ * Hits in score order until `docs` documents are in: at most FILL_PER_DOC chunks each, and
+ * SAME_DOC of the focus's own document (`own`).
+ */
+function fillDocs(
+  rt: Runtime,
+  hits: Uint32Array,
+  scores: Float32Array,
+  docs: number,
+  own = -1,
+): [number, number][] {
+  const per = new Map<number, number>()
+  const out: [number, number][] = []
+  for (let i = 0; i < hits.length; i++) {
+    const d = rt.docByRow[hits[i]]?.d
+    if (d === undefined) continue
+    const n = per.get(d) ?? 0
+    if (n === 0 && per.size >= docs) continue
+    if (n >= (d === own ? SAME_DOC : FILL_PER_DOC)) continue
+    per.set(d, n + 1)
+    out.push([hits[i], Math.round(Math.max(0, scores[i]) * 255)])
+  }
+  return out
+}
 
 /**
  * The focus row's nearest rows of the filtered kinds, scored over the whole matrix: the
@@ -112,19 +149,11 @@ async function filteredNeighbours(rt: Runtime, row: number): Promise<[number, nu
   only[row] = 0
   const result = await requestVec(
     rt,
-    { type: 'query', url, vector: got.vector, scale: meta.scale, k: rt.k * 3, only },
+    { type: 'query', url, vector: got.vector, scale: meta.scale, k: FILL_K, only },
     [got.vector.buffer, only.buffer],
   )
   if (result.type !== 'queried') return []
-  const own = rt.docByRow[row]?.d
-  const out: [number, number][] = []
-  let same = 0
-  for (let i = 0; i < result.hits.length && out.length < rt.k; i++) {
-    const r = result.hits[i]
-    if (rt.docByRow[r]?.d === own && ++same > SAME_DOC) continue
-    out.push([r, Math.round(Math.max(0, result.scores[i]) * 255)])
-  }
-  return out
+  return fillDocs(rt, result.hits, result.scores, paneDocs(rt), rt.docByRow[row]?.d)
 }
 
 function linksBody(rt: Runtime): HTMLElement {
@@ -189,14 +218,13 @@ function matchAxes(rt: Runtime, text: string): number {
       first ??= card
     } else delete card.dataset.match
   }
-  // an open features tab keeps the probe: it lists the features whose terms match
+  // an open features tab keeps the probe: it lists the features whose terms match. Otherwise
+  // the 3-d tab opens and its axis carousel slides to the first match
   const features = rt.probe.querySelector<HTMLElement>('.lat-panel[data-panel="features"]')
   if (first && (!features || features.hidden)) {
-    for (const tab of rt.probe.querySelectorAll<HTMLButtonElement>('.lat-tab'))
-      tab.setAttribute('aria-selected', String(tab.dataset.tab === 'axes'))
-    for (const panel of rt.probe.querySelectorAll<HTMLElement>('.lat-panel'))
-      panel.hidden = panel.dataset.panel !== 'axes'
-    first.scrollIntoView({ block: 'nearest' })
+    const bench = rt.probe.querySelector<HTMLButtonElement>('.lat-tab[data-tab="bench"]')
+    if (bench && bench.getAttribute('aria-selected') !== 'true') bench.click()
+    showAxis(first)
   }
   return count
 }
@@ -273,13 +301,16 @@ export async function runQuery(rt: Runtime, text: string): Promise<void> {
     if (stale()) return
     const result = await requestVec(
       rt,
-      { type: 'query', url, vector, scale: meta.scale, k: rt.k, only },
+      { type: 'query', url, vector, scale: meta.scale, k: only ? FILL_K : rt.k, only },
       [vector.buffer],
     )
     if (result.type !== 'queried' || stale()) return
+    // a filtered query fills the pane with documents; an open one keeps the k nearest chunks
     const items = linkItems(
       rt,
-      [...result.hits].map((row, i) => [row, Math.round(Math.max(0, result.scores[i]) * 255)]),
+      only
+        ? fillDocs(rt, result.hits, result.scores, paneDocs(rt))
+        : [...result.hits].map((row, i) => [row, Math.round(Math.max(0, result.scores[i]) * 255)]),
     )
     rt.query = { text, items }
     renderDocumentLinks(

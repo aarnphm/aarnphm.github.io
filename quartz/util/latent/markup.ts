@@ -2,6 +2,7 @@ import type { Element, ElementContent } from 'hast'
 import { h } from 'hastscript'
 import type {
   LatentAxis,
+  LatentAxisPole,
   LatentChunk,
   LatentDoc,
   LatentIndex,
@@ -42,7 +43,7 @@ import {
   truncate,
 } from './rail'
 import { svgDrawings } from './svg'
-import { displayTex } from './tex'
+import { displayTex, inlineTex } from './tex'
 import { titleRuns, titleText } from './title'
 import { KIND_ORDER, inScope, rowHref } from './types'
 
@@ -90,7 +91,11 @@ function inlineRuns(text: string): ElementContent[] {
   let last = 0
   for (const match of text.matchAll(INLINE)) {
     if (match.index > last) out.push({ type: 'text', value: text.slice(last, match.index) })
-    out.push(match[1] !== undefined ? h('span.math.math-inline', match[1]) : h('strong', match[2]))
+    out.push(
+      match[1] !== undefined
+        ? h('span.math.math-inline', inlineTex(match[1]))
+        : h('strong', match[2]),
+    )
     last = match.index + match[0].length
   }
   if (last < text.length) out.push({ type: 'text', value: text.slice(last) })
@@ -195,7 +200,9 @@ function withCode(text: string, runs: (masked: string) => ElementContent[]): Ele
  * svg rebuilt through ./svg's allowlist, labelled like the note page's figure. A block with no
  * drawing in it (a figure around an image) drops, as images do.
  */
-function figureBlock(html: string): Element[] {
+function figureBlock(html: string, inline: MdHooks['inline']): Element[] {
+  const paper = paperFigure(html, inline)
+  if (paper) return paper
   const drawings = svgDrawings(html)
   if (!drawings.length) return []
   const label = /<figure\b[^>]*?\baria-label\s*=\s*"([^"]*)"/.exec(html)?.[1]
@@ -208,17 +215,43 @@ function figureBlock(html: string): Element[] {
   ]
 }
 
+// An arXiv paper's figure (quartz/scripts/latent/arxiv.py writes it, one line): the source's
+// graphics, drawn at build under /embeddings/latent/fig/, and the caption as markdown. Only that
+// exact shape and folder pass; any other figure html goes through the svg allowlist.
+const PAPER_FIGURE =
+  /^<figure class="lat-paper-figure">((?:<img [^<>]*>)*)<figcaption>([\s\S]*?)<\/figcaption><\/figure>\s*$/
+const PAPER_IMAGE =
+  /<img src="(\/embeddings\/latent\/fig\/[\w.-]+\/[\w.-]+\.(?:svg|webp))" alt="">/g
+
+function paperFigure(html: string, inline: MdHooks['inline']): Element[] | null {
+  const m = PAPER_FIGURE.exec(html.trim())
+  if (!m) return null
+  const plates = [...m[1].matchAll(PAPER_IMAGE)].map(image =>
+    h('img', { src: image[1], alt: '', loading: 'lazy', decoding: 'async' }),
+  )
+  return [
+    h('figure.lat-paper-figure', [
+      plates.length
+        ? h('div.lat-paper-plates', { dataCount: String(plates.length) }, plates)
+        : null,
+      h('figcaption', inline(m[2])),
+    ]),
+  ]
+}
+
 const mdHooks = (options: PassageOptions): MdHooks => {
   const runs = { ...options, code: false }
+  const inline: MdHooks['inline'] = text =>
+    withCode(gardenText(text), masked => htmlRuns(masked, mdLeaf, runs))
   return {
-    inline: text => withCode(gardenText(text), masked => htmlRuns(masked, mdLeaf, runs)),
+    inline,
     pipe: block =>
       pipeTable(block, cell =>
         withCode(gardenText(cell), masked => htmlRuns(masked, mdCellLeaf, runs)),
       ),
     display: tex => h('div.math.math-display', decodeEntities(tex)),
     fence: (body, info) => fenceView(body, info, options),
-    figure: figureBlock,
+    figure: html => figureBlock(html, inline),
   }
 }
 
@@ -413,7 +446,15 @@ function joinedRun(chunks: LatentChunk[], texts: string[], i: number): number {
   while (open % 2 === 1) {
     j += 1
     const next = chunks[j]
-    if (!next || j - i >= JOIN_MAX || next.same || next.r !== chunks[j - 1].r + 1) return i
+    if (
+      !next ||
+      j - i >= JOIN_MAX ||
+      next.same ||
+      next.m === 1 ||
+      next.j !== undefined ||
+      next.r !== chunks[j - 1].r + 1
+    )
+      return i
     open += fences(texts[j])
   }
   // a lone `$`, a table or a heading inside any of the run's display math means the dollars
@@ -435,7 +476,7 @@ const OVERLAP_MIN = 12
 function ownText(prev: LatentChunk | undefined, chunk: LatentChunk): string {
   const text = chunk.text ?? ''
   const before = prev?.text ?? ''
-  if (!prev || prev.same || chunk.same || prev.r + 1 !== chunk.r) return text
+  if (!prev || prev.same || chunk.same || prev.m === 1 || prev.r + 1 !== chunk.r) return text
   const probe = text.length < OVERLAP_MIN ? '\u0000' : text.slice(0, OVERLAP_MIN)
   // the earliest place the row's start recurs in the tail of the one before is the longest seam
   for (
@@ -502,11 +543,28 @@ function chunkLocus(
   ])
 }
 
+/** An arXiv slice and the passages right after it whose text it shows (`j` naming it). */
+function sourceRun(chunks: LatentChunk[], i: number): number {
+  let j = i
+  while (chunks[j + 1]?.j === chunks[i].r && chunks[j + 1].r === chunks[j].r + 1) j += 1
+  return j
+}
+
+const joinedMarker = (c: LatentChunk, to: number): Element =>
+  h('article.lat-chunk.lat-joined', {
+    id: `lat-r${c.r}`,
+    dataRow: String(c.r),
+    dataPage: c.p ? String(c.p) : undefined,
+    dataJoined: String(to),
+  })
+
 /**
  * `article.lat-chunk` for each chunk; `chunk.c` is its index in the document. A run of pdf rows
  * holding one display equation (see `joinedRun`) is one article on its first row; each row after
  * it keeps an empty `article.lat-joined` marker (`data-joined` names the first row), so focus,
- * the rail and goTo still find every row.
+ * the rail and goTo still find every row. An arXiv paper's passage read from its TeX source
+ * (`m`) is markdown, as a note's slice is; a passage whose text another slice shows (`j`) is a
+ * marker joined to that slice's row, wherever it sits.
  */
 export function chunkArticles(
   meta: Pick<LatentText, 'store'>,
@@ -515,17 +573,26 @@ export function chunkArticles(
   focus: number,
 ): Element[] {
   const pdf = meta.store === 'pdf'
-  const texts = chunks.map((chunk, i) => (pdf ? ownText(chunks[i - 1], chunk) : (chunk.text ?? '')))
+  const texts = chunks.map((chunk, i) =>
+    pdf && chunk.m !== 1 ? ownText(chunks[i - 1], chunk) : (chunk.text ?? ''),
+  )
   const out: Element[] = []
   for (let i = 0; i < chunks.length; i++) {
     const chunk = chunks[i]
-    const j = pdf ? joinedRun(chunks, texts, i) : i
+    if (chunk.j !== undefined) {
+      out.push(joinedMarker(chunk, chunk.j))
+      continue
+    }
+    const j = !pdf ? i : chunk.m === 1 ? sourceRun(chunks, i) : joinedRun(chunks, texts, i)
     const run = chunks.slice(i, j + 1)
     out.push(
       h(
-        'article.lat-chunk',
+        // a pdf passage is set like its paper (latent-folio.scss); its hyphenation is English,
+        // as the pdf shelf is, not the page's language
+        pdf ? 'article.lat-chunk.lat-pdf' : 'article.lat-chunk',
         {
           id: `lat-r${chunk.r}`,
+          lang: pdf ? 'en' : undefined,
           dataRow: String(chunk.r),
           dataPage: chunk.p ? String(chunk.p) : undefined,
           dataBox: runBox(run)?.join(','),
@@ -538,25 +605,19 @@ export function chunkArticles(
             ? [imageFrame(doc)]
             : chunk.same
               ? [samePointer(chunk.same)]
-              : passageBlocks(texts.slice(i, j + 1).join('\n\n'), {
-                  code: meta.store === 'note',
-                  markdown: chunk.m === 1,
-                  lines: meta.store === 'note' && chunk.m !== 1,
-                  page: meta.store === 'note' ? rowHref(doc) : undefined,
-                  seed: doc.id,
-                })),
+              : passageBlocks(
+                  (chunk.m === 1 ? texts.slice(i, i + 1) : texts.slice(i, j + 1)).join('\n\n'),
+                  {
+                    code: meta.store === 'note',
+                    markdown: chunk.m === 1,
+                    lines: meta.store === 'note' && chunk.m !== 1,
+                    page: meta.store === 'note' ? rowHref(doc) : undefined,
+                    seed: doc.id,
+                  },
+                )),
         ],
       ),
-      ...run
-        .slice(1)
-        .map(c =>
-          h('article.lat-chunk.lat-joined', {
-            id: `lat-r${c.r}`,
-            dataRow: String(c.r),
-            dataPage: c.p ? String(c.p) : undefined,
-            dataJoined: String(chunk.r),
-          }),
-        ),
+      ...run.slice(1).map(c => joinedMarker(c, chunk.r)),
     )
     i = j
   }
@@ -926,7 +987,53 @@ function poleNote(axis: LatentAxis, side: 'a' | 'b'): string {
   const end = /^pc\d+$/.test(axis.id)
     ? `the ${side === 'a' ? 'low' : 'high'} end of ${axis.id}`
     : `the ${side === 'a' ? axis.a : axis.b} end`
-  return `${end}. italics: the words most over-represented among the 200 passages furthest this way. rows: the three furthest; click one to read it.`
+  return `${end}. italics: the words most over-represented among the 200 passages furthest this way, at most 8 from one document. rows: the furthest ${POLE_ROWS} documents, one passage each, with the furthest notes this way after them; click one to read it.`
+}
+
+const POLE_ROWS = 5
+const POLE_NOTES = 2
+const EDITION =
+  / (?:\d+(?:st|nd|rd|th)|first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth) ed(?:ition)?\b.*$/
+
+/** build.py `title_key`: two editions, or a notebook copied into eleven folders, read as one */
+const titleKey = (title: string) =>
+  titleText(title)
+    .toLowerCase()
+    .replace(/[^0-9a-z]+/g, ' ')
+    .trim()
+    .replace(EDITION, '')
+
+/** The furthest documents of one end, then notes until POLE_NOTES of the rows are notes. Sidecars
+ * built before build.py deduplicated the ends list a document many times, so this drops repeats. */
+function poleExemplars(
+  axis: LatentAxis,
+  side: 'a' | 'b',
+): { pole: LatentAxisPole; pick: boolean }[] {
+  const docs = new Set<number>()
+  const titles = new Set<string>()
+  // only rows that are shown claim their document, so a note past the cut can still be picked
+  const take = (list: LatentAxisPole[], n: number) => {
+    const out: LatentAxisPole[] = []
+    for (const p of list) {
+      if (out.length >= n) break
+      const key = titleKey(p.t)
+      // a book's base entry and its pdf are one work; a note titled 'linear algebra' is not the book
+      const t = key && p.s === 'note' ? `note\t${key}` : key
+      if (docs.has(p.d) || (t && titles.has(t))) continue
+      docs.add(p.d)
+      if (t) titles.add(t)
+      out.push(p)
+    }
+    return out
+  }
+  const top = take(axis.poles[side], POLE_ROWS)
+  const want = POLE_NOTES - top.filter(p => p.s === 'note').length
+  const extra = want > 0 ? take(axis.notes?.[side] ?? [], want) : []
+  // room for the notes comes off the inner end of the list, never from a note already in it
+  for (let i = top.length - 1; i >= 0 && top.length + extra.length > POLE_ROWS; i--) {
+    if (top[i].s !== 'note') top.splice(i, 1)
+  }
+  return [...top.map(pole => ({ pole, pick: false })), ...extra.map(pole => ({ pole, pick: true }))]
 }
 
 const SOURCES_NOTE =
@@ -951,18 +1058,16 @@ export function axisCard(axis: LatentAxis, focusValue: number | null): Element {
       h('span.lat-pole-terms', axis.terms[side].slice(0, 4).join('\u00a0· ')),
       h(
         'ol.lat-pole-rows',
-        axis.poles[side]
-          .slice(0, 3)
-          .map(p =>
-            h('li', [
-              mark(p.s),
-              h(
-                'a',
-                { href: `?focus=${p.r}`, dataLatFocus: String(p.r) },
-                truncate(titleText(p.t), 44),
-              ),
-            ]),
-          ),
+        poleExemplars(axis, side).map(({ pole: p, pick }) =>
+          h('li', { dataPick: pick ? 'note' : undefined }, [
+            mark(p.s),
+            h(
+              'a',
+              { href: `?focus=${p.r}`, dataLatFocus: String(p.r) },
+              truncate(titleText(p.t), 44),
+            ),
+          ]),
+        ),
       ),
     ])
   const max = Math.max(1, ...axis.hist)
@@ -990,6 +1095,44 @@ export function axisCard(axis: LatentAxis, focusValue: number | null): Element {
           }),
     ]),
     h('div.lat-poles', [pole('a'), pole('b')]),
+  ])
+}
+
+const axisLabel = (axis: LatentAxis) =>
+  /^pc\d+$/.test(axis.id) ? axis.id : axis.name.replace(/\s*↔\s*/g, '↔')
+
+/**
+ * The axis cards under the 3-d view: one card a row, scrolled sideways and snapped, pc1 first
+ * and the named axes (store, frontmatter) after the principal ones. `data-axis-index` keeps the
+ * probe.json order, which the kNN blocks' per-row projections follow (search.ts focus ticks).
+ * The pager names every card; latent-client/axes-carousel.ts scrolls to a pick and marks the
+ * card in view.
+ */
+export function axesCarousel(axes: LatentAxis[], focusValues: number[]): Element {
+  const order = axes
+    .map((axis, i) => ({ axis, i }))
+    .sort((x, y) => Number(!/^pc\d+$/.test(x.axis.id)) - Number(!/^pc\d+$/.test(y.axis.id)))
+  return h('div.lat-axes', [
+    h(
+      'nav.lat-axes-pager',
+      { ariaLabel: 'axes' },
+      order.map(({ axis }, n) =>
+        h(
+          'button',
+          { type: 'button', dataAxis: axis.id, ariaCurrent: n === 0 ? 'true' : undefined },
+          axisLabel(axis),
+        ),
+      ),
+    ),
+    h(
+      'div.lat-axes-track',
+      { tabindex: 0, ariaLabel: 'probe axes, scroll sideways' },
+      order.map(({ axis, i }) => {
+        const card = axisCard(axis, focusValues[i] ?? null)
+        card.properties.dataAxisIndex = String(i)
+        return card
+      }),
+    ),
   ])
 }
 

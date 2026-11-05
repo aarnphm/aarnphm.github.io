@@ -527,19 +527,18 @@
     }
   }
 
-  // a feature in the steering set: its name carries the sign
-  .lat-feat[data-steered] .lat-feat-name::before {
-    font-family: var(--lat-mono);
-    margin-right: 0.25rem;
-    color: var(--gray);
+  // a feature in the steering set says so in its activation bar, not with a glyph: boosted in
+  // Flexoki orange, suppressed in a muted blue, and a hair heavier than an unsteered bar
+  .lat-feat[data-steered] .lat-feat-bar i {
+    height: 2px;
   }
 
-  .lat-feat[data-steered='up'] .lat-feat-name::before {
-    content: '+';
+  .lat-feat[data-steered='up'] .lat-feat-bar i {
+    background: var(--color-orange);
   }
 
-  .lat-feat[data-steered='down'] .lat-feat-name::before {
-    content: '−';
+  .lat-feat[data-steered='down'] .lat-feat-bar i {
+    background: color-mix(in srgb, var(--color-blue) 70%, var(--gray));
   }
 
   .lat-feat-note {
@@ -638,7 +637,8 @@
   }
 }
 
-// the links pane's group bars use the probe's one mark width, so the counts line up too
+// the links pane's group bars use the probe's one mark width and box, so the counts line up
+// and every kind tag on the page is the same chip
 [data-layout='latent'] :where(#quartz-root) .lat-links .lat-group {
   .lat-mark {
     box-sizing: border-box;
@@ -687,9 +687,15 @@
     gap: 0.25rem;
     min-width: 0;
 
+    // a cut name ends in an ellipsis: a button only draws one as a block box
     .lat-feat-chip {
+      display: block;
       flex: 0 1 auto;
       min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-align: left;
     }
   }
 
@@ -851,24 +857,50 @@
     }
   }
 
+  // matching chunk numbers as plain mono figures (latent-search.scss .lat-chunk-link)
   .lat-why-chunks {
-    display: inline-flex;
-    align-items: center;
-    flex: 0 1 auto;
-    gap: 0.15rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.45rem;
     overflow-x: auto;
+    scrollbar-width: none;
     min-width: 0;
-    max-width: 40%;
     white-space: nowrap;
   }
 
+  // section heads read like the pane heads: mono micro, the action at the right in the same
+  // face and size (a feature card keeps its title, which is not a group head)
+  .lat-feat-group > header > .lat-feat-head {
+    font-family: var(--lat-mono);
+    font-size: var(--lat-micro);
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    color: var(--darkgray);
+  }
+
+  // one line: the kind chip (the probe's box), the title cut with an ellipsis, then the chunk
+  // numbers and the cosine · share at the right
   .lat-why-head {
     display: flex;
     gap: var(--lat-mark-gap);
-    align-items: center;
+    align-items: baseline;
     margin: 0;
     font-size: var(--text-meta);
     line-height: 1.3;
+
+    > .lat-mark {
+      flex: none;
+    }
+
+    > .lat-why-chunks {
+      flex: 0 1 auto;
+      max-width: 30%;
+    }
+
+    > .lat-why-share {
+      flex: none;
+      margin-left: auto;
+    }
 
     > a {
       flex: 1 1 0;

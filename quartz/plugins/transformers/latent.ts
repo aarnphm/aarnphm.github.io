@@ -10,7 +10,7 @@ import { QuartzTransformerPlugin } from '../../types/plugin'
 import cachedKatex from '../../util/cached-katex'
 import { codeAttributes, highlightCode } from '../../util/highlight-source'
 import {
-  axisCard,
+  axesCarousel,
   docHead,
   ledger,
   linksPane,
@@ -193,11 +193,6 @@ export const Latent: QuartzTransformerPlugin = () => {
               h('nav.lat-tabs', { role: 'tablist' }, [
                 h(
                   'button.lat-tab',
-                  { type: 'button', dataTab: 'axes', ariaSelected: 'false' },
-                  'axes',
-                ),
-                h(
-                  'button.lat-tab',
                   { type: 'button', dataTab: 'bench', ariaSelected: 'true' },
                   '3-d',
                 ),
@@ -210,16 +205,13 @@ export const Latent: QuartzTransformerPlugin = () => {
                   : null,
               ]),
             ]),
-            h(
-              'div.lat-panel',
-              { dataPanel: 'axes', hidden: true },
-              probe.axes.map((axis, i) => axisCard(axis, links.axes[i] ?? null)),
-            ),
-            // the probe opens on the 3-d bench; the client loads it once the page is idle
+            // the probe opens on the 3-d bench; the client loads it once the page is idle. The
+            // axis cards sit under the canvas as a sideways carousel, one card a row
             h('div.lat-panel.lat-bench', { dataPanel: 'bench' }, [
               h('div.lat-bench-controls'),
               h('canvas.lat-bench-canvas', { width: 320, height: 320 }),
               h('p.lat-bench-status'),
+              axesCarousel(probe.axes, links.axes),
             ]),
             // sparse features: the client fills the panel the first time the tab opens
             features.length

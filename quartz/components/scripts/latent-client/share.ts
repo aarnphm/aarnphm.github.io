@@ -15,6 +15,7 @@ function snapshot(rt: Runtime): SharedView {
     base: rt.base,
     focus: rt.focus,
     tab: selected === 'features' || selected === 'axes' ? selected : 'bench',
+    ...(rt.filter ? { filter: [...rt.filter.kinds] } : {}),
     features: snapshotFeatures(rt),
     bench: bench
       ? {
@@ -41,8 +42,24 @@ export async function bindShare(rt: Runtime): Promise<boolean> {
   const button = document.createElement('button')
   button.type = 'button'
   button.className = 'lat-share'
-  button.textContent = 'copy link'
+  button.setAttribute('aria-label', 'copy a link to this view')
   button.title = 'copy the focus, steering, features and 3-d view'
+  // the code blocks' copy/check pair from the page sprite (svg/sprite-tail.ts)
+  const NS = 'http://www.w3.org/2000/svg'
+  for (const [name, symbol] of [
+    ['copy-icon', '#github-copy'],
+    ['check-icon', '#github-check'],
+  ]) {
+    const svg = document.createElementNS(NS, 'svg')
+    svg.setAttribute('viewBox', '0 0 16 16')
+    svg.setAttribute('aria-hidden', 'true')
+    svg.setAttribute('class', name)
+    const use = document.createElementNS(NS, 'use')
+    use.setAttribute('href', symbol)
+    svg.append(use)
+    button.append(svg)
+  }
+  let copied = 0
   head.append(button)
   const toast = new Toast()
   const notice = (text: string) => {
@@ -51,6 +68,7 @@ export async function bindShare(rt: Runtime): Promise<boolean> {
   }
   const dialog = document.createElement('dialog')
   dialog.className = 'lat-share-dialog'
+  dialog.setAttribute('aria-label', 'copy shared view link')
   const label = document.createElement('label')
   label.textContent = 'copy this link'
   const input = document.createElement('textarea')
@@ -75,9 +93,17 @@ export async function bindShare(rt: Runtime): Promise<boolean> {
     'click',
     async () => {
       const url = sharedViewUrl(window.location.href, snapshot(rt))
+      if (!readSharedView(new URL(url).hash)) {
+        notice('this view is too large to share')
+        return
+      }
       try {
         await navigator.clipboard.writeText(url)
-        if (!rt.signal.aborted) notice('link copied')
+        if (rt.signal.aborted) return
+        // the copy glyph turns into a check for two seconds, as on code blocks
+        window.clearTimeout(copied)
+        button.classList.add('check')
+        copied = window.setTimeout(() => button.classList.remove('check'), 2000)
       } catch {
         if (rt.signal.aborted) return
         input.value = url
@@ -111,12 +137,19 @@ export async function bindShare(rt: Runtime): Promise<boolean> {
   }
   button.disabled = true
   try {
+    rt.filter = saved.filter?.length ? { kinds: [...saved.filter], mask: null } : null
+    if (rt.filter && !saved.features?.query) {
+      const box = rt.links.querySelector<HTMLInputElement>('form.lat-search input')
+      if (box) box.value = `filter:${rt.filter.kinds.join(',')}`
+    }
     await goTo(rt, saved.focus)
+    // the axes tab is gone (its cards sit under the 3-d view); older links open the 3-d tab
+    const tabName = saved.tab === 'axes' ? 'bench' : saved.tab
     for (const tab of rt.probe.querySelectorAll<HTMLElement>('.lat-tab[data-tab]'))
-      tab.setAttribute('aria-selected', String(tab.dataset.tab === saved.tab))
+      tab.setAttribute('aria-selected', String(tab.dataset.tab === tabName))
     for (const panel of rt.probe.querySelectorAll<HTMLElement>('.lat-panel'))
-      panel.hidden = panel.dataset.panel !== saved.tab
-    if (saved.bench || saved.tab === 'bench') await openBench(rt, saved.bench)
+      panel.hidden = panel.dataset.panel !== tabName
+    if (saved.bench || tabName === 'bench') await openBench(rt, saved.bench)
     if (saved.features?.query) {
       const box = rt.links.querySelector<HTMLInputElement>('form.lat-search input')
       if (box) box.value = saved.features.query

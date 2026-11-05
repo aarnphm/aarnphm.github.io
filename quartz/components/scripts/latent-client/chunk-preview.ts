@@ -90,6 +90,7 @@ export function bindChunkPreview(rt: Runtime): void {
   popup.id = 'lat-chunk-preview'
   rt.links.append(popup)
   let anchor: HTMLElement | null = null
+  let pending: HTMLElement | null = null
   let wanted = -1
   let timer = 0
   let closeTimer = 0
@@ -101,6 +102,7 @@ export function bindChunkPreview(rt: Runtime): void {
     anchor?.removeAttribute('aria-details')
     anchor?.removeAttribute('aria-expanded')
     anchor = null
+    pending = null
     wanted = -1
     if (popup.matches(':popover-open')) popup.hidePopover()
   }
@@ -110,20 +112,26 @@ export function bindChunkPreview(rt: Runtime): void {
       return
     }
     const box = anchor.getBoundingClientRect()
-    const width = Math.min(560, window.innerWidth - 16)
+    const viewportWidth = document.documentElement.clientWidth
+    const width = Math.min(560, viewportWidth - 16)
     popup.style.width = `${width}px`
-    popup.style.left = `${Math.max(8, Math.min(window.innerWidth - width - 8, box.left - width / 2 + box.width / 2))}px`
+    popup.style.left = `${Math.max(8, Math.min(viewportWidth - width - 8, box.left - width / 2 + box.width / 2))}px`
     popup.style.top = `${Math.max(8, Math.min(window.innerHeight - popup.offsetHeight - 8, box.bottom + 6))}px`
   }
   const show = async (target: HTMLElement) => {
+    pending = null
     window.clearTimeout(closeTimer)
     const row = Number(target.dataset.latChunk)
     if (row === wanted && popup.matches(':popover-open')) {
-      anchor?.removeAttribute('aria-details')
-      anchor?.removeAttribute('aria-expanded')
-      anchor = target
-      target.setAttribute('aria-details', popup.id)
-      target.setAttribute('aria-expanded', 'true')
+      if (anchor !== target) {
+        anchor?.removeAttribute('aria-details')
+        anchor?.removeAttribute('aria-expanded')
+        anchor = target
+        popup.hidePopover()
+        popup.showPopover({ source: target })
+        target.setAttribute('aria-details', popup.id)
+        target.setAttribute('aria-expanded', 'true')
+      }
       position()
       return
     }
@@ -195,10 +203,12 @@ export function bindChunkPreview(rt: Runtime): void {
   const schedule = (target: HTMLElement, delay: number) => {
     window.clearTimeout(timer)
     window.clearTimeout(closeTimer)
+    pending = target
     timer = window.setTimeout(() => void show(target), delay)
   }
   const leave = () => {
     window.clearTimeout(timer)
+    pending = null
     closeTimer = window.setTimeout(() => {
       if (
         !popup.matches(':hover') &&
@@ -258,9 +268,29 @@ export function bindChunkPreview(rt: Runtime): void {
     },
     { signal: rt.signal },
   )
-  rt.links.addEventListener('scroll', close, { signal: rt.signal, passive: true })
-  window.addEventListener('resize', close, { signal: rt.signal })
-  window.addEventListener('scroll', close, { signal: rt.signal, passive: true })
+  const viewportChanged = () => {
+    const target = pending ?? anchor
+    if (
+      target?.isConnected &&
+      (document.activeElement === target || popup.contains(document.activeElement))
+    ) {
+      const box = target.getBoundingClientRect()
+      const pane = target.closest<HTMLElement>('.lat-links, .lat-panel')?.getBoundingClientRect()
+      const left = Math.max(0, pane?.left ?? 0)
+      const viewportWidth = document.documentElement.clientWidth
+      const right = Math.min(viewportWidth, pane?.right ?? viewportWidth)
+      const top = Math.max(0, pane?.top ?? 0)
+      const bottom = Math.min(window.innerHeight, pane?.bottom ?? window.innerHeight)
+      if (box.right > left && box.left < right && box.bottom > top && box.top < bottom) {
+        if (anchor === target) position()
+        return
+      }
+    }
+    close()
+  }
+  rt.links.addEventListener('scroll', viewportChanged, { signal: rt.signal, passive: true })
+  window.addEventListener('resize', viewportChanged, { signal: rt.signal })
+  window.addEventListener('scroll', viewportChanged, { signal: rt.signal, passive: true })
   const observer = new ResizeObserver(position)
   observer.observe(popup)
   rt.signal.addEventListener(

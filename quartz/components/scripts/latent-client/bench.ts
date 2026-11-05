@@ -119,7 +119,7 @@ async function initializeBench(rt: Runtime, saved?: SharedBench | null): Promise
     td.append(...children)
     return td
   }
-  // the variance share is on the axes tab; here an axis is its name
+  // the variance share is on the axis cards under the canvas; here an axis is its name
   const options = meta.axes.map((axis, i) => ({ value: i, label: axisBase(axis.name) }))
   for (const slot of [0, 1, 2]) {
     const name = 'xyz'[slot]

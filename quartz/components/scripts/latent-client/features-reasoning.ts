@@ -197,6 +197,9 @@ export async function annotateChunk(
   slot.innerHTML = toHtml(edgeList(link) as never)
 }
 
+const RELEVANCE_NOTE =
+  'the search results in the links pane, best first: each row is its cosine to the focus or query, split into the feature pairs that carry it'
+
 export async function whySection(
   rt: Runtime,
   st: FeatureState,
@@ -206,7 +209,12 @@ export async function whySection(
   const focus = rt.focus
   const query = st.query
   const head = h('header', [
-    h('span.lat-feat-head', 'reasoning'),
+    h(
+      'span.lat-feat-head',
+      // the hover note (latent-tips.scss / tips.ts) says what the rows are
+      { tabIndex: 0, dataTip: RELEVANCE_NOTE, 'aria-description': RELEVANCE_NOTE },
+      'relevance',
+    ),
     h(
       'button.lat-feat-clear',
       { type: 'button', dataWhy: '', ariaExpanded: st.explain ? 'true' : 'false' },

@@ -1,3 +1,6 @@
+import type { LatentKind } from './types'
+import { bytesToBase64, base64ToBytes } from '../base64url'
+
 /** Versioned URL state. Parsing is bounded before any shared value reaches a data loader. */
 export interface SharedFeature {
   dict: string
@@ -33,6 +36,7 @@ export interface SharedView {
   base: string
   focus: number
   tab: 'axes' | 'bench' | 'features'
+  filter?: LatentKind[]
   features: SharedFeatures | null
   bench: SharedBench | null
 }
@@ -96,10 +100,24 @@ function bench(value: unknown): value is SharedBench | null {
   )
 }
 
+function kinds(value: unknown): value is LatentKind[] {
+  return (
+    Array.isArray(value) &&
+    value.length <= 4 &&
+    value.every(kind => kind === 'note' || kind === 'pdf' || kind === 'image' || kind === 'base')
+  )
+}
+
 export function readSharedView(hash: string): SharedView | null {
   if (!hash.startsWith('#view=') || hash.length > 65536) return null
   try {
-    const value: unknown = JSON.parse(decodeURIComponent(hash.slice(6)))
+    const payload = hash.slice(6)
+    // Links copied before base64url encoding used percent-encoded JSON.
+    const bytes = payload.startsWith('%7B') ? null : base64ToBytes(payload)
+    const json = bytes
+      ? new TextDecoder('utf-8', { fatal: true }).decode(bytes)
+      : decodeURIComponent(payload)
+    const value: unknown = JSON.parse(json)
     if (
       !record(value) ||
       value.v !== 1 ||
@@ -108,7 +126,8 @@ export function readSharedView(hash: string): SharedView | null {
       !integer(value.focus) ||
       !['axes', 'bench', 'features'].includes(String(value.tab)) ||
       !features(value.features) ||
-      !bench(value.bench)
+      !bench(value.bench) ||
+      (value.filter !== undefined && !kinds(value.filter))
     )
       return null
     const tab = value.tab
@@ -118,6 +137,7 @@ export function readSharedView(hash: string): SharedView | null {
       base: value.base,
       focus: value.focus,
       tab,
+      ...(kinds(value.filter) ? { filter: value.filter } : {}),
       features: value.features,
       bench: value.bench,
     }
@@ -129,6 +149,6 @@ export function readSharedView(hash: string): SharedView | null {
 export function sharedViewUrl(href: string, view: SharedView): string {
   const url = new URL(href)
   url.searchParams.set('focus', String(view.focus))
-  url.hash = 'view=' + encodeURIComponent(JSON.stringify(view))
+  url.hash = 'view=' + bytesToBase64(new TextEncoder().encode(JSON.stringify(view)))
   return url.href
 }

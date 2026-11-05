@@ -1,11 +1,137 @@
 @use '../variables.scss' as *;
 
-// `layout: latent`: a pdf passage's page (quartz/util/latent/pdf.ts, latent-client/folio.ts).
-// The gutter glyph is the page drawn small with the passage's box filled; the folio under the
-// passage is the site's pdf embed (transcludes.scss) fitted to the column, its box marked the way
-// the reader marks focus: a dark rule at the left, over a wash of the pdf colour.
+// `layout: latent` pdf passages (quartz/util/latent/pdf.ts, latent-client/folio.ts).
+// The passage text is set as the paper sets it: Computer Modern (KaTeX's own cut of it, so text
+// and math share one face), justified and hyphenated, paragraphs indented and unspaced. The
+// gutter glyph is the page drawn small with the passage's box filled; hovering the locus (or a
+// tap on the glyph) opens the page in the site's pdf embed inside the site's popover frame
+// (popover.scss), the box marked the way the reader marks focus: a dark rule at the left, over a
+// wash of the pdf colour.
+
+// KaTeX's Computer Modern, from the stylesheet the page already loads for math (latex.ts), so a
+// page that typeset math has the files cached; the browser fetches a face only when a pdf
+// passage shows it.
+$katex-fonts: 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/fonts';
+
+@each $file, $weight, $style in ('Regular', 400, normal), ('Italic', 400, italic),
+  ('Bold', 700, normal), ('BoldItalic', 700, italic)
+{
+  @font-face {
+    font-family: 'Latent Modern';
+    src: url('#{$katex-fonts}/KaTeX_Main-#{$file}.woff2') format('woff2');
+    font-weight: $weight;
+    font-style: $style;
+    font-display: swap;
+  }
+}
 
 [data-layout='latent'] :where(#quartz-root) {
+  .lat-reader .lat-chunk.lat-pdf {
+    font-family: 'Latent Modern', KaTeX_Main, 'Latin Modern Roman', 'CMU Serif', Georgia, serif;
+    // Computer Modern's x-height is a fifth under the sans the notes use
+    font-size: 1.14rem;
+    line-height: 1.48;
+    font-kerning: normal;
+    font-variant-ligatures: common-ligatures;
+
+    & > p {
+      white-space: normal;
+      text-align: justify;
+      hyphens: auto;
+      hyphenate-limit-chars: 6 3 2;
+      text-wrap: pretty;
+    }
+
+    // LaTeX's paragraphs: no space between them, the first line of each later one indented
+    // (a heading is a `p.lat-h` too, and the line after it is not indented)
+    & > p:not(.lat-h) + p:not(.lat-h) {
+      margin-top: 0;
+      text-indent: 1.5em;
+    }
+
+    & > .lat-h {
+      font-weight: 700;
+      text-align: left;
+    }
+
+    & > .lat-h + p {
+      margin-top: 0.35em;
+    }
+
+    // an arXiv paper read from its TeX source (quartz/scripts/latent/arxiv.py): the source's own
+    // figures on a white plate, as on the page (their drawings assume white), the caption set
+    // small under them as the paper sets it; algorithms in the note page's pseudocode box
+    & > figure.lat-paper-figure {
+      margin: 0.9em 0;
+
+      .lat-paper-plates {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        justify-content: center;
+        align-items: flex-end;
+        padding: 0.5rem;
+        background: #fff;
+        border: 1px solid var(--lightgray);
+      }
+
+      img {
+        display: block;
+        flex: 1 1 0;
+        min-width: 0;
+        max-width: 100%;
+        max-height: 26rem;
+        height: auto;
+        object-fit: contain;
+      }
+
+      .lat-paper-plates[data-count='1'] img {
+        flex: 0 1 auto;
+      }
+
+      figcaption {
+        display: block;
+        margin-top: 0.45em;
+        font-size: 0.9em;
+        line-height: 1.38;
+        text-align: justify;
+        hyphens: auto;
+      }
+    }
+
+    & > .ps-root {
+      margin: 0.9em 0;
+      font-size: 0.94em;
+    }
+
+    & > .math-display {
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    // a numbered equation in a reading column: KaTeX pins the number to the right edge over the
+    // centred formula, so a formula half the column wide already runs under it. The number
+    // takes its own place at the end of the line and the formula centres in what is left.
+    .katex-display > .katex > .katex-html:has(> .tag) {
+      display: flex;
+      align-items: center;
+
+      & > .base:first-child {
+        margin-left: auto;
+      }
+
+      & > .tag {
+        position: static;
+        margin-left: auto;
+        padding-left: 1em;
+      }
+    }
+
+    .katex {
+      font-size: 1em;
+    }
+  }
+
   .lat-reader .lat-locus .lat-folio-toggle {
     display: block;
     width: 0.8rem;
@@ -35,38 +161,59 @@
       fill: var(--lat-pdf);
     }
 
-    &:hover,
-    &:focus-visible {
-      color: var(--dark);
-    }
-
     &:focus-visible {
       outline: 1px solid var(--dark);
       outline-offset: 2px;
     }
 
-    &[aria-expanded='true'] {
-      color: var(--dark);
-
-      .lat-folio-sheet {
-        fill: color-mix(in srgb, var(--lat-pdf) 22%, var(--light));
-      }
+    &[aria-expanded='true'] .lat-folio-sheet {
+      fill: color-mix(in srgb, var(--lat-pdf) 22%, var(--light));
     }
   }
 
-  .lat-reader .lat-chunk > .lat-folio {
-    margin-top: 0.9rem;
+  // the whole locus is the hover target on a pdf passage
+  .lat-reader .lat-chunk.lat-pdf .lat-locus:hover,
+  .lat-reader .lat-locus .lat-folio-toggle[aria-expanded='true'] {
+    color: var(--dark);
+  }
 
-    .pdf-embed {
-      margin: 0;
-      border-color: var(--ledger-line, var(--lightgray));
-
-      &:focus,
-      &:focus-within,
-      &[data-pdf-selected='true'] {
-        border-color: var(--darkgray);
-      }
+  // the locus sits above its passage on phones: the glyph follows its text on the same line
+  @media all and ($mobile) {
+    .lat-reader .lat-locus .lat-folio-toggle {
+      display: inline-block;
+      margin: 0 0 0 0.45rem;
+      vertical-align: -0.2em;
     }
+  }
+}
+
+// The popover mounts on <body>, outside the page root, like the site's.
+[data-layout='latent'] .popover.lat-folio-popover {
+  --lat-pdf: #fdb2a2;
+
+  // the site clears `active-popover` from every popover when a link is left; this one is shown
+  // by its own class (latent-client/folio.ts)
+  &.lat-folio-open {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0ms;
+
+    & > .popover-arrow {
+      opacity: 1;
+    }
+  }
+
+  // pinned by a click: the frame turns to ink until a click elsewhere or Escape
+  &.lat-folio-pinned {
+    --popover-border-color: var(--dark);
+  }
+
+  & > .popover-inner[data-content-type][data-content-type*='pdf'] {
+    width: var(--lat-folio-w, 36rem);
+    height: var(--lat-folio-h, 34rem);
+    max-width: none;
+    max-height: none;
+    user-select: text;
   }
 
   .lat-folio-mark {
@@ -91,19 +238,22 @@
       animation: none;
     }
   }
+}
 
-  // the locus sits above its passage on phones: the glyph follows its text on the same line
+// popover.scss hides popovers on phones with !important inside the component layer
+// (style-assets.ts `@layer quartz-base`), and an important rule outside a layer loses to one
+// inside it. This one is opened by a tap, so its override joins that layer, where specificity
+// decides.
+@layer quartz-base {
   @media all and ($mobile) {
-    .lat-reader .lat-locus .lat-folio-toggle {
-      display: inline-block;
-      margin: 0 0 0 0.45rem;
-      vertical-align: -0.2em;
+    [data-layout='latent'] .popover.lat-folio-popover {
+      display: block !important;
     }
   }
 }
 
 // the dark sheet is the inverted page (transcludes.scss): multiply would vanish on it
-[saved-theme='dark'] [data-layout='latent'] :where(#quartz-root) .lat-folio-mark {
+[saved-theme='dark'] [data-layout='latent'] .popover.lat-folio-popover .lat-folio-mark {
   background: color-mix(in srgb, var(--lat-pdf) 24%, transparent);
   mix-blend-mode: normal;
 }

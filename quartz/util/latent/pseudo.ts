@@ -75,6 +75,15 @@ function parseMarkup(markup: string): Element | null {
   return first && first.type === 'element' ? first : null
 }
 
+/**
+ * `captionCount=N` in the info string numbers the algorithm N + 1, as the paper does (an arXiv
+ * paper's algorithms, quartz/scripts/latent/arxiv.py); a note's algorithm is Algorithm 1.
+ */
+function captionCount(info: string): number {
+  const n = /\bcaptionCount=(\d+)\b/.exec(info)?.[1]
+  return n ? Number(n) : 0
+}
+
 /** From `\begin{algorithm}` on: what sits before it is a preamble of macros a passage cannot use. */
 function algorithmSource(body: string): string {
   const start = body.indexOf('\\begin{algorithm}')
@@ -87,7 +96,7 @@ export function pseudocodeBlock(body: string, info = ''): Element | null {
     const renderer = new Renderer(new Parser(new Lexer(algorithmSource(body))), {
       ...OPTIONS,
       lineNumber: lineNumbers(info),
-      captionCount: 0,
+      captionCount: captionCount(info),
     })
     renderer.backend = {
       name: 'katex',

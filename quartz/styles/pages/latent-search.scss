@@ -1,4 +1,5 @@
 @use '../variables.scss' as *;
+@use '../shortcut-hint.scss' as hint;
 @use '../../components/styles/search-completions.scss';
 
 // `layout: latent`: the typed query box above the links, feature matches in the probe, and the
@@ -61,9 +62,18 @@
     border-bottom-color: var(--secondary);
   }
 
+  // an axis card the search text matches gets an ink rule on all four sides, like a picked link
+  // row: an inset outline takes no space, so nothing shifts. Its name in the carousel pager goes
+  // ink and boxed the same way, so a match off-screen still shows
   .lat-axis[data-match] {
     outline: 1px solid var(--dark);
-    outline-offset: 4px;
+    outline-offset: -1px;
+  }
+
+  .lat-axes-pager button[data-match] {
+    color: var(--dark);
+    outline: 1px solid var(--dark);
+    outline-offset: 1px;
   }
 
   .lat-rail svg.lat-track {
@@ -154,23 +164,44 @@
   }
 }
 
+// the suggestions hang from the search box like the chunk preview: the box's bottom rule is
+// their top edge and the pane's own sides are theirs, so only the bottom rule is drawn
 [data-layout='latent'] :where(#quartz-root) .lat-search .search-completions {
   position: absolute;
   z-index: 10;
   top: 100%;
   inset-inline: 0;
   max-height: 20rem;
+  padding: 0;
   background: var(--light);
-  border: 1px solid var(--ledger-line);
+  border: 0;
+  border-bottom: 1px solid var(--ledger-line);
+  font-family: var(--lat-mono);
+  font-size: var(--lat-micro);
 }
 
-// the row picked with ctrl-n/ctrl-p (or ↑↓) gets one accent rule on all four sides and nothing
-// else. An inset outline paints over the row's own 1px rule and takes no space, so picking never
-// moves a row; the grey rule on the far side of the box goes transparent so the edge stays 1px
+// the row picked with ctrl-n/ctrl-p (or ↑↓), a picked goto row and a picked suggestion share
+// one mark: the selected tint between two accent rules. The rules sit on the row lines above and
+// below (inset -1px, over the neighbours' 1px rules), and there are no side rules: a box inside
+// the pane stood 1px off the pane's own border and read as a doubled frame. Nothing takes
+// space, so picking never moves a row
+@mixin picked-row {
+  position: relative;
+  z-index: 1;
+  background: var(--ledger-selected);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -1px 0;
+    border-block: 1px solid var(--secondary);
+    pointer-events: none;
+  }
+}
+
 [data-layout='latent'] :where(#quartz-root) .lat-links {
   .lat-link:is(.lat-goto-item[data-active], [data-keyboard-active]) {
-    outline: 1px solid var(--secondary);
-    outline-offset: -1px;
+    @include picked-row;
   }
 
   // goto rows rule their top edge: the row below drops its rule
@@ -188,9 +219,41 @@
   z-index: 2;
 }
 
+// one line per suggestion: the name, then its meta at the right. Every row of a list shares the
+// operator the box already shows (#, goto:, filter:), so the per-row token is dropped. The
+// picked row is boxed in the accent like a picked link row, without an underline
 [data-layout='latent'] :where(#quartz-root) .lat-search .search-completions {
+  .search-completions-label {
+    padding: 0.375rem 0.75rem 0.125rem;
+    color: var(--gray);
+  }
+
   .search-completions-list {
-    grid-template-columns: max-content minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) fit-content(50%);
+    column-gap: 0.75rem;
+  }
+
+  .search-completion {
+    min-height: 1.75rem;
+    padding: 0.25rem 0.75rem;
+    align-items: baseline;
+
+    &[aria-selected='true'] {
+      @include picked-row;
+    }
+
+    &[aria-selected='true'] .search-completion-value,
+    &:hover .search-completion-value {
+      text-decoration: none;
+    }
+
+    &:hover:not([aria-selected='true']) {
+      background: var(--ledger-surface);
+    }
+  }
+
+  .search-completion-token {
+    display: none;
   }
 
   .search-completion-value,
@@ -199,21 +262,36 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-}
 
-[data-layout='latent'] :where(#quartz-root) .lat-search .search-completion-description {
-  grid-column: 2;
+  .search-completion-value {
+    grid-column: 1;
+    color: var(--dark);
+  }
+
+  // the meta fills its own column from one left edge: an end-justified box sized to its text
+  // ran left past the column into the name when the meta was long (goto titles)
+  .search-completion-description {
+    grid-column: 2;
+    min-width: 0;
+    color: var(--gray);
+    font-variant-numeric: tabular-nums;
+  }
 }
 
 [data-layout='latent'] :where(#quartz-root) {
+  // two lines: the title alone across the row, then the matching chunks at the left and the
+  // score at the right. Every row has the same two lines, so the rows stay one height, which
+  // the windowed list (document-list.ts) measures once
   .lat-links .lat-link.lat-link-document {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    height: 2.5rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+    align-items: baseline;
+    column-gap: 0.75rem;
+    row-gap: 0.2rem;
     min-width: 0;
     box-sizing: border-box;
-    padding: 0.25rem 0.75rem;
+    padding: 0.5rem 0.75rem;
     border-bottom: 1px solid var(--ledger-line);
     font-size: var(--text-meta);
 
@@ -222,44 +300,47 @@
     }
 
     > .lat-link-title {
-      flex: 1 1 0;
-      min-width: 4ch;
+      grid-column: 1 / -1;
+      grid-row: 1;
+      min-width: 0;
     }
 
+    > .lat-document-chunks {
+      grid-column: 1;
+      grid-row: 2;
+    }
+
+    // the score keeps the pane's mono micro figure (latent.scss .lat-score)
     > .lat-score {
-      flex: none;
-      font-size: var(--text-meta);
-      color: var(--darkgray);
-      font-variant-numeric: tabular-nums;
+      grid-column: 2;
+      grid-row: 2;
+      justify-self: end;
     }
+  }
 
-    &[data-out] .lat-link-title {
-      color: var(--darkgray);
-    }
+  // a later kind's bar draws the rule above it, so the row over the bar drops its own and the
+  // boundary stays one 1px line
+  .lat-list:has(+ .lat-group) > .lat-link-document:nth-last-child(1 of .lat-link-document) {
+    border-bottom-color: transparent;
   }
 
   .lat-document-chunks {
-    display: inline-flex;
-    align-items: center;
-    flex: 0 1 auto;
-    gap: 0.15rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.45rem;
     min-width: 0;
-    max-width: 46%;
     overflow-x: auto;
-    scrollbar-width: thin;
+    scrollbar-width: none;
   }
 
+  // matching chunk numbers: the score's mono micro figures, one shade darker because they link
   .lat-chunk-link {
-    display: inline-flex;
     flex: none;
-    align-items: center;
-    justify-content: center;
-    min-width: 1.5rem;
-    min-height: 1.5rem;
-    font: var(--text-meta)/1.3 var(--lat-mono);
+    font-family: var(--lat-mono);
+    font-size: var(--lat-micro);
+    line-height: 1.3;
     font-variant-numeric: tabular-nums;
     color: var(--darkgray);
-    background: var(--ledger-surface);
     text-decoration: none;
   }
 
@@ -288,8 +369,11 @@
     max-width: calc(100vw - 16px);
     max-height: min(34rem, calc(100dvh - 16px));
     overflow: auto;
-    border: 1px solid var(--darkgray);
+    // the page-map card's frame (latent.scss .lat-silhouette): a hairline and a soft lift, so
+    // the card sits on the page instead of being cut out of it
+    border: 1px solid var(--ledger-line);
     border-radius: var(--radius-none);
+    box-shadow: 0 0.4rem 1.2rem color-mix(in srgb, var(--dark) 12%, transparent);
     background: var(--light);
     color: var(--darkgray);
     font: var(--text-meta)/1.45 var(--lat-text);
@@ -305,13 +389,33 @@
     }
 
     .lat-chunk-preview-head {
+      grid-row: 1;
+      align-self: baseline;
       color: var(--dark);
       font-family: var(--lat-mono);
+      font-size: var(--lat-micro);
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    // a pdf chunk puts /read at the right end of the title line
+    &:has(> .lat-chunk-read) > .lat-chunk-preview-head {
+      grid-column: 1;
     }
 
     .lat-link-why:empty {
       display: none;
     }
+  }
+
+  // the feature pairs read as a footer under one hairline, edge to edge (the popover mounts in
+  // .lat-links, whose .lat-link-why margin in latent-features.scss this outranks)
+  .lat-links .lat-chunk-preview > .lat-link-why {
+    margin: 0 -0.75rem;
+    padding: 0.5rem 0.75rem 0;
+    border-top: 1px solid var(--ledger-line);
   }
 
   .lat-chunk-preview-text {
@@ -321,7 +425,30 @@
     max-height: 20rem;
     overflow: auto;
     overflow-wrap: anywhere;
+    scrollbar-width: thin;
     font-size: var(--text-meta);
+    // a passage that runs on below the cut fades out instead of slicing a line; the bottom
+    // padding is the fade's room, so a short passage ends above it at full ink. Scrolled, the
+    // top edge fades in the same way and the bottom one clears at the end (scroll-driven, so
+    // nothing fades at scrollTop 0; without scroll timelines only the bottom fade shows)
+    padding-bottom: 1.5rem;
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      #000 var(--lat-fade-top),
+      #000 calc(100% - var(--lat-fade-bottom)),
+      transparent 100%
+    );
+
+    @supports (animation-timeline: scroll()) {
+      animation:
+        lat-fade-top linear both,
+        lat-fade-bottom linear both;
+      animation-timeline: scroll(self), scroll(self);
+      animation-range:
+        0 3rem,
+        calc(100% - 3rem) 100%;
+    }
 
     p {
       font-size: inherit;
@@ -349,11 +476,14 @@
       height: 100%;
     }
 
+    // the page-map card's tones (latent.scss .lat-silhouette): light boxes, the matched one
+    // a step darker, salmon only for pdfs. A one-chunk note is one box, which in ink read as
+    // a solid black block
     rect {
-      fill: var(--gray);
+      fill: var(--lightgray);
 
       &[data-hit] {
-        fill: var(--dark);
+        fill: var(--gray);
       }
     }
 
@@ -364,25 +494,33 @@
 
   .lat-chunk-read {
     grid-column: 2;
-    color: var(--darkgray);
+    grid-row: 1;
+    justify-self: end;
+    align-self: baseline;
     font-family: var(--lat-mono);
+    font-size: var(--lat-micro);
+    color: var(--darkgray);
+    white-space: nowrap;
+
+    &:hover {
+      color: var(--dark);
+    }
   }
 
   @media (hover: hover) and (pointer: fine) {
     .lat-chunk-link:hover {
       color: var(--dark);
-      background: var(--lightgray);
       text-decoration: underline;
     }
   }
 
   @media (pointer: coarse) {
-    .lat-links .lat-link.lat-link-document {
-      height: 44px;
-    }
-
+    // a touch target without a visible box
     .lat-chunk-link {
-      min-width: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 2rem;
       min-height: 44px;
     }
   }
@@ -395,5 +533,73 @@
     .lat-links .lat-link-document > .lat-score {
       display: none;
     }
+  }
+}
+
+[data-layout='latent'] :where(#quartz-root) {
+  .lat-search-key {
+    @include hint.badge;
+    position: absolute;
+    inset-block-start: 0.5rem;
+    inset-inline-end: 0.75rem;
+    z-index: 2;
+  }
+
+  [data-lat-control-hints] .lat-search-key {
+    @include hint.shown;
+  }
+
+  [data-lat-control-hints] .lat-search::after {
+    visibility: hidden;
+  }
+}
+
+[data-layout='latent'] :where(#quartz-root) {
+  .lat-tab,
+  .lat-bench-level {
+    position: relative;
+  }
+
+  .lat-probe-key {
+    @include hint.badge;
+    position: absolute;
+    inset-block-start: 0.15rem;
+    inset-inline-start: 0.15rem;
+    z-index: 2;
+  }
+
+  .lat-probe[data-shortcut-hints] .lat-probe-key:not([hidden]) {
+    @include hint.shown;
+  }
+}
+
+// the passage preview's edge fades (.lat-chunk-preview-text), animated by its own scroll
+@property --lat-fade-top {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --lat-fade-bottom {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 1.5rem;
+}
+
+@keyframes lat-fade-top {
+  from {
+    --lat-fade-top: 0px;
+  }
+  to {
+    --lat-fade-top: 1.5rem;
+  }
+}
+
+@keyframes lat-fade-bottom {
+  from {
+    --lat-fade-bottom: 1.5rem;
+  }
+  to {
+    --lat-fade-bottom: 0px;
   }
 }

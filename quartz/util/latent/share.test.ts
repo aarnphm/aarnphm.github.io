@@ -36,6 +36,7 @@ const view: SharedView = {
 test('a shared view round-trips signed steering, unicode and the whole camera', () => {
   const url = sharedViewUrl('https://example.com/embeddings/?focus=1#old', view)
   assert.equal(new URL(url).searchParams.get('focus'), '5457')
+  assert.match(new URL(url).hash, /^#view=[A-Za-z0-9_-]+$/)
   assert.deepEqual(readSharedView(new URL(url).hash), view)
 })
 
@@ -55,4 +56,9 @@ test('untrusted links reject malformed versions, values and oversized payloads',
   assert.equal(readSharedView('#view=%'), null)
   assert.equal(readSharedView('#view=' + 'x'.repeat(100000)), null)
   assert.equal(readSharedView('#ordinary-heading'), null)
+})
+
+test('previous percent-encoded shared links remain readable', () => {
+  assert.deepEqual(readSharedView('#view=' + encodeURIComponent(JSON.stringify(view))), view)
+  assert.equal(readSharedView('#view=_w'), null)
 })

@@ -80,6 +80,8 @@ export interface LatentDoc {
   pages?: number | null
   /** every row is a copy: the document that holds most of this one's text */
   copyOf?: number
+  /** the title the encoder saw, when `t` (a pdf's folder index title) differs; words.py reads it */
+  et?: string
 }
 
 /** One row of a `prev/NNNNN.json` block. */
@@ -102,8 +104,16 @@ export interface LatentChunk {
   l?: string
   /** Page box in permille of the page, resolved from pdf-regions at build. */
   box?: [number, number, number, number]
-  /** 1 when `text` is the note's markdown slice rather than its rendered text */
+  /**
+   * 1 when `text` is markdown rather than rendered text: a note's markdown slice, or an arXiv
+   * paper's slice of its TeX source (quartz/scripts/latent/arxiv.py)
+   */
   m?: 1
+  /**
+   * an arXiv passage whose text the source slice of row `j` shows (its algorithm, a float's
+   * caption): the reader keeps an empty `lat-joined` marker for it, focus goes to row `j`
+   */
+  j?: number
   /**
    * Page text another chunk already shows: [row, chunk index, why]. `repeat` is source text again
    * (a table's run-together cells), `figure` the text a figure draws, `code` a code cell's
@@ -164,7 +174,10 @@ export interface LatentAxis {
   scale: number
   hist: number[]
   terms: { a: string[]; b: string[] }
+  /** furthest rows of each end, one per document and per title (build.py `pole_rows`) */
   poles: { a: LatentAxisPole[]; b: LatentAxisPole[] }
+  /** furthest notes of each end, one per document; absent on the store axis and older sidecars */
+  notes?: { a: LatentAxisPole[]; b: LatentAxisPole[] }
   /** Set on an axis the page's `axes:` frontmatter names (build.py `axes_spec`). */
   source?: 'frontmatter'
   spec?: { a: LatentAxisSpecPole; b: LatentAxisSpecPole }

@@ -157,7 +157,8 @@ def main() -> None:
         ch['r']: ch['text']
         for ch in json.loads((side / 'text' / name).read_text())['chunks']
       }
-    return doc['t'] or 'none', texts[key].get(r, '')
+    # `et` is the title the encoder saw, when the sidecar shows another (a pdf's folder index title)
+    return doc.get('et') or doc['t'] or 'none', texts[key].get(r, '')
 
   def attribute(r: int, f: int) -> tuple[list[str], np.ndarray, set[int]]:
     title, text = chunk(r)

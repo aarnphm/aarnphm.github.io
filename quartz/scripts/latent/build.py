@@ -34,6 +34,7 @@ import shutil
 import struct
 import sys
 import time
+import unicodedata
 from collections import Counter
 from pathlib import Path
 
@@ -176,6 +177,41 @@ def clean_title(title: str | None, slug: str) -> str:
     stem = os.path.splitext(os.path.basename(slug))[0]
     t = re.sub(r'[-_.]+', ' ', stem).strip() or slug
   return t
+
+
+def sluggify(path: str) -> str:
+  """quartz/util/path.ts sluggify: the slug Quartz gives a content path."""
+  return '/'.join(
+    re
+    .sub(r'\s', '-', seg)
+    .replace('&', '-and-')
+    .replace('%', '-percent')
+    .replace('?', '')
+    .replace('#', '')
+    for seg in path.split('/')
+  ).rstrip('/')
+
+
+def pdf_index_titles(content: Path) -> dict[str, str]:
+  """pdf slug → the title its folder index gives it (`pdfTitles`, keyed by file name relative to the
+  index's folder), read the way quartz/util/pdf-titles.ts reads it for folder pages and the pdf
+  reader. It outranks the store's title, which is pdf metadata or OCR'd first-page text (a cited
+  paper, a publisher line, a chapter heading)."""
+  out: dict[str, str] = {}
+  for path in sorted(content.rglob('index.md')):
+    values = read_frontmatter(path).get('pdfTitles')
+    if not isinstance(values, dict):
+      continue
+    folder = path.parent.relative_to(content).as_posix()
+    folder = '' if folder == '.' else folder + '/'
+    for name, value in values.items():
+      if not isinstance(value, str):
+        continue
+      title = re.sub(r'\s+', ' ', unicodedata.normalize('NFC', value)).strip()
+      slug = sluggify(folder + str(name)).lstrip('/')
+      if title and slug.lower().endswith('.pdf'):
+        out[slug] = title
+  return out
 
 
 def tokens(text: str) -> set[str]:
@@ -505,6 +541,120 @@ def note_markdown(
     r['md'] = reader_markdown(raw, doc, by_name, bib)
     r['figure'] = bool(FIGURE_FENCE.search(raw))
   return True
+
+
+# An arXiv paper on the pdf shelf reads from its TeX source (arxiv.py writes it as markdown, math
+# and algorithms the authors' own) instead of the OCR, cut into the paper's passages the way a
+# note's markdown is. The store's text, its vectors and the boxes stay the OCR's.
+ARXIV_PDF = re.compile(r'(?:^|/)(\d{4}\.\d{4,5}(?:v\d+)?)\.pdf$')
+# how far past the last match a passage's start may be found, in source words: further than this,
+# a few common words matched by chance
+PAPER_REACH = 4000
+# math and markup are blanked before matching: OCR's TeX is a guess, the source's is the paper's
+PAPER_NOISE = re.compile(r'\$\$[\s\S]+?\$\$|\$[^$\n]+\$|<[^>\n]+>|\\[A-Za-z]+')
+# a passage that opens on a float's caption: the float sits elsewhere in the source than on the
+# page, so the passage is found by the text after it
+FLOAT_HEAD = re.compile(r'^(?:Figure|Fig\.|Table|Algorithm)\s*\d+[.:]', re.I)
+PAPER_HELD = 0.5
+
+
+def paper_words(text: str) -> list[tuple[int, str]]:
+  blank = PAPER_NOISE.sub(lambda m: ' ' * len(m.group()), text.lower())
+  return [(m.start(), m.group()) for m in MD_WORD.finditer(blank)]
+
+
+def paper_markdown(chunks: list[dict], md: str) -> int:
+  """Set `md` on the passages of one arXiv paper found in its TeX source (arxiv.py's paper.md);
+  returns how many passages read from it.
+
+  As note_markdown: each passage found by a 5-word run of its prose starts a slice at the block
+  holding it, and the slice runs to the next found passage. A passage not found whose 5-word runs
+  the source holds anyway (an algorithm's OCR, a float's caption, a page of equations) is shown
+  by a slice already: `into` names that slice's row. One the source does not hold (the
+  references, which it keeps in a .bbl) keeps its OCR text.
+  """
+  order = sorted(chunks, key=lambda r: (r['page'] or 0, r['chunk']))
+  toks = paper_words(md)
+  words = [w for _, w in toks]
+  fences = [(m.start(), m.end()) for m in MD_FENCE.finditer(md)]
+  starts: list[tuple[dict, int]] = [(order[0], 0)]
+  cursor = 0
+  for r in order[1:]:
+    paras = (r['text'] or '').split('\n\n')
+    while len(paras) > 1 and FLOAT_HEAD.match(paras[0].strip()):
+      paras.pop(0)
+    ct = [w for _, w in paper_words('\n\n'.join(paras))]
+    n = min(GRAM, len(ct))
+    if n < 3:
+      continue
+    found = None
+    for k in range(0, min(60, len(ct) - n + 1)):
+      j = find_gram(words, ct[k : k + n], cursor)
+      if j is not None and j - cursor <= PAPER_REACH:
+        found = j
+        break
+    if found is None:
+      continue
+    line = md.rfind('\n', 0, toks[found][0]) + 1
+    block = md.rfind('\n\n', 0, line)
+    block = block + 2 if block >= 0 else 0
+    if block > starts[-1][1]:
+      line = block
+    for a, b in fences:
+      if a < line < b:
+        line = a if a > starts[-1][1] else b + 1
+        break
+    if line <= starts[-1][1] or line >= len(md):
+      continue
+    starts.append((r, line))
+    cursor = found + 1
+  if len(starts) < 2:
+    return 0
+  bounds = []
+  for i, (r, line) in enumerate(starts):
+    end = starts[i + 1][1] if i + 1 < len(starts) else len(md)
+    r['md'] = md[line:end].strip('\n')
+    bounds.append((line, end, r))
+  grams: dict[str, int] = {}
+  for i in range(len(words) - GRAM + 1):
+    grams.setdefault(' '.join(words[i : i + GRAM]), toks[i][0])
+  for r in order:
+    if 'md' in r:
+      continue
+    ct = [w for _, w in paper_words(r['text'] or '')]
+    runs = [
+      ' '.join(ct[i : i + GRAM]) for i in range(0, len(ct) - GRAM + 1, GRAM)
+    ]
+    at = [grams[g] for g in runs if g in grams]
+    if not runs or len(at) < PAPER_HELD * len(runs):
+      continue
+    # the slice that holds most of it
+    owners = Counter(
+      next(
+        (i for i, (a, b, _) in enumerate(bounds) if a <= p < b),
+        len(bounds) - 1,
+      )
+      for p in at
+    )
+    r['into'] = bounds[owners.most_common(1)[0][0]][2]['row']
+  return len(starts)
+
+
+def paper_sources(rows: list[dict], arxiv: Path) -> None:
+  """`md` (and `into`) on the pdf rows of every arXiv paper whose source arxiv.py converted."""
+  by_doc: dict[str, list[dict]] = {}
+  for r in rows:
+    by_doc.setdefault(r['doc'], []).append(r)
+  read = papers = 0
+  for doc, chunks in by_doc.items():
+    m = ARXIV_PDF.search(doc)
+    path = arxiv / m.group(1) / 'paper.md' if m else None
+    if path is None or not path.is_file():
+      continue
+    n = paper_markdown(chunks, path.read_text(encoding='utf-8'))
+    read += n
+    papers += n > 0
+  log('pdf passages read from arXiv TeX source', read, 'in', papers, 'papers')
 
 
 # A note's embedding text is its rendered page's text, and the page holds more than its markdown:
@@ -838,7 +988,11 @@ def notebook_markdown(path: Path) -> str:
 
 
 def load_rows(
-  content: Path, store: dict, offset: int
+  content: Path,
+  store: dict,
+  offset: int,
+  excluded: set[str] = frozenset(),
+  arxiv: Path | None = None,
 ) -> tuple[list[dict], np.ndarray]:
   """Rows of one store in vector order: id, doc, title, chunk, page, label, text, date."""
   m = store['manifest']
@@ -854,8 +1008,12 @@ def load_rows(
     )
     if passages and len(passages) != m['rows']:
       raise SystemExit('note passages do not align with the vectors')
+    keep: list[int] = []
     for i, rid in enumerate(m['ids']):
       meta = m['chunkMetadata'].get(rid, {})
+      if meta.get('parentSlug', rid.split('#')[0]) in excluded:
+        continue
+      keep.append(i)
       p = passages[i] if passages else {}
       rows.append(
         dict(
@@ -872,6 +1030,12 @@ def load_rows(
           start=p.get('charStart'),
         )
       )
+    if len(keep) != len(m['ids']):
+      log(
+        'note rows dropped (protected/private/draft)',
+        len(m['ids']) - len(keep),
+      )
+      vectors = vectors[keep]
     by_doc: dict[str, list[dict]] = {}
     for r in rows:
       by_doc.setdefault(r['doc'], []).append(r)
@@ -903,13 +1067,23 @@ def load_rows(
     if len(passages) != m['rows']:
       raise SystemExit('pdf passages do not align with the vectors')
     docs = m['documents']
+    named = pdf_index_titles(content)
+    log(
+      'pdf titles from folder indexes',
+      sum(slug in named for slug in docs),
+      'of',
+      len(docs),
+    )
     for p in passages:
       d = docs.get(p['slug'], {})
       rows.append(
         dict(
           id=f'{p["slug"]}#page={p["page"]}&chunk={p["chunk"]}',
           doc=p['slug'],
-          title=clean_title(d.get('title') or p.get('title'), p['slug']),
+          title=named.get(p['slug'])
+          or clean_title(d.get('title') or p.get('title'), p['slug']),
+          # the title the encoder saw (pdf-search/build.py prefixes the passage title)
+          embedTitle=p.get('title'),
           chunk=p['chunk'],
           page=p['page'],
           label=p.get('pageLabel') or '',
@@ -955,6 +1129,8 @@ def load_rows(
     r['row'] = offset + i
     r['store'] = kind
     r['storeId'] = store['id']
+  if kind == 'pdf' and arxiv is not None:
+    paper_sources(rows, arxiv)
   return rows, vectors
 
 
@@ -1017,6 +1193,84 @@ def bimodality(values: np.ndarray) -> float:
   return (g * g + 1.0) / (k + 3.0 * (n - 1) ** 2 / ((n - 2) * (n - 3)))
 
 
+# Pole ends. A 2,800-passage book holds every one of the furthest dozen rows of an axis it leans
+# along (pc2's low end was twelve rows of the Arcades Project), and a course notebook copied into
+# eleven folders is eleven documents with one title. So the exemplars walk inward from the end
+# and keep one row per document and per title, as dedup.py keeps one row per text; notes get
+# their own short list, since pdf passages outnumber note chunks and crowd them off the ends.
+# The pole's words read a window of the furthest rows that takes at most TERM_DOC_CAP rows from
+# one document.
+POLE_ROWS = 12  # distinct documents per pole end
+POLE_NOTES = 6  # distinct notes per pole end
+TERM_ROWS = 200
+TERM_DOC_CAP = 8
+TITLE_KEY = re.compile(r'[^0-9a-z]+')
+# 'Structure and Interpretation of Signals and Systems, Second Edition' and the first edition
+EDITION = re.compile(
+  r' (?:\d+(?:st|nd|rd|th)|first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth) ed(?:ition)?\b.*$'
+)
+
+
+def title_key(title: str | None) -> str:
+  return EDITION.sub('', TITLE_KEY.sub(' ', (title or '').lower()).strip())
+
+
+def pole_rows(
+  rows: list[dict],
+  order: np.ndarray,
+  doc_of_row: np.ndarray,
+  limit: int,
+  store: str | None = None,
+) -> list[int]:
+  """Rows from the pole end inward, the first of each document and each title."""
+  docs: set[int] = set()
+  titles: set[str] = set()
+  out: list[int] = []
+  for r in order:
+    r = int(r)
+    row = rows[r]
+    if store is not None and row['store'] != store:
+      continue
+    d = int(doc_of_row[r])
+    t = title_key(row.get('title'))
+    if t and row['store'] == 'note':
+      # a book's base entry and its pdf are one work; a note titled 'linear algebra' is not the book
+      t = 'note\t' + t
+    if d in docs or (t and t in titles):
+      continue
+    docs.add(d)
+    if t:
+      titles.add(t)
+    out.append(r)
+    if len(out) >= limit:
+      break
+  return out
+
+
+def term_window(order: np.ndarray, doc_of_row: np.ndarray) -> np.ndarray:
+  """The TERM_ROWS furthest rows, at most TERM_DOC_CAP of them from one document."""
+  held: Counter = Counter()
+  out: list[int] = []
+  for r in order:
+    d = int(doc_of_row[r])
+    if held[d] >= TERM_DOC_CAP:
+      continue
+    held[d] += 1
+    out.append(int(r))
+    if len(out) >= TERM_ROWS:
+      break
+  return np.asarray(out, dtype=np.int64)
+
+
+def pole_entry(rows: list[dict], doc_of_row: np.ndarray, r: int) -> dict:
+  return dict(
+    r=int(r),
+    d=int(doc_of_row[r]),
+    t=rows[int(r)]['title'],
+    s=rows[int(r)]['store'],
+  )
+
+
 def top_terms(
   rows: list[dict], order: np.ndarray, rest: np.ndarray, n: int = 5
 ) -> list[str]:
@@ -1050,6 +1304,23 @@ def top_terms(
 # into the sidecar hash (quartz/util/latent/sidecar.ts `axesSpec` builds the same JSON), so a
 # page whose axes changed reads the sidecar as behind and a browser never mixes two axis sets.
 MIN_POLE = 8
+
+
+# protected (encrypted on the site, plaintext in the store), private and draft notes never enter the
+# sidecar: no rows, text, neighbours, dictionaries, labels or steering. embed_build.py prunes them
+# from the note store too; this keeps a stale store from leaking them back in.
+EXCLUDE_KEYS = ('protected', 'private', 'draft')
+
+
+def excluded_notes(content: Path) -> set[str]:
+  out: set[str] = set()
+  for slug, path in note_sources(content).items():
+    if path.suffix != '.md':
+      continue
+    fm = read_frontmatter(path)
+    if any(fm.get(key) for key in EXCLUDE_KEYS):
+      out.add(slug)
+  return out
 
 
 def read_frontmatter(path: Path) -> dict:
@@ -1195,6 +1466,11 @@ def main() -> None:
   )
   ap.add_argument('--k', type=int, default=16)
   ap.add_argument(
+    '--arxiv',
+    default='quartz/.quartz-cache/arxiv-src',
+    help='arxiv.py output: <id>/paper.md, the TeX source of each arXiv pdf as markdown',
+  )
+  ap.add_argument(
     '--regions', default='embeddings/pdf-regions', help='relative to --content'
   )
   ap.add_argument(
@@ -1241,6 +1517,8 @@ def main() -> None:
   log(
     'axes from', page.relative_to(content) if page else None, spec_json(spec)
   )
+  excluded = excluded_notes(content)
+  log('excluded notes (protected/private/draft)', len(excluded))
   sidecar_hash = sha256('\n'.join(digest_lines).encode())
   log(
     'stores', [(s['id'], s['kind'], s['rows'], s['included']) for s in stores]
@@ -1258,7 +1536,9 @@ def main() -> None:
   mats: list[np.ndarray] = []
   for s in included:
     s['rowOffset'] = len(rows)
-    r, V = load_rows(content, s, len(rows))
+    r, V = load_rows(
+      content, s, len(rows), excluded, Path(args.arxiv).resolve()
+    )
     rows.extend(r)
     mats.append(V)
     log(s['id'], len(r), 'rows')
@@ -1299,6 +1579,7 @@ def main() -> None:
           store=r['store'],
           storeId=r['storeId'],
           title=r['title'],
+          embedTitle=r.get('embedTitle'),
           date=r['date'],
           prec=r['prec'],
           sha=r.get('sha'),
@@ -1501,7 +1782,16 @@ def main() -> None:
     lim = float(np.abs(proj).max()) + 1e-9
     axis_i8[:, ai] = np.clip(np.round(proj / lim * 127), -127, 127)
     order = keep[np.argsort(proj[keep])]
-    neg, pos = order[:12], order[-12:][::-1]
+    ends = dict(a=order, b=order[::-1])
+    # the store axis has a notes end already; elsewhere notes get a list of their own
+    note_ends = (
+      {}
+      if ax['id'] == 'store'
+      else {
+        side: pole_rows(rows, o, doc_of_row, POLE_NOTES, store='note')
+        for side, o in ends.items()
+      }
+    )
     hist, _ = np.histogram(proj[keep], bins=32, range=(-lim, lim))
     probe.append(
       dict(
@@ -1513,32 +1803,24 @@ def main() -> None:
         bc=round(bimodality(proj[keep]), 3),
         scale=lim,
         hist=hist.astype(int).tolist(),
-        terms=dict(
-          a=top_terms(rows, order[:200], rest_sample),
-          b=top_terms(rows, order[-200:], rest_sample),
-        ),
-        poles=dict(
-          a=[
-            dict(
-              r=int(r),
-              d=int(doc_of_row[r]),
-              t=rows[int(r)]['title'],
-              s=rows[int(r)]['store'],
-            )
-            for r in neg
-          ],
-          b=[
-            dict(
-              r=int(r),
-              d=int(doc_of_row[r]),
-              t=rows[int(r)]['title'],
-              s=rows[int(r)]['store'],
-            )
-            for r in pos
-          ],
-        ),
+        terms={
+          side: top_terms(rows, term_window(o, doc_of_row), rest_sample)
+          for side, o in ends.items()
+        },
+        poles={
+          side: [
+            pole_entry(rows, doc_of_row, r)
+            for r in pole_rows(rows, o, doc_of_row, POLE_ROWS)
+          ]
+          for side, o in ends.items()
+        },
       )
     )
+    if note_ends:
+      probe[-1]['notes'] = {
+        side: [pole_entry(rows, doc_of_row, r) for r in rs]
+        for side, rs in note_ends.items()
+      }
   with open(out / 'vec' / 'meta.json', 'w', encoding='utf-8') as fh:
     json.dump(
       dict(
@@ -1610,6 +1892,10 @@ def main() -> None:
       if row.get('same'):
         # page text the earlier chunk's markdown already shows: the reader points there
         chunk['same'] = [row['same']['row'], row['same']['chunk'], row['why']]
+      if row.get('into') is not None:
+        # an arXiv passage whose text another passage's source slice shows
+        chunk['j'] = row['into']
+        chunk['text'] = ''
       if row['page']:
         chunk['p'] = row['page']
         chunk['l'] = row['label']
@@ -1663,6 +1949,12 @@ def main() -> None:
         n=count,
         **({'sha': d['sha'], 'pages': d['pages']} if d.get('sha') else {}),
         **({'copyOf': d['copyOf']} if 'copyOf' in d else {}),
+        # words.py rebuilds the encoder prompt; keep its title when the shown one differs
+        **(
+          {'et': d['embedTitle']}
+          if d.get('embedTitle') and d['embedTitle'] != d['title']
+          else {}
+        ),
       )
     )
     track += struct.pack(
