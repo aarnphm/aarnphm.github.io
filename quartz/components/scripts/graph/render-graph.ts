@@ -1,0 +1,484 @@
+import { zoomIdentity, select, drag, zoom } from 'd3'
+import { Text, Graphics, Application, Container, Circle } from 'pixi.js'
+import 'pixi.js/unsafe-eval'
+import type { D3Config } from '../../Graph'
+import { type FullSlug, resolveRelative, simplifySlug } from '../../../util/path'
+import { prepareGraphData, type NodeData, type LinkData } from './data'
+import { determineGraphicsAPI, readGraphTheme } from './display'
+import { createGraphSimulation } from './simulation'
+import { getVisited } from './visited'
+
+type GraphicsInfo = { color: string; gfx: Graphics; alpha: number; active: boolean }
+
+type NodeRenderData = GraphicsInfo & { simulationData: NodeData; label: Text }
+
+type LinkRenderData = { simulationData: LinkData; color: string; alpha: number; active: boolean }
+
+export async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
+  const slug = simplifySlug(fullSlug)
+  const visited = getVisited()
+  graph.replaceChildren()
+
+  let {
+    drag: enableDrag,
+    zoom: enableZoom,
+    depth,
+    scale,
+    opacityScale,
+    repelForce,
+    centerForce,
+    linkDistance,
+    fontSize,
+    removeTags,
+    showTags,
+    focusOnHover,
+    enableRadial,
+    label: labelMode = 'default',
+  } = JSON.parse(graph.dataset['cfg']!) as D3Config
+
+  const graphData = prepareGraphData(await fetchData, slug, { depth, showTags, removeTags })
+
+  const width = graph.offsetWidth
+  const height = Math.max(graph.offsetHeight, 250)
+
+  const simulation = createGraphSimulation(
+    graphData,
+    { width, height },
+    { repelForce, centerForce, linkDistance, enableRadial },
+  )
+
+  const { colors: theme, labelTintBase, labelTintDimmed } = readGraphTheme()
+
+  const color = (d: NodeData) => {
+    const isCurrent = d.id === slug
+    if (isCurrent) {
+      return theme.secondary
+    } else if (visited.has(d.id) || d.id.startsWith('tags/')) {
+      return theme.tertiary
+    } else {
+      return theme.gray
+    }
+  }
+
+  const nodeRadius = (node: NodeData) => node.radius
+
+  let hoveredNodeId: string | null = null
+  let hoveredNeighbours: Set<string> = new Set()
+  let labelsContainer: Container<Text> | null = null
+  const updateLabelVisibility = () => {
+    if (!labelsContainer) return
+    labelsContainer.visible =
+      !dragging && labelMode !== 'off' && (labelMode !== 'hover' || hoveredNodeId !== null)
+  }
+  const linkRenderData: LinkRenderData[] = []
+  const nodeRenderData: NodeRenderData[] = []
+  function updateHoverInfo(newHoveredId: string | null) {
+    if (dragging && newHoveredId !== null) {
+      return
+    }
+    hoveredNodeId = newHoveredId
+
+    if (newHoveredId === null) {
+      hoveredNeighbours = new Set()
+      for (const n of nodeRenderData) {
+        n.active = false
+      }
+
+      for (const l of linkRenderData) {
+        l.active = false
+      }
+    } else {
+      hoveredNeighbours = new Set()
+      for (const l of linkRenderData) {
+        const linkData = l.simulationData
+        if (linkData.source.id === newHoveredId || linkData.target.id === newHoveredId) {
+          hoveredNeighbours.add(linkData.source.id)
+          hoveredNeighbours.add(linkData.target.id)
+        }
+
+        l.active = linkData.source.id === newHoveredId || linkData.target.id === newHoveredId
+      }
+
+      for (const n of nodeRenderData) {
+        n.active = hoveredNeighbours.has(n.simulationData.id)
+      }
+    }
+    updateLabelVisibility()
+  }
+
+  let dragStartTime = 0
+  let dragging = false
+  let animationFrame: number | null = null
+  let stopAnimation = false
+  let layoutDirty = true
+  let linksDirty = true
+  let renderDirty = true
+  const scheduleRender = () => {
+    if (stopAnimation || animationFrame !== null) return
+    animationFrame = requestAnimationFrame(renderFrame)
+  }
+
+  let lastFrameTime = 0
+
+  const markLayoutDirty = () => {
+    layoutDirty = true
+    scheduleRender()
+  }
+
+  const markLinksDirty = () => {
+    linksDirty = true
+    scheduleRender()
+  }
+
+  const markRenderDirty = () => {
+    renderDirty = true
+    scheduleRender()
+  }
+
+  const smooth = (current: number, target: number, factor = 0.9) =>
+    current * factor + target * (1 - factor)
+  const smoothColor = (current: number, target: number, factor: number) => {
+    const cr = (current >> 16) & 255
+    const cg = (current >> 8) & 255
+    const cb = current & 255
+    const tr = (target >> 16) & 255
+    const tg = (target >> 8) & 255
+    const tb = target & 255
+    const nr = Math.round(smooth(cr, tr, factor))
+    const ng = Math.round(smooth(cg, tg, factor))
+    const nb = Math.round(smooth(cb, tb, factor))
+    return (nr << 16) + (ng << 8) + nb
+  }
+
+  const initialScale = scale
+  const defaultScale = 1 / initialScale
+  const activeScale = defaultScale * 1.1
+  let zoomScale = 1
+  let zoomTextAlpha = 0
+  const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
+  const updateZoomDerived = (currentScale: number) => {
+    const relativeZoom = currentScale / initialScale
+    const safeRelativeZoom = Math.max(relativeZoom, 1e-4)
+    zoomScale = 1 / Math.sqrt(safeRelativeZoom)
+    zoomTextAlpha = clamp(Math.log2(safeRelativeZoom) + 1 - opacityScale, 0, 1)
+  }
+  updateZoomDerived(initialScale)
+
+  function renderLabels() {
+    markRenderDirty()
+  }
+
+  function renderLinks() {
+    markLinksDirty()
+    markRenderDirty()
+  }
+
+  function renderNodes() {
+    markRenderDirty()
+  }
+
+  function renderPixiFromD3() {
+    renderNodes()
+    renderLinks()
+    renderLabels()
+  }
+
+  const app = new Application()
+  await app.init({
+    width,
+    height,
+    antialias: true,
+    autoStart: false,
+    autoDensity: true,
+    backgroundAlpha: 0,
+    preference: await determineGraphicsAPI(),
+    resolution: window.devicePixelRatio,
+    eventMode: 'static',
+  })
+  graph.appendChild(app.canvas)
+
+  const stage = app.stage
+  stage.interactive = false
+
+  labelsContainer = new Container<Text>({ zIndex: 3, isRenderGroup: true })
+  const nodesContainer = new Container<Graphics>({ zIndex: 2, isRenderGroup: true })
+  const linkContainer = new Container<Graphics>({ zIndex: 1, isRenderGroup: true })
+  const linksGfx = new Graphics({ interactive: false, eventMode: 'none' })
+  linkContainer.addChild(linksGfx)
+  stage.addChild(nodesContainer, labelsContainer, linkContainer)
+  updateLabelVisibility()
+
+  for (const simulationData of graphData.nodes) {
+    const { text, id: label } = simulationData
+
+    const txt = new Text({
+      interactive: false,
+      eventMode: 'none',
+      text,
+      alpha: 0,
+      anchor: { x: 0.5, y: 1.2 },
+      style: { fontSize: fontSize * 15, fill: '#ffffff', fontFamily: theme.font },
+      resolution: window.devicePixelRatio * 4,
+    })
+    txt.tint = labelTintBase
+    txt.scale.set(defaultScale * zoomScale)
+
+    const isTagNode = label.startsWith('tags/')
+    const gfx = new Graphics({
+      interactive: true,
+      label,
+      eventMode: 'static',
+      hitArea: new Circle(0, 0, nodeRadius(simulationData)),
+      cursor: 'var(--cursor-pointer, pointer)',
+    })
+      .circle(0, 0, nodeRadius(simulationData))
+      .fill({ color: isTagNode ? theme.foam : color(simulationData) })
+      .on('pointerover', e => {
+        updateHoverInfo(e.target.label)
+        if (!dragging) renderPixiFromD3()
+      })
+      .on('pointerleave', () => {
+        updateHoverInfo(null)
+        if (!dragging) renderPixiFromD3()
+      })
+
+    if (isTagNode) gfx.stroke({ width: 1, color: theme.tertiary })
+
+    nodesContainer.addChild(gfx)
+    labelsContainer.addChild(txt)
+
+    nodeRenderData.push({
+      simulationData,
+      gfx,
+      label: txt,
+      color: color(simulationData),
+      alpha: 1,
+      active: false,
+    })
+  }
+
+  for (const l of graphData.links) {
+    linkRenderData.push({ simulationData: l, color: theme.lightgray, alpha: 1, active: false })
+  }
+
+  simulation.on('tick', () => {
+    markLayoutDirty()
+  })
+
+  let currentTransform = zoomIdentity
+  if (enableDrag) {
+    select<HTMLCanvasElement, NodeData | undefined>(app.canvas).call(
+      drag<HTMLCanvasElement, NodeData | undefined>()
+        .container(() => app.canvas)
+        .subject(() => graphData.nodes.find(n => n.id === hoveredNodeId))
+        .on('start', function dragstarted(event) {
+          if (!event.active) simulation.alphaTarget(1).restart()
+          event.subject.fx = event.subject.x
+          event.subject.fy = event.subject.y
+          event.subject.__initialDragPos = {
+            x: event.subject.x,
+            y: event.subject.y,
+            fx: event.subject.fx,
+            fy: event.subject.fy,
+          }
+          dragStartTime = Date.now()
+          dragging = true
+          updateHoverInfo(null)
+          markLayoutDirty()
+        })
+        .on('drag', function dragged(event) {
+          const initPos = event.subject.__initialDragPos
+          event.subject.fx = initPos.x + (event.x - initPos.x) / currentTransform.k
+          event.subject.fy = initPos.y + (event.y - initPos.y) / currentTransform.k
+          markLayoutDirty()
+        })
+        .on('end', function dragended(event) {
+          if (!event.active) simulation.alphaTarget(0)
+          event.subject.fx = null
+          event.subject.fy = null
+          dragging = false
+          updateLabelVisibility()
+          markLayoutDirty()
+
+          if (Date.now() - dragStartTime < 500) {
+            window.spaNavigate(
+              new URL(resolveRelative(fullSlug, event.subject.id), window.location.toString()),
+            )
+          }
+        }),
+    )
+  } else {
+    for (const node of nodeRenderData) {
+      node.gfx.on('click', () => {
+        window.spaNavigate(
+          new URL(resolveRelative(fullSlug, node.simulationData.id), window.location.toString()),
+        )
+        graph.classList.remove('active')
+      })
+    }
+  }
+
+  function handleZoomBehaviour(x: number, y: number, scale: number) {
+    stage.scale.set(scale, scale)
+    stage.position.set(x, y)
+
+    updateZoomDerived(scale)
+    for (const n of nodeRenderData) {
+      n.gfx.scale.set(zoomScale)
+    }
+    renderLabels()
+    markLinksDirty()
+    markRenderDirty()
+  }
+
+  const initialX = width / 2 - (width / 2) * initialScale
+  const initialY = height / 2 - (height / 2) * initialScale
+
+  if (enableZoom) {
+    const zoomBehaviour = zoom<HTMLCanvasElement, NodeData>()
+      .extent([
+        [0, 0],
+        [width, height],
+      ])
+      .scaleExtent([0.25, 4])
+      .on('zoom', ({ transform }) => {
+        currentTransform = transform
+        handleZoomBehaviour(transform.x, transform.y, transform.k)
+      })
+
+    const canvasSelection = select<HTMLCanvasElement, NodeData>(app.canvas).call(zoomBehaviour)
+    const initialTransform = zoomIdentity.translate(initialX, initialY).scale(initialScale)
+    canvasSelection.call(zoomBehaviour.transform, initialTransform)
+  } else {
+    handleZoomBehaviour(initialX, initialY, initialScale)
+  }
+
+  function renderFrame(time: number) {
+    animationFrame = null
+    if (stopAnimation) return
+
+    const delta = lastFrameTime === 0 ? 16.666 : Math.max(1, Math.min(100, time - lastFrameTime))
+    lastFrameTime = time
+    const smoothingFactor = Math.pow(0.9, delta / 16.666)
+
+    if (layoutDirty) {
+      for (const n of nodeRenderData) {
+        const { x, y } = n.simulationData
+        if (x == null || y == null) continue
+        n.gfx.position.set(x + width / 2, y + height / 2)
+        n.label.position.set(x + width / 2, y + height / 2)
+      }
+      layoutDirty = false
+      linksDirty = true
+      renderDirty = true
+    }
+
+    let needsNextFrame = false
+    const epsilon = 0.001
+    const baseScale = defaultScale * zoomScale
+    const hoverScale = activeScale * zoomScale
+
+    for (const n of nodeRenderData) {
+      const nodeTargetAlpha = hoveredNodeId !== null && focusOnHover ? (n.active ? 1 : 0.2) : 1
+      const nextNodeAlpha = smooth(n.alpha, nodeTargetAlpha, smoothingFactor)
+      if (Math.abs(nextNodeAlpha - n.alpha) > epsilon) {
+        needsNextFrame = true
+        renderDirty = true
+      }
+      n.alpha = nextNodeAlpha
+      n.gfx.alpha = nextNodeAlpha
+
+      const nodeId = n.simulationData.id
+      const isCurrentlyHover = hoveredNodeId === nodeId
+      const isConnected = hoveredNeighbours.has(nodeId)
+      const isDimmed = hoveredNodeId !== null && !isCurrentlyHover && !isConnected
+      let labelTargetAlpha = 0
+      if (!dragging) {
+        if (labelMode === 'default') {
+          labelTargetAlpha = hoveredNodeId
+            ? isCurrentlyHover
+              ? 1
+              : isConnected
+                ? 0.8
+                : zoomTextAlpha
+            : zoomTextAlpha
+        } else if (labelMode === 'hover') {
+          labelTargetAlpha = hoveredNodeId && (isCurrentlyHover || isConnected) ? 1 : 0
+        }
+      }
+      const nextLabelAlpha = smooth(n.label.alpha, labelTargetAlpha, smoothingFactor)
+      if (Math.abs(nextLabelAlpha - n.label.alpha) > epsilon) {
+        needsNextFrame = true
+        renderDirty = true
+      }
+      n.label.alpha = nextLabelAlpha
+
+      const labelScale = isCurrentlyHover || isConnected ? hoverScale : baseScale
+      if (Math.abs(n.label.scale.x - labelScale) > epsilon) {
+        n.label.scale.set(labelScale)
+        renderDirty = true
+      }
+
+      const targetTint = isDimmed ? labelTintDimmed : labelTintBase
+      const nextTint = smoothColor(n.label.tint, targetTint, smoothingFactor)
+      if (nextTint !== n.label.tint) {
+        n.label.tint = nextTint
+        needsNextFrame = true
+        renderDirty = true
+      }
+    }
+
+    let linksNeedRender = linksDirty
+    for (const l of linkRenderData) {
+      const linkTargetAlpha = hoveredNodeId ? (l.active ? 1 : 0.2) : 1
+      const nextLinkAlpha = smooth(l.alpha, linkTargetAlpha, smoothingFactor)
+      if (Math.abs(nextLinkAlpha - l.alpha) > epsilon) {
+        needsNextFrame = true
+        linksNeedRender = true
+      }
+      l.alpha = nextLinkAlpha
+      l.color = l.active ? theme.secondary : theme.lightgray
+    }
+
+    if (linksNeedRender) {
+      linksGfx.clear()
+      const linkWidth = 1 / stage.scale.x
+      for (const l of linkRenderData) {
+        const linkData = l.simulationData
+        if (
+          linkData.source.x == null ||
+          linkData.source.y == null ||
+          linkData.target.x == null ||
+          linkData.target.y == null
+        )
+          continue
+        linksGfx.moveTo(linkData.source.x + width / 2, linkData.source.y + height / 2)
+        linksGfx
+          .lineTo(linkData.target.x + width / 2, linkData.target.y + height / 2)
+          .stroke({ alpha: l.alpha, width: linkWidth, color: l.color })
+      }
+      linksDirty = false
+      renderDirty = true
+    }
+
+    if (renderDirty) {
+      app.renderer.render(stage)
+      renderDirty = false
+    }
+
+    if (needsNextFrame) {
+      scheduleRender()
+    }
+  }
+
+  markLayoutDirty()
+  return () => {
+    stopAnimation = true
+    if (animationFrame !== null) {
+      cancelAnimationFrame(animationFrame)
+      animationFrame = null
+    }
+    simulation.stop()
+    app.destroy({ removeView: true })
+  }
+}
