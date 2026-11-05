@@ -10,6 +10,27 @@ import pymupdf
 def reviewed_region_text(
   source: Path, number: int, bounds: list[float], content: str | None
 ) -> dict[str, str] | None:
+  if number == 125 and bounds == [278, 194, 287, 204]:
+    source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+    if (
+      source_hash
+      != 'cf49bbbb18ec9a1928d32530e9676b16c34d696394579b177ab38dbadc368534'
+    ):
+      return None
+    return {
+      'content': '1',
+      'recovery': 'reviewed-region-text-v1',
+      'review_status': 'reviewed',
+      'review_recognition': 'approved-transcription-before-ocr',
+      'review_source_sha256': source_hash,
+      'review_physical_page': '125',
+      'review_bounds': str(bounds),
+      'review_models': 'gemini-4-argon-high',
+      'review_approved_by': 'Codex direct full-page and crop review',
+      'review_date': '2026-11-04',
+      'review_reference': 'docs/verification/ocr-aside-recovery/source-review.md#grid-systems-page-125',
+      'review_approval': 'Monitor recovery authorization, 2026-11-04',
+    }
   if number == 312 and bounds in (
     [827, 409, 890, 414],
     [383, 569, 434, 575],
@@ -80,6 +101,279 @@ def reviewed_region_text(
       'review_reference': 'docs/verification/ocr-aside-recovery/source-review.md#grid-systems-page-100',
       'review_approval': 'Standing marked-partial specimen recovery authorization, 2026-11-03; monitor recovery instruction, 2026-11-04',
     }
+  if number == 119 and bounds == [357, 860, 516, 885]:
+    source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+    if (
+      source_hash
+      != '728e6d0ca3809d504f12f3302ef5303238a7324cf2824b303d64781d597dba7d'
+    ):
+      return None
+    return {
+      'content': 'WASHING, WRINGING, MANGLING.—\n"E[unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text]\n[unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] B[unreadable: miniature advertisement text]\'[unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text]." A [unreadable: miniature advertisement text]\n[unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text].—T[unreadable: miniature advertisement text] B[unreadable: miniature advertisement text], P[unreadable: miniature advertisement text], [unreadable: miniature advertisement text], F[unreadable: miniature advertisement text]-[unreadable: miniature advertisement text],\nL[unreadable: miniature advertisement text]; [unreadable: miniature advertisement text] C[unreadable: miniature advertisement text]-[unreadable: miniature advertisement text], M[unreadable: miniature advertisement text].',
+      'recovery': 'reviewed-region-text-v1',
+      'review_status': 'reviewed-partial',
+      'review_recognition': 'approved-transcription-before-ocr',
+      'review_source_sha256': source_hash,
+      'review_physical_page': '119',
+      'review_bounds': str(bounds),
+      'review_models': 'gemini-4-argon-high',
+      'review_approved_by': 'Codex image review under aarnphm authorization',
+      'review_date': '2026-11-04',
+      'review_reference': 'docs/verification/ocr-aside-recovery/source-review.md#thinking-with-type-page-119',
+      'review_approval': 'Standing marked-partial specimen recovery authorization, 2026-11-03; monitor recovery instruction, 2026-11-04',
+    }
+  if number in (140, 141, 143) and bounds == {140: [101, 121, 903, 535], 141: [63, 120, 869, 503], 143: [60, 109, 870, 518]}[number]:
+    source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+    if (
+      source_hash
+      != '728e6d0ca3809d504f12f3302ef5303238a7324cf2824b303d64781d597dba7d'
+    ):
+      return None
+    return {
+      'content': (Path(__file__).parent / 'reviewed-specimens' / f'type-{number}.txt').read_text().strip(),
+      'recovery': 'reviewed-region-text-v1',
+      'review_status': 'reviewed-partial',
+      'review_recognition': 'approved-transcription-before-ocr',
+      'review_source_sha256': source_hash,
+      'review_physical_page': str(number),
+      'review_bounds': str(bounds),
+      'review_models': 'gemini-4-argon-high',
+      'review_approved_by': 'Codex image review under aarnphm authorization',
+      'review_date': '2026-11-04',
+      'review_reference': f'docs/verification/ocr-aside-recovery/source-review.md#thinking-with-type-page-{number}',
+      'review_approval': 'Standing marked-partial specimen recovery authorization, 2026-11-03; monitor recovery instruction, 2026-11-04',
+    }
+  if number == 153 and bounds == [0, 388, 77, 449]:
+    source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+    if (
+      source_hash
+      != '728e6d0ca3809d504f12f3302ef5303238a7324cf2824b303d64781d597dba7d'
+    ):
+      return None
+    return {
+      'content': '[unreadable: photographed German specimen; left edge clipped at spine gutter and literal glyph recognition unresolved at source resolution]',
+      'recovery': 'reviewed-region-text-v1',
+      'review_status': 'reviewed-partial',
+      'review_recognition': 'approved-transcription-before-ocr',
+      'review_source_sha256': source_hash,
+      'review_physical_page': '153',
+      'review_bounds': str(bounds),
+      'review_models': 'gemini-4-argon-high',
+      'review_approved_by': 'Codex image review under aarnphm authorization',
+      'review_date': '2026-11-04',
+      'review_reference': 'docs/verification/ocr-aside-recovery/source-review.md#thinking-with-type-page-153',
+      'review_approval': 'Standing marked-partial specimen recovery authorization, 2026-11-03; monitor recovery instruction, 2026-11-04',
+    }
+  if number == 151 and bounds == [471, 647, 877, 942]:
+    source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+    if (
+      source_hash
+      != '728e6d0ca3809d504f12f3302ef5303238a7324cf2824b303d64781d597dba7d'
+    ):
+      return None
+    return {
+      'content': 'A grid can be\nsimple or\ncomplex[unreadable: trailing punctuation occluded by vertical grid line]\nspecific or\ngeneric,\ntightly defined\nor loosely\ninterpreted.\nTypographic\ngrids are all\nabout control.\nThey establish\na system for\narranging\ncontent\nwithin the\nspace of page,\nscreen, or\nbuilt\nenvironment.\nDesigned in\nresponse to\nthe internal\npressures of\ncontent [unreadable: glyph occluded by vertical grid line]text,\nimage, data)\nand the outer\nedge or frame\n(page, screen,\n\nGrid systems\n\nA grid can be simple or complex, specific or generic, tightly de[unreadable: clipped right edge]\nloosely interpreted. Typographic grids are all about control. Th[unreadable: clipped right edge]\nsystem for arranging content within the space of page, screen, [unreadable: clipped right edge]\nenvironment. Designed in response to the internal pressures o[unreadable: clipped right edge]\n(text, image, data) and the outer edge or frame (page[unreadable: punctuation occluded by vertical grid line] screen, w[unreadable: clipped right edge]\neffective grid is not a r[unreadable: glyph occluded by vertical grid line]gid formula but a flexible and resilient s[unreadable: clipped right edge]\nskeleton that moves in concert with the muscular mass of cont[unreadable: clipped right edge]\nbelong to the technological framework of typography, from the\nmodularity of letterpress to the ubiquitous rulers[unreadable: punctuation occluded by vertical grid line] guides, and [unreadable: clipped right edge]\nsystems of graphics applications. Although software generates\nsmooth curves and continuous tones, every digital image or m[unreadable: clipped right edge]\nconstructed—ultimately—from a grid of neatly bounded block[unreadable: clipped right edge]\nubiquitous language of the GUI (graphical user interface) creat[unreadable: clipped right edge]\nspace in which windows overlay windows. In addition to their [unreadable: clipped right edge]\nbackground of design production, grids have become explicit t[unreadable: clipped right edge]\ntools. Avant-garde designers in the 1910s and 1920s exposed th[unreadable: clipped right edge]\nmechanical grid of letterpress, bringing it to the polemical surf[unreadable: clipped right edge]',
+      'recovery': 'reviewed-region-text-v1',
+      'review_status': 'reviewed-partial',
+      'review_recognition': 'approved-transcription-before-ocr',
+      'review_source_sha256': source_hash,
+      'review_physical_page': '151',
+      'review_bounds': str(bounds),
+      'review_models': 'gemini-4-argon-high',
+      'review_approved_by': 'Codex image review under aarnphm authorization',
+      'review_date': '2026-11-04',
+      'review_reference': 'docs/verification/ocr-aside-recovery/source-review.md#thinking-with-type-page-151',
+      'review_approval': 'Standing marked-partial specimen recovery authorization, 2026-11-03; monitor recovery instruction, 2026-11-04',
+    }
+  if number == 119 and bounds == [197, 680, 354, 712]:
+    source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+    if (
+      source_hash
+      != '728e6d0ca3809d504f12f3302ef5303238a7324cf2824b303d64781d597dba7d'
+    ):
+      return None
+    return {
+      'content': "WALLER'S PRICE-LIST of HAIR PLAITS,\n[unreadable: miniature advertisement text]-[unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text].—P[unreadable: miniature advertisement text] F[unreadable: miniature advertisement text],\n[unreadable: miniature advertisement text] I[unreadable: miniature advertisement text] I[unreadable: miniature advertisement text] [unreadable: miniature advertisement text] D[unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text],\n[unreadable: miniature advertisement text]. [unreadable: miniature advertisement text]., [unreadable: miniature advertisement text]. [unreadable: miniature advertisement text]., 1[unreadable: miniature advertisement text]. [unreadable: miniature advertisement text]., 1[unreadable: miniature advertisement text]. [unreadable: miniature advertisement text]., [unreadable: miniature advertisement text] [unreadable: miniature advertisement text]. [unreadable: miniature advertisement text] [unreadable: miniature advertisement text], [unreadable: miniature advertisement text] [unreadable: miniature advertisement text]-\n[unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text]\n[unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text]. A [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] B[unreadable: miniature advertisement text] C[unreadable: miniature advertisement text],\nH[unreadable: miniature advertisement text], O[unreadable: miniature advertisement text], [unreadable: miniature advertisement text] O[unreadable: miniature advertisement text] H[unreadable: miniature advertisement text], [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text],\nW. W[unreadable: miniature advertisement text] C[unreadable: miniature advertisement text] H[unreadable: miniature advertisement text]",
+      'recovery': 'reviewed-region-text-v1',
+      'review_status': 'reviewed-partial',
+      'review_recognition': 'approved-transcription-before-ocr',
+      'review_source_sha256': source_hash,
+      'review_physical_page': '119',
+      'review_bounds': str(bounds),
+      'review_models': 'gemini-4-argon-high',
+      'review_approved_by': 'Codex image review under aarnphm authorization',
+      'review_date': '2026-11-04',
+      'review_reference': 'docs/verification/ocr-aside-recovery/source-review.md#thinking-with-type-page-119',
+      'review_approval': 'Standing marked-partial specimen recovery authorization, 2026-11-03; monitor recovery instruction, 2026-11-04',
+    }
+  if number == 119 and bounds == [361, 317, 521, 360]:
+    source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+    if (
+      source_hash
+      != '728e6d0ca3809d504f12f3302ef5303238a7324cf2824b303d64781d597dba7d'
+    ):
+      return None
+    return {
+      'content': 'LIMOGES CHINA ([unreadable: miniature advertisement text] Imported).—\nB[unreadable: miniature advertisement text] B[unreadable: miniature advertisement text], T[unreadable: miniature advertisement text], D[unreadable: miniature advertisement text], [unreadable: miniature advertisement text] D[unreadable: miniature advertisement text] S[unreadable: miniature advertisement text], [unreadable: miniature advertisement text]\n[unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text].—E[unreadable: miniature advertisement text] C[unreadable: miniature advertisement text], [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] T[unreadable: miniature advertisement text]\nS[unreadable: miniature advertisement text], [unreadable: miniature advertisement text] 1[unreadable: miniature advertisement text]. [unreadable: miniature advertisement text].; B[unreadable: miniature advertisement text] S[unreadable: miniature advertisement text], [unreadable: miniature advertisement text] 1[unreadable: miniature advertisement text]. [unreadable: miniature advertisement text].; [unreadable: miniature advertisement text] P[unreadable: miniature advertisement text]\nD[unreadable: miniature advertisement text] S[unreadable: miniature advertisement text], [unreadable: miniature advertisement text] [unreadable: miniature advertisement text].; D[unreadable: miniature advertisement text] S[unreadable: miniature advertisement text], [unreadable: miniature advertisement text] [unreadable: miniature advertisement text]. E[unreadable: miniature advertisement text] [unreadable: miniature advertisement text]\nF[unreadable: miniature advertisement text] T[unreadable: miniature advertisement text] G[unreadable: miniature advertisement text], P[unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] D[unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] R[unreadable: miniature advertisement text], C[unreadable: miniature advertisement text], [unreadable: miniature advertisement text].\nT[unreadable: miniature advertisement text] [unreadable: miniature advertisement text] S[unreadable: miniature advertisement text] [unreadable: miniature advertisement text] L[unreadable: miniature advertisement text] [unreadable: miniature advertisement text] N[unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] P[unreadable: miniature advertisement text].\nV[unreadable: miniature advertisement text], B[unreadable: miniature advertisement text] [unreadable: miniature advertisement text] P[unreadable: miniature advertisement text] S[unreadable: miniature advertisement text], F[unreadable: miniature advertisement text], J[unreadable: miniature advertisement text], [unreadable: miniature advertisement text] A[unreadable: miniature advertisement text]\n[unreadable: miniature advertisement text] P[unreadable: miniature advertisement text].—M[unreadable: miniature advertisement text]. T[unreadable: miniature advertisement text], 1[unreadable: miniature advertisement text] [unreadable: miniature advertisement text] 1[unreadable: miniature advertisement text], R[unreadable: miniature advertisement text]-[unreadable: miniature advertisement text], L[unreadable: miniature advertisement text]; [unreadable: miniature advertisement text]\n[unreadable: miniature advertisement text], E[unreadable: miniature advertisement text]-[unreadable: miniature advertisement text], B[unreadable: miniature advertisement text].',
+      'recovery': 'reviewed-region-text-v1',
+      'review_status': 'reviewed-partial',
+      'review_recognition': 'approved-transcription-before-ocr',
+      'review_source_sha256': source_hash,
+      'review_physical_page': '119',
+      'review_bounds': str(bounds),
+      'review_models': 'gemini-4-argon-high',
+      'review_approved_by': 'Codex image review under aarnphm authorization',
+      'review_date': '2026-11-04',
+      'review_reference': 'docs/verification/ocr-aside-recovery/source-review.md#thinking-with-type-page-119',
+      'review_approval': 'Standing marked-partial specimen recovery authorization, 2026-11-03; monitor recovery instruction, 2026-11-04',
+    }
+  if number == 119 and bounds == [360, 166, 523, 203]:
+    source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+    if (
+      source_hash
+      != '728e6d0ca3809d504f12f3302ef5303238a7324cf2824b303d64781d597dba7d'
+    ):
+      return None
+    return {
+      'content': 'A P[unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text], [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] E[unreadable: miniature advertisement text], [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text]\nS[unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] M[unreadable: miniature advertisement text]. I[unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text]\n[unreadable: miniature advertisement text], [unreadable: miniature advertisement text], [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text], [unreadable: miniature advertisement text] [unreadable: miniature advertisement text], [unreadable: miniature advertisement text] [unreadable: miniature advertisement text]\n[unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text]; [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text]\n[unreadable: miniature advertisement text]-[unreadable: miniature advertisement text] [unreadable: miniature advertisement text], [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text], [unreadable: miniature advertisement text], [unreadable: miniature advertisement text]\n[unreadable: miniature advertisement text]. G[unreadable: miniature advertisement text], [unreadable: miniature advertisement text] [unreadable: miniature advertisement text], [unreadable: miniature advertisement text] [unreadable: miniature advertisement text]-[unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text]\nB[unreadable: miniature advertisement text] [unreadable: miniature advertisement text]. F[unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text]\n[unreadable: miniature advertisement text], [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text] [unreadable: miniature advertisement text]-\n[unreadable: miniature advertisement text].',
+      'recovery': 'reviewed-region-text-v1',
+      'review_status': 'reviewed-partial',
+      'review_recognition': 'approved-transcription-before-ocr',
+      'review_source_sha256': source_hash,
+      'review_physical_page': '119',
+      'review_bounds': str(bounds),
+      'review_models': 'gemini-4-argon-high',
+      'review_approved_by': 'Codex image review under aarnphm authorization',
+      'review_date': '2026-11-04',
+      'review_reference': 'docs/verification/ocr-aside-recovery/source-review.md#thinking-with-type-page-119',
+      'review_approval': 'Standing marked-partial specimen recovery authorization, 2026-11-03; monitor recovery instruction, 2026-11-04',
+    }
+  if number == 119 and bounds == [361, 120, 523, 167]:
+    source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+    if (
+      source_hash
+      != '728e6d0ca3809d504f12f3302ef5303238a7324cf2824b303d64781d597dba7d'
+    ):
+      return None
+    return {
+      'content': '[unreadable: miniature tariff text] [unreadable: miniature tariff text] [unreadable: miniature tariff text] [unreadable: miniature tariff text] [unreadable: miniature tariff text], [unreadable: miniature tariff text] [unreadable: miniature tariff text] [unreadable: miniature tariff text] [unreadable: miniature tariff text].\nF[unreadable: miniature tariff text] P[unreadable: miniature tariff text], O[unreadable: miniature tariff text]. [unreadable: miniature tariff text] [unreadable: miniature tariff text]. [unreadable: miniature tariff text]. Q[unreadable: miniature tariff text] P[unreadable: miniature tariff text], O[unreadable: miniature tariff text]. [unreadable: miniature tariff text] [unreadable: miniature tariff text]. [unreadable: miniature tariff text].\n1[unreadable: miniature tariff text] T[unreadable: miniature tariff text] S[unreadable: miniature tariff text] [unreadable: miniature tariff text] .. 11 [unreadable: miniature tariff text] [unreadable: miniature tariff text] | 1[unreadable: miniature tariff text] T[unreadable: miniature tariff text] S[unreadable: miniature tariff text] [unreadable: miniature tariff text] .. 1[unreadable: miniature tariff text] [unreadable: miniature tariff text] [unreadable: miniature tariff text]\n1[unreadable: miniature tariff text] D[unreadable: miniature tariff text] D[unreadable: miniature tariff text] [unreadable: miniature tariff text] .. [unreadable: miniature tariff text] [unreadable: miniature tariff text] [unreadable: miniature tariff text] | 1[unreadable: miniature tariff text] D[unreadable: miniature tariff text] [unreadable: miniature tariff text] [unreadable: miniature tariff text] .. [unreadable: miniature tariff text] [unreadable: miniature tariff text] [unreadable: miniature tariff text]\n1[unreadable: miniature tariff text] T[unreadable: miniature tariff text] F[unreadable: miniature tariff text] [unreadable: miniature tariff text] .. 11 [unreadable: miniature tariff text] [unreadable: miniature tariff text] | 1[unreadable: miniature tariff text] T[unreadable: miniature tariff text] F[unreadable: miniature tariff text] [unreadable: miniature tariff text] .. 1[unreadable: miniature tariff text] [unreadable: miniature tariff text] [unreadable: miniature tariff text]\n1[unreadable: miniature tariff text] D[unreadable: miniature tariff text] D[unreadable: miniature tariff text] [unreadable: miniature tariff text] .. [unreadable: miniature tariff text] [unreadable: miniature tariff text] [unreadable: miniature tariff text] | 1[unreadable: miniature tariff text] D[unreadable: miniature tariff text] [unreadable: miniature tariff text] [unreadable: miniature tariff text] .. [unreadable: miniature tariff text] [unreadable: miniature tariff text] [unreadable: miniature tariff text]\n[unreadable: miniature tariff text] G[unreadable: miniature tariff text] S[unreadable: miniature tariff text] 1[unreadable: miniature tariff text] .. [unreadable: miniature tariff text] 1[unreadable: miniature tariff text] [unreadable: miniature tariff text] | [unreadable: miniature tariff text] G[unreadable: miniature tariff text] S[unreadable: miniature tariff text] 1[unreadable: miniature tariff text] .. [unreadable: miniature tariff text] [unreadable: miniature tariff text] [unreadable: miniature tariff text]\n1 S[unreadable: miniature tariff text] L[unreadable: miniature tariff text] 1[unreadable: miniature tariff text] .. [unreadable: miniature tariff text] 1[unreadable: miniature tariff text] [unreadable: miniature tariff text] | 1 S[unreadable: miniature tariff text] L[unreadable: miniature tariff text] 1[unreadable: miniature tariff text] .. [unreadable: miniature tariff text] [unreadable: miniature tariff text] [unreadable: miniature tariff text]\n[unreadable: miniature tariff text] S[unreadable: miniature tariff text] [unreadable: miniature tariff text] 1[unreadable: miniature tariff text] .. [unreadable: miniature tariff text] 1[unreadable: miniature tariff text] [unreadable: miniature tariff text] | [unreadable: miniature tariff text] S[unreadable: miniature tariff text] [unreadable: miniature tariff text] 1[unreadable: miniature tariff text] .. [unreadable: miniature tariff text] 1[unreadable: miniature tariff text] [unreadable: miniature tariff text]\n[unreadable: miniature tariff text] S[unreadable: miniature tariff text] [unreadable: miniature tariff text] ([unreadable: miniature tariff text]) .. 1 [unreadable: miniature tariff text] [unreadable: miniature tariff text] | [unreadable: miniature tariff text] S[unreadable: miniature tariff text] [unreadable: miniature tariff text] ([unreadable: miniature tariff text]) .. [unreadable: miniature tariff text] [unreadable: miniature tariff text] [unreadable: miniature tariff text]\n1 F[unreadable: miniature tariff text] S[unreadable: miniature tariff text] ([unreadable: miniature tariff text]) .. [unreadable: miniature tariff text] 1[unreadable: miniature tariff text] [unreadable: miniature tariff text] | 1 F[unreadable: miniature tariff text] S[unreadable: miniature tariff text] ([unreadable: miniature tariff text]) .. [unreadable: miniature tariff text] [unreadable: miniature tariff text] [unreadable: miniature tariff text]\n1[unreadable: miniature tariff text] T[unreadable: miniature tariff text] S[unreadable: miniature tariff text] 1[unreadable: miniature tariff text] .. [unreadable: miniature tariff text] 1[unreadable: miniature tariff text] [unreadable: miniature tariff text] | 1[unreadable: miniature tariff text] T[unreadable: miniature tariff text] S[unreadable: miniature tariff text] 1[unreadable: miniature tariff text] .. [unreadable: miniature tariff text] 1[unreadable: miniature tariff text] [unreadable: miniature tariff text]\n1 P[unreadable: miniature tariff text] S[unreadable: miniature tariff text] T[unreadable: miniature tariff text] .. [unreadable: miniature tariff text] 1[unreadable: miniature tariff text] [unreadable: miniature tariff text] | 1 P[unreadable: miniature tariff text] S[unreadable: miniature tariff text] T[unreadable: miniature tariff text] .. 1 [unreadable: miniature tariff text] [unreadable: miniature tariff text]',
+      'recovery': 'reviewed-region-text-v1',
+      'review_status': 'reviewed-partial',
+      'review_recognition': 'approved-transcription-before-ocr',
+      'review_source_sha256': source_hash,
+      'review_physical_page': '119',
+      'review_bounds': str(bounds),
+      'review_models': 'gemini-4-argon-high',
+      'review_approved_by': 'Codex image review under aarnphm authorization',
+      'review_date': '2026-11-04',
+      'review_reference': 'docs/verification/ocr-aside-recovery/source-review.md#thinking-with-type-page-119',
+      'review_approval': 'Standing marked-partial specimen recovery authorization, 2026-11-03; monitor recovery instruction, 2026-11-04',
+    }
+  if number == 119 and bounds == [196, 718, 356, 746]:
+    source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+    if (
+      source_hash
+      != '728e6d0ca3809d504f12f3302ef5303238a7324cf2824b303d64781d597dba7d'
+    ):
+      return None
+    return {
+      'content': 'BEFORE YOU HAVE YOUR LIKENESS\nT[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] D[unreadable: blurred print] P[unreadable: blurred print] [unreadable: blurred print] B[unreadable: blurred print],\nL[unreadable: blurred print], B[unreadable: blurred print], [unreadable: blurred print]., [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print]-[unreadable: blurred print]. R[unreadable: blurred print] R[unreadable: blurred print]-\n[unreadable: blurred print] B[unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] G[unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] L[unreadable: blurred print] [unreadable: blurred print] H[unreadable: blurred print] [unreadable: blurred print]\n[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print].—D[unreadable: blurred print], M[unreadable: blurred print] G[unreadable: blurred print]-\n[unreadable: blurred print] [unreadable: blurred print] J[unreadable: blurred print], 1[unreadable: blurred print], [unreadable: blurred print], C[unreadable: blurred print], L[unreadable: blurred print].',
+      'recovery': 'reviewed-region-text-v1',
+      'review_status': 'reviewed-partial',
+      'review_recognition': 'approved-transcription-before-ocr',
+      'review_source_sha256': source_hash,
+      'review_physical_page': '119',
+      'review_bounds': str(bounds),
+      'review_models': 'gemini-4-argon-high',
+      'review_approved_by': 'Codex image review under aarnphm authorization',
+      'review_date': '2026-11-04',
+      'review_reference': 'docs/verification/ocr-aside-recovery/source-review.md#thinking-with-type-page-119',
+      'review_approval': 'Standing marked-partial specimen recovery authorization, 2026-11-03; monitor recovery instruction, 2026-11-04',
+    }
+  if number == 119 and bounds == [197, 645, 354, 672]:
+    source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+    if (
+      source_hash
+      != '728e6d0ca3809d504f12f3302ef5303238a7324cf2824b303d64781d597dba7d'
+    ):
+      return None
+    return {
+      'content': 'MOURNING JEWELLERY.—A large and\n[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] M[unreadable: blurred print] J[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] W[unreadable: blurred print] J[unreadable: blurred print].\nT[unreadable: blurred print] [unreadable: blurred print] S[unreadable: blurred print], [unreadable: blurred print] B[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print], 2[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print]. E[unreadable: blurred print],\n[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print]. J[unreadable: blurred print] C[unreadable: blurred print], B[unreadable: blurred print]-\n[unreadable: blurred print], G[unreadable: blurred print], B[unreadable: blurred print], [unreadable: blurred print]., [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print].—F[unreadable: blurred print]\nH[unreadable: blurred print], J[unreadable: blurred print], 1[unreadable: blurred print], R[unreadable: blurred print]-[unreadable: blurred print], W.',
+      'recovery': 'reviewed-region-text-v1',
+      'review_status': 'reviewed-partial',
+      'review_recognition': 'approved-transcription-before-ocr',
+      'review_source_sha256': source_hash,
+      'review_physical_page': '119',
+      'review_bounds': str(bounds),
+      'review_models': 'gemini-4-argon-high',
+      'review_approved_by': 'Codex image review under aarnphm authorization',
+      'review_date': '2026-11-04',
+      'review_reference': 'docs/verification/ocr-aside-recovery/source-review.md#thinking-with-type-page-119',
+      'review_approval': 'Standing marked-partial specimen recovery authorization, 2026-11-03; monitor recovery instruction, 2026-11-04',
+    }
+  if number == 119 and bounds == [198, 557, 355, 596]:
+    source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+    if (
+      source_hash
+      != '728e6d0ca3809d504f12f3302ef5303238a7324cf2824b303d64781d597dba7d'
+    ):
+      return None
+    return {
+      'content': "W. F. THOMAS and CO.'S PATENT\nS[unreadable: blurred print]-M[unreadable: blurred print].—I[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print]\n[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print]-\n[unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print]. F[unreadable: blurred print] [unreadable: blurred print]\n[unreadable: blurred print] [unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print], [unreadable: blurred print]\n[unreadable: blurred print] [unreadable: blurred print]. T[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print]\n[unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print]\n[unreadable: blurred print]. L[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print],\nN[unreadable: blurred print]-[unreadable: blurred print], C[unreadable: blurred print]; [unreadable: blurred print] 1[unreadable: blurred print], M[unreadable: blurred print]-[unreadable: blurred print], M[unreadable: blurred print].",
+      'recovery': 'reviewed-region-text-v1',
+      'review_status': 'reviewed-partial',
+      'review_recognition': 'approved-transcription-before-ocr',
+      'review_source_sha256': source_hash,
+      'review_physical_page': '119',
+      'review_bounds': str(bounds),
+      'review_models': 'gemini-4-argon-high',
+      'review_approved_by': 'Codex image review under aarnphm authorization',
+      'review_date': '2026-11-04',
+      'review_reference': 'docs/verification/ocr-aside-recovery/source-review.md#thinking-with-type-page-119',
+      'review_approval': 'Standing marked-partial specimen recovery authorization, 2026-11-03; monitor recovery instruction, 2026-11-04',
+    }
+  if number == 119 and bounds == [198, 435, 356, 482]:
+    source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+    if (
+      source_hash
+      != '728e6d0ca3809d504f12f3302ef5303238a7324cf2824b303d64781d597dba7d'
+    ):
+      return None
+    return {
+      'content': 'CHIMNEYPIECES, TOMBS, MONUMENTS,\nF[unreadable: blurred print], [unreadable: blurred print].—E[unreadable: blurred print] B[unreadable: blurred print] [unreadable: blurred print] B[unreadable: blurred print],\nW[unreadable: blurred print] H[unreadable: blurred print], 1[unreadable: blurred print] [unreadable: blurred print] 1[unreadable: blurred print], R[unreadable: blurred print]-[unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print]\nN[unreadable: blurred print] [unreadable: blurred print] G[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print]-\n[unreadable: blurred print] [unreadable: blurred print] I[unreadable: blurred print] [unreadable: blurred print] B[unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print], [unreadable: blurred print]\n[unreadable: blurred print] [unreadable: blurred print] M[unreadable: blurred print]-[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print]. T[unreadable: blurred print]\nG[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] B[unreadable: blurred print] M[unreadable: blurred print]\n[unreadable: blurred print] [unreadable: blurred print] C[unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print]. [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print]; M[unreadable: blurred print]-\n[unreadable: blurred print] [unreadable: blurred print] T[unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print]; H[unreadable: blurred print] [unreadable: blurred print] F[unreadable: blurred print] S[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print].\nM[unreadable: blurred print]—C[unreadable: blurred print], B[unreadable: blurred print]; [unreadable: blurred print] 1[unreadable: blurred print], N[unreadable: blurred print]-[unreadable: blurred print], O[unreadable: blurred print]-\n[unreadable: blurred print], L[unreadable: blurred print], W.',
+      'recovery': 'reviewed-region-text-v1',
+      'review_status': 'reviewed-partial',
+      'review_recognition': 'approved-transcription-before-ocr',
+      'review_source_sha256': source_hash,
+      'review_physical_page': '119',
+      'review_bounds': str(bounds),
+      'review_models': 'gemini-4-argon-high',
+      'review_approved_by': 'Codex image review under aarnphm authorization',
+      'review_date': '2026-11-04',
+      'review_reference': 'docs/verification/ocr-aside-recovery/source-review.md#thinking-with-type-page-119',
+      'review_approval': 'Standing marked-partial specimen recovery authorization, 2026-11-03; monitor recovery instruction, 2026-11-04',
+    }
+  if number == 119 and bounds == [198, 309, 357, 384]:
+    source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+    if (
+      source_hash
+      != '728e6d0ca3809d504f12f3302ef5303238a7324cf2824b303d64781d597dba7d'
+    ):
+      return None
+    return {
+      'content': 'EDUCATION.—RICHMOND-HILL.—In a\nF[unreadable: blurred print] [unreadable: blurred print] G[unreadable: blurred print] P[unreadable: blurred print] E[unreadable: blurred print], [unreadable: blurred print]\n[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] G[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] M[unreadable: blurred print] [unreadable: blurred print]\nE[unreadable: blurred print], I[unreadable: blurred print], F[unreadable: blurred print], G[unreadable: blurred print], S[unreadable: blurred print] L[unreadable: blurred print], D[unreadable: blurred print],\nP[unreadable: blurred print], L[unreadable: blurred print], M[unreadable: blurred print], S[unreadable: blurred print], D[unreadable: blurred print], R[unreadable: blurred print] I[unreadable: blurred print] [unreadable: blurred print]\n[unreadable: blurred print] C[unreadable: blurred print], G[unreadable: blurred print] DAU[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print]\n[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print]\n[unreadable: blurred print] [unreadable: blurred print]. P[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] E[unreadable: blurred print], D[unreadable: blurred print], P[unreadable: blurred print],\nF[unreadable: blurred print], [unreadable: blurred print] G[unreadable: blurred print]; [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] F[unreadable: blurred print]\n[unreadable: blurred print] G[unreadable: blurred print] G[unreadable: blurred print]. T[unreadable: blurred print] P[unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] S[unreadable: blurred print], [unreadable: blurred print]\n[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print]\nP[unreadable: blurred print]. P[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print],\n[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print]. T[unreadable: blurred print] [unreadable: blurred print]\n[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] R[unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print]\nP[unreadable: blurred print]; [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print]\n[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print]-\n[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print].—THETA, [unreadable: blurred print]-[unreadable: blurred print],\nR[unreadable: blurred print], S[unreadable: blurred print].',
+      'recovery': 'reviewed-region-text-v1',
+      'review_status': 'reviewed-partial',
+      'review_recognition': 'approved-transcription-before-ocr',
+      'review_source_sha256': source_hash,
+      'review_physical_page': '119',
+      'review_bounds': str(bounds),
+      'review_models': 'gemini-4-argon-high',
+      'review_approved_by': 'Codex image review under aarnphm authorization',
+      'review_date': '2026-11-04',
+      'review_reference': 'docs/verification/ocr-aside-recovery/source-review.md#thinking-with-type-page-119',
+      'review_approval': 'Standing marked-partial specimen recovery authorization, 2026-11-03; monitor recovery instruction, 2026-11-04',
+    }
   if number == 119 and bounds == [198, 491, 355, 523]:
     source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
     if (
@@ -88,7 +382,112 @@ def reviewed_region_text(
     ):
       return None
     return {
-      'content': 'LOCK-STITCH SEWING-MACHINES,\n[unreadable] [unreadable] [unreadable] W[unreadable] [unreadable] WIL[unreadable]N MANUFA[unreadable]-\nTURIN[unreadable] C[unreadable]MPANY, [unreadable] [unreadable] [unreadable]. C[unreadable] C[unreadable]-\n[unreadable], [unreadable] [unreadable] H[unreadable], B[unreadable], C[unreadable], [unreadable]. O[unreadable] [unreadable] [unreadable]-\n[unreadable], 1[unreadable], R[unreadable]-[unreadable], W., L[unreadable] ([unreadable] [unreadable], O[unreadable]-[unreadable]).\nI[unreadable] [unreadable] [unreadable] [unreadable] [unreadable]. I[unreadable] P[unreadable], [unreadable]\nT[unreadable], [unreadable] [unreadable] [unreadable]-[unreadable].',
+      'content': 'LOCK-STITCH SEWING-MACHINES,\n[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] W[unreadable: blurred print] [unreadable: blurred print] WIL[unreadable: blurred print]N MANUFA[unreadable: blurred print]-\nTURIN[unreadable: blurred print] C[unreadable: blurred print]MPANY, [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print]. C[unreadable: blurred print] C[unreadable: blurred print]-\n[unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] H[unreadable: blurred print], B[unreadable: blurred print], C[unreadable: blurred print], [unreadable: blurred print]. O[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print]-\n[unreadable: blurred print], 1[unreadable: blurred print], R[unreadable: blurred print]-[unreadable: blurred print], W., L[unreadable: blurred print] ([unreadable: blurred print] [unreadable: blurred print], O[unreadable: blurred print]-[unreadable: blurred print]).\nI[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print]. I[unreadable: blurred print] P[unreadable: blurred print], [unreadable: blurred print]\nT[unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print]-[unreadable: blurred print].',
+      'recovery': 'reviewed-region-text-v1',
+      'review_status': 'reviewed-partial',
+      'review_recognition': 'approved-transcription-before-ocr',
+      'review_source_sha256': source_hash,
+      'review_physical_page': '119',
+      'review_bounds': str(bounds),
+      'review_models': 'gemini-4-argon-high',
+      'review_approved_by': 'Codex image review under aarnphm authorization',
+      'review_date': '2026-11-04',
+      'review_reference': 'docs/verification/ocr-aside-recovery/source-review.md#thinking-with-type-page-119',
+      'review_approval': 'Standing marked-partial specimen recovery authorization, 2026-11-03; monitor recovery instruction, 2026-11-04',
+    }
+  if number == 119 and bounds == [360, 361, 522, 412]:
+    source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+    if (
+      source_hash
+      != '728e6d0ca3809d504f12f3302ef5303238a7324cf2824b303d64781d597dba7d'
+    ):
+      return None
+    return {
+      'content': "WILLIAM [unreadable: blurred print]. BURTON'S GENERAL\nFURNISHING IRONMONGERY CATALOGUE may be\n[unreadable: blurred print] G[unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print].—I[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] I[unreadable: blurred print]-\n[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] S[unreadable: blurred print] [unreadable: blurred print] S[unreadable: blurred print] S[unreadable: blurred print] [unreadable: blurred print] E[unreadable: blurred print] P[unreadable: blurred print],\nN[unreadable: blurred print] S[unreadable: blurred print], [unreadable: blurred print] B[unreadable: blurred print] M[unreadable: blurred print] G[unreadable: blurred print], D[unreadable: blurred print]-[unreadable: blurred print], H[unreadable: blurred print]-[unreadable: blurred print]\nD[unreadable: blurred print], S[unreadable: blurred print], F[unreadable: blurred print], M[unreadable: blurred print] C[unreadable: blurred print]-[unreadable: blurred print], K[unreadable: blurred print] R[unreadable: blurred print],\nL[unreadable: blurred print], G[unreadable: blurred print]; T[unreadable: blurred print] T[unreadable: blurred print], U[unreadable: blurred print], [unreadable: blurred print] K[unreadable: blurred print]; C[unreadable: blurred print], T[unreadable: blurred print]\nC[unreadable: blurred print], B[unreadable: blurred print], T[unreadable: blurred print] W[unreadable: blurred print], T[unreadable: blurred print], I[unreadable: blurred print] [unreadable: blurred print] B[unreadable: blurred print] B[unreadable: blurred print],\nB[unreadable: blurred print], B[unreadable: blurred print]-[unreadable: blurred print] [unreadable: blurred print] C[unreadable: blurred print] F[unreadable: blurred print], [unreadable: blurred print].; [unreadable: blurred print] L[unreadable: blurred print] [unreadable: blurred print] P[unreadable: blurred print],\n[unreadable: blurred print] P[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] T[unreadable: blurred print] [unreadable: blurred print] S[unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print], O[unreadable: blurred print]-[unreadable: blurred print], W.;\n1, 1A, [unreadable: blurred print], [unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print], N[unreadable: blurred print]-[unreadable: blurred print]; [unreadable: blurred print], [unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print], P[unreadable: blurred print]'[unreadable: blurred print]-[unreadable: blurred print]; [unreadable: blurred print] 1,\nN[unreadable: blurred print]'[unreadable: blurred print]-[unreadable: blurred print], L[unreadable: blurred print].",
+      'recovery': 'reviewed-region-text-v1',
+      'review_status': 'reviewed-partial',
+      'review_recognition': 'approved-transcription-before-ocr',
+      'review_source_sha256': source_hash,
+      'review_physical_page': '119',
+      'review_bounds': str(bounds),
+      'review_models': 'gemini-4-argon-high',
+      'review_approved_by': 'Codex image review under aarnphm authorization',
+      'review_date': '2026-11-04',
+      'review_reference': 'docs/verification/ocr-aside-recovery/source-review.md#thinking-with-type-page-119',
+      'review_approval': 'Standing marked-partial specimen recovery authorization, 2026-11-03; monitor recovery instruction, 2026-11-04',
+    }
+  if number == 119 and bounds == [358, 759, 519, 811]:
+    source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+    if (
+      source_hash
+      != '728e6d0ca3809d504f12f3302ef5303238a7324cf2824b303d64781d597dba7d'
+    ):
+      return None
+    return {
+      'content': 'FURNISHING WAREHOUSES, [unreadable: blurred print], [unreadable: blurred print], [unreadable: blurred print]1,\n[unreadable: blurred print], [unreadable: blurred print], [unreadable: blurred print], [unreadable: blurred print], W[unreadable: blurred print]-[unreadable: blurred print]-[unreadable: blurred print], London.\nA[unreadable: blurred print] [unreadable: blurred print] C[unreadable: blurred print]. [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print]\n[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print]. B[unreadable: blurred print] [unreadable: blurred print],\n[unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] 1[unreadable: blurred print].; [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] 1[unreadable: blurred print].;\n[unreadable: blurred print]-[unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print], [unreadable: blurred print]\n[unreadable: blurred print] [unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] 1[unreadable: blurred print]., [unreadable: blurred print]. C[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print]\n[unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print]-[unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print], [unreadable: blurred print]\n[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print]\n[unreadable: blurred print]. C[unreadable: blurred print]—T[unreadable: blurred print], A[unreadable: blurred print], B[unreadable: blurred print], K[unreadable: blurred print],\n[unreadable: blurred print]. C[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print], [unreadable: blurred print], [unreadable: blurred print], [unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print], [unreadable: blurred print]\n[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print], [unreadable: blurred print]-[unreadable: blurred print], [unreadable: blurred print],\n[unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print].',
+      'recovery': 'reviewed-region-text-v1',
+      'review_status': 'reviewed-partial',
+      'review_recognition': 'approved-transcription-before-ocr',
+      'review_source_sha256': source_hash,
+      'review_physical_page': '119',
+      'review_bounds': str(bounds),
+      'review_models': 'gemini-4-argon-high',
+      'review_approved_by': 'Codex image review under aarnphm authorization',
+      'review_date': '2026-11-04',
+      'review_reference': 'docs/verification/ocr-aside-recovery/source-review.md#thinking-with-type-page-119',
+      'review_approval': 'Standing marked-partial specimen recovery authorization, 2026-11-03; monitor recovery instruction, 2026-11-04',
+    }
+  if number == 119 and bounds == [198, 216, 356, 252]:
+    source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+    if (
+      source_hash
+      != '728e6d0ca3809d504f12f3302ef5303238a7324cf2824b303d64781d597dba7d'
+    ):
+      return None
+    return {
+      'content': 'THE PALACE HOTEL, Buckingham-gate,\nLondon, [unreadable: blurred print].W., [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print]. T[unreadable: blurred print] [unreadable: blurred print]\n[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] A[unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] C[unreadable: blurred print]-\n[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] L[unreadable: blurred print] [unreadable: blurred print] G[unreadable: blurred print], [unreadable: blurred print] R[unreadable: blurred print]-[unreadable: blurred print]\n[unreadable: blurred print]; [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] W[unreadable: blurred print]\nB[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print]\n[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] V[unreadable: blurred print] R[unreadable: blurred print] T[unreadable: blurred print].—J. G. B[unreadable: blurred print],\nP[unreadable: blurred print].',
+      'recovery': 'reviewed-region-text-v1',
+      'review_status': 'reviewed-partial',
+      'review_recognition': 'approved-transcription-before-ocr',
+      'review_source_sha256': source_hash,
+      'review_physical_page': '119',
+      'review_bounds': str(bounds),
+      'review_models': 'gemini-4-argon-high',
+      'review_approved_by': 'Codex image review under aarnphm authorization',
+      'review_date': '2026-11-04',
+      'review_reference': 'docs/verification/ocr-aside-recovery/source-review.md#thinking-with-type-page-119',
+      'review_approval': 'Standing marked-partial specimen recovery authorization, 2026-11-03; monitor recovery instruction, 2026-11-04',
+    }
+  if number == 119 and bounds == [528, 246, 686, 265]:
+    source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+    if (
+      source_hash
+      != '728e6d0ca3809d504f12f3302ef5303238a7324cf2824b303d64781d597dba7d'
+    ):
+      return None
+    return {
+      'content': 'OSWEGO PREPARED CORN,\n[unreadable: blurred print] P[unreadable: blurred print], [unreadable: blurred print], [unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print]\n[unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] E[unreadable: blurred print] [unreadable: blurred print].\nWholesale London Agents, R[unreadable: blurred print], B[unreadable: blurred print], [unreadable: blurred print] C[unreadable: blurred print].',
+      'recovery': 'reviewed-region-text-v1',
+      'review_status': 'reviewed-partial',
+      'review_recognition': 'approved-transcription-before-ocr',
+      'review_source_sha256': source_hash,
+      'review_physical_page': '119',
+      'review_bounds': str(bounds),
+      'review_models': 'gemini-4-argon-high',
+      'review_approved_by': 'Codex image review under aarnphm authorization',
+      'review_date': '2026-11-04',
+      'review_reference': 'docs/verification/ocr-aside-recovery/source-review.md#thinking-with-type-page-119',
+      'review_approval': 'Standing marked-partial specimen recovery authorization, 2026-11-03; monitor recovery instruction, 2026-11-04',
+    }
+  if number == 119 and bounds == [527, 267, 687, 298]:
+    source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+    if (
+      source_hash
+      != '728e6d0ca3809d504f12f3302ef5303238a7324cf2824b303d64781d597dba7d'
+    ):
+      return None
+    return {
+      'content': 'FLOUR, to any part of London (not less than\n1[unreadable: blurred print]), [unreadable: blurred print]. W[unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] ([unreadable: blurred print]), 1[unreadable: blurred print]. [unreadable: blurred print].;\nH[unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print]-[unreadable: blurred print], 1[unreadable: blurred print].; [unreadable: blurred print], [unreadable: blurred print]. [unreadable: blurred print].;\nW[unreadable: blurred print] [unreadable: blurred print], [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print], [unreadable: blurred print]. [unreadable: blurred print].; [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print] [unreadable: blurred print]\nO[unreadable: blurred print].—A[unreadable: blurred print], H[unreadable: blurred print], [unreadable: blurred print] C[unreadable: blurred print], B[unreadable: blurred print] M[unreadable: blurred print],\nW[unreadable: blurred print], E[unreadable: blurred print]; [unreadable: blurred print] [unreadable: blurred print], G[unreadable: blurred print]-[unreadable: blurred print], C[unreadable: blurred print]-[unreadable: blurred print], E.C. D[unreadable: blurred print]\n[unreadable: blurred print] [unreadable: blurred print]-[unreadable: blurred print] [unreadable: blurred print]. T[unreadable: blurred print], [unreadable: blurred print].',
       'recovery': 'reviewed-region-text-v1',
       'review_status': 'reviewed-partial',
       'review_recognition': 'approved-transcription-before-ocr',
@@ -206,7 +605,11 @@ def reviewed_region_text(
       'review_reference': 'docs/verification/ocr-aside-recovery/source-review.md#grid-systems-page-106',
       'review_approval': 'Standing marked-partial specimen recovery authorization, 2026-11-03; monitor recovery instruction, 2026-11-04',
     }
-  if number == 114 and bounds == [87, 399, 169, 430]:
+  if number == 114 and bounds in (
+    [87, 399, 169, 430],
+    [535, 432, 620, 463],
+    [717, 426, 799, 442],
+  ):
     source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
     if (
       source_hash
@@ -225,6 +628,69 @@ def reviewed_region_text(
       'review_approved_by': 'Codex image review under aarnphm authorization',
       'review_date': '2026-11-04',
       'review_reference': 'docs/verification/ocr-aside-recovery/source-review.md#grid-systems-page-114',
+      'review_approval': 'Standing marked-partial specimen recovery authorization, 2026-11-03; monitor recovery instruction, 2026-11-04',
+    }
+  if number == 149 and bounds == [71, 279, 895, 369]:
+    source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+    if (
+      source_hash
+      != 'cf49bbbb18ec9a1928d32530e9676b16c34d696394579b177ab38dbadc368534'
+    ):
+      return None
+    return {
+      'content': '[unreadable: bottom-clipped figure numeral 1; overlaps region 11] [unreadable: bottom-clipped figure numeral 2; overlaps region 11] [unreadable: bottom-clipped figure numeral 3; overlaps region 11]',
+      'recovery': 'reviewed-region-text-v1',
+      'review_status': 'reviewed-partial',
+      'review_recognition': 'approved-transcription-before-ocr',
+      'review_source_sha256': source_hash,
+      'review_physical_page': '149',
+      'review_bounds': str(bounds),
+      'review_models': 'gemini-4-argon-high',
+      'review_approved_by': 'Codex image review under aarnphm authorization',
+      'review_date': '2026-11-04',
+      'review_reference': 'docs/verification/ocr-aside-recovery/source-review.md#grid-systems-page-149',
+      'review_approval': 'Standing marked-partial specimen recovery authorization, 2026-11-03; monitor recovery instruction, 2026-11-04',
+    }
+  if number == 149 and bounds == [486, 277, 897, 690]:
+    source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+    if (
+      source_hash
+      != 'cf49bbbb18ec9a1928d32530e9676b16c34d696394579b177ab38dbadc368534'
+    ):
+      return None
+    return {
+      'content': '1 2 3\n4 5 6\n7 8 9\n[unreadable: bottom-clipped figure numerals; complete captions retained in regions 16, 14 and 15]',
+      'recovery': 'reviewed-region-text-v1',
+      'review_status': 'reviewed-partial',
+      'review_recognition': 'approved-transcription-before-ocr',
+      'review_source_sha256': source_hash,
+      'review_physical_page': '149',
+      'review_bounds': str(bounds),
+      'review_models': 'gemini-4-argon-high',
+      'review_approved_by': 'Codex image review under aarnphm authorization',
+      'review_date': '2026-11-04',
+      'review_reference': 'docs/verification/ocr-aside-recovery/source-review.md#grid-systems-page-149',
+      'review_approval': 'Standing marked-partial specimen recovery authorization, 2026-11-03; monitor recovery instruction, 2026-11-04',
+    }
+  if number == 116 and bounds in ([213, 333, 249, 341], [85, 334, 199, 630]):
+    source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+    if (
+      source_hash
+      != 'cf49bbbb18ec9a1928d32530e9676b16c34d696394579b177ab38dbadc368534'
+    ):
+      return None
+    return {
+      'content': '[unreadable: miniature brochure specimen; literal glyph recognition unresolved at source resolution]',
+      'recovery': 'reviewed-region-text-v1',
+      'review_status': 'reviewed-partial',
+      'review_recognition': 'approved-transcription-before-ocr',
+      'review_source_sha256': source_hash,
+      'review_physical_page': '116',
+      'review_bounds': str(bounds),
+      'review_models': 'gemini-4-argon-high',
+      'review_approved_by': 'Codex image review under aarnphm authorization',
+      'review_date': '2026-11-04',
+      'review_reference': 'docs/verification/ocr-aside-recovery/source-review.md#grid-systems-page-116',
       'review_approval': 'Standing marked-partial specimen recovery authorization, 2026-11-03; monitor recovery instruction, 2026-11-04',
     }
   if number == 109 and bounds == [229, 378, 301, 408]:

@@ -312,7 +312,9 @@ class OcrClient:
                 )
                 if len(symbol) != 1 or not symbol.isalnum():
                   raise ValueError(
-                    'Tiny text recovery did not return one letter or digit'
+                    f'{loaded.source.source}: page {number}, region {region["index"]}, '
+                    f'bounds {region["bbox_2d"]}: tiny text recovery did not return '
+                    f'one letter or digit; response={formula!r}'
                   )
                 content = symbol
                 method = 'small-region-symbol-ocr-v1'
