@@ -51,6 +51,7 @@ pdfTitles:
   'Chaos as an intermittently forced linear system.pdf': 'Chaos as an intermittently forced linear system'
   'Code World Model.pdf': 'CWM: An Open-Weights LLM for Research on Code Generation with World Models'
   'Corporations and Morality - Thomas Donaldson.pdf': 'Corporations and Morality'
+  'Critical-Thinking-Why-Is-It-So-Hard-to-Teach.pdf': 'Critical Thinking: Why Is It So Hard to Teach?'
   'cslewis-living-in-an-atomic-age.pdf': 'On Living in an Atomic Age'
   'DeepSeek_V3_2.pdf': 'DeepSeek-V3.2-Exp: Boosting Long-Context Efficiency with DeepSeek Sparse Attention'
   'DeepSeek_V3.pdf': 'DeepSeek-V3 Technical Report'
