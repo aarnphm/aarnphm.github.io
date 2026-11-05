@@ -513,6 +513,111 @@ ISO_DAY = re.compile(r'^\d{4}-\d{2}-\d{2}$')
 TEXT_STORE_DIR = 'notes'
 
 
+# Frontmatter keys that keep a note out of every embeddings store (vectors, passage text, the latent
+# sidecar): protected pages are encrypted on the site but the build's text is their plaintext, and
+# private/draft notes slip through any build that serves. Mirrors isEmbeddingExcluded in
+# quartz/plugins/emitters/semantic.ts and excluded_notes in quartz/scripts/latent/build.py.
+EXCLUDE_KEYS = ('protected', 'private', 'draft')
+FRONTMATTER_BLOCK = re.compile(
+  r'\A---\r?\n(.*?)\r?\n(?:---|\.\.\.)\s*(?:\r?\n|\Z)', re.S
+)
+FALSY = {'', 'false', 'no', 'off', '0', 'null', '~', '""', "''"}
+
+
+def frontmatter_flag(block: str, key: str) -> bool:
+  m = re.search(rf'^{key}\s*:[ \t]*(.*?)[ \t]*(?:#.*)?$', block, re.M)
+  return bool(m) and m.group(1).strip().lower() not in FALSY
+
+
+def excluded_slugs(content_dir: Path) -> set[str]:
+  """Slugs of the markdown notes whose frontmatter sets protected, private or draft."""
+  out: set[str] = set()
+  for fp in content_dir.rglob('*.md'):
+    try:
+      head = fp.read_text(encoding='utf-8', errors='replace')[:16384]
+    except OSError:
+      continue
+    m = FRONTMATTER_BLOCK.match(head)
+    if m and any(frontmatter_flag(m.group(1), key) for key in EXCLUDE_KEYS):
+      rel = fp.relative_to(content_dir).as_posix()
+      out.add(slugify_file_path(rel, exclude_ext=True))
+      out.add(rel[:-3].replace(' ', '-'))
+  return out
+
+
+def row_parent(manifest: dict, row_id: str) -> str:
+  meta = manifest.get('chunkMetadata', {}).get(row_id) or {}
+  return meta.get('parentSlug') or row_id.split('#')[0]
+
+
+def prune_store(out_dir: Path, excluded: set[str]) -> int:
+  """Drop the rows of excluded notes from an existing store without re-embedding: vectors, ids,
+  titles, chunk metadata and the passage text sidecar (a new generation; the old one is deleted)."""
+  manifest_path = out_dir / 'manifest.json'
+  if not manifest_path.exists():
+    return 0
+  manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+  ids = manifest['ids']
+  keep = [
+    i for i, rid in enumerate(ids) if row_parent(manifest, rid) not in excluded
+  ]
+  dropped = len(ids) - len(keep)
+  if not dropped:
+    print('Prune: no excluded notes in the store')
+    return 0
+  docs = sorted({
+    row_parent(manifest, ids[i]) for i in set(range(len(ids))) - set(keep)
+  })
+  vec = manifest['vectors']
+  dims = vec['dims']
+  np_dtype = np.float16 if vec['dtype'] == 'fp16' else np.float32
+  full = np.empty((vec['rows'], dims), dtype=np.float32)
+  for shard in vec['shards']:
+    data = np.fromfile(out_dir / Path(shard['path']).name, dtype=np_dtype)
+    start = shard['rowOffset']
+    full[start : start + shard['rows']] = data.reshape(shard['rows'], dims)
+  passages: list[dict] = []
+  for shard in manifest.get('passages', {}).get('shards', []):
+    rel = shard['path'].removeprefix('/embeddings/')
+    passages.extend(json.loads((out_dir / rel).read_text(encoding='utf-8')))
+  if passages and len(passages) != len(ids):
+    raise SystemExit(
+      'passage rows do not align with the vectors; rebuild the sidecar first'
+    )
+  old_bins = {out_dir / Path(shard['path']).name for shard in vec['shards']}
+  shards = write_shards(
+    full[keep], manifest['shardSizeRows'], vec['dtype'], out_dir
+  )
+  for stale in old_bins - {
+    out_dir / Path(shard['path']).name for shard in shards
+  }:
+    stale.unlink(missing_ok=True)
+  kept_ids = [ids[i] for i in keep]
+  kept = set(kept_ids)
+  manifest['ids'] = kept_ids
+  manifest['titles'] = [manifest['titles'][i] for i in keep]
+  manifest['chunkMetadata'] = {
+    k: v for k, v in manifest.get('chunkMetadata', {}).items() if k in kept
+  }
+  manifest['rows'] = len(keep)
+  manifest['vectors'] = {**vec, 'rows': len(keep), 'shards': shards}
+  if passages:
+    store = write_text_store(
+      out_dir, [passages[i] for i in keep], shards, vector_digest(shards)
+    )
+    manifest['passages'] = {
+      'generation': store['generation'],
+      'shards': store['shards'],
+    }
+  manifest_path.write_text(
+    json.dumps(manifest, ensure_ascii=False), encoding='utf-8'
+  )
+  print(
+    f'Prune: dropped {dropped} rows of {len(docs)} protected/private/draft notes'
+  )
+  return dropped
+
+
 def file_date(fp: Path) -> dict:
   from datetime import date
 
@@ -942,6 +1047,12 @@ def main():
     'manifest in --out; no embedding server needed. Rows whose id no longer matches get text null.',
   )
   ap.add_argument(
+    '--prune-only',
+    action='store_true',
+    help='Drop the rows of protected/private/draft notes from the existing store in --out '
+    '(vectors, ids, passage text) and exit; no JSONL or embedding server needed.',
+  )
+  ap.add_argument(
     '--batch-size',
     type=int,
     default=int(os.environ.get('VLLM_BATCH_SIZE', '64')),
@@ -960,7 +1071,17 @@ def main():
     *quartz_ignore_patterns(Path(args.quartz_config)),
     *args.ignore_pattern,
   ]
+  excluded = excluded_slugs(content_dir)
+  if args.prune_only:
+    prune_store(Path(args.out), excluded)
+    return
   recs = list(load_jsonl(args.jsonl))
+  hidden = [rec for rec in recs if rec.get('slug') in excluded]
+  if hidden:
+    recs = [rec for rec in recs if rec.get('slug') not in excluded]
+    print(
+      f'Filtered {len(hidden)} protected/private/draft note(s) from embeddings input'
+    )
   ignored_slugs = ignored_slugs_from_content_index(
     content_index, content_dir, ignore_patterns
   )
@@ -975,6 +1096,7 @@ def main():
       recs,
       load_notebook_documents(content_index, content_dir, ignore_patterns),
     )
+  recs = [rec for rec in recs if rec.get('slug') not in excluded]
   if not recs:
     print(
       f'No input found in {args.jsonl}; run the site build first to emit JSONL.'
@@ -1027,6 +1149,7 @@ def main():
   rows = passage_rows(chunks, recs)
 
   if args.text_only:
+    prune_store(Path(args.out), excluded)
     restamp_text_store(Path(args.out), rows)
     return
 

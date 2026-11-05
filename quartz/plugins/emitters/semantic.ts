@@ -118,6 +118,13 @@ export function embeddingDate(data: {
   return date ? { date, dateSource } : {}
 }
 
+/** Frontmatter keys that keep a note out of every embeddings store. */
+export const EMBEDDING_EXCLUDE_KEYS = ['protected', 'private', 'draft'] as const
+
+export function isEmbeddingExcluded(frontmatter: Record<string, unknown> | undefined): boolean {
+  return EMBEDDING_EXCLUDE_KEYS.some(key => Boolean(frontmatter?.[key]))
+}
+
 export const SemanticIndex: QuartzEmitterPlugin<
   Partial<GlobalConfiguration['semanticSearch']>
 > = opts => {
@@ -161,6 +168,10 @@ export const SemanticIndex: QuartzEmitterPlugin<
       for (const [_, file] of content) {
         // `semantic: false`: video transcripts stay out of the embeddings (+35% words otherwise)
         if (file.data.flashcards || file.data.frontmatter?.semantic === false) continue
+        // protected pages are encrypted on the site but `text` is their plaintext, and private or
+        // draft notes are only filtered when not serving: none of them may reach the embeddings
+        // (vectors, passage text, the latent sidecar). embed_build.py and latent/build.py repeat it.
+        if (isEmbeddingExcluded(file.data.frontmatter)) continue
         const slug = file.data.slug!
         if (isSearchExcluded(slug)) continue
         const title = file.data.frontmatter?.title ?? slug
