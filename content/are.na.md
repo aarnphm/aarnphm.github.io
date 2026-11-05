@@ -5390,6 +5390,78 @@ title: are.na
 
 ## places
 
+- https://yakitorimomiji.ca/ -- Yakitori Momiji
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [restaurant]
+    - coord: [43.669943, -79.3933113]
+    - address: 156 Cumberland St, 2nd Floor, Toronto, ON M5R 1A8, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/De2_huFMXS-/
+- https://www.lillebakery.com/ -- Lille Bakery
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [bakery, coffee shop]
+    - coord: [55.6900548, 12.6133271]
+    - address: Refshalevej 213B, 1432 København K, Denmark
+    - later: true
+    - source: https://www.instagram.com/reel/DfXQsREIuoY/
+- https://nomaprojects.com/pages/contact -- Noma Projects Shop
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [coffee shop]
+    - coord: [55.68331269999999, 12.6105955]
+    - address: Refshalevej 96, 1432 København K, Denmark
+    - later: true
+    - source: https://www.instagram.com/reel/DfXQsREIuoY/
+- https://www.google.com/maps?cid=18071264027986571557 -- A Matcha Space
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [coffee shop]
+    - coord: [55.6847631, 12.5882415]
+    - address: Store Kongensgade 74, st. 2, 1264 København K, Denmark
+    - later: true
+    - source: https://www.instagram.com/reel/DfXQsREIuoY/
+- https://lacabra.com/pages/nordhavn -- La Cabra Nordhavn
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [coffee shop]
+    - coord: [55.70716299999999, 12.5920549]
+    - address: Århusgade 118X, 2150 Nordhavn, Denmark
+    - later: true
+    - source: https://www.instagram.com/reel/DfXQsREIuoY/
+- https://komunacoffee.com/pages/faq -- Komuna Coffee Silent Club
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [coffee shop]
+    - coord: [55.687011, 12.5923799]
+    - address: Bredgade 73, 1260 København K, Denmark
+    - later: true
+    - source: https://www.instagram.com/reel/DfXQsREIuoY/
+- https://cafeatelierseptember.com/pages/kronprinsessegade -- Atelier September Kronprinsessegade
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [coffee shop, restaurant]
+    - coord: [55.6873916, 12.5849268]
+    - address: Kronprinsessegade 62, 1306 København K, Denmark
+    - later: true
+    - source: https://www.instagram.com/reel/DfXQsREIuoY/
+- https://cabincph.dk/ -- Cabin Copenhagen
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [coffee shop]
+    - coord: [55.6824735, 12.5863843]
+    - address: Store Kongensgade 32, 1264 København K, Denmark
+    - later: true
+    - source: https://www.instagram.com/reel/DfXQsREIuoY/
+- https://louise-roe.com/pages/the-roe-bar-1 -- The Roe Bar
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [coffee shop]
+    - coord: [55.6822458, 12.5784749]
+    - address: Vognmagergade 9, 1120 København K, Denmark
+    - later: true
+    - source: https://www.instagram.com/reel/DfXQsREIuoY/
 - https://www.leserpent.ca/ -- Le Serpent
   - [meta]:
     - date: 11/05/2026

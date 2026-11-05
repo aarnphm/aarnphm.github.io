@@ -2,7 +2,7 @@
 date: '2024-02-25'
 description: token lookup, position, masking, and image–text representations
 id: Embedding
-modified: 2026-11-03 14:03:39 GMT-05:00
+modified: 2026-11-05 15:51:08 GMT-05:00
 seealso:
   - '[[thoughts/Transformers|Transformers]]'
   - '[[thoughts/Attention|Attention]]'
