@@ -11,6 +11,7 @@ import {
   swimWorkoutLaps,
   workoutElevationPaths,
   workoutLapTimeline,
+  workoutMajorityLaps,
 } from './workout-lap-data'
 
 export const buildSwimWorkoutAnalysis = <N>(
@@ -21,9 +22,13 @@ export const buildSwimWorkoutAnalysis = <N>(
   const laps = swimWorkoutLaps(d)
   if (laps.length === 0) return null
   const timeline = workoutLapTimeline(laps)
-  const paceAxis = runWorkoutPaceAxis(laps.map(lap => lap.paceS))
+  const majority = workoutMajorityLaps(laps)
+  const paceAxis = runWorkoutPaceAxis(
+    majority.map(lap => lap.paceS),
+    majority.length < laps.length,
+  )
   const paceSpan = paceAxis.max - paceAxis.min
-  const speeds = laps.map(lap => lap.speedKph)
+  const speeds = majority.map(lap => lap.speedKph)
   const minSpeedKph = Math.min(...speeds)
   const maxSpeedKph = Math.max(...speeds)
   const speedSpan = maxSpeedKph - minSpeedKph
@@ -87,7 +92,8 @@ export const buildSwimWorkoutAnalysis = <N>(
     const start = (span.startS / timeline.durationS) * 100
     const end = (span.endS / timeline.durationS) * 100
     const height = Math.max(3, ((paceAxis.max - lap.paceS) / paceSpan) * 100)
-    const intensity = speedSpan > 0 ? 0.42 + ((lap.speedKph - minSpeedKph) / speedSpan) * 0.5 : 0.72
+    const intensity =
+      speedSpan > 0 ? 0.42 + (Math.max(0, lap.speedKph - minSpeedKph) / speedSpan) * 0.5 : 0.72
     attrs['aria-pressed'] = 'false'
     attrs['aria-label'] = `${lap.range.label}, ${metrics.join(', ')}`
     attrs.style = `--tri-swim-workout-start:${start.toFixed(3)}%;--tri-swim-workout-width:${Math.max(0, end - start).toFixed(3)}%;--tri-swim-workout-height:${height.toFixed(3)}%;--tri-swim-workout-opacity:${intensity.toFixed(3)}`
@@ -127,9 +133,13 @@ export const buildRunWorkoutAnalysis = <N>(
   const elevationPaths = workoutElevationPaths(d, timeline)
   const imperial = isImperial(f.presentation)
   const paceUnit = imperial ? '/mi' : '/km'
-  const paceAxis = runWorkoutPaceAxis(laps.map(lap => lap.paceS))
+  const majority = workoutMajorityLaps(laps)
+  const paceAxis = runWorkoutPaceAxis(
+    majority.map(lap => lap.paceS),
+    majority.length < laps.length,
+  )
   const paceSpan = paceAxis.max - paceAxis.min
-  const speeds = laps.map(lap => lap.speedKph)
+  const speeds = majority.map(lap => lap.speedKph)
   const minSpeedKph = Math.min(...speeds)
   const maxSpeedKph = Math.max(...speeds)
   const speedSpan = maxSpeedKph - minSpeedKph
@@ -196,7 +206,8 @@ export const buildRunWorkoutAnalysis = <N>(
     const start = (span.startS / timeline.durationS) * 100
     const end = (span.endS / timeline.durationS) * 100
     const height = Math.max(3, ((paceAxis.max - lap.paceS) / paceSpan) * 100)
-    const intensity = speedSpan > 0 ? 0.42 + ((lap.speedKph - minSpeedKph) / speedSpan) * 0.5 : 0.72
+    const intensity =
+      speedSpan > 0 ? 0.42 + (Math.max(0, lap.speedKph - minSpeedKph) / speedSpan) * 0.5 : 0.72
     attrs['aria-pressed'] = 'false'
     attrs['aria-label'] = `${lap.range.label}, ${metrics.join(', ')}`
     attrs.style = `--tri-run-workout-start:${start.toFixed(3)}%;--tri-run-workout-width:${Math.max(0, end - start).toFixed(3)}%;--tri-run-workout-height:${height.toFixed(3)}%;--tri-run-workout-opacity:${intensity.toFixed(3)}`
