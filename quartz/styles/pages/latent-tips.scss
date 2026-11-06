@@ -3,7 +3,7 @@
 // `layout: latent`: hover and focus notes on the probe's terms (bc, the pc share, poles,
 // sources, model). markup.ts puts the text in data-tip and it is drawn from attr(), so it never
 // joins the page text. Box and motion follow the triathlon day tooltips.
-[data-layout='latent'] :where(#quartz-root) .lat-probe {
+:is([data-layout='latent'] :where(#quartz-root), .latent-embed) .lat-probe {
   [data-tip] {
     position: relative;
     cursor: help;
@@ -114,7 +114,7 @@
 
 // the live notes (latent-client/tips.ts): one fixed box on the root, drawn over pane borders and
 // kept inside the viewport; the ::after notes above stand down once it binds
-[data-layout='latent'] :where(#quartz-root) {
+:is([data-layout='latent'] :where(#quartz-root), .latent-embed) {
   [data-tips-live] [data-tip]::after {
     display: none;
   }

@@ -4,7 +4,7 @@
 
 // `layout: latent`: rail | reader | links | probe. Markup from quartz/util/latent/markup.ts.
 // Popovers mount on <body>, so every rule hangs off the page root through :where.
-[data-layout='latent'] :where(#quartz-root) {
+:is([data-layout='latent'] :where(#quartz-root), .latent-embed) {
   --lat-pdf: #fdb2a2;
   --lat-image: #cdd597;
   // a picked feature's rows on the 3-d bench (Flexoki orange, themed)
@@ -175,7 +175,7 @@
   }
 }
 
-[data-layout='latent'] :where(#quartz-root) {
+:is([data-layout='latent'] :where(#quartz-root), .latent-embed) {
   // the global `header` rule (document-defaults.scss) pads the element and pushes its
   // second-last child right, which shoved each pane label against its count
   .lat-pane-head,
@@ -579,6 +579,11 @@
       background: var(--light);
       box-shadow: 0 0.4rem 1.2rem color-mix(in srgb, var(--dark) 18%, transparent);
       opacity: 0;
+
+      // same lift as .lat-chunk-preview: no pale halo in dark mode
+      :root[saved-theme='dark'] & {
+        box-shadow: none;
+      }
       visibility: hidden;
       cursor: pointer;
       // the hide waits long enough for the pointer to cross from the title to the card

@@ -1,0 +1,420 @@
+@use '../mixin.scss' as *;
+
+// `![[embeddings#focus=N#view=…]]` in a note (docs/latent-embed.md): head | bench 1fr, features
+// 19rem | the view's links. The figure is a size container, so the same rules serve the note
+// column, popovers and any later host. The bench and the features column have a fixed height,
+// so hydration swapping the poster for a canvas and re-rendering the column cannot shift the
+// page. Tokens (--lat-*) come from latent.scss, scoped to `.latent-embed` there; the panel
+// builders' markup is styled by latent-features.scss and latent-tips.scss through `.lat-probe`,
+// which the box carries, so its explorer-pane rules (sticky, full height) are undone here.
+.latent-embed {
+  container-type: inline-size;
+  margin: 1.75rem 0;
+  padding: 0;
+  color: var(--dark);
+  font-family: var(--lat-ui);
+
+  // the note column (7 / span 3) is too narrow for two panes on a desktop: widen to the title's
+  // column, two grid tracks to the left (the tracks have no gap)
+  @media (min-width: 1400px) {
+    &[data-wide] {
+      margin-inline-start: calc(-2 * var(--grid-col-width));
+    }
+  }
+
+  // a stream entry's body is already its own wide column: the figure sits on the entry's text
+  // edge and within its width
+  .stream-entry-content &[data-wide] {
+    margin-inline-start: 0;
+  }
+
+  & > .lat-embed-box.lat-probe {
+    --emb-feats: 19rem;
+    --emb-h: clamp(18rem, 58cqi, 28rem);
+    --emb-foot: 1.6rem;
+    position: relative;
+    top: auto;
+    height: auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--emb-feats);
+    grid-template-areas:
+      'head head'
+      'bench feats'
+      'links links';
+    overflow: visible;
+    contain: layout paint;
+    @include ledgerBox;
+    border-color: var(--lat-hair);
+    border-radius: var(--radius-none, 0);
+    font-size: var(--text-meta);
+  }
+
+  &[data-panes='bench'] > .lat-embed-box {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'head' 'bench' 'links';
+  }
+
+  &[data-panes='features'] > .lat-embed-box {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'head' 'feats' 'links';
+  }
+
+  &[data-state='notice'] > .lat-embed-box {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'head';
+  }
+
+  .lat-embed-head {
+    grid-area: head;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 0;
+    height: var(--lat-head);
+    margin: 0;
+    padding: 0 0.65rem;
+    border-bottom: 1px solid var(--lat-hair);
+    background: var(--ledger-surface);
+    color: var(--darkgray);
+    font-family: var(--lat-mono);
+    font-size: var(--lat-micro);
+    white-space: nowrap;
+
+    > * {
+      margin: 0;
+    }
+  }
+
+  &[data-state='notice'] .lat-embed-head {
+    border-bottom: 0;
+  }
+
+  .lat-embed-kicker,
+  .lat-embed-locus {
+    color: var(--gray);
+  }
+
+  a.lat-embed-focus {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--dark);
+    font-family: var(--lat-text);
+    font-size: 0.8rem;
+    font-weight: var(--lat-strong);
+    text-decoration: none;
+  }
+
+  .lat-embed-state {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: right;
+    color: var(--gray);
+  }
+
+  .lat-embed-reset,
+  a.lat-embed-open {
+    flex: none;
+    padding: 0 0.4rem;
+    border: 1px solid var(--lat-hair);
+    border-radius: 0;
+    background: var(--light);
+    color: var(--darkgray);
+    font: inherit;
+    line-height: 1.35rem;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--dark);
+      border-color: var(--dark);
+    }
+  }
+
+  .lat-embed-bench {
+    grid-area: bench;
+    position: relative;
+    min-width: 0;
+    height: var(--emb-h);
+    padding: 0;
+    border-right: 1px solid var(--lat-hair);
+  }
+
+  &[data-panes='bench'] .lat-embed-bench {
+    border-right: 0;
+  }
+
+  // the explorer's canvas rule (latent.scss, through .lat-probe) is square and ruled; the embed's
+  // fills the bench above its status foot, so this outranks it
+  .lat-embed-box .lat-embed-bench > .lat-embed-poster,
+  .lat-embed-box .lat-embed-bench > .lat-bench-canvas {
+    position: absolute;
+    inset: 0 0 var(--emb-foot) 0;
+    width: 100%;
+    height: calc(100% - var(--emb-foot));
+    aspect-ratio: auto;
+    border: 0;
+  }
+
+  .lat-bench-canvas {
+    display: block;
+    // one finger turns the yaw; vertical drags scroll the page
+    touch-action: pan-y;
+    cursor: grab;
+    outline: none;
+
+    &:focus-visible {
+      outline: 1px solid var(--dark);
+      outline-offset: -1px;
+    }
+  }
+
+  .lat-embed-poster {
+    overflow: visible;
+    pointer-events: none;
+
+    .pts path {
+      fill: none;
+      stroke-linecap: round;
+      vector-effect: non-scaling-stroke;
+
+      &.sq {
+        stroke-linecap: square;
+      }
+    }
+
+    .k0 {
+      stroke: var(--dark);
+    }
+
+    .k1 {
+      stroke: var(--lat-pdf);
+    }
+
+    .k2 {
+      stroke: var(--lat-image);
+    }
+
+    .k3 {
+      stroke: var(--gray);
+    }
+
+    .fire {
+      stroke: var(--lat-fire);
+    }
+
+    .axes line,
+    .axes path {
+      fill: none;
+      stroke: var(--gray);
+      stroke-width: 1;
+      vector-effect: non-scaling-stroke;
+      opacity: 0.7;
+    }
+
+    .axes text {
+      fill: var(--gray);
+      opacity: 0.7;
+      font-family: var(--lat-mono);
+      font-size: 11px;
+      text-anchor: middle;
+      dominant-baseline: middle;
+    }
+
+    .marks .mark {
+      fill: none;
+      stroke: var(--dark);
+      stroke-width: 1.5;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .marks .edge {
+      fill: none;
+      vector-effect: non-scaling-stroke;
+      stroke-opacity: 0.85;
+
+      &.near {
+        stroke: var(--gray);
+        stroke-width: 0.75;
+      }
+
+      &.parent,
+      &.child {
+        stroke: var(--dark);
+        stroke-width: 1;
+      }
+
+      &.child {
+        stroke-dasharray: 3 2;
+      }
+    }
+  }
+
+  .lat-embed-bench > .lat-bench-status {
+    position: absolute;
+    inset: auto 0 0 0;
+    height: var(--emb-foot);
+    margin: 0;
+    padding: 0 0.6rem;
+    border-top: 1px solid var(--lat-hair);
+    color: var(--gray);
+    font-family: var(--lat-mono);
+    font-size: var(--lat-micro);
+    line-height: var(--emb-foot);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .lat-embed-features.lat-features {
+    grid-area: feats;
+    min-width: 0;
+    height: var(--emb-h);
+    margin: 0;
+    padding: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+
+  &[data-panes='features'] .lat-embed-features.lat-features {
+    height: auto;
+    max-height: var(--emb-h);
+  }
+
+  // the view's results: two columns of pooled rows, numbered
+  .lat-embed-links {
+    grid-area: links;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 1.2rem;
+    row-gap: 0.15rem;
+    margin: 0;
+    padding: 0.45rem 0.65rem 0.5rem;
+    border-top: 1px solid var(--lat-hair);
+    list-style: none;
+    counter-reset: lat-embed;
+    transition: opacity 0.15s ease;
+
+    &[data-pending] {
+      opacity: 0.55;
+    }
+
+    > li {
+      display: grid;
+      grid-template-columns: 1.1rem 0.55rem minmax(0, 1fr) auto;
+      gap: 0.35rem;
+      align-items: baseline;
+      margin: 0;
+      padding: 0;
+      font-size: 0.8rem;
+      counter-increment: lat-embed;
+
+      &::before {
+        content: counter(lat-embed);
+        color: var(--gray);
+        font-family: var(--lat-mono);
+        font-size: var(--lat-micro);
+        text-align: right;
+      }
+    }
+
+    > li.lat-embed-links-head {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.2rem;
+      color: var(--gray);
+      font-family: var(--lat-mono);
+      font-size: var(--lat-micro);
+      counter-increment: none;
+
+      &::before {
+        content: none;
+      }
+    }
+
+    .lat-swatch {
+      align-self: center;
+      width: 0.5rem;
+      height: 0.5rem;
+      background: var(--dark);
+
+      &[data-kind='pdf'] {
+        background: var(--lat-pdf);
+      }
+
+      &[data-kind='image'] {
+        background: var(--lat-image);
+      }
+
+      &[data-kind='base'] {
+        background: var(--gray);
+      }
+    }
+
+    a {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--dark);
+      font-family: var(--lat-text);
+      text-decoration: none;
+      background: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    .lat-embed-loc {
+      color: var(--gray);
+      font-family: var(--lat-mono);
+      font-size: var(--lat-micro);
+    }
+  }
+
+  figcaption.lat-embed-cap {
+    margin-top: 0.45rem;
+    color: var(--darkgray);
+    font-size: var(--text-meta);
+  }
+}
+
+// narrow: one column, the picture, then what it produced, then the apparatus; a scroller inside
+// the page scroll is a trap on phones, so the features take their natural height
+@container (max-width: 34rem) {
+  .latent-embed > .lat-embed-box.lat-probe {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'head' 'bench' 'links' 'feats';
+  }
+
+  .latent-embed .lat-embed-bench {
+    height: auto;
+    aspect-ratio: 1 / 1;
+    max-height: 24rem;
+    border-right: 0;
+  }
+
+  .latent-embed .lat-embed-features.lat-features {
+    height: auto;
+    overflow: visible;
+    border-top: 1px solid var(--lat-hair);
+  }
+
+  .latent-embed .lat-embed-links {
+    grid-template-columns: minmax(0, 1fr);
+
+    > li:nth-of-type(n + 8) {
+      display: none;
+    }
+  }
+
+  .latent-embed .lat-embed-locus {
+    display: none;
+  }
+}

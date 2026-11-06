@@ -121,18 +121,21 @@ export async function* writeComponentStyles(
       key: componentCssBundleKey,
       slug: componentCssBundleSlug,
       css: resources.componentCss.filter(css => !scoped.has(css)),
+      layer: true,
     },
     ...pageScopedComponentStyles.map(style => ({
       key: componentCssScopeKey(style.name),
       slug: `${componentCssBundleSlug}-${style.name}`,
       css: resources.componentCss.filter(css => css === style.css),
+      layer: style.layer !== false,
     })),
   ]
   for (const sheet of sheets) {
     if (sheet.css.length === 0) continue
+    const css = sheet.css.join('\n')
     const content = minifyStylesheet(
       `${path.basename(sheet.slug)}.css`,
-      `@layer quartz-base {\n${sheet.css.join('\n')}\n}`,
+      sheet.layer ? `@layer quartz-base {\n${css}\n}` : css,
     )
     const slug = assetSlugForContent(ctx, sheet.slug, '.css', content)
     registerExtractedStaticResource(ctx, sheet.key, assetPath(slug, '.css'))

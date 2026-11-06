@@ -3,7 +3,7 @@
 // `layout: latent`: the probe's features tab (quartz/components/scripts/latent-client/features.ts).
 // Rows share the axis cards' grid: a hairline bar for the activation, the feature's terms, its id,
 // and the ± steering pair, all in the probe's mono micro type.
-[data-layout='latent'] :where(#quartz-root) .lat-probe .lat-features {
+:is([data-layout='latent'] :where(#quartz-root), .latent-embed) .lat-probe .lat-features {
   padding: 0 0 0.5rem;
 
   .lat-feat-group,
@@ -557,7 +557,7 @@
 // reads as) in one mono column of --lat-feat-label, and what it labels starting on one line to
 // its right, wrapped chips included. Rows of chips are inline so the label shares the first
 // chip's baseline and wrapped lines return to the content edge, not under the label.
-[data-layout='latent'] :where(#quartz-root) .lat-probe .lat-features {
+:is([data-layout='latent'] :where(#quartz-root), .latent-embed) .lat-probe .lat-features {
   --lat-feat-label: 5.25rem;
 
   .lat-feat-card > :is(.lat-feat-path, .lat-feat-near, .lat-feat-kinds),
@@ -641,7 +641,7 @@
 
 // the links pane's group bars use the probe's one mark width and box, so the counts line up
 // and every kind tag on the page is the same chip
-[data-layout='latent'] :where(#quartz-root) .lat-links .lat-group {
+:is([data-layout='latent'] :where(#quartz-root), .latent-embed) .lat-links .lat-group {
   .lat-mark {
     box-sizing: border-box;
     min-width: calc(5ch + 5 * 0.08em + 0.85em + 0.6rem + 2px);
@@ -653,7 +653,7 @@
 }
 
 // a cut label under the pointer scrolls through its whole text (latent-client/marquee.ts)
-[data-layout='latent'] :where(#quartz-root) .lat-probe [data-marquee] {
+:is([data-layout='latent'] :where(#quartz-root), .latent-embed) .lat-probe [data-marquee] {
   text-overflow: clip;
 
   @media (prefers-reduced-motion: no-preference) {
@@ -733,7 +733,7 @@
 // Steering by score fusion (docs/latent-steering.md): each term's strength is a slider in its
 // own unit, tags and axes list beside features in `#` search with their sparse probe under them,
 // and "reasoning" splits each link's cosine into feature-pair edges.
-[data-layout='latent'] :where(#quartz-root) .lat-probe .lat-features {
+:is([data-layout='latent'] :where(#quartz-root), .latent-embed) .lat-probe .lat-features {
   .lat-steer-amount {
     grid-template-columns: 5.5rem 2.6rem;
     column-gap: 0.35rem;
@@ -935,7 +935,7 @@
 }
 
 // Chunk previews keep feature chips operable without changing the compact document rows.
-[data-layout='latent'] :where(#quartz-root) .lat-links .lat-link-why {
+:is([data-layout='latent'] :where(#quartz-root), .latent-embed) .lat-links .lat-link-why {
   margin: 0.3rem 0 0;
 
   .lat-feat-chip {

@@ -406,6 +406,11 @@
     border-radius: var(--radius-none);
     box-shadow: 0 0.4rem 1.2rem color-mix(in srgb, var(--dark) 12%, transparent);
     background: var(--light);
+
+    // --dark is the light ink in dark mode, so the lift turns into a pale halo there
+    :root[saved-theme='dark'] & {
+      box-shadow: none;
+    }
     color: var(--darkgray);
     font: var(--text-meta)/1.45 var(--lat-text);
 
