@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-10-23 09:10:10 GMT-04:00
+modified: 2026-11-05 23:42:45 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -833,6 +833,12 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/noampomsky/status/2118438333978394887 -- Ava on preserving clarity and examining your motives
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [psychology, self-knowledge]
+    - later: true
+  - Record what becomes clear so you can revisit it when you lose sight of it. For emotional and relational decisions, write down your immediate reason, the reason behind it, and a possible unflattering motive. Consider the criticism that makes you most defensive.
 - https://x.com/WillManidis/status/2107558351383253000 -- Will Manidis on inflation from billion-dollar to trillion-dollar PDFs
   - [meta]:
     - date: 10/23/2026
@@ -5390,6 +5396,86 @@ title: are.na
 
 ## places
 
+- https://www.25king.ca/the-history -- Commerce Court North Banking Hall
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [architecture]
+    - coord: [43.6486448, -79.3790475]
+    - address: 25 King St W, Toronto, ON, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfXBMD3IYp1/
+- https://www.canadianstage.com/plan-your-visit/venues-directions/winter-garden -- Elgin and Winter Garden Theatres
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [theatre, architecture]
+    - coord: [43.6530164, -79.3793958]
+    - address: 189 Yonge St, Toronto, ON M5B 1M4, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfXBMD3IYp1/
+- https://lso.ca/about-lso/osgoode-hall-and-ontario-legal-heritage/osgoode-hall -- Osgoode Hall Great Library
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [architecture]
+    - coord: [43.652027, -79.3857558]
+    - address: 130 Queen St W, Toronto, ON, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfXBMD3IYp1/
+- https://www.omnihotels.com/hotels/toronto-king-edward -- Omni King Edward Hotel Lobby
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [architecture]
+    - coord: [43.649245, -79.37604689999999]
+    - address: 37 King St E, Toronto, ON M5C 1E9, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfXBMD3IYp1/
+- https://www.toronto.ca/services-payments/water-environment/tap-water-in-toronto/fast-facts-about-the-citys-water-treatment-plants/ -- R.C. Harris Water Treatment Plant
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [architecture]
+    - coord: [43.67340739999999, -79.27891819999999]
+    - address: 2701 Queen St E, Toronto, ON, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfXBMD3IYp1/
+- https://harthouse.ca/spaces/venue/great-hall -- Hart House Great Hall
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [architecture]
+    - coord: [43.6640136, -79.3943321]
+    - address: 7 Hart House Circle, First Floor, Room 1022, Toronto, ON M5S 3H3, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfXBMD3IYp1/
+- https://torontounion.ca/visit/ -- Union Station Great Hall
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [architecture]
+    - coord: [43.6454842, -79.3808301]
+    - address: 65 Front St W, Toronto, ON, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfXBMD3IYp1/
+- https://library.utoronto.ca/library/fisher-library -- Thomas Fisher Rare Book Library
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [architecture]
+    - coord: [43.66407359999999, -79.3989838]
+    - address: 120 St George St, Toronto, ON M5S 0C1, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfXBMD3IYp1/
+- https://speducci.com/ -- Speducci Mercatto
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [restaurant, market]
+    - coord: [43.7048583, -79.47280549999999]
+    - address: 46 Milford Ave, North York, ON M6M 2V8, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfYUze2BO_3/
+- https://www.shunoko.ca/ -- Shunoko
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [restaurant]
+    - coord: [43.7287711, -79.4034466]
+    - address: 3220 Yonge St, Toronto, ON M4N 2L2, Canada
+    - rating: 5
+    - later: false
 - https://yakitorimomiji.ca/ -- Yakitori Momiji
   - [meta]:
     - date: 11/05/2026
@@ -7894,6 +7980,46 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://wethedeepfeelers.substack.com/p/i-smoke-a-cigarette-after-i-meditate -- i smoke a cigarette after i meditate
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [self-knowledge, identity]
+    - later: true
+- https://wethedeepfeelers.substack.com/p/the-problem-with-not-saying-how-you -- the problem with not saying how you feel
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [relationships, communication]
+    - later: true
+- https://wethedeepfeelers.substack.com/p/drunk-kissing-with-god -- drunk kissing with god
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [happiness, desire]
+    - later: true
+- https://wethedeepfeelers.substack.com/p/i-can-only-create-from-the-depths -- i can only create from the depths of my experiences
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [creativity, art]
+    - later: true
+- https://wethedeepfeelers.substack.com/p/i-travel-for-a-living-i-promise-you -- i travel for a living. i promise you can't run from yourself.
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [travel, self-knowledge]
+    - later: true
+- https://wethedeepfeelers.substack.com/p/sometimes-i-feel-like-nothing-scares -- sometimes i feel like nothing scares me anymore
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [fear, attachment]
+    - later: true
+- https://wethedeepfeelers.substack.com/p/i-cry-every-birthday-and-i-think -- i cry every birthday. and i think i always will.
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [birthdays, coming of age]
+    - later: true
+- https://wethedeepfeelers.substack.com/p/inside-the-mind-of-a-full-time-solo -- the decision to leave everything to solo travel
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [solo travel, backpacking]
+    - later: true
 - https://kwokchain.com/2026/10/09/abstract-warfare-how-tsmc-made-its-own-market -- Abstract Warfare: How TSMC Made Its Own Market
   - [meta]:
     - date: 10/22/2026
