@@ -542,9 +542,39 @@ def main() -> None:
     )
   for entry in out_root.iterdir():
     if entry.is_dir() and SHA.match(entry.name) and entry.name != sidecar_hash:
+      keep_for_remap(entry, out_root / 'remap' / entry.name)
       shutil.rmtree(entry)
   total = sum(p.stat().st_size for p in out.rglob('*') if p.is_file())
   log('wrote', out, f'{total / 1e6:.1f} MB', f'{time.time() - t0:.0f}s')
+
+
+REMAP_FILES = ('docs.json', 'vec/meta.json')
+REMAP_DICT_FILES = ('features.json', 'meta.json', 'dec-int8.bin')
+
+
+def keep_for_remap(old: Path, dest: Path) -> None:
+  """
+  What a later remap needs from a generation about to be pruned (docs/latent-embed.md §10):
+  embeds in notes name its hash, rows and feature ids, so the doc table and each dictionary's
+  labels and decoder stay under remap/<oldHash>/ (~3 MB) until remap files replace them.
+  """
+  if dest.exists():
+    return
+  for rel in REMAP_FILES:
+    src = old / rel
+    if src.is_file():
+      (dest / rel).parent.mkdir(parents=True, exist_ok=True)
+      shutil.copy2(src, dest / rel)
+  feat = old / 'feat'
+  if feat.is_dir():
+    for d in feat.iterdir():
+      for name in REMAP_DICT_FILES:
+        src = d / name
+        if d.is_dir() and src.is_file():
+          (dest / 'feat' / d.name).mkdir(parents=True, exist_ok=True)
+          shutil.copy2(src, dest / 'feat' / d.name / name)
+  if dest.exists():
+    log('kept', dest, 'for embeds that still name', old.name[:8])
 
 
 if __name__ == '__main__':
