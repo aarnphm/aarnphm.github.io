@@ -17,6 +17,7 @@ import {
   cleanArxivIdentifier,
   createPdfEmbed,
   PDF_PREVIEW_OPTIONS,
+  pdfPageFromHash,
   pdfTitleFromUrl,
   isPdfUrl,
   mountPdfPreview,
@@ -395,11 +396,10 @@ export async function mouseEnterHandler(
     popoverElement.id = popoverId
     popoverInner.dataset.contentType = 'application/pdf'
     popoverInner.appendChild(
-      createPdfEmbed(
-        fetchUrl.toString(),
-        pdfTitleFromUrl(fetchUrl.toString()),
-        PDF_PREVIEW_OPTIONS,
-      ),
+      createPdfEmbed(fetchUrl.toString(), pdfTitleFromUrl(fetchUrl.toString()), {
+        ...PDF_PREVIEW_OPTIONS,
+        page: pdfPageFromHash(targetUrl.hash),
+      }),
     )
 
     if (document.getElementById(popoverId)) return

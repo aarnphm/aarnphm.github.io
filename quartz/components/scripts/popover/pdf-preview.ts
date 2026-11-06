@@ -7,6 +7,8 @@ interface PdfEmbedOptions {
   overscan?: number
   maxPixelRatio?: number
   textLayer?: boolean
+  /** The page the viewer opens on, from a `#page=N` link. */
+  page?: number | null
 }
 
 const PDF_LOAD_TIMEOUT = 8 * 1000
@@ -36,12 +38,24 @@ export function isPdfUrl(url: URL): boolean {
   return url.pathname.toLowerCase().endsWith('.pdf')
 }
 
+/** `#page=N` on a pdf link, as the reader and pdf.js read it. */
+export function pdfPageFromHash(hash: string): number | null {
+  const match = /(?:^#?|&)page=(\d+)/.exec(hash)
+  const page = match ? Number(match[1]) : NaN
+  return page >= 1 ? page : null
+}
+
+// `/read/<slug>.pdf` is the reader page's address: the worker answers it with the reader shell, so
+// a viewer fed that path gets html. The document itself is served at `/<slug>.pdf`.
+const PDF_READER_DOCUMENT = /^\/read(\/.+\.pdf)$/i
+
 function pdfRuntimeSource(rawSrc: string): string {
   try {
     const url = new URL(rawSrc, window.location.href)
     if (url.protocol === 'http:' || url.protocol === 'https:') {
       if (url.origin !== window.location.origin) return arenaPdfViewerSource(url.toString())
-      return `${url.pathname}${url.search}`
+      const pathname = PDF_READER_DOCUMENT.exec(url.pathname)?.[1] ?? url.pathname
+      return `${pathname}${url.search}`
     }
   } catch {
     return rawSrc
@@ -85,6 +99,7 @@ export function createPdfEmbed(
     pdf.dataset.pdfMaxPixelRatio = String(options.maxPixelRatio)
   }
   if (options.textLayer !== undefined) pdf.dataset.pdfTextLayer = String(options.textLayer)
+  if (options.page) pdf.dataset.pdfPage = String(options.page)
   pdf.tabIndex = 0
 
   const loading = document.createElement('span')
