@@ -34,6 +34,7 @@ function fromFile(file: QuartzPluginData): ReferenceCatalogInput {
     })),
     blocks: file.blocks ? Object.keys(file.blocks) : undefined,
     baseViews: file.basesConfig?.views.map(view => ({ name: view.name })),
+    ...(file.frontmatter?.pageLayout === 'latent' ? { latent: true } : {}),
   }
 }
 

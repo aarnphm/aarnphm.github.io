@@ -38,5 +38,6 @@ export function indexReferenceDocument(tree: Root, file: VFile): void {
     headings,
     blocks: [...blocks],
     baseViews: file.data.basesConfig?.views.map(view => ({ name: view.name })),
+    ...(file.data.frontmatter?.pageLayout === 'latent' ? { latent: true } : {}),
   }
 }

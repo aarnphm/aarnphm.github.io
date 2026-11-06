@@ -80,5 +80,15 @@ export function referenceRoute(
   }
   if (selector.kind === 'notebook')
     return { slug: entry.slug, anchor: `#${selector.cells.join('#')}` }
+  // /embeddings opens a view from `?focus=N#view=…` (latent-client/share.ts)
+  if (selector.kind === 'latent')
+    return {
+      slug: entry.slug,
+      anchor: selector.view
+        ? `#view=${selector.view}`
+        : selector.focus !== undefined
+          ? `?focus=${selector.focus}`
+          : undefined,
+    }
   return { slug: entry.slug, anchor: `#${selector.raw}` }
 }

@@ -295,3 +295,17 @@ after(async () => {
   )
   console.log(`Catalog evidence: ${receiptPath}`)
 })
+
+test('a folder name resolves to its index note after source and route identity', () => {
+  const folders = createReferenceCatalog([
+    { path: 'embeddings/index.md' },
+    { path: 'thoughts/index.md' },
+    { path: 'thoughts.md' },
+  ])
+  const found = folders.resolve('embeddings', 'stream.md')
+  assert.equal(found.kind, 'found')
+  if (found.kind === 'found') assert.equal(found.entry.path, 'embeddings/index.md')
+  assert.ok(found.lookupKeys.includes('route:embeddings/index'))
+  const note = folders.resolve('thoughts', 'stream.md')
+  assert.equal(note.kind === 'found' && note.entry.path, 'thoughts.md')
+})

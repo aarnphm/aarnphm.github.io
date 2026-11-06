@@ -6,6 +6,7 @@ import type {
   ReferenceSettings,
   ReferenceTargetDiagnostic,
 } from './catalog-types'
+import { parseLatentFragment } from '../latent/embed/fragment'
 import { parseNoteStack } from '../note-stack'
 import { slugAnchor } from '../path'
 import { isRecord } from '../type-guards'
@@ -13,7 +14,7 @@ import { labelToText, parseReferenceLabel } from './label'
 
 type ReferenceTargetInfo = Pick<
   ReferenceCatalogEntry,
-  'path' | 'kind' | 'headings' | 'blocks' | 'baseViews'
+  'path' | 'kind' | 'headings' | 'blocks' | 'baseViews' | 'latent'
 >
 
 export interface ReferenceInterpretationInput {
@@ -192,6 +193,23 @@ export function interpretReference(
         !raw.startsWith('^') && matchingHeading(entry, fragments)
           ? headingSelector(entry, fragments, diagnostics)
           : { kind: 'notebook', cells: Object.freeze([...fragments]) }
+    } else if (entry.latent) {
+      // `focus=N#view=…`: a view of the embedding space (util/latent/embed)
+      const latent = parseLatentFragment(fragments)
+      for (const key of latent.unsupported)
+        diagnostics.push({
+          code: 'unsupported-selector',
+          message: `Unsupported latent embed key: ${key}`,
+        })
+      for (const error of latent.errors)
+        diagnostics.push({ code: 'invalid-selector', message: `Latent embed: ${error}` })
+      selector = {
+        kind: 'latent',
+        raw,
+        ...(latent.focus !== undefined ? { focus: latent.focus } : {}),
+        ...(latent.view ? { view: latent.view } : {}),
+        ...(latent.errors.length ? { error: latent.errors.join('; ') } : {}),
+      }
     } else if (/^(?:triathlon)(?:\/|\.md$)/.test(entry.path)) {
       selector = { kind: 'triathlon', raw }
     } else if (/^(?:curius)(?:\/|\.md$)/.test(entry.path)) {

@@ -32,6 +32,8 @@ export interface ReferenceCatalogInput {
   readonly headings?: readonly ReferenceHeading[]
   readonly blocks?: readonly string[]
   readonly baseViews?: readonly ReferenceBaseView[]
+  /** a `layout: latent` page: its fragments name a view of the embedding space */
+  readonly latent?: boolean
 }
 
 export interface ReferenceCatalogEntry {
@@ -42,6 +44,7 @@ export interface ReferenceCatalogEntry {
   readonly headings?: readonly ReferenceHeading[]
   readonly blocks?: readonly string[]
   readonly baseViews?: readonly ReferenceBaseView[]
+  readonly latent?: boolean
 }
 
 export interface ReferenceResolutionOptions {
@@ -97,6 +100,14 @@ export type ReferenceSelector =
   | { readonly kind: 'note-stack'; readonly raw: string; readonly slugs: readonly string[] }
   | { readonly kind: 'provider'; readonly raw: string }
   | { readonly kind: 'triathlon'; readonly raw: string }
+  /** a view of a `layout: latent` page; the renderer decodes `view` (util/latent/embed) */
+  | {
+      readonly kind: 'latent'
+      readonly raw: string
+      readonly focus?: number
+      readonly view?: string
+      readonly error?: string
+    }
   | { readonly kind: 'resource'; readonly raw: string }
 
 export type ReferenceSettings =

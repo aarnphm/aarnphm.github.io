@@ -151,6 +151,7 @@ export function createReferenceCatalog(inputs: readonly ReferenceCatalogInput[])
         ...(input.baseViews
           ? { baseViews: Object.freeze(input.baseViews.map(view => Object.freeze({ ...view }))) }
           : {}),
+        ...(input.latent ? { latent: true } : {}),
       }),
     )
   }
@@ -220,6 +221,10 @@ export function createReferenceCatalog(inputs: readonly ReferenceCatalogInput[])
     lookupKeys.add(`route:${fold(sought)}`)
     const routed = result(routes.get(fold(sought)) ?? [])
     if (routed) return routed
+    // a folder's name names its index note (`[[embeddings]]` is embeddings/index.md)
+    lookupKeys.add(`route:${fold(sought)}/index`)
+    const folder = result(routes.get(`${fold(sought)}/index`) ?? [])
+    if (folder) return folder
     if (!explicit) {
       lookupKeys.add(`name:${fold(sought)}`)
       const candidates = names.get(fold(sought)) ?? []
