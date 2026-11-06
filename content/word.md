@@ -380,3 +380,12 @@ title: lists
 - spent
 - knackered
 - languid
+- Wanderlust
+- Fernweh
+- Geborgenheit
+- Kopfkino
+- Fingerspitzengefühl
+- Sehnsucht
+- Augenblick
+- Sitzfleisch
+- Feierabend
