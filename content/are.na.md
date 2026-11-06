@@ -5396,6 +5396,102 @@ title: are.na
 
 ## places
 
+- https://early-june.fr/ -- Early June
+  - [meta]:
+    - date: 11/06/2026
+    - tags: [restaurant, bar]
+    - coord: [48.8729647, 2.3632777]
+    - address: 19 Rue Jean Poulmarch, 75010 Paris, France
+    - later: true
+    - source: https://www.instagram.com/reel/DfSpXP4Rk9g/
+- http://www.4850.nl/ -- 4850
+  - [meta]:
+    - date: 11/06/2026
+    - tags: [coffee shop, bar]
+    - coord: [52.35779369999999, 4.913378]
+    - address: Camperstraat 48-50, Amsterdam, Netherlands
+    - later: true
+    - source: https://www.instagram.com/p/DfVI-FdEVbz/
+- https://www.antiekcentrumamsterdam.nl/ -- Antiekcentrum Amsterdam
+  - [meta]:
+    - date: 11/06/2026
+    - tags: [market, shop]
+    - coord: [52.36880739999999, 4.8788256]
+    - address: Elandsgracht 109, 1016 TT Amsterdam, Netherlands
+    - later: true
+    - source: https://www.instagram.com/p/DfVI-FdEVbz/
+- https://restobarmassalia.nl/ -- Restobar Massalia
+  - [meta]:
+    - date: 11/06/2026
+    - tags: [restaurant, bar]
+    - coord: [52.3571928, 4.9184186]
+    - address: Beukenplein 21, Amsterdam, Netherlands
+    - later: true
+    - source: https://www.instagram.com/p/DfVI-FdEVbz/
+- https://www.noordermarkt-amsterdam.nl/ -- Noordermarkt
+  - [meta]:
+    - date: 11/06/2026
+    - tags: [market]
+    - coord: [52.3795998, 4.886963199999999]
+    - address: Noordermarkt, Amsterdam, Netherlands
+    - later: true
+    - source: https://www.instagram.com/p/DfVI-FdEVbz/
+- https://www.bunbun.amsterdam/ -- BunBun
+  - [meta]:
+    - date: 11/06/2026
+    - tags: [bakery]
+    - coord: [52.3788371, 4.886504]
+    - address: Prinsengracht 16, 1015 DV Amsterdam, Netherlands
+    - later: true
+    - source: https://www.instagram.com/p/DfVI-FdEVbz/
+- https://www.rijksmuseum.nl/en -- Rijksmuseum
+  - [meta]:
+    - date: 11/06/2026
+    - tags: [museum]
+    - coord: [52.3599976, 4.8852188]
+    - address: Museumstraat 1, 1071 XX Amsterdam, Netherlands
+    - later: true
+    - source: https://www.instagram.com/p/DfVI-FdEVbz/
+- https://papeneiland.nl/ -- Café 't Papeneiland
+  - [meta]:
+    - date: 11/06/2026
+    - tags: [bar]
+    - coord: [52.3804627, 4.887970399999999]
+    - address: Prinsengracht 2, 1015 DV Amsterdam, Netherlands
+    - later: true
+    - source: https://www.instagram.com/p/DfVI-FdEVbz/
+- https://www.pathe.nl/nl/bioscopen/koninklijk-theater-tuschinski -- Pathé Tuschinski
+  - [meta]:
+    - date: 11/06/2026
+    - tags: [theatre, architecture]
+    - coord: [52.3665424, 4.894633799999999]
+    - address: Reguliersbreestraat 26-34, 1017 CN Amsterdam, Netherlands
+    - later: true
+    - source: https://www.instagram.com/p/DfVI-FdEVbz/
+- https://www.nwediep.nl/ -- Distilleerderij 't Nieuwe Diep
+  - [meta]:
+    - date: 11/06/2026
+    - tags: [bar]
+    - coord: [52.3620528, 4.9501333]
+    - address: Flevopark 13, Amsterdam, Netherlands
+    - later: true
+    - source: https://www.instagram.com/p/DfVI-FdEVbz/
+- https://www.vangoghmuseum.nl/en -- Van Gogh Museum
+  - [meta]:
+    - date: 11/06/2026
+    - tags: [museum]
+    - coord: [52.3580757, 4.8812053]
+    - address: Museumplein 6, 1071 DJ Amsterdam, Netherlands
+    - later: true
+    - source: https://www.instagram.com/p/DfVI-FdEVbz/
+- https://sluyswacht.nl/ -- Café de Sluyswacht
+  - [meta]:
+    - date: 11/06/2026
+    - tags: [bar]
+    - coord: [52.3698667, 4.9017167]
+    - address: Jodenbreestraat 1, 1011 NG Amsterdam, Netherlands
+    - later: true
+    - source: https://www.instagram.com/p/DfVI-FdEVbz/
 - https://www.25king.ca/the-history -- Commerce Court North Banking Hall
   - [meta]:
     - date: 11/05/2026
@@ -7980,6 +8076,26 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://rentherapy.substack.com/p/your-partner-isnt-the-enemy-unpacking -- Your Partner Isn't the Enemy: Unpacking Relationship Rage
+  - [meta]:
+    - date: 11/06/2026
+    - tags: [relationships, anger]
+    - later: true
+- https://rentherapy.substack.com/p/15-ways-to-build-an-emotionally-mature -- 15 Ways to Build an Emotionally Mature Relationship
+  - [meta]:
+    - date: 11/06/2026
+    - tags: [relationships, emotional-maturity]
+    - later: true
+- https://rentherapy.substack.com/p/how-do-i-know-whether-im-loving-openly -- How do I know whether I’m loving openly, or carrying the relationship?
+  - [meta]:
+    - date: 11/06/2026
+    - tags: [relationships, reciprocity]
+    - later: true
+- https://rentherapy.substack.com/p/i-know-i-deserve-more-why-is-this -- I Know I Deserve More. Why Is This Still So Hard? (Relationship Conflict)
+  - [meta]:
+    - date: 11/06/2026
+    - tags: [relationships, communication]
+    - later: true
 - https://wethedeepfeelers.substack.com/p/i-smoke-a-cigarette-after-i-meditate -- i smoke a cigarette after i meditate
   - [meta]:
     - date: 11/05/2026
