@@ -73,6 +73,62 @@ function hint(rel: string, href: string, as?: string): void {
   document.head.append(link)
 }
 
+function mountEmbed(figure: HTMLElement): void {
+  void loadEmbed()
+    .then(runtime => {
+      if (figure.isConnected) runtime.mountLatentEmbed(figure)
+    })
+    .catch(error => console.warn('[latent] embed runtime', error))
+}
+
+const embedOf = (target: EventTarget | null): HTMLElement | null => {
+  const figure =
+    target instanceof Element
+      ? target.closest<HTMLElement>('figure.latent-embed[data-latent-coords]')
+      : null
+  return figure && figure.dataset.latentReady === undefined && !figure.closest('.popover')
+    ? figure
+    : null
+}
+
+// Intent is delegated from the document, once: a figure the page adds after `nav` (the stream's
+// feed appends entries as it scrolls) mounts the same way as one the page shipped with.
+let dwellOn: HTMLElement | null = null
+let dwell = 0
+document.addEventListener(
+  'pointerover',
+  event => {
+    const figure = embedOf(event.target)
+    if (!figure || figure === dwellOn) return
+    window.clearTimeout(dwell)
+    dwellOn = figure
+    dwell = window.setTimeout(() => {
+      dwellOn = null
+      mountEmbed(figure)
+    }, 120)
+  },
+  { passive: true },
+)
+document.addEventListener(
+  'pointerout',
+  event => {
+    if (!dwellOn || dwellOn.contains(event.relatedTarget as Node | null)) return
+    window.clearTimeout(dwell)
+    dwellOn = null
+  },
+  { passive: true },
+)
+for (const type of ['focusin', 'touchstart'] as const)
+  document.addEventListener(
+    type,
+    event => {
+      const figure = embedOf(event.target)
+      if (figure) mountEmbed(figure)
+    },
+    { passive: true },
+  )
+
+// tier 1 for the figures a page ships with: preload the runtime and the coordinates when idle
 document.addEventListener('nav', () => {
   const figures = [
     ...document.querySelectorAll<HTMLElement>('figure.latent-embed[data-latent-coords]'),
@@ -99,26 +155,5 @@ document.addEventListener('nav', () => {
     { rootMargin: '600px 0px' },
   )
   signal.addEventListener('abort', () => near.disconnect(), { once: true })
-  for (const figure of figures) {
-    near.observe(figure)
-    let dwell = 0
-    const mount = () => {
-      window.clearTimeout(dwell)
-      void loadEmbed()
-        .then(runtime => {
-          if (figure.isConnected && !signal.aborted) runtime.mountLatentEmbed(figure)
-        })
-        .catch(error => console.warn('[latent] embed runtime', error))
-    }
-    figure.addEventListener(
-      'pointerenter',
-      () => {
-        dwell = window.setTimeout(mount, 120)
-      },
-      { signal },
-    )
-    figure.addEventListener('pointerleave', () => window.clearTimeout(dwell), { signal })
-    figure.addEventListener('focusin', mount, { signal })
-    figure.addEventListener('touchstart', mount, { signal, passive: true })
-  }
+  for (const figure of figures) near.observe(figure)
 })
