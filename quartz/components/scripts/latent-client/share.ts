@@ -1,4 +1,5 @@
 import type { Runtime } from './runtime'
+import { latentEmbedSnippet } from '../../../util/latent/embed/fragment'
 import { readSharedView, sharedViewUrl, type SharedView } from '../../../util/latent/share'
 import { Toast } from '../toast'
 import { openBench } from './bench'
@@ -43,7 +44,7 @@ export async function bindShare(rt: Runtime): Promise<boolean> {
   button.type = 'button'
   button.className = 'lat-share'
   button.setAttribute('aria-label', 'copy a link to this view')
-  button.title = 'copy the focus, steering, features and 3-d view'
+  button.title = 'copy the focus, steering, features and 3-d view (shift: as a note embed)'
   // the code blocks' copy/check pair from the page sprite (svg/sprite-tail.ts)
   const NS = 'http://www.w3.org/2000/svg'
   for (const [name, symbol] of [
@@ -91,14 +92,23 @@ export async function bindShare(rt: Runtime): Promise<boolean> {
   )
   button.addEventListener(
     'click',
-    async () => {
-      const url = sharedViewUrl(window.location.href, snapshot(rt))
-      if (!readSharedView(new URL(url).hash)) {
+    async (event: MouseEvent) => {
+      const view = snapshot(rt)
+      const url = sharedViewUrl(window.location.href, view)
+      const hash = new URL(url).hash
+      if (!readSharedView(hash)) {
         notice('this view is too large to share')
         return
       }
+      // shift: the `![[embeddings#focus=N#view=…]]` that quotes this view in a note
+      const slug = decodeURIComponent(window.location.pathname)
+        .replace(/^\/+|\/+$/g, '')
+        .replace(/\/index$/, '')
+      const text = event.shiftKey
+        ? latentEmbedSnippet(slug || 'embeddings', view, hash.slice(6))
+        : url
       try {
-        await navigator.clipboard.writeText(url)
+        await navigator.clipboard.writeText(text)
         if (rt.signal.aborted) return
         // the copy glyph turns into a check for two seconds, as on code blocks
         window.clearTimeout(copied)
@@ -106,7 +116,7 @@ export async function bindShare(rt: Runtime): Promise<boolean> {
         copied = window.setTimeout(() => button.classList.remove('check'), 2000)
       } catch {
         if (rt.signal.aborted) return
-        input.value = url
+        input.value = text
         dialog.showModal()
         input.focus()
         input.select()

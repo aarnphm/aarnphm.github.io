@@ -7,6 +7,7 @@ import { annotateChunk } from './features-reasoning'
 import { applySteer } from './features-steering'
 import { type FeatureState, type FeatureDict } from './features-types'
 import { type Runtime, metaOf } from './runtime'
+import { filterMask, renderLinks } from './search'
 
 const states = new WeakMap<Runtime, FeatureState>()
 
@@ -74,41 +75,68 @@ async function pinFeature(
         }
   }
   const label = withCluster ? `# ${featureName(row)} + cluster` : `feature · ${featureName(row)}`
-  await pinLinks(rt, label, rows)
+  await st.pin(label, rows)
 }
 
 // ---- wiring --------------------------------------------------------------------------------
 
+/**
+ * A latent embed's features column (latent-embed.client.ts): its own panel and results band,
+ * seeded from the view the build rendered, so mounting fetches nothing until the reader steers.
+ */
+export interface EmbedFeatures {
+  panel: HTMLElement
+  pin: FeatureState['pin']
+  unpin(): void
+  seed: SharedFeatures | null
+  /** the rows the build listed for the view, so "reasoning" explains them */
+  pinned: number[] | null
+  /** caches shared by every embed of one sidecar on the page */
+  dicts: FeatureState['dicts']
+  channels: FeatureState['channels']
+}
+
 /** Hydrate the features tab when the sidecar carries dictionaries; a no-op otherwise. */
-export function bindFeatures(rt: Runtime): void {
-  const panel = rt.probe.querySelector<HTMLElement>('.lat-panel[data-panel="features"]')
+export function bindFeatures(rt: Runtime, embed?: EmbedFeatures): FeatureState | null {
+  const panel =
+    embed?.panel ?? rt.probe.querySelector<HTMLElement>('.lat-panel[data-panel="features"]')
   const names = (rt.root.dataset.latentFeatures ?? '').split(',').filter(Boolean)
-  if (!panel || names.length === 0) return
+  if (!panel || names.length === 0) return null
+  const seed = embed?.seed
   const st: FeatureState = {
     refresh: () => {
       void renderPanel(rt, st)
     },
-    pin: (label, rows) => pinLinks(rt, label, rows),
+    pin: embed?.pin ?? ((label, rows) => pinLinks(rt, label, rows)),
+    unpin:
+      embed?.unpin ??
+      (() => {
+        rt.query = null
+        delete rt.links.dataset.query
+        void renderLinks(rt, rt.focus)
+      }),
+    mask: () => filterMask(rt),
     names,
-    dicts: new Map(),
+    dicts: embed?.dicts ?? new Map(),
     tags: null,
-    selected: null,
+    selected: seed?.selected ? { ...seed.selected } : null,
     query: null,
     needle: '',
-    steer: new Map(),
+    steer: new Map((seed?.steer ?? []).map(([key, w]) => [key, termOf(key, w)])),
     steerSeq: 0,
     tables: null,
     tablesNow: null,
     words: null,
-    channels: new Set(),
-    explain: true,
+    channels: embed?.channels ?? new Set(),
+    explain: seed?.explain ?? true,
     whyReady: false,
     renderSeq: 0,
     whyCache: new Map(),
     whyKey: '',
-    pinned: null,
+    pinned: embed?.pinned ?? null,
     dragFrame: null,
     panel,
+    ...(embed ? { embed: true } : {}),
   }
   states.set(rt, st)
   const open = () => !panel.hidden
@@ -316,6 +344,7 @@ export function bindFeatures(rt: Runtime): void {
     },
     { signal: rt.signal },
   )
+  return st
 }
 
 /** The owning controller exposes values, keeping worker channels and caches private. */

@@ -135,6 +135,7 @@ export function hoverBench(rt: Runtime, px: number, py: number): void {
 }
 
 function hoverName(rt: Runtime, bench: Bench, i: number): string {
+  if (bench.embed) return bench.embed.name(i)
   if (bench.level === 'feats') return atlasName(rt, bench, i)
   const doc = bench.level === 'docs' ? rt.docs[i] : docOfRow(rt, i)
   const name = `${doc.s} · ${titleText(doc.t)}`
@@ -195,7 +196,13 @@ export function drawBench(rt: Runtime): void {
     drawBenchAxes(ctx, bench, w, h, colours[3], style)
     const shown = (i: number) => !((bench.hidden >> bench.kinds![i]) & 1)
     const feats = bench.level === 'feats'
-    const mark = feats ? atlasPoint(bench) : bench.level === 'docs' ? rt.open : rt.focus
+    const mark = bench.embed
+      ? bench.embed.mark
+      : feats
+        ? atlasPoint(bench)
+        : bench.level === 'docs'
+          ? rt.open
+          : rt.focus
     const selected = mark >= 0 && mark < n ? mark : -1
     drawBenchPoints(ctx, bench, at, shown, colours)
     // edges are drawn for two points only (bench-links.ts): the marked one once a point has
@@ -204,14 +211,19 @@ export function drawBench(rt: Runtime): void {
     const edgeColours = { ink, near: colours[3] }
     const hovered = bench.hover >= 0 && bench.hover < n ? bench.hover : -1
     // a feature's edges are its own table (near, parent, finer), drawn without a fetch
-    if (feats) {
+    if (bench.embed) {
+      // an embed carries its marked feature's edges; points have no adjacency loaded
+      if (bench.embed.edges)
+        drawFixedEdges(ctx, at, shown, selected, bench.embed.edges, edgeColours)
+    } else if (feats) {
       if (selected !== hovered) drawAtlasEdges(ctx, bench, at, shown, selected, edgeColours)
       drawAtlasEdges(ctx, bench, at, shown, hovered, edgeColours)
     } else if (bench.picked && selected !== hovered)
       drawBenchLinks(ctx, rt, bench, at, shown, selected, edgeColours, redraw)
-    const counts = feats
-      ? null
-      : drawBenchLinks(ctx, rt, bench, at, shown, hovered, edgeColours, redraw, true)
+    const counts =
+      feats || bench.embed
+        ? null
+        : drawBenchLinks(ctx, rt, bench, at, shown, hovered, edgeColours, redraw, true)
     if (counts && hovered >= 0) {
       const parts = [
         counts.near === null ? null : `${counts.near} near`,
@@ -240,6 +252,8 @@ export function drawBench(rt: Runtime): void {
       ctx.arc(at.xs[bench.hover], at.ys[bench.hover], 5, 0, Math.PI * 2)
       ctx.stroke()
     }
+    // an embed names its axes on the status line under the canvas, as its poster did
+    if (bench.embed) return
     // the three axis names on one line along the floor, in the page's mono face (the canvas
     // inherits it from latent.scss), on a paper halo so the point cloud does not run through
     // the glyphs. The variance is in the table above, so only the names
@@ -279,6 +293,36 @@ export function drawBench(rt: Runtime): void {
       x += ctx.measureText(text).width + gap
     }
   })
+}
+
+/** A feature's edges as the figure names them (near grey, parent solid, children dashed). */
+function drawFixedEdges(
+  ctx: CanvasRenderingContext2D,
+  at: Screen,
+  shown: (i: number) => boolean,
+  point: number,
+  edges: NonNullable<NonNullable<Bench['embed']>['edges']>,
+  colours: { ink: string; near: string },
+): void {
+  if (point < 0 || !shown(point)) return
+  const n = at.xs.length
+  const stroke = (targets: number[], colour: string, width: number, dash: number[]) => {
+    const path = new Path2D()
+    for (const b of targets) {
+      if (b < 0 || b >= n || !shown(b)) continue
+      path.moveTo(at.xs[point], at.ys[point])
+      path.lineTo(at.xs[b], at.ys[b])
+    }
+    ctx.strokeStyle = colour
+    ctx.lineWidth = width
+    ctx.setLineDash(dash)
+    ctx.globalAlpha = 0.85
+    ctx.stroke(path)
+  }
+  stroke(edges.near, colours.near, 0.75, [])
+  stroke([edges.parent], colours.ink, 1, [])
+  stroke(edges.children, colours.ink, 1, [3, 2])
+  ctx.setLineDash([])
 }
 
 /** "pc1 · 6.2 %" → "pc1"; the variance share is shown on the axis cards under the canvas. */
