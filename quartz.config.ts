@@ -197,6 +197,7 @@ const config: QuartzConfig = {
             { name: 'base-bookcase', entry: 'components/scripts/base-bookcase.inline.ts' },
             { name: 'pele', entry: 'components/scripts/pele.client.ts' },
             { name: 'latent', entry: 'components/scripts/latent.client.ts' },
+            { name: 'latent-embed', entry: 'components/scripts/latent-embed.client.ts' },
             { name: 'latent.worker', entry: 'workers/latent.worker.ts' },
           ],
         }),

@@ -1,3 +1,4 @@
+import type { Root } from 'hast'
 import { readFile } from 'node:fs/promises'
 import { Node } from 'unist'
 import { defaultContentPageLayout, sharedPageComponents } from '../../../quartz.layout'
@@ -11,10 +12,11 @@ import {
   CuriusFriends,
   CuriusNavigation,
 } from '../../components/renderPage'
+import { prepareLatentEmbeds } from '../../components/renderPage/transclude-latent'
 import { QuartzComponentProps } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
-import { BuildCtx, contentDataFor } from '../../util/ctx'
+import { BuildCtx, contentDataFor, renderDataFor } from '../../util/ctx'
 import { escapeHTML } from '../../util/escape'
 import { FilePath, FullSlug, joinSegments, pathToRoot } from '../../util/path'
 import { logBuildSpan, PerfTimer } from '../../util/perf'
@@ -63,6 +65,9 @@ async function processContent(
   }
 
   const perf = new PerfTimer()
+  // latent embeds need async work (vectors, the panel builders) before the synchronous render
+  const bySlug = renderDataFor(ctx, allFiles).bySlug
+  await prepareLatentEmbeds(ctx, tree as Root, slug => bySlug.get(slug), slug)
   const content = renderPage(ctx, slug, componentData, opts, externalResources, false)
   logBuildSpan(ctx.argv, 'contentPage:render', slug, perf.elapsedMs())
   return write({ ctx, content, slug, ext: '.html' })

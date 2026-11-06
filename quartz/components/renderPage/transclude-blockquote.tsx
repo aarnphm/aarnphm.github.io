@@ -9,6 +9,7 @@ import { referenceSourcePath } from '../../util/references/context'
 import { hasHastClass, readTranscludeTarget } from '../../util/transclude-props'
 import { buildBaseEmbedNodes, type BaseRenderedView, type BaseRenderResult } from './base-embeds'
 import { transcludeCurius } from './transclude-curius'
+import { transcludeLatent } from './transclude-latent'
 import { transcludeNoteStack, transcludePageStatus } from './transclude-note-stack'
 import { occurrenceContent } from './transclude-occurrence'
 import {
@@ -72,6 +73,8 @@ export function transcludeBlockquote(scope: TranscludeScope, node: Element): voi
     node.properties['data-transclude-status'] = status
     return
   }
+  // a view of a `layout: latent` page: the prepared figure replaces the blockquote
+  if (transcludeLatent(scope, node, page, transclude)) return
 
   const calendarView =
     page.frontmatter?.layout === 'triathlon' ? calendarEmbedView(fragments) : undefined

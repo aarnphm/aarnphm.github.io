@@ -11,6 +11,7 @@ import { sharedPageComponents, defaultContentPageLayout } from '../../../quartz.
 import HeaderConstructor from '../../components/Header'
 import StreamPageComponent from '../../components/pages/StreamPage'
 import { pageResources, renderPage, renderPageWithMetadata } from '../../components/renderPage'
+import { prepareLatentEmbedsFor } from '../../components/renderPage/transclude-latent'
 import { renderProtectedEntryBody } from '../../components/stream/Entry'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
@@ -170,6 +171,13 @@ async function* processStreamIndex(
     ext: '.xml',
     content: generateStreamAtomFeed(ctx, fileData),
   })
+  // latent embeds in entries need async work before the synchronous renders below
+  await prepareLatentEmbedsFor(
+    ctx,
+    allFiles,
+    (fileData.streamData?.entries ?? []).flatMap(entry => entry.content),
+    'stream',
+  )
 
   const filteredHeader = sharedPageComponents.header.filter(component => {
     const name = component.displayName || component.name || ''
