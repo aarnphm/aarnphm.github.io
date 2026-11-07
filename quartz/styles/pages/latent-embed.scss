@@ -308,6 +308,31 @@
     }
   }
 
+  // the "in" row: chips start right after the label, not at the ledger's label column, and each
+  // is as wide as the column to the label's right at most, its text from the left
+  .lat-embed-box .lat-embed-features.lat-features .lat-feat-card > .lat-feat-path {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: baseline;
+    justify-items: start;
+    gap: 0.3rem 0.4rem;
+    padding-left: 0;
+
+    > * {
+      grid-column: 2;
+      max-width: 100%;
+      margin: 0;
+      text-align: left;
+    }
+
+    > span:first-child {
+      grid-column: 1;
+      grid-row: 1;
+      width: auto;
+      margin: 0;
+    }
+  }
+
   &[data-panes='features'] .lat-embed-features.lat-features {
     height: auto;
     max-height: var(--emb-h);
