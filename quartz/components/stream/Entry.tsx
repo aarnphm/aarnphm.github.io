@@ -238,20 +238,6 @@ export const renderStreamEntry = (
             ))}
           </div>
         )}
-        {graphIds.length > 0 && (
-          <div class="stream-entry-graphs" role="group" aria-label="graphs">
-            {graphIds.map(id => (
-              <a
-                key={id}
-                class="stream-entry-graph"
-                href={streamGraphHref(id, entry.id)}
-                data-no-popover
-              >
-                {id}
-              </a>
-            ))}
-          </div>
-        )}
         {socials && Object.keys(socials).length > 0 && (
           <div class="stream-entry-socials">
             {Object.entries(socials).map(([name, link]) => {
@@ -273,13 +259,31 @@ export const renderStreamEntry = (
             })}
           </div>
         )}
-        {!protectedEntry && !privateEntry && (
-          <div class="stream-entry-share" role="group" aria-label="partager cette entrée">
-            <PressKitButtons
-              citation={false}
-              entryId={entry.id}
-              entryUrl={buildStreamEntryPathFromIso(resolvedIsoDate, entry.id) ?? undefined}
-            />
+        {(graphIds.length > 0 || (!protectedEntry && !privateEntry)) && (
+          <div class="stream-entry-actions">
+            {graphIds.length > 0 && (
+              <div class="stream-entry-graphs" role="group" aria-label="graphs">
+                {graphIds.map(id => (
+                  <a
+                    key={id}
+                    class="stream-entry-graph"
+                    href={streamGraphHref(id, entry.id)}
+                    data-no-popover
+                  >
+                    {id}
+                  </a>
+                ))}
+              </div>
+            )}
+            {!protectedEntry && !privateEntry && (
+              <div class="stream-entry-share" role="group" aria-label="partager cette entrée">
+                <PressKitButtons
+                  citation={false}
+                  entryId={entry.id}
+                  entryUrl={buildStreamEntryPathFromIso(resolvedIsoDate, entry.id) ?? undefined}
+                />
+              </div>
+            )}
           </div>
         )}
         {entry.importance !== undefined && (
