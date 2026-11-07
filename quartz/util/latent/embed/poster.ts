@@ -109,7 +109,10 @@ class Bands {
   }
 }
 
-const inBox = (x: number, y: number) => x > -8 && y > -8 && x < POSTER + 8 && y < POSTER + 8
+// the bench is wider than tall on a desktop, and `meet` shows the viewBox's sides past the
+// square: keep what a box up to 3:1 shows (the svg clips the rest, as the canvas does)
+const inBox = (x: number, y: number) =>
+  x > -POSTER - 8 && y > -POSTER * 0.5 - 8 && x < POSTER * 2 + 8 && y < POSTER * 1.5 + 8
 
 export function benchPoster(input: PosterInput): Element {
   const { level, kinds, hidden } = input
@@ -252,8 +255,9 @@ export function benchPoster(input: PosterInput): Element {
   if (mark >= 0 && mark < n && !((hidden >> kinds[mark]) & 1)) {
     const edges = input.edges
     if (level === 'feats' && edges) {
+      // an edge runs to its feature wherever it lies; the svg clips it at the bench's edge
       const line = (b: number) =>
-        b >= 0 && b < n && shown(b)
+        b >= 0 && b < n && !((hidden >> kinds[b]) & 1)
           ? `M${round(at.xs[mark])} ${round(at.ys[mark])}L${round(at.xs[b])} ${round(at.ys[b])}`
           : ''
       const near = edges.near.map(line).join('')

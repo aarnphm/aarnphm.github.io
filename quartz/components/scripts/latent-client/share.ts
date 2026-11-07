@@ -43,8 +43,8 @@ export async function bindShare(rt: Runtime): Promise<boolean> {
   const button = document.createElement('button')
   button.type = 'button'
   button.className = 'lat-share'
-  button.setAttribute('aria-label', 'copy a link to this view')
-  button.title = 'copy the focus, steering, features and 3-d view (shift: as a note embed)'
+  button.title = 'copy this view as a wikilink (shift-click to copy the URL)'
+  button.setAttribute('aria-label', button.title)
   // the code blocks' copy/check pair from the page sprite (svg/sprite-tail.ts)
   const NS = 'http://www.w3.org/2000/svg'
   for (const [name, symbol] of [
@@ -100,13 +100,12 @@ export async function bindShare(rt: Runtime): Promise<boolean> {
         notice('this view is too large to share')
         return
       }
-      // shift: the `![[embeddings#focus=N#view=…]]` that quotes this view in a note
       const slug = decodeURIComponent(window.location.pathname)
         .replace(/^\/+|\/+$/g, '')
         .replace(/\/index$/, '')
       const text = event.shiftKey
-        ? latentEmbedSnippet(slug || 'embeddings', view, hash.slice(6))
-        : url
+        ? url
+        : latentEmbedSnippet(slug || 'embeddings', view, hash.slice(6))
       try {
         await navigator.clipboard.writeText(text)
         if (rt.signal.aborted) return

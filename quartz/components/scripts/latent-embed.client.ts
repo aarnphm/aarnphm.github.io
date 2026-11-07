@@ -251,8 +251,10 @@ export function mountLatentEmbed(figure: HTMLElement): void {
           yaw: saved.yaw,
           pitch: saved.pitch,
           zoom: saved.zoom,
-          panX: saved.panX * w,
-          panY: saved.panY * h,
+          // pan is a fraction of the shorter side: the explorer's bench is square, and the
+          // build's poster (a square viewBox under `meet`) maps it the same way
+          panX: saved.panX * Math.min(w, h),
+          panY: saved.panY * Math.min(w, h),
         }
       : {}
   let dirty = false
@@ -579,8 +581,8 @@ export function mountLatentEmbed(figure: HTMLElement): void {
               yaw: b.yaw,
               pitch: b.pitch,
               zoom: b.zoom,
-              panX: b.panX / Math.max(1, b.w),
-              panY: b.panY / Math.max(1, b.h),
+              panX: b.panX / Math.max(1, Math.min(b.w, b.h)),
+              panY: b.panY / Math.max(1, Math.min(b.w, b.h)),
             }
           : view.bench,
     }

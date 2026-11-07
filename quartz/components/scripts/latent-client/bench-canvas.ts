@@ -20,8 +20,18 @@ export function fitBenchCanvas(rt: Runtime, canvas: HTMLCanvasElement): void {
       ph = devH
     }
     // Preserve the shared camera offset when controls or the viewport resize the canvas.
-    if (bench.w > 0) bench.panX *= cssW / bench.w
-    if (bench.h > 0) bench.panY *= cssH / bench.h
+    if (bench.embed) {
+      // an embed's pan follows the shorter side, as its poster's does
+      const was = Math.min(bench.w, bench.h)
+      if (was > 0) {
+        const k = Math.min(cssW, cssH) / was
+        bench.panX *= k
+        bench.panY *= k
+      }
+    } else {
+      if (bench.w > 0) bench.panX *= cssW / bench.w
+      if (bench.h > 0) bench.panY *= cssH / bench.h
+    }
     bench.w = cssW
     bench.h = cssH
     bench.dpr = pw / cssW
