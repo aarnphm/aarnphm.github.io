@@ -8,7 +8,7 @@ coordinates:
 date: '2025-11-22'
 description: pan-asian small plates over japanese charcoal, fusion of filipino, malaysian, and japanese
 id: Lake Inez
-modified: '2026-11-01'
+modified: '2026-11-08'
 rating: 4
 source: 'https://www.instagram.com/p/DfDUc1yoNEc/'
 tags:
@@ -18,3 +18,7 @@ type:
   - restaurant
 url: https://maps.app.goo.gl/71RKELpW6MiP6bq27
 ---
+
+Photo from [Dine in Toronto’s post](https://www.instagram.com/p/DfP2kJvAOFM/), slide 7.
+
+![[thoughts/images/DFkyjH77MrT7PnUH12PjlBZP4Fi6OVmZdTlczFNliCM.jpg|Lake Inez food, wine, and entrance collage]]
