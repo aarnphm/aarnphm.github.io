@@ -385,25 +385,30 @@ $selection-highlight: rgba(255, 220, 100, 0.5);
 }
 
 .comment-bubble {
-  --expand-animation-time: 0.15s;
+  --expand-animation-time: 220ms;
   --bubble-collapsed-size: 32px;
+  --bubble-open-width: min(320px, calc(100vw - var(--space-6)));
+  --bubble-z-delay: var(--expand-animation-time);
   position: absolute;
   z-index: 901;
   display: flex;
   flex-direction: column;
-  min-width: var(--bubble-collapsed-size);
-  max-width: var(--bubble-collapsed-size);
-  min-height: var(--bubble-collapsed-size);
-  max-height: var(--bubble-collapsed-size);
+  width: var(--bubble-collapsed-size);
+  height: var(--bubble-collapsed-size);
   padding: 3px;
   overflow: hidden;
   cursor: pointer;
-  transform-origin: bottom left;
+  // -100% resolves against the live height every frame, so the bottom edge stays on the
+  // collapsed square while the card grows up. It is never transitioned itself: interpolating it
+  // against a growing height swung the card down past the square and back up.
+  transform: translateY(calc(-100% + var(--bubble-collapsed-size)));
+  // One curve for every property, and z-index drops only once the collapse ends, so a closing
+  // card never slides under a neighbour mid-flight.
   transition:
-    max-width 220ms $panel-ease,
-    max-height 220ms $panel-ease,
-    padding 150ms ease,
-    transform 220ms $panel-ease;
+    width var(--expand-animation-time) $panel-ease,
+    height var(--expand-animation-time) $panel-ease,
+    padding var(--expand-animation-time) $panel-ease,
+    z-index 0s linear var(--bubble-z-delay);
 
   &.comment-bubble-unread {
     border-color: var(--darkgray);
@@ -411,6 +416,7 @@ $selection-highlight: rgba(255, 220, 100, 0.5);
   }
 
   .reply-item {
+    flex: none;
     column-gap: var(--space-2);
   }
 
@@ -434,24 +440,29 @@ $selection-highlight: rgba(255, 220, 100, 0.5);
   }
 
   @media (hover: hover) and (pointer: fine) {
+    // The preview is laid out at its open width all the time and the box only clips it, so the
+    // text never rewraps mid-expand and the open height (measured on enter) is exact.
+    .reply-item {
+      width: calc(var(--bubble-open-width) - 2 * var(--space-3) - 2px);
+    }
+
+    .reply-body {
+      display: block;
+    }
+
+    .reply-text {
+      display: -webkit-box;
+      overflow: hidden;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+    }
+
     &:hover:not(.modal-active) {
+      --bubble-z-delay: 0s;
       z-index: 902;
-      width: 320px;
-      max-width: min(320px, calc(100vw - var(--space-6)));
-      max-height: 220px;
+      width: var(--bubble-open-width);
+      height: calc(var(--bubble-content-h, 160px) + 2 * var(--space-3) + 2px);
       padding: var(--space-3);
-      transform: translateY(calc(-100% + var(--bubble-collapsed-size)));
-
-      .reply-body {
-        display: block;
-      }
-
-      .reply-text {
-        display: -webkit-box;
-        overflow: hidden;
-        -webkit-line-clamp: 4;
-        -webkit-box-orient: vertical;
-      }
     }
   }
 }
