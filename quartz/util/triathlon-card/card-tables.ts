@@ -1,5 +1,6 @@
 import type { ActivityHealth, StravaActivityDetail } from '../../plugins/stores/strava'
 import type { TriNodeFactory } from './construction-contracts'
+import { sleepProviderLabel } from '../triathlon-day-sleep'
 import { dur, formatMl } from './metric-text'
 
 export type ActivityFueling = NonNullable<StravaActivityDetail['fueling']>
@@ -20,8 +21,13 @@ export const formatFuelingSource = (fueling: ActivityFueling): string => {
 export const recoveryRows = (h: ActivityHealth): [string, string][] => {
   const rows: [string, string][] = []
   if (h.readiness != null) rows.push(['readiness', `${h.readiness}`])
-  if (h.sleepScore != null) rows.push(['sleep', `${h.sleepScore}`])
-  if (h.sleepDurationS != null) rows.push(['slept', dur(h.sleepDurationS)])
+  const source = (key: 'sleepScore' | 'sleepDurationS'): string => {
+    const provider = h.sleepSources?.[key]
+    return provider ? ` (${sleepProviderLabel(provider)})` : ''
+  }
+  if (h.sleepScore != null) rows.push(['sleep', `${h.sleepScore}${source('sleepScore')}`])
+  if (h.sleepDurationS != null)
+    rows.push(['slept', `${dur(h.sleepDurationS)}${source('sleepDurationS')}`])
   if (h.hrv != null) rows.push(['hrv', `${h.hrv} ms`])
   if (h.rhr != null) rows.push(['resting hr', `${h.rhr} bpm`])
   if (h.tempDeviationC != null)

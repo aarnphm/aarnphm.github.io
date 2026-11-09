@@ -8,12 +8,7 @@ import type {
   Vo2Method,
 } from '../plugins/stores/analytics'
 import type { GarminHealthDay } from '../plugins/stores/garmin-health'
-import type {
-  OuraDayDetail,
-  OuraSeries,
-  OuraSleepDetail,
-  OuraHealthDay,
-} from '../plugins/stores/oura'
+import type { OuraDayDetail, OuraHealthDay } from '../plugins/stores/oura'
 import type { StravaActivityDetail } from '../plugins/stores/strava'
 import { isGarminHealthDay } from './garmin-health'
 import {
@@ -22,7 +17,18 @@ import {
   type OuraRestorationBaseline,
 } from './oura-health'
 import { isSleepMetrics, resolveSleepMetrics, type SleepMetrics } from './sleep-metrics'
+import {
+  napSummaries,
+  ouraDailySleep,
+  resolveSleepSummary,
+  sleepIsValid,
+  type TriathlonDayNap,
+  type TriathlonDaySleep,
+} from './triathlon-day-sleep'
 import { isRecord } from './type-guards'
+
+export { napSummaries, sleepSummary } from './triathlon-day-sleep'
+export type { TriathlonDayNap, TriathlonDaySleep } from './triathlon-day-sleep'
 
 export interface TriathlonDayRecovery {
   status: RecoveryStatus | null
@@ -42,48 +48,11 @@ export interface TriathlonDayRecovery {
   sleepDebtS: number | null
 }
 
-export interface TriathlonDaySleep {
-  bedtimeStart: string | null
-  bedtimeEnd: string | null
-  phase5Min: string | null
-  phase30Sec?: string | null
-  movement30Sec?: string | null
-  lowBatteryAlert?: boolean
-  sleepAlgorithmVersion?: string | null
-  efficiency: number | null
-  latencyS: number | null
-  timeInBedS: number | null
-  totalSleepS: number | null
-  deepS: number | null
-  lightS: number | null
-  remS: number | null
-  awakeS: number | null
-  averageBreathsPerMinute: number | null
-  averageHeartRate: number | null
-  averageHrv: number | null
-  lowestHeartRate: number | null
-  restlessPeriods: number | null
-  hrv: OuraSeries | null
-  heartRate: OuraSeries | null
-  readinessScore: number | null
-  readinessContrib: Record<string, number | null> | null
-  sleepScore: number | null
-  sleepContrib: Record<string, number | null> | null
-}
-
 export interface TriathlonDayVo2max {
   value: number
   method: Vo2Method
   confidence: Conf
   asOfDate: string
-}
-
-export interface TriathlonDayNap extends TriathlonDaySleep {
-  id: string
-  type: 'sleep' | 'late_nap'
-  reportedDay: string | null
-  sleepScoreDelta: number | null
-  readinessScoreDelta: number | null
 }
 
 export interface TriathlonDayTraining {
@@ -172,48 +141,6 @@ const recoveryIsValid = (value: unknown): boolean =>
     nullableFiniteNumber(value.sleepTargetS) &&
     nullableFiniteNumber(value.sleepDebtS))
 
-const ouraSeriesIsValid = (value: unknown): boolean =>
-  value === null ||
-  (isRecord(value) &&
-    typeof value.startTs === 'string' &&
-    finiteNumber(value.intervalS) &&
-    value.intervalS > 0 &&
-    Array.isArray(value.items) &&
-    value.items.every(nullableFiniteNumber))
-
-const contributionIsValid = (value: unknown): boolean =>
-  value === null || (isRecord(value) && Object.values(value).every(nullableFiniteNumber))
-
-const sleepIsValid = (value: unknown): boolean =>
-  value === null ||
-  (isRecord(value) &&
-    nullableString(value.bedtimeStart) &&
-    nullableString(value.bedtimeEnd) &&
-    nullableString(value.phase5Min) &&
-    (value.phase30Sec === undefined || nullableString(value.phase30Sec)) &&
-    (value.movement30Sec === undefined || nullableString(value.movement30Sec)) &&
-    (value.lowBatteryAlert === undefined || typeof value.lowBatteryAlert === 'boolean') &&
-    (value.sleepAlgorithmVersion === undefined || nullableString(value.sleepAlgorithmVersion)) &&
-    nullableFiniteNumber(value.efficiency) &&
-    nullableFiniteNumber(value.latencyS) &&
-    nullableFiniteNumber(value.timeInBedS) &&
-    nullableFiniteNumber(value.totalSleepS) &&
-    nullableFiniteNumber(value.deepS) &&
-    nullableFiniteNumber(value.lightS) &&
-    nullableFiniteNumber(value.remS) &&
-    nullableFiniteNumber(value.awakeS) &&
-    nullableFiniteNumber(value.averageBreathsPerMinute) &&
-    nullableFiniteNumber(value.averageHeartRate) &&
-    nullableFiniteNumber(value.averageHrv) &&
-    nullableFiniteNumber(value.lowestHeartRate) &&
-    nullableFiniteNumber(value.restlessPeriods) &&
-    ouraSeriesIsValid(value.hrv) &&
-    ouraSeriesIsValid(value.heartRate) &&
-    nullableFiniteNumber(value.readinessScore) &&
-    contributionIsValid(value.readinessContrib) &&
-    nullableFiniteNumber(value.sleepScore) &&
-    contributionIsValid(value.sleepContrib))
-
 const vo2maxIsValid = (value: unknown): boolean =>
   value === null ||
   (isRecord(value) &&
@@ -277,6 +204,7 @@ export const isTriathlonDailyAnalytics = (value: unknown): value is TriathlonDai
               isRecord(nap) &&
               typeof nap.id === 'string' &&
               (nap.type === 'sleep' || nap.type === 'late_nap') &&
+              (nap.providerFeedback === undefined || nullableString(nap.providerFeedback)) &&
               nullableString(nap.reportedDay) &&
               nullableFiniteNumber(nap.sleepScoreDelta) &&
               nullableFiniteNumber(nap.readinessScoreDelta) &&
@@ -340,58 +268,6 @@ const vo2maxAt = (analytics: Analytics, date: string): TriathlonDayVo2max | null
       'prior',
   }
 }
-
-export const sleepSummary = (detail: OuraSleepDetail | undefined): TriathlonDaySleep | null =>
-  detail &&
-  Object.entries(detail).some(
-    ([key, value]) => key !== 'date' && key !== 'naps' && key !== 'health' && value != null,
-  )
-    ? {
-        bedtimeStart: detail.bedtimeStart,
-        bedtimeEnd: detail.bedtimeEnd,
-        phase5Min: detail.phase5Min,
-        phase30Sec: detail.phase30Sec,
-        movement30Sec: detail.movement30Sec,
-        lowBatteryAlert: detail.lowBatteryAlert,
-        sleepAlgorithmVersion: detail.sleepAlgorithmVersion,
-        efficiency: detail.efficiency,
-        latencyS: detail.latencyS,
-        timeInBedS: detail.timeInBedS,
-        totalSleepS: detail.totalSleepS,
-        deepS: detail.deepS,
-        lightS: detail.lightS,
-        remS: detail.remS,
-        awakeS: detail.awakeS,
-        averageBreathsPerMinute: detail.avgBreath,
-        averageHeartRate: detail.avgHr,
-        averageHrv: detail.avgHrv,
-        lowestHeartRate: detail.lowestHr,
-        restlessPeriods: detail.restlessPeriods,
-        hrv: detail.hrv,
-        heartRate: detail.hr,
-        readinessScore: detail.readinessScore,
-        readinessContrib: detail.readinessContrib,
-        sleepScore: detail.sleepScore,
-        sleepContrib: detail.sleepContrib,
-      }
-    : null
-
-export const napSummaries = (detail: OuraDayDetail | undefined): TriathlonDayNap[] | undefined =>
-  detail?.naps?.flatMap(nap => {
-    const sleep = sleepSummary(nap)
-    return sleep
-      ? [
-          {
-            ...sleep,
-            id: nap.id,
-            type: nap.type,
-            reportedDay: nap.reportedDay,
-            sleepScoreDelta: nap.sleepScoreDelta,
-            readinessScoreDelta: nap.readinessScoreDelta,
-          },
-        ]
-      : []
-  })
 
 export function buildTriathlonDailyAnalytics(
   analytics: Analytics,
@@ -486,8 +362,12 @@ export function buildTriathlonDailyAnalytics(
             sleepDebtS: recovery.sleepDebtS,
           }
         : null,
-      sleep: sleepSummary(ouraDetails[date]),
-      naps: napSummaries(ouraDetails[date]),
+      sleep: resolveSleepSummary(
+        ouraDetails[date],
+        daily?.sleepMetrics?.garmin,
+        ouraDailySleep(daily),
+      ),
+      naps: napSummaries(ouraDetails[date], daily?.sleepMetrics?.garmin),
       garminHealth: daily?.garminHealth ?? null,
       ouraHealth: ouraDetails[date]?.health ?? daily?.ouraHealth ?? null,
       restorationBaseline: ouraRestorationBaseline(date, ouraDetails),

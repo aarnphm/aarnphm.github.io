@@ -1,6 +1,7 @@
 import type { Analytics } from '../../../plugins/stores/analytics'
 import type { TriathlonContext } from '../runtime/context'
 import type { WkKind } from './panels/performance'
+import { sleepProviderLabel } from '../../../util/triathlon-day-sleep'
 import { weeklyChartIndex } from '../../../util/weekly-target-range'
 import { weeklyChartX } from '../../../util/weekly-target-range'
 import { daySleepBarIndex } from '../activity/day-sleep'
@@ -65,7 +66,9 @@ export const mountPrimaryPanel = (
       i => {
         const d = sleepView[i]
         const debt = d.sleepDebtS != null ? `${(d.sleepDebtS / 3600).toFixed(1)}h` : '—'
-        return `${d.date} · ${d.sleepS != null ? hms(d.sleepS) : '—'} · score ${d.sleepScore ?? '—'} · debt ${debt}`
+        const durationSource = d.sleepSources?.sleepDurationS
+        const scoreSource = d.sleepSources?.sleepScore
+        return `${d.date} · ${d.sleepS != null ? hms(d.sleepS) : '—'}${durationSource ? ` (${sleepProviderLabel(durationSource)})` : ''} · score ${d.sleepScore ?? '—'}${scoreSource ? ` (${sleepProviderLabel(scoreSource)})` : ''} · debt ${debt}`
       },
       indexAt,
     )

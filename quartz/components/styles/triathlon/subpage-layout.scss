@@ -185,7 +185,8 @@
   align-items: center;
   gap: 0.9rem;
   margin-block: 0;
-  padding: 1.6rem 0;
+  // The top is taller than the bottom so the subnav's shortcut chips have room above it.
+  padding: 2.6rem 0 1.6rem;
   box-sizing: border-box;
 }
 
@@ -219,7 +220,12 @@
 .tri-subnav-links {
   display: inline-flex;
   flex-wrap: wrap;
-  gap: 0.9rem;
+  // Wide enough that neighbouring chips ("g o", "g u") over short labels do not touch.
+  gap: 1.6rem;
+}
+
+.tri-subnav .tri-key {
+  bottom: calc(100% + 0.6rem);
 }
 
 @media all and (max-width: 48rem) {

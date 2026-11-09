@@ -2,8 +2,9 @@ import type { TriathlonDayAnalytics } from '../triathlon-day-analytics'
 import type { TriathlonPresentation } from '../triathlon-presentation'
 import type { TriNodeFactory } from './construction-contracts'
 import { resolveSleepMetrics, type SleepMetrics } from '../sleep-metrics'
+import { sleepProviderLabel } from '../triathlon-day-sleep'
 import { buildGarminHealth, buildGarminRecovery } from '../triathlon-garmin-health'
-import { ouraScoreStatus } from '../triathlon-health'
+import { healthScoreTable, ouraScoreStatus } from '../triathlon-health'
 import { triText } from '../triathlon-i18n'
 import { buildOuraHealth } from '../triathlon-oura-health'
 import {
@@ -19,11 +20,8 @@ import {
   dayAnalyticsTrainingMetrics,
   type DayAnalyticsMetric,
 } from './day-analytics-metrics'
-import {
-  buildSleepRespirationChart,
-  dayAnalyticsSleepSeries,
-  dayAnalyticsSleepStages,
-} from './sleep-charts'
+import { buildSleepRespirationChart, dayAnalyticsSleepSeries } from './sleep-charts'
+import { dayAnalyticsSleepStages } from './sleep-stages-chart'
 
 export const sleepSupplementMetrics = (
   presentation: TriathlonPresentation,
@@ -74,6 +72,12 @@ export const sleepSupplementMetrics = (
       ]
         .filter(value => value != null)
         .join('\n'),
+    })
+  else if (garmin?.lowestSpO2 != null)
+    metrics.push({
+      label: 'lowest Pulse Ox',
+      value: `${number(garmin.lowestSpO2)}%`,
+      detail: 'Garmin',
     })
   if (sleep.breathingDisturbanceIndex != null)
     metrics.push({
@@ -175,8 +179,54 @@ const dayAnalyticsContributionGroup = <N>(
   return group
 }
 
+const garminFactorLabels: Record<string, string> = {
+  totalDuration: 'total sleep',
+  stress: 'sleep stress',
+  awakeCount: 'awake count',
+  restlessness: 'restless moments',
+  lightPercentage: 'light sleep',
+  deepPercentage: 'deep sleep',
+  remPercentage: 'rem sleep',
+}
+
+const garminSleepFactors = <N>(f: TriNodeFactory<N>, summary: TriathlonDayAnalytics): N | null => {
+  if (
+    summary.sleep?.fieldSources?.sleepScore !== 'garmin' &&
+    summary.sleep?.nightSource !== 'garmin'
+  )
+    return null
+  const factors = summary.sleepMetrics?.garmin?.sleep?.scoreFactors
+  if (!factors) return null
+  const rows = Object.entries(factors).flatMap(([key, factor]) => {
+    if (!factor || (factor.value == null && factor.qualifier == null)) return []
+    const label = garminFactorLabels[key]
+    const qualifier = factor.qualifier?.replaceAll('_', ' ').toLowerCase()
+    const value =
+      factor.value == null
+        ? triText(f.presentation.locale, qualifier ?? '')
+        : `${dayAnalyticsNumber(f.presentation, factor.value, 1)}${key.endsWith('Percentage') ? '%' : ''}`
+    const detail =
+      factor.value != null && qualifier
+        ? `Garmin\n${triText(f.presentation.locale, qualifier)}`
+        : 'Garmin'
+    return [{ label, value, detail }]
+  })
+  if (!rows.length) return null
+  const title = 'Garmin sleep score factors'
+  const group = f.el('section', 'tri-sleep-contrib')
+  f.add(
+    group,
+    f.el('h4', 'tri-ana-block-title', triText(f.presentation.locale, title), {
+      'data-i18n': title,
+    }),
+    healthScoreTable(f, summary.date, title, rows),
+  )
+  return group
+}
+
 const buildDaySleepPeriod = <N>(f: TriNodeFactory<N>, summary: TriathlonDayAnalytics): N | null => {
   const sleep = summary.sleep
+  const garminOffset = summary.sleepMetrics?.garmin?.utcOffsetMinutes
   const metrics = dayAnalyticsSleepMetrics(f.presentation, summary)
   const metricBar = buildSleepMetricBar(
     f,
@@ -184,7 +234,10 @@ const buildDaySleepPeriod = <N>(f: TriNodeFactory<N>, summary: TriathlonDayAnaly
     summary.sleepMetrics ??
       resolveSleepMetrics(
         {
-          avgBreath: sleep?.averageBreathsPerMinute ?? null,
+          avgBreath:
+            sleep?.fieldSources?.averageBreathsPerMinute === 'garmin'
+              ? null
+              : (sleep?.averageBreathsPerMinute ?? null),
           health: summary.ouraHealth ?? undefined,
         },
         null,
@@ -220,6 +273,7 @@ const buildDaySleepPeriod = <N>(f: TriNodeFactory<N>, summary: TriathlonDayAnaly
   const scoreGroups = [
     dayAnalyticsContributionGroup(f, 'sleep score', sleep?.sleepContrib ?? null),
     dayAnalyticsContributionGroup(f, 'readiness', sleep?.readinessContrib ?? null),
+    garminSleepFactors(f, summary),
     recovery,
     training,
     ...oura,
@@ -230,14 +284,24 @@ const buildDaySleepPeriod = <N>(f: TriNodeFactory<N>, summary: TriathlonDayAnaly
     f.add(group, contributions)
   }
   if (sleep) {
-    const stages = dayAnalyticsSleepStages(f, summary.date, sleep)
-    const hrv = dayAnalyticsSleepSeries(f, summary.date, 'hrv', 'hrv', sleep.hrv)
+    const sourceLabel = (source: 'oura' | 'garmin' = 'oura'): string =>
+      source === 'garmin' && garminOffset == null ? 'Garmin (UTC)' : sleepProviderLabel(source)
+    const stages = dayAnalyticsSleepStages(f, summary.date, sleep, 'stages', garminOffset)
+    const hrv = dayAnalyticsSleepSeries(
+      f,
+      summary.date,
+      'hrv',
+      'hrv',
+      sleep.hrv,
+      sourceLabel(sleep.fieldSources?.hrv),
+    )
     const heartRate = dayAnalyticsSleepSeries(
       f,
       summary.date,
       'heart-rate',
-      'resting heart rate',
+      'heart rate',
       sleep.heartRate,
+      sourceLabel(sleep.fieldSources?.heartRate),
     )
     const movement = dayAnalyticsSleepStages(f, summary.date, sleep, 'movement')
     if (stages) f.add(group, stages)
@@ -317,12 +381,13 @@ export const buildDaySleepAnalytics = <N>(
   const naps = f.el('div', 'tri-sleep-naps')
   if (summary.naps?.length) {
     const total = summary.naps.reduce((sum, nap) => sum + (nap.totalSleepS ?? 0), 0)
+    const source = sleepProviderLabel(summary.naps[0].nightSource ?? 'oura')
     f.add(
       naps,
       f.el(
         'p',
         'tri-ana-k tri-sleep-nap-summary',
-        `${summary.naps.length} ${triText(f.presentation.locale, summary.naps.length === 1 ? 'nap' : 'naps')} · ${dayAnalyticsDuration(total)} · Oura`,
+        `${summary.naps.length} ${triText(f.presentation.locale, summary.naps.length === 1 ? 'nap' : 'naps')} · ${dayAnalyticsDuration(total)} · ${source}`,
       ),
     )
     for (const [index, nap] of summary.naps.entries()) {
@@ -354,6 +419,8 @@ export const buildDaySleepAnalytics = <N>(
           deltas.push({ label, value: `${value > 0 ? '+' : ''}${value}`, detail: 'Oura' })
       if (nap.reportedDay && nap.reportedDay !== summary.date)
         deltas.push({ label: 'score date', value: nap.reportedDay, detail: 'Oura' })
+      if (nap.providerFeedback)
+        deltas.push({ label: 'nap feedback', value: nap.providerFeedback, detail: 'Garmin' })
       if (deltas.length)
         f.add(entry, dayAnalyticsList(f, `${summary.date}-nap-${index}`, 'nap', deltas))
       if (period) f.add(entry, period)

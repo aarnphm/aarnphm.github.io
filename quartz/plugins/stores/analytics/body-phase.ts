@@ -1,6 +1,8 @@
 import type { PowerRankMass } from '../power-rank'
 import type { AnalyticsInputs } from './schema'
+import { resolveDailySleepHealth } from '../../../util/daily-sleep-health'
 import { resolveSleepMetrics } from '../../../util/sleep-metrics'
+import { napSummaries } from '../../../util/triathlon-day-sleep'
 import { AppleCache } from '../apple'
 import { round } from '../strava'
 import {
@@ -47,13 +49,16 @@ export function buildBody(scope: BodyScope): BodyPhase {
   let latestWeight: PowerRankMass | null = null
   for (const d of daily) {
     const o = ouraDays[d.date]
-    const naps = inputs.oura?.details?.[d.date]?.naps
+    const garminSleep = inputs.garmin?.sleep?.[d.date]
+    const naps = napSummaries(
+      inputs.oura?.details?.[d.date],
+      garminSleep?.date === d.date ? garminSleep : null,
+    )
     d.napDurationS = naps ? naps.reduce((sum, nap) => sum + (nap.totalSleepS ?? 0), 0) : null
     d.napCount = naps?.length ?? null
     const garminHealth = inputs.garmin?.health?.[d.date]
     d.garminHealth = garminHealth?.date === d.date ? garminHealth : null
     d.ouraHealth = inputs.oura?.details?.[d.date]?.health ?? null
-    const garminSleep = inputs.garmin?.sleep?.[d.date]
     d.sleepMetrics = resolveSleepMetrics(
       inputs.oura?.details?.[d.date],
       garminSleep?.date === d.date ? garminSleep : null,
@@ -62,11 +67,17 @@ export function buildBody(scope: BodyScope): BodyPhase {
       d.readiness = o.readiness
       d.hrv = o.hrv
       d.rhr = o.rhr
-      d.sleepScore = o.sleepScore
-      d.sleepDurationS = o.sleepDurationS
       d.tempDevC = o.tempDeviationC
       d.totalCalories = o.totalCalories
     }
+    Object.assign(
+      d,
+      resolveDailySleepHealth(d.date, o, inputs.oura?.details?.[d.date], garminSleep),
+    )
+    const napSource =
+      naps?.[0]?.nightSource ?? (naps && inputs.oura?.details?.[d.date]?.naps ? 'oura' : null)
+    if (napSource)
+      d.sleepSources = { ...d.sleepSources, napDurationS: napSource, napCount: napSource }
     const w = weightByDate.get(d.date)
     if (w != null) carriedWeight = w
     d.weightKg = carriedWeight?.kg ?? null

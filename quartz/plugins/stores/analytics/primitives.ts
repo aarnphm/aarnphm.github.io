@@ -1,3 +1,4 @@
+import type { DailySleepSources } from '../../../util/daily-sleep-health'
 import type { SleepMetrics } from '../../../util/sleep-metrics'
 import type { WeeklyTargetRange } from '../../../util/weekly-target-range'
 import type { GarminHealthDay } from '../garmin-health'
@@ -58,6 +59,7 @@ export interface DailyPoint {
   rhr: number | null
   sleepScore: number | null
   sleepDurationS: number | null
+  sleepSources?: DailySleepSources
   napDurationS?: number | null
   napCount?: number | null
   garminHealth?: GarminHealthDay | null

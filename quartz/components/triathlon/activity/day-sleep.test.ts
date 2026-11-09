@@ -3,12 +3,24 @@ import test from 'node:test'
 import { daySleepStageLabel, daySleepMovementLabel } from '../../../util/triathlon-card'
 import {
   daySleepBarIndex,
+  daySleepBandGeometry,
   daySleepReadout,
   daySleepTimeGeometry,
   daySleepUnitLabel,
   decodeDaySleepTimes,
   decodeDaySleepValues,
 } from './day-sleep'
+
+test('uses Garmin stage boundaries for hit testing, cursor position, and gap readout', () => {
+  const times = [0, 73, 113, 270, 300]
+  const geometry = daySleepBandGeometry(times, 300)
+  assert.deepEqual([0, 0.25, 0.5, 1].map(geometry.indexAt), [0, 1, 2, 3])
+  assert.equal(geometry.x(2), 191.5)
+  assert.equal(
+    daySleepReadout(0, 1, [3, null, 2, 4], 1, value => daySleepStageLabel('en', value), times),
+    '00:01:13 · —',
+  )
+})
 
 test('sleep history selects the same date across each bar and clamps chart edges', () => {
   assert.deepEqual(

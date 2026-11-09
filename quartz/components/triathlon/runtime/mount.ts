@@ -14,6 +14,7 @@ import { setupActivityWorkspace } from '../activity/workspace'
 import { setupAnalytics } from '../analytics/controller'
 import { setupCalendars } from '../calendar/controller'
 import { setupCalendarPanel } from '../calendar/panel'
+import { setupHighParkHover } from '../fun/high-park'
 import { setupMap } from '../maps/controller'
 import { setupAxisLabels } from '../shell/axis-labels'
 import { setupCommandPalette } from '../shell/command-palette'
@@ -36,7 +37,7 @@ import { setupPaceForecast } from '../tools/pace-forecast'
 import { setupTirePressure } from '../tools/tire-pressure'
 import { setupToolsTabs } from '../tools/tools-tabs'
 import { createTriathlonContext } from './context'
-import { readTriPanelsFullscreen } from './preferences'
+import { readTriPanelsFullscreen, toggleTriUnit } from './preferences'
 
 export interface MountedTriathlon {
   cleanup(): void
@@ -86,6 +87,12 @@ export const mountTriathlon = (signal: AbortSignal): MountedTriathlon => {
     addCleanup(setupMap(root, context))
     addCleanup(setupAxisLabels(root))
     addCleanup(setupShortcuts(root))
+    addCleanup(
+      setupHighParkHover(root, {
+        imperial: () => context.presentation.distance === 'imperial',
+        toggle: () => toggleTriUnit(context.preferences),
+      }),
+    )
     const hashDate = /^#(\d{4}-\d{2}-\d{2})$/.exec(window.location.hash)?.[1]
     if (hashDate)
       window.dispatchEvent(new CustomEvent('tri:focus-day', { detail: { date: hashDate } }))

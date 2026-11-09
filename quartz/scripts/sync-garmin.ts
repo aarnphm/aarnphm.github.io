@@ -1,5 +1,6 @@
+import { randomUUID } from 'node:crypto'
 import fs from 'node:fs/promises'
-import { resolve } from 'node:path'
+import { dirname, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import type { GarminCache } from '../plugins/stores/garmin'
 import {
@@ -8,7 +9,7 @@ import {
   readGarminConnectSession,
   type GarminConnectSession,
 } from '../util/garmin-session'
-import { joinSegments, QUARTZ } from '../util/path'
+import { shiftIsoDay } from '../util/local-date'
 import { syncRefreshDays } from '../util/sync-refresh-window'
 import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
 import { fetchGarminHealthRange } from './garmin-health-sync'
@@ -23,6 +24,7 @@ import {
   cacheFile,
   prepareGarminRefreshWindows,
   readCache,
+  replaceGarminSleepCoverage,
   resolveGarminFetch,
 } from './sync-garmin/refresh-window'
 export {
@@ -44,6 +46,44 @@ export {
   needsGarminActivityFit,
   reconcileGarminActivities,
 } from './sync-garmin/activities'
+
+async function writeCache(cache: GarminCache): Promise<void> {
+  const target = await fs.realpath(cacheFile).catch(() => cacheFile)
+  const temporary = `${target}.${randomUUID()}.tmp`
+  await fs.mkdir(dirname(target), { recursive: true })
+  try {
+    await fs.writeFile(temporary, JSON.stringify(cache, null, 2))
+    await fs.rename(temporary, target)
+  } finally {
+    await fs.rm(temporary, { force: true })
+  }
+}
+
+function sleepCacheFields(
+  previous: GarminCache | null,
+  refresh: Awaited<ReturnType<typeof fetchGarminSleepRange>> | undefined,
+  start: string,
+  end: string,
+  fetchedAt: number,
+): Pick<GarminCache, 'sleep' | 'sleepLastSync' | 'sleepCoverage'> {
+  const { sleep: cached, sleepLastSync, sleepCoverage } = previous ?? {}
+  if (!refresh) return { sleep: cached, sleepLastSync, sleepCoverage }
+  const sleep = { ...cached }
+  for (const range of refresh.coverage) {
+    for (let date = range.start; date <= range.end; date = shiftIsoDay(date, 1)) {
+      const row = refresh.sleep[date]
+      if (row) sleep[date] = row
+      else delete sleep[date]
+    }
+  }
+  return {
+    sleep: Object.fromEntries(
+      Object.entries(sleep).sort(([left], [right]) => left.localeCompare(right)),
+    ),
+    sleepLastSync: refresh.fetchedDays > 0 ? fetchedAt : sleepLastSync,
+    sleepCoverage: replaceGarminSleepCoverage(sleepCoverage ?? [], refresh.coverage, start, end),
+  }
+}
 
 async function prepareGarminSyncScope(): Promise<{
   flags: string[]
@@ -84,14 +124,7 @@ async function main(): Promise<void> {
     )
     const latest = await readCache()
     if (!latest) throw new Error('Garmin cache disappeared during lactate threshold refresh')
-    await fs.writeFile(
-      cacheFile,
-      JSON.stringify(
-        { ...latest, runningLactateThreshold, lactateThresholdLastSync: Date.now() },
-        null,
-        2,
-      ),
-    )
+    await writeCache({ ...latest, runningLactateThreshold, lactateThresholdLastSync: Date.now() })
     await refreshTriathlonRouteSource()
     console.log('[garmin] refreshed running lactate threshold', runningLactateThreshold)
     return
@@ -120,8 +153,7 @@ async function main(): Promise<void> {
         health,
         healthLastSync,
       }
-      await fs.mkdir(joinSegments(QUARTZ, '.quartz-cache'), { recursive: true })
-      await fs.writeFile(cacheFile, JSON.stringify(cache, null, 2))
+      await writeCache(cache)
       await refreshTriathlonRouteSource()
       console.log(
         `[garmin] health: ${result.responses} responses, ${result.failures} failures, ${Object.keys(health).length} days`,
@@ -132,44 +164,41 @@ async function main(): Promise<void> {
     }
   }
 
-  let overnightSleep = previous?.sleep ?? {}
-  let sleepLastSync = previous?.sleepLastSync
-  let sleepFailedDays: string[] = []
+  let sleepRefresh: Awaited<ReturnType<typeof fetchGarminSleepRange>> | undefined
   console.log(`[garmin] fetching Garmin Connect sleep ${sleepStart} -> ${end}`)
   try {
-    const result = await fetchGarminSleepRange(
+    sleepRefresh = await fetchGarminSleepRange(
       session,
       base,
-      overnightSleep,
+      previous?.sleep ?? {},
       sleepStart,
       end,
       delayMs,
     )
-    overnightSleep = result.sleep
-    sleepFailedDays = result.failedDays
-    if (result.fetchedDays > 0) sleepLastSync = Date.now()
     console.log(
-      `[garmin] sleep: ${result.fetchedDays} responses, ${result.failedDays.length} failed, ${Object.keys(overnightSleep).length} nights with measurements`,
+      `[garmin] sleep: ${sleepRefresh.fetchedDays} responses, ${sleepRefresh.failedDays.length} failed, ${Object.keys(sleepRefresh.sleep).length} dates with measurements`,
     )
-    if (sleepOnly && result.fetchedDays === 0) throw new Error('No Garmin sleep dates fetched')
+    if (sleepOnly && sleepRefresh.fetchedDays === 0)
+      throw new Error('No Garmin sleep dates fetched')
   } catch (error) {
     if (sleepOnly) throw error
     console.warn(`[garmin] sleep fetch failed: ${error instanceof Error ? error.message : error}`)
   }
+  const sleepFetchedAt = Date.now()
   if (sleepOnly) {
     const latest = await readCache()
     if (previous && !latest) throw new Error('Garmin cache disappeared during sleep refresh')
     const cache: GarminCache = {
       ...(latest ?? { version: CACHE_VERSION, lastSync: 0, activities: {} }),
-      sleep: overnightSleep,
-      sleepLastSync,
+      ...sleepCacheFields(latest, sleepRefresh, sleepStart, end, sleepFetchedAt),
     }
-    await fs.mkdir(joinSegments(QUARTZ, '.quartz-cache'), { recursive: true })
-    await fs.writeFile(cacheFile, JSON.stringify(cache, null, 2))
+    await writeCache(cache)
     await refreshTriathlonRouteSource()
-    console.log(`[garmin] wrote ${Object.keys(overnightSleep).length} sleep nights -> ${cacheFile}`)
-    if (sleepFailedDays.length > 0)
-      throw new Error(`Garmin sleep refresh incomplete for ${sleepFailedDays.join(', ')}`)
+    console.log(
+      `[garmin] wrote ${Object.keys(cache.sleep ?? {}).length} sleep dates -> ${cacheFile}`,
+    )
+    if (sleepRefresh?.failedDays.length)
+      throw new Error(`Garmin sleep refresh incomplete for ${sleepRefresh.failedDays.join(', ')}`)
     return
   }
 
@@ -230,13 +259,17 @@ async function main(): Promise<void> {
     ),
     lactateThresholdLastSync: lactateThresholdOutcome.ok ? now : previous?.lactateThresholdLastSync,
     weight,
-    sleep: overnightSleep,
-    sleepLastSync,
+    ...sleepCacheFields(
+      (await readCache()) ?? previous,
+      sleepRefresh,
+      sleepStart,
+      end,
+      sleepFetchedAt,
+    ),
     health,
     healthLastSync,
   }
-  await fs.mkdir(joinSegments(QUARTZ, '.quartz-cache'), { recursive: true })
-  await fs.writeFile(cacheFile, JSON.stringify(cache, null, 2))
+  await writeCache(cache)
   await refreshTriathlonRouteSource()
   console.log(
     `[garmin] wrote ${Object.keys(sorted).length} activities (${details} detail responses, ${streamDetails} stream responses, ${activityArchives} activity archives, ${Object.values(sortedGearShifts).reduce((sum, shifts) => sum + shifts.length, 0)} shift states, ${Object.values(sortedCyclingDynamics).reduce((sum, dynamics) => sum + dynamics.time.length, 0)} cycling dynamics samples, ${Object.values(sortedSwims).reduce((sum, swim) => sum + swim.lengths.length, 0)} swim lengths, ${climbDetails} climb responses, ${Object.values(sortedClimbs).reduce((sum, segments) => sum + segments.length, 0)} climbs, ${runWalkDetails} run/walk responses, ${Object.values(sortedRunWalks).reduce((sum, runWalk) => sum + runWalk.segments.length, 0)} run/walk segments, ${skipped} skipped) -> ${cacheFile}`,

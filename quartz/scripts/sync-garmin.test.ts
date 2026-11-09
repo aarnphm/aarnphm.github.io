@@ -97,6 +97,10 @@ test('sleep download preserves failed dates, replaces fetched dates, and clears 
   )
   assert.equal(result.fetchedDays, 2)
   assert.deepEqual(result.failedDays, ['2026-09-08', '2026-09-10'])
+  assert.deepEqual(result.coverage, [
+    { start: '2026-09-07', end: '2026-09-07' },
+    { start: '2026-09-09', end: '2026-09-09' },
+  ])
   assert.equal(result.sleep['2026-09-06'], previous['2026-09-06'])
   assert.equal(result.sleep['2026-09-07'].averageBreathsPerMinute, 15)
   assert.equal(result.sleep['2026-09-08'], previous['2026-09-08'])
@@ -268,6 +272,7 @@ test('Garmin health, sleep, and lactate threshold refresh starts bridge sync gap
     activities: {},
     health: { '2026-10-01': healthDay('2026-10-01'), '2026-10-02': healthDay('2026-10-02') },
     sleep: { '2026-10-01': sleepDay('2026-10-01'), '2026-10-02': sleepDay('2026-10-02') },
+    sleepCoverage: [{ start: '2026-05-15', end: '2026-10-02' }],
   }
   assert.equal(garminHealthRefreshStart(lagged, '2026-05-15', '2026-10-09', 2), '2026-09-30')
   assert.equal(garminSleepRefreshStart(lagged, '2026-05-15', '2026-10-09', 2), '2026-09-30')
@@ -288,6 +293,7 @@ test('Garmin health, sleep, and lactate threshold refresh starts bridge sync gap
       '2026-10-08': sleepDay('2026-10-08'),
       '2026-10-09': sleepDay('2026-10-09'),
     },
+    sleepCoverage: [{ start: '2026-05-15', end: '2026-10-09' }],
   }
   assert.equal(garminHealthRefreshStart(hole, '2026-05-15', '2026-10-09', 2), '2026-10-03')
   assert.equal(garminSleepRefreshStart(hole, '2026-05-15', '2026-10-09', 2), '2026-10-03')
@@ -325,6 +331,24 @@ test('Garmin health, sleep, and lactate threshold refresh starts bridge sync gap
     garminLactateThresholdRefreshStart(null, '2026-05-15', '2026-10-09', 2),
     '2026-05-15',
   )
+})
+
+test('Garmin sleep migrates legacy history and retries uncovered dates after a bounded refresh', () => {
+  const start = '2026-05-15'
+  const end = '2026-10-09'
+  const legacy = { version: 14, lastSync: 1, activities: {}, sleepLastSync: Date.parse(end) }
+  const refresh = (sleepCoverage?: { start: string; end: string }[]) =>
+    garminSleepRefreshStart({ ...legacy, sleepCoverage }, start, end, 2)
+  assert.equal(refresh(), start)
+  assert.equal(refresh([{ start: '2026-10-07', end }]), start)
+  assert.equal(
+    refresh([
+      { start, end: '2026-09-30' },
+      { start: '2026-10-02', end },
+    ]),
+    '2026-10-01',
+  )
+  assert.equal(refresh([{ start, end }]), '2026-10-07')
 })
 
 test('Garmin refresh reconciliation prunes the fetched range and preserves older history', () => {

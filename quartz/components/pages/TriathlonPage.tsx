@@ -317,6 +317,10 @@ export default (() => {
               <span data-i18n="calculator">calculator</span>
               <ShortcutHint>g c</ShortcutHint>
             </button>
+            <a class="tri-fun-link tri-key-anchor internal" href="/triathlon/fun">
+              <span data-i18n="fun">fun</span>
+              <ShortcutHint>g u</ShortcutHint>
+            </a>
             <a
               class="tri-credit"
               href="https://rauno.me/run"

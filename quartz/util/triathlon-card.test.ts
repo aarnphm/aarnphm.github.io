@@ -132,7 +132,7 @@ import {
   type DetailCtx,
   type TriNodeFactory,
 } from './triathlon-card'
-import { buildTriathlonDailyAnalytics } from './triathlon-day-analytics'
+import { buildTriathlonDailyAnalytics, isTriathlonDailyAnalytics } from './triathlon-day-analytics'
 import {
   criticalPowerEvidenceText,
   criticalPowerSummaryText,
@@ -7457,6 +7457,168 @@ test('renders native sleep respiration with real time spacing, gaps, and Garmin 
       String(path.properties.d).endsWith('l0 0'),
     ),
   )
+})
+
+test('renders Garmin sleep on an Oura gap and preserves native stage and sample times', () => {
+  const date = '2026-09-08'
+  const bedtime = `${date}T00:00:00-04:00`
+  const start = Date.parse(bedtime)
+  const end = start + 300_000
+  const garmin: GarminSleepSummary = {
+    source: 'garmin',
+    date,
+    startTime: new Date(start).toISOString(),
+    endTime: new Date(end).toISOString(),
+    utcOffsetMinutes: -240,
+    averageBreathsPerMinute: 16,
+    lowestBreathsPerMinute: null,
+    highestBreathsPerMinute: null,
+    averageSpO2: 97,
+    lowestSpO2: null,
+    bodyBatteryStart: null,
+    bodyBatteryEnd: null,
+    bodyBatteryChange: null,
+    averageStress: 15,
+    restlessMoments: 0,
+    sleep: {
+      totalSleepS: 230,
+      deepS: 73,
+      lightS: 157,
+      remS: 0,
+      awakeS: 0,
+      unmeasurableS: 30,
+      awakeCount: 0,
+      sleepScore: 81,
+      sleepScoreQualifier: 'GOOD',
+      scoreFactors: { deepPercentage: { qualifier: 'GOOD', value: 31.7 } },
+      restingHeartRateBpm: 51,
+      averageHeartRateBpm: 58,
+      averageHrvMs: 70,
+      skinTempDeviationC: 0.2,
+      stages: [
+        { startTime: start, endTime: start + 73_000, stage: 'deep' },
+        { startTime: start + 113_000, endTime: end - 30_000, stage: 'light' },
+        { startTime: end - 30_000, endTime: end, stage: 'unmeasurable' },
+      ],
+      heartRate: [
+        { timestamp: start, bpm: 56 },
+        { timestamp: start + 65_000, bpm: null },
+        { timestamp: start + 129_000, bpm: 60 },
+      ],
+    },
+    naps: [
+      {
+        id: 'native-nap',
+        startTime: start + 49_800_000,
+        endTime: start + 51_600_000,
+        durationS: 1800,
+        startUtcOffsetMinutes: -180,
+        endUtcOffsetMinutes: -180,
+        providerSource: 1,
+        feedback: null,
+      },
+    ],
+  }
+  const analytics = buildAnalytics(
+    {
+      athleteId: 1,
+      auth: { refreshToken: '', obtainedAt: 0 },
+      lastSync: start,
+      lastActivityStart: start,
+      activities: {
+        1: {
+          id: 1,
+          name: 'Ride',
+          sportType: 'Ride',
+          distance: 5000,
+          movingTime: 900,
+          elapsedTime: 900,
+          averageSpeed: 5000 / 900,
+          totalElevationGain: 0,
+          startDate: `${date}T16:00:00Z`,
+          startDateLocal: `${date}T12:00:00Z`,
+        },
+      },
+    },
+    {
+      garmin: { lastSync: 0, activities: {}, sleep: { [date]: garmin } },
+      since: date,
+      timeZone: 'America/Toronto',
+    },
+  )
+  const summary = buildTriathlonDailyAnalytics(analytics)[date]
+  assert.ok(summary?.sleep)
+  assert.equal(summary.sleep.nightSource, 'garmin')
+  assert.equal(summary.sleep.fieldSources?.totalSleepS, 'garmin')
+  assert.equal(summary.sleep.fieldSources?.sleepScore, 'garmin')
+  assert.equal(summary.sleep.lowestHeartRate, null)
+  assert.equal(summary.sleep.readinessScore, null)
+  assert.equal(isTriathlonDailyAnalytics(JSON.parse(JSON.stringify({ [date]: summary }))), true)
+  assert.equal(
+    isTriathlonDailyAnalytics({
+      [date]: {
+        ...summary,
+        sleep: {
+          ...summary.sleep,
+          heartRate: { ...summary.sleep.heartRate, offsetsS: [0, 65, 60] },
+        },
+      },
+    }),
+    false,
+  )
+
+  const tree = buildDayAnalytics(factory, summary)
+  assert.match(text(tree), /sleep score81Garmin/)
+  assert.match(text(tree), /sleep window5mGarmin/)
+  assert.match(text(tree), /Garmin sleep score factors/)
+  assert.match(text(tree), /31\.7%/)
+  assert.match(text(tree), /bedtime12:00 amGarmin/)
+  assert.match(text(tree), /resting heart rate51 bpmGarmin/)
+  const stageChart = byClass(tree, 'tri-day-sleep-stages')[0]
+  assert.equal(stageChart.properties.dataDaySleepSource, 'Garmin')
+  assert.equal(stageChart.properties.dataDaySleepBoundaries, '0,73,113,270,300')
+  assert.equal(byClass(stageChart, 'tri-hyp--deep')[0].properties.width, 73)
+  assert.equal(byClass(stageChart, 'tri-hyp--light')[0].properties.x, 113)
+  assert.equal(byClass(stageChart, 'tri-hyp--unmeasurable')[0].properties.width, 30)
+  assert.equal(
+    byClass(stageChart, 'tri-day-sleep-stage-svg')[0].properties.ariaValueText,
+    '00:04:30 · unmeasurable',
+  )
+  const heartChart = byClass(tree, 'tri-day-sleep-series--heart-rate')[0]
+  assert.equal(heartChart.properties.dataDaySleepTimes, '0,65,129')
+  assert.equal(heartChart.properties.dataDaySleepSource, 'Garmin')
+  const nap = byClass(tree, 'tri-sleep-nap')[0]
+  assert.equal(nap.properties.dataNapId, 'native-nap')
+  assert.match(text(nap), /bedtime2:50 pmGarmin/)
+  assert.match(text(nap), /total sleep30mGarmin/)
+  assert.doesNotMatch(text(nap), /sleep score|sleep stress|Pulse Ox/)
+
+  const ouraDetails: Record<string, OuraDayDetail> = {}
+  applyOuraSleepRows(
+    [
+      {
+        type: 'long_sleep',
+        day: date,
+        bedtime_start: bedtime,
+        bedtime_end: `${date}T07:00:00-04:00`,
+        total_sleep_duration: 24_000,
+        sleep_phase_5_min: '423214',
+        average_hrv: 85,
+      },
+    ],
+    {},
+    ouraDetails,
+    date,
+    date,
+  )
+  const mixed = buildTriathlonDailyAnalytics(analytics, ouraDetails)[date]
+  assert.equal(mixed.sleep?.totalSleepS, 24_000)
+  assert.equal(mixed.sleep?.averageHrv, 85)
+  assert.equal(mixed.sleep?.fieldSources?.averageHrv, 'oura')
+  assert.equal(mixed.sleep?.fieldSources?.heartRate, 'garmin')
+  assert.equal(mixed.sleep?.deepS, null)
+  assert.equal(mixed.sleep?.stages, undefined)
+  assert.equal(mixed.sleep?.phase5Min, '423214')
 })
 
 test('day-card date renders as a month link only when extras provide an href', () => {

@@ -1,4 +1,5 @@
 import type { BestEffortsBlock } from '../../../util/best-efforts'
+import type { DailySleepSources } from '../../../util/daily-sleep-health'
 import type { SleepMetrics } from '../../../util/sleep-metrics'
 import type { SwimPowerCurveBlock } from '../../../util/swim-power'
 import type { WeeklyTargetRange } from '../../../util/weekly-target-range'
@@ -319,6 +320,7 @@ export const DAY_FIELDS = [
   'hrv',
   'rhr',
   'sleepDurationS',
+  'sleepSources',
   'napDurationS',
   'napCount',
   'garminHealth',
@@ -441,6 +443,7 @@ export interface FeedDayRow {
   hrv: number | null
   rhr: number | null
   sleepDurationS: number | null
+  sleepSources?: DailySleepSources
   napDurationS?: number | null
   napCount?: number | null
   garminHealth?: GarminHealthDay | null

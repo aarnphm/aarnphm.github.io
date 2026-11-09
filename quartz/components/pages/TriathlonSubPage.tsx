@@ -19,6 +19,7 @@ import {
   TriathlonSubnav,
   type TriView,
 } from './triathlon-panels'
+import { HighParkPanel } from './triathlon-panels/high-park'
 
 interface TriathlonSubPanelProps {
   page?: boolean
@@ -28,6 +29,7 @@ interface TriathlonSubPanelProps {
 }
 
 const PANEL: Record<Exclude<TriView, 'on'>, (props: TriathlonSubPanelProps) => JSX.Element> = {
+  fun: HighParkPanel,
   tools: ToolsPanel,
   calc: CalcPanel,
   analytics: AnalyticsPanel,
