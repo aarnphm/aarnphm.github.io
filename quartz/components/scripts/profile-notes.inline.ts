@@ -60,6 +60,19 @@ function hydrateArticle(article: HTMLElement) {
       mark.setAttribute('aria-expanded', String(open))
     }
     mark.addEventListener('click', toggle, { capture: true, signal })
+    // Hovering or focusing the mark lights its note (marginalia.scss boxes it in the rail), the
+    // mirror of a hovered note boxing its mark. The popover runtime skips shown footnotes for this.
+    const light = (on: boolean) => () => note.toggleAttribute('data-lit', on)
+    mark.addEventListener('pointerenter', light(true), { signal })
+    mark.addEventListener('pointerleave', light(false), { signal })
+    mark.addEventListener(
+      'focusin',
+      () => {
+        if (mark.matches(':focus-visible')) note.toggleAttribute('data-lit', true)
+      },
+      { signal },
+    )
+    mark.addEventListener('focusout', light(false), { signal })
     if (!link)
       mark.addEventListener(
         'keydown',

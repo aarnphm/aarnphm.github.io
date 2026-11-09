@@ -24,6 +24,7 @@ The repo is the source of truth. When this skill and the code disagree, the code
 - Hover only under `(hover: hover) and (pointer: fine)`. Controls are 1.5rem in readers, 1.75rem in collections, 2.125rem in Base views, 44px under `(pointer: coarse)`. Text inputs are 16px or more on mobile.
 - Motion: 100 to 150ms on named properties for feedback, 220ms `cubic-bezier(0.23, 1, 0.32, 1)` for panels, never `transition: all`. Reduced motion stops movement and keeps a static cue.
 - Pick the page mode first (reading, collection, workspace); see `references/layout.md`. Text-holding grid and flex children get `min-width: 0`. The page never scrolls sideways down to 320px.
+- Brand art is the mascot drawn with its pen (`quartz/util/mascot.ts`): ink, paper, `salmon` and `secondary` only, never pixels or type. A section dresses it in an outfit that serves as favicon, social-card header, link icon and the pet's clothes; `quartz/util/section-icon.ts` routes pages to sections (`references/imagery.md`). Pixel art belongs to the trail and the 404 page alone.
 
 ## Read only what the task needs
 
@@ -40,7 +41,9 @@ The repo is the source of truth. When this skill and the code disagree, the code
 | Math, numbers in prose, chart labels, TikZ                                                                   | `references/math.md`                                                     |
 | Text sizes, figure text on a phone or in Zoomable, small tables, readouts, joined controls, a Base-like page | `references/compact.md`, then `references/components/Instrument.md`      |
 | Focus rings, `outline: none`, focus on tabs or charts                                                        | `references/focus.md`                                                    |
-| Brand art, mascot, social images                                                                             | `references/imagery.md`                                                  |
+| Brand art, mascot, social images, section icons and pet outfits                                              | `references/imagery.md`                                                  |
+| A drop cap, a `dropcap` fence or specimen card, an initials face                                             | `references/components/Dropcap.md`                                       |
+| The trail's holiday props (Christmas, Halloween)                                                             | `references/components/HomepageTrail.md`, then `references/home.md`      |
 | A specific component                                                                                         | `references/components/index.md`, then `references/components/<Name>.md` |
 | Calling a surface done                                                                                       | `references/review.md`                                                   |
 

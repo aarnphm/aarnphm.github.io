@@ -314,6 +314,17 @@ body:not(.stack-mode)[data-layout='newspaper'] #quartz-root > section.header {
         visibility: visible;
       }
 
+      // The other end of the pair: a lit note (its mark hovered or focused, profile-notes.inline.ts)
+      // or a hovered one is boxed too. The offset puts the box's top edge on the hanging rule.
+      .profile-note:not(.profile-note-boxed) {
+        outline: 1px solid transparent;
+        outline-offset: calc(0.4rem - 1px);
+      }
+
+      .profile-note:not(.profile-note-boxed):is([data-lit], :hover, :focus-within) {
+        outline-color: var(--dark);
+      }
+
       #tldr > .profile-note,
       #tldr > .profile-note:first-of-type {
         left: calc(100% + var(--mag-offset));

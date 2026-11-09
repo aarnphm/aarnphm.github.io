@@ -34,6 +34,7 @@ The garden is a reading site that also holds working tools: notes, collections, 
 - A column or field that holds a changing value reserves the widest value the data can produce, computed from the data (`ch` in the value's font) with `white-space: nowrap`, so nothing beside it moves. The Compact tools section has the sizes and the four patterns.
 - Weight 400 is the default; 500 to 600 marks a value; headings use 700.
 - Headings wrap with `text-wrap: balance` and prose with `pretty`. Long URLs and identifiers wrap with `overflow-wrap: anywhere`.
+- A reading page may open with a drop cap. Newspaper pages get the two-layer EB Garamond Initials by default; other pages set `dropcap:` to one of six faces or `none`. The letter's ink, not its em, spans three lines from cap top to baseline; a ` ```dropcap ` fence shows one face as a centred 9rem specimen card captioned by its name, or by its seed in italics for the procedural tile (see Dropcap).
 
 ## Math and numbers
 
@@ -95,6 +96,7 @@ The site has two registers. Prose pages use the reading defaults in this README.
 - The site image is the mascot: a hand-drawn circle with two dash eyes shifted left, drawn as pressure-width pen ribbons in ink #1c1b1a (Flexoki base-950, a step above `dark`) on paper #fffcf0 (`assets/Imagery/mascot.svg`, `icon.webp`). It comes from `quartz/util/mascot.ts`; `quartz/scripts/brand-art.ts` rasterises it into the favicon, touch icons and avatar. Its eyes look left, so a scene around it rises or moves to the left.
 - The default social card (`assets/Imagery/og-image.webp`, 1200 × 630) shows the mascot climbing a peak toward a flag, a `salmon` pack and sun against a `secondary` range.
 - Draw new brand art with the mascot's pen (`stroke`, `pressure`, `hand` in `mascot.ts`), never with filled pixels or a typeface. The site has no logotype; set the name in `title` type.
+- Twelve sections dress the mascot in an outfit (a sweatband, a beret, a quill, a wig, a palette, glasses and books, a bow tie, a reading sheet, a mortarboard, a hard hat, popcorn, a spyglass on a constellation). The outfit is the section's favicon, the header of its social cards, the icon after a link into it and what the site pet wears there. `quartz/util/section-icon.ts` routes a page to its section; `assets/Imagery` has the roster and the rules for a new one.
 
 ## Not in this system
 

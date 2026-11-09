@@ -108,6 +108,9 @@
     background: currentColor;
   }
 }
+.homepage-trail:has(> .homepage-trail-toggle[hidden]) .trail-visitor-count {
+  right: calc(1rem + 44px);
+}
 .trail-gate-transition {
   position: fixed;
   inset: 0;
@@ -154,6 +157,9 @@ body[data-slug='index'][data-trail-open='true'] {
   .trail-visitor-count {
     right: calc(1rem + 56px);
     min-width: 28px;
+  }
+  .homepage-trail:has(> .homepage-trail-toggle[hidden]) .trail-visitor-count {
+    right: calc(1rem + 28px);
   }
 }
 @media (max-width: 600px) {

@@ -28,6 +28,7 @@
 | [CoursesIndex](CoursesIndex.md)             | The list of mirrored courses at `/courses/`: a trail bar, a bar of study counts, and one bordered row per course.                                                              |
 | [Darkmode](Darkmode.md)                     | The theme toggle: one button that cycles system, dark and light, shown as three icon states.                                                                                   |
 | [DatePicker](DatePicker.md)                 | A date field that opens a month grid in the top layer.                                                                                                                         |
+| [Dropcap](Dropcap.md)                       | The initial that opens a lede or a chapter on a reading page, and the specimen card that shows one face on a note page.                                                        |
 | [Dropdown](Dropdown.md)                     | A text button that shows or hides one panel of details, such as gear or pace zones.                                                                                            |
 | [Evergreen](Evergreen.md)                   | The evergreen aside on a folder page: the folder's notes and tags with a count.                                                                                                |
 | [ExecutionLegend](ExecutionLegend.md)       | The legend that names each training-execution colour and its range.                                                                                                            |
