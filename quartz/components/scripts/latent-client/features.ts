@@ -189,6 +189,8 @@ export function bindFeatures(rt: Runtime, embed?: EmbedFeatures): FeatureState |
         void applySteer(rt, st)
         return
       }
+      // a bridge chip in a card belongs to the selection tab (gemma.ts), not to the card
+      if (target.closest('.lat-gm-bridge, [data-open-text]')) return
       const item = target.closest<HTMLElement>('[data-dict][data-f]')
       if (!item || !panel.contains(item)) return
       event.preventDefault()

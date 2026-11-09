@@ -2,6 +2,7 @@ import { type Element } from 'hast'
 import { h } from 'hastscript'
 import { mark } from '../../../util/latent/markup'
 import { truncate } from '../../../util/latent/rail'
+import { bridgeOf, bridgesOf, gemmaNames } from './bridges'
 import { wordsOf, KIND_ORDER } from './features-data'
 import { ancestry, steerKey, featureName, share, amount, chip, timeline } from './features-markup'
 import { type FeatureState, type FeatureDict } from './features-types'
@@ -16,10 +17,19 @@ export async function featureCard(
   const row = dict.table[f]
   const up = ancestry(dict, f)
   const kids = dict.children.get(f) ?? []
-  const [cross, words] = await Promise.all([
+  const text = dict.meta.name === 'text'
+  const [cross, words, br] = await Promise.all([
     Promise.all(row.cross.slice(0, 4).map(([r]) => previewOf(rt, r))),
-    dict.meta.name === 'text' ? wordsOf(rt, st) : Promise.resolve(null),
+    text ? wordsOf(rt, st) : Promise.resolve(null),
+    text ? bridgesOf(rt) : Promise.resolve(null),
   ])
+  const bridge = bridgeOf(br, f)
+  const gemma = bridge
+    ? await gemmaNames(
+        rt,
+        bridge.b.map(([l, g]) => [l, g]),
+      )
+    : []
   const unit = st.tablesNow?.dicts[dict.meta.name]?.[f]
   const said = words?.features[String(f)]
   const inTags = (dict.meta.name === 'text' ? (st.tablesNow?.tags ?? []) : []).filter(t =>
@@ -107,6 +117,35 @@ export async function featureCard(
             ),
           ],
         )
+      : null,
+    bridge
+      ? h('p.lat-feat-near.lat-feat-bridge', [
+          h(
+            'span',
+            {
+              dataTip: [
+                'Gemma 4 E4B features that predict it',
+                `${bridge.n} rows · held-out auc ${bridge.auc === null ? 'n/a' : bridge.auc.toFixed(2)}`,
+              ].join('\n'),
+              dataTipAt: 'up',
+              tabIndex: 0,
+            },
+            'in gemma',
+          ),
+          ...bridge.b.map(([l, g, w, phi], i) =>
+            h(
+              'button.lat-feat-chip.lat-gm-bridge',
+              {
+                type: 'button',
+                dataL: String(l),
+                dataF: String(g),
+                dataTip: `L${String(l).padStart(2, '0')} f${g}\nweight ${w.toFixed(2)} · phi ${phi.toFixed(2)}`,
+                dataTipAt: 'up',
+              },
+              gemma[i],
+            ),
+          ),
+        ])
       : null,
     h('p.lat-feat-kinds', kinds),
     timeline(dict, row),

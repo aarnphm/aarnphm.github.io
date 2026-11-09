@@ -20,6 +20,9 @@ units of the chunk text (the context, the traced token, and each graph position'
 for the reader's highlight), and
 graphs/summary.jsonl, one line per passage (target, p, influence by kind, seconds).
 Resumable: rows with a graph are skipped.
+
+Between passages it answers the reader's live requests (plt_serve.py POST /graph), so the model
+and transcoders sit in memory once: live/req-<id>.json in, live/<id>.json out (live_graph).
 """
 
 from __future__ import annotations
@@ -94,6 +97,71 @@ def pick(model, t, ids: list[int], ctx: int, min_p: float):
     if tw[-1] == ids[pos] and pw[-1] >= min_p:
       return pos, float(pw[-1])
   return None
+
+
+def live_graph(
+  model, lm, t, tok, tcs, mean, req: dict, *, plt, ctx: int, nodes: int
+) -> dict:
+  """The graph of the token after a reader selection: req = {row, text, end}, `text` the chunk's
+  raw markdown and `end` the selection's end in UTF-16 units of it. The window is the --ctx tokens
+  ending at the selection's last token, tokenised as the bake does."""
+  from attribute import build
+  from plt_bake import tokenize
+
+  ids, spans, _ = tokenize(tok, req['text'], 1024)
+  end = int(req['end'])
+  # spans index tokens after bos: ids[i] is spans[i - 1]; i = the last token starting before end
+  i = max((k + 1 for k, (a, _) in enumerate(spans) if a < end), default=0)
+  if i < 1:
+    raise ValueError('no token before the selection end')
+  start = max(1, i - ctx + 1)
+  g = build(
+    model,
+    lm,
+    t,
+    tcs,
+    [ids[0], *ids[start : i + 1]],
+    prompt=t.decode(ids[start : i + 1]),
+    plt=plt,
+    nodes_=nodes,
+    mean=mean,
+  )
+  after = (
+    spans[i] if i < len(spans) else None
+  )  # the token the text really has next
+  g['passage'] = dict(
+    row=int(req['row']),
+    start=int(spans[start - 1][0]),
+    end=int(spans[i - 1][1]),
+    target=[int(after[0]), int(after[1])]
+    if after is not None
+    else [int(spans[i - 1][1])] * 2,
+    spans=[[int(a), int(b)] for a, b in spans[start - 1 : i]],
+    token=t.decode([ids[i + 1]]) if i + 1 < len(ids) else '',
+    live=True,
+  )
+  return g
+
+
+def drain(live: Path, **kw) -> int:
+  """Answer every pending live request; an error goes back as {error}."""
+  n = 0
+  for req_path in sorted(live.glob('req-*.json')):
+    rid = req_path.stem[4:]
+    try:
+      body = live_graph(**kw, req=json.loads(req_path.read_text()))
+    except Exception as e:  # noqa: BLE001 - the reader shows it
+      body = dict(error=f'{type(e).__name__}: {e}')
+    tmp = live / f'.{rid}.json'
+    tmp.write_text(json.dumps(body, ensure_ascii=False))
+    tmp.rename(live / f'{rid}.json')
+    req_path.unlink(missing_ok=True)
+    n += 1
+    log(
+      f'live graph {rid}',
+      'error' if 'error' in body else f'→ {body["logits"][0]["token"]!r}',
+    )
+  return n
 
 
 def spread_key(content: Path, directory: str):
@@ -180,7 +248,22 @@ def main() -> None:
   mean = unembed_mean(lm)
   summary = (out / 'summary.jsonl').open('a')
   t0, done = time.time(), 0
+  live = out.parent / 'live'
+  live.mkdir(exist_ok=True)
+  served = dict(
+    model=model,
+    lm=lm,
+    t=t,
+    tok=tok,
+    tcs=tcs,
+    mean=mean,
+    plt=a.plt,
+    ctx=a.ctx,
+    nodes=a.nodes,
+  )
   for r, text in todo:
+    if drain(live, **served):
+      mx.clear_cache()
     ids, spans, _ = tokenize(tok, text, a.passage)
     hit = pick(model, t, ids, a.ctx, a.min_p)
     if hit is None:

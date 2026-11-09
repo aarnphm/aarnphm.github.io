@@ -10,6 +10,23 @@
     color: var(--darkgray);
   }
 
+  .lat-gm-trace {
+    font: inherit;
+    color: var(--secondary);
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+
+    &:disabled {
+      color: var(--gray);
+      cursor: progress;
+      text-decoration: none;
+    }
+  }
+
   .lat-gm-head .lat-feat-head {
     font-style: italic;
     font-weight: normal;
@@ -181,6 +198,12 @@
     &[data-kind='embedding'] {
       fill: none;
       stroke: var(--gray);
+    }
+
+    // bridges to one of the passage's own text features (plt_bridges.py)
+    &[data-bridge] {
+      stroke: var(--gold);
+      stroke-width: 1.5;
     }
   }
 

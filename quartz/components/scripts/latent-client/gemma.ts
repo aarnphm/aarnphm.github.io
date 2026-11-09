@@ -1,3 +1,5 @@
+import { bridgeOf, bridgesOf, predicts } from './bridges'
+import { benchFeatures } from './features'
 import { docOfRow, fetchBytes, fetchJson, partOf, textOf, type Runtime } from './runtime'
 
 // The probe's selection tab: select text in a passage and see it as Gemma 4 E4B reads it, from
@@ -185,7 +187,7 @@ function indexOf(rt: Runtime, bake: Bake, layer: number) {
 }
 
 /** a feature's strongest distinct tokens over the bake, for features with no label */
-function glossOf(rt: Runtime, bake: Bake, layer: number): Promise<Record<string, string>> {
+export function glossOf(rt: Runtime, bake: Bake, layer: number): Promise<Record<string, string>> {
   let got = bake.gloss.get(layer)
   if (!got) {
     got = fetchJson<Record<string, string>>(
@@ -471,6 +473,7 @@ function panelHtml(
   picked: number[],
   labels: Record<string, Record<string, Label | string>>,
   glosses: Record<string, string>[],
+  bridged: string,
 ): string {
   const { layers, layerMax } = pool(data, picked)
   const s = data.spans[2 * picked[0]]
@@ -504,30 +507,128 @@ function panelHtml(
     .map((layer, i) => `<button type="button" class="lat-gm-a" data-a="${i}">${ll(layer)}</button>`)
     .join('')
   const cut = bake.meta.rows[String(al.row)]?.[1]
+  // localhost only: plt_serve.py traces the token after the selection on request
+  const trace = bake.base.startsWith('http://localhost')
+    ? `<p class="lat-gm-note"><button type="button" class="lat-gm-trace" data-tip="${esc('attribution graph of the next token\n32 tokens of context · ~15 s\nshown in the circuit tab')}">trace the next token</button></p>`
+    : ''
   return [
     `<section class="lat-feat-group lat-gm-head"><header><span class="lat-feat-head">“${esc(quote.length > 80 ? `${quote.slice(0, 79)}…` : quote)}”</span><span class="lat-count">${picked.length} tok</span></header>`,
-    `${cut ? '<p class="lat-gm-note">past the 1024-token window: the tail is not baked</p>' : ''}</section>`,
+    `${cut ? '<p class="lat-gm-note">past the 1024-token window: the tail is not baked</p>' : ''}${trace}</section>`,
     strongest
       ? `<section class="lat-feat-group"><header><span class="lat-feat-head">reads as</span><span class="lat-count">detection ≥ ${STRONG}</span></header><ul class="lat-feat-list">${strongest}</ul></section>`
       : '',
+    bridged,
     `<section class="lat-feat-group"><header><span class="lat-feat-head">attends to</span><span class="lat-count">global layers</span></header><nav class="lat-gm-attn">${attn}</nav></section>`,
     `<section class="lat-feat-group"><header><span class="lat-feat-head">depth</span><span class="lat-count">top 3 a layer, L41 first</span></header><ol class="lat-gm-strip">${strip}</ol></section>`,
     `<section class="lat-feat-group lat-gm-where" hidden></section>`,
   ].join('')
 }
 
+/** the text dictionary's feature names, through the features tab's loaded dictionary */
+async function textNames(rt: Runtime): Promise<((f: number) => string) | null> {
+  const feats = benchFeatures(rt)
+  const dict = await feats?.dict('text').catch(() => null)
+  if (!feats || !dict) return null
+  return f => (dict.table[f] ? feats.name(dict.table[f]) : `#${f}`)
+}
+
+function textChip(f: number, name: string, tip: string): string {
+  return `<button type="button" class="lat-feat-chip" data-open-text="${f}" data-tip="${esc(tip)}" data-tip-at="up">${esc(name)}</button>`
+}
+
+/**
+ * The passage-SAE features the selection's Gemma features predict: each text feature scores the
+ * sum, over the selection's features that bridge to it, of bridge weight × activation (as a share
+ * of its layer's max in the passage).
+ */
+async function bridgeSection(rt: Runtime, data: BakeRow, picked: number[]): Promise<string> {
+  const [br, name] = await Promise.all([bridgesOf(rt), textNames(rt)])
+  if (!br || !name) return ''
+  const { layers, layerMax } = pool(data, picked)
+  const score = new Map<number, { s: number; via: number }>()
+  layers.forEach((feats, l) => {
+    for (const { f, a } of feats) {
+      const x = layerMax[l] > 0 ? a / layerMax[l] : 0
+      for (const [j, w] of predicts(br, l, f)) {
+        const got = score.get(j) ?? { s: 0, via: 0 }
+        got.s += w * x
+        got.via += 1
+        score.set(j, got)
+      }
+    }
+  })
+  const top = [...score].sort((p, q) => q[1].s - p[1].s).slice(0, 6)
+  if (!top.length) return ''
+  const max = top[0][1].s
+  const items = top
+    .map(([j, { s, via }]) => {
+      const b = bridgeOf(br, j)!
+      const auc = b.auc === null ? 'auc n/a' : `auc ${b.auc.toFixed(2)}`
+      return `<li class="lat-feat"><span class="lat-feat-bar"><i style="--a:${(s / max).toFixed(3)}"></i></span>${textChip(j, name(j), `text #${j} · ${auc}\nvia ${via} gemma feature${via === 1 ? '' : 's'}`)}<span class="lat-feat-meta">#${j}</span><span class="lat-feat-meta">${via}</span></li>`
+    })
+    .join('')
+  return `<section class="lat-feat-group lat-gm-bridges"><header><span class="lat-feat-head">bridges</span><span class="lat-count">text features</span></header><ul class="lat-feat-list">${items}</ul></section>`
+}
+
+/** the selection tab's "elsewhere" box, made when a feature card asks for it */
+function whereBox(rt: Runtime, st: GemmaState): HTMLElement {
+  const panel = ensureTab(rt, st)
+  let box = panel.querySelector<HTMLElement>('.lat-gm-where')
+  if (!box) {
+    box = document.createElement('section')
+    box.className = 'lat-feat-group lat-gm-where'
+    panel.append(box)
+  }
+  return box
+}
+
+/** POST the selection to plt_serve.py; the graph goes to the circuit tab (circuit.ts) */
+async function traceNext(rt: Runtime, st: GemmaState, button: HTMLButtonElement): Promise<void> {
+  const { aligned: al, data, picked } = st
+  if (!al || !data || !picked.length || button.disabled) return
+  button.disabled = true
+  button.textContent = 'tracing…'
+  let note = 'trace the next token'
+  try {
+    const response = await fetch(`http://localhost:${PORT}/graph`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        h8: (rt.root.dataset.latentHash ?? '').slice(0, 8),
+        row: al.row,
+        text: al.raw,
+        end: data.spans[2 * picked[picked.length - 1] + 1],
+      }),
+      signal: rt.signal,
+    })
+    const body = await response.json()
+    if (!response.ok || body.error) note = `not traced: ${body.error ?? response.status}`
+    else rt.root.dispatchEvent(new CustomEvent('latent:graph', { detail: body }))
+  } catch {
+    note = 'not traced: plt_serve.py is not running'
+  }
+  if (!button.isConnected) return
+  button.disabled = false
+  button.textContent = note
+}
+
 async function elsewhere(rt: Runtime, st: GemmaState, l: number, f: number): Promise<void> {
   const bake = await st.bake
-  const box = st.panel?.querySelector<HTMLElement>('.lat-gm-where')
-  if (!bake || !box) return
+  if (!bake) return
+  const box = whereBox(rt, st)
   box.hidden = false
   box.innerHTML = `<header><span class="lat-feat-head">${ll(l)} f${f} elsewhere</span><span class="lat-count">…</span></header>`
-  const got = await Promise.all([indexOf(rt, bake, l), bake.labels]).catch(() => null)
+  const got = await Promise.all([
+    indexOf(rt, bake, l),
+    bake.labels,
+    bridgesOf(rt),
+    textNames(rt),
+  ]).catch(() => null)
   if (!got) {
     box.innerHTML = `<header><span class="lat-feat-head">${ll(l)} f${f} elsewhere</span></header><p class="lat-gm-note">no index yet</p>`
     return
   }
-  const [idx, labels] = got
+  const [idx, labels, br, name] = got
   const best = new Map<number, number>()
   for (let i = idx.starts[f]; i < idx.starts[f + 1]; i++)
     if (idx.a[i] > (best.get(idx.r[i]) ?? 0)) best.set(idx.r[i], idx.a[i])
@@ -540,7 +641,11 @@ async function elsewhere(rt: Runtime, st: GemmaState, l: number, f: number): Pro
       return `<li class="lat-feat"><span class="lat-feat-meta">${a.toFixed(1)}</span><a class="lat-feat-name" href="?focus=${r}" data-lat-focus="${r}">${esc(title)}</a><span class="lat-feat-meta">#${doc ? r - doc.r0 + 1 : r}</span><span></span></li>`
     })
     .join('')
-  box.innerHTML = `<header><span class="lat-feat-head">${esc(lab?.label ?? `${ll(l)} f${f}`)}: elsewhere</span><span class="lat-count">${ll(l)} f${f}</span></header><ul class="lat-feat-list">${items}</ul>`
+  const to = name ? predicts(br, l, f).slice(0, 4) : []
+  const bridged = to.length
+    ? `<p class="lat-feat-near"><span>predicts</span>${to.map(([j, w]) => textChip(j, name!(j), `text #${j} · bridge weight ${w.toFixed(2)}`)).join('')}</p>`
+    : ''
+  box.innerHTML = `<header><span class="lat-feat-head">${esc(lab?.label ?? `${ll(l)} f${f}`)}: elsewhere</span><span class="lat-count">${ll(l)} f${f}</span></header>${bridged}<ul class="lat-feat-list">${items}</ul>`
 }
 
 // ---- tab ----------------------------------------------------------------------------------------
@@ -618,10 +723,12 @@ async function onSelection(rt: Runtime, st: GemmaState): Promise<void> {
   if (!span) return
   const picked = tokensIn(data, span[0], span[1])
   if (!picked.length || picked.length > 400) return
+  const bridged = await bridgeSection(rt, data, picked).catch(() => '')
+  if (seq !== st.seq) return
   st.aligned = al
   st.data = data
   st.picked = picked
-  panel.innerHTML = panelHtml(bake, data, al, picked, labels, glosses)
+  panel.innerHTML = panelHtml(bake, data, al, picked, labels, glosses, bridged)
   showTab(rt)
 }
 
@@ -647,8 +754,8 @@ export function bindGemma(rt: Runtime): void {
   rt.probe.addEventListener(
     'pointerover',
     event => {
-      if (!st.aligned || !st.data) return
       const target = event.target as HTMLElement
+      if (!st.aligned || !st.data || !st.panel?.contains(target)) return
       const f = target.closest<HTMLElement>('.lat-gm-f')
       if (f) {
         highlight(
@@ -681,9 +788,25 @@ export function bindGemma(rt: Runtime): void {
   rt.probe.addEventListener(
     'click',
     event => {
-      const f = (event.target as HTMLElement).closest<HTMLElement>('.lat-gm-f')
+      const target = event.target as HTMLElement
+      const trace = target.closest<HTMLButtonElement>('.lat-gm-trace')
+      if (trace) {
+        void traceNext(rt, st, trace)
+        return
+      }
+      const text = target.closest<HTMLElement>('[data-open-text]')
+      if (text) {
+        // a bridge's text feature: open it in the features tab
+        rt.probe.querySelector<HTMLButtonElement>('.lat-tab[data-tab="features"]')?.click()
+        void benchFeatures(rt)?.select('text', Number(text.dataset.openText))
+        return
+      }
+      const f = target.closest<HTMLElement>('.lat-gm-f, .lat-gm-bridge')
       if (!f) return
+      const outside = !st.panel?.contains(f)
       void elsewhere(rt, st, Number(f.dataset.l), Number(f.dataset.f))
+      // from a feature card: the answer is in the selection tab
+      if (outside) showTab(rt)
     },
     { signal: rt.signal },
   )

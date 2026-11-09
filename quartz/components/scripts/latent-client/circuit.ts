@@ -1,3 +1,6 @@
+import { bridgeOf, bridgesOf } from './bridges'
+import { benchFeatures } from './features'
+import { codesOf } from './features-data'
 import {
   bakeOf,
   clearHighlights,
@@ -44,7 +47,9 @@ interface Graph {
     target: [number, number]
     spans: [number, number][]
     token: string
-    p: number
+    p?: number
+    /** traced on request for a reader selection (plt_serve.py POST /graph), not baked */
+    live?: boolean
   }
 }
 
@@ -116,7 +121,32 @@ function layout(g: Graph) {
   return { first, x, y }
 }
 
-function svg(g: Graph, labels: Record<string, Record<string, Label | string>>): string {
+/**
+ * The graph's features that bridge to a text feature of the passage itself (plt_bridges.py):
+ * "L:f" -> that text feature's name.
+ */
+async function bridged(rt: Runtime, row: number): Promise<Map<string, string>> {
+  const out = new Map<string, string>()
+  const feats = benchFeatures(rt)
+  const [br, dict] = await Promise.all([
+    bridgesOf(rt),
+    feats ? feats.dict('text').catch(() => null) : Promise.resolve(null),
+  ])
+  if (!feats || !br || !dict) return out
+  for (const [j] of await codesOf(rt, dict, row).catch(() => [] as [number, number][])) {
+    const b = bridgeOf(br, j)
+    if (!b) continue
+    for (const [l, f] of b.b)
+      if (!out.has(`${l}:${f}`)) out.set(`${l}:${f}`, feats.name(dict.table[j]))
+  }
+  return out
+}
+
+function svg(
+  g: Graph,
+  labels: Record<string, Record<string, Label | string>>,
+  bridges: Map<string, string>,
+): string {
   const { first, x, y } = layout(g)
   const nodes = g.nodes.filter(n => n.kind !== 'bias' && (n.pos >= first || n.kind === 'logit'))
   const byId = new Map(nodes.map(n => [n.id, n]))
@@ -148,6 +178,7 @@ function svg(g: Graph, labels: Record<string, Record<string, Label | string>>): 
         return `<circle class="lat-cx-n" data-kind="logit" data-id="${esc(n.id)}" data-tip="${esc(`logit ${tok(n.token)} · p ${(n.prob ?? 0).toFixed(3)}`)}" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="4"/>`
       const lab = n.kind === 'feature' ? labelOf(labels, n.layer, n.feature ?? -1) : null
       const infl = `infl ${(n.influence ?? 0).toFixed(3)}`
+      const to = n.kind === 'feature' ? bridges.get(`${n.layer}:${n.feature}`) : undefined
       const tip =
         n.kind === 'feature'
           ? [
@@ -156,9 +187,10 @@ function svg(g: Graph, labels: Record<string, Record<string, Label | string>>): 
                 ? `${lab.label}${lab.score !== undefined ? ` · det ${lab.score.toFixed(2)}` : ''}`
                 : 'unlabelled',
               `act ${(n.act ?? 0).toFixed(2)} · ${infl}`,
+              ...(to ? [`bridges to ${to}`] : []),
             ].join('\n')
           : `emb ${tok(g.tokens[n.pos])} · ${infl}`
-      return `<circle class="lat-cx-n" data-kind="${n.kind}"${(lab?.score ?? 0) >= 0.75 ? ' data-strong' : ''} data-id="${esc(n.id)}" data-tip="${esc(tip)}" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r.toFixed(1)}"/>`
+      return `<circle class="lat-cx-n" data-kind="${n.kind}"${(lab?.score ?? 0) >= 0.75 ? ' data-strong' : ''}${to ? ' data-bridge' : ''} data-id="${esc(n.id)}" data-tip="${esc(tip)}" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r.toFixed(1)}"/>`
     })
     .join('')
   // the grid the graph lives on: a hairline per layer, one per token column
@@ -220,12 +252,13 @@ function topFeatures(g: Graph, labels: Record<string, Record<string, Label | str
     .join('')
 }
 
-async function render(rt: Runtime, row: number, seq: CircuitState): Promise<void> {
+async function render(rt: Runtime, row: number, seq: CircuitState, live?: Graph): Promise<void> {
   const n = ++seq.n
   seq.graph = null
   const bake = await bakeOf(rt)
   if (!bake || n !== seq.n) return
-  const g = await fetchJson<Graph>(rt, `${bake.base}/graphs/${row}.json`).catch(() => null)
+  const g =
+    live ?? (await fetchJson<Graph>(rt, `${bake.base}/graphs/${row}.json`).catch(() => null))
   if (n !== seq.n) return
   const have = rt.probe.querySelector<HTMLElement>('.lat-panel[data-panel="circuit"]')
   if (!g) {
@@ -233,15 +266,15 @@ async function render(rt: Runtime, row: number, seq: CircuitState): Promise<void
       have.innerHTML = `<section class="lat-feat-group"><p class="lat-gm-note">no circuit for this passage</p></section>`
     return
   }
-  const labels = await bake.labels
+  const [labels, bridges] = await Promise.all([bake.labels, bridged(rt, row)])
   if (n !== seq.n) return
   seq.graph = g
   const panel = have ?? probeTab(rt, 'circuit', 'lat-features lat-gemma lat-circuit')
   const target = g.logits[0]
   panel.innerHTML = [
-    `<section class="lat-feat-group lat-gm-head"><header><span class="lat-feat-head">→ “${esc(target?.token ?? '')}”</span><span class="lat-count">p ${(target?.prob ?? 0).toFixed(2)}</span></header>`,
+    `<section class="lat-feat-group lat-gm-head"><header><span class="lat-feat-head">→ “${esc(target?.token ?? '')}”</span><span class="lat-count">p ${(target?.prob ?? 0).toFixed(2)}${g.passage?.live ? ' · live' : ''}</span></header>`,
     `<p class="lat-gm-note"><span data-tip="${esc(MODEL_TIP)}" data-tip-wide>Gemma 4 E4B</span> · influence ${shares(g)}</p></section>`,
-    `<section class="lat-feat-group">${svg(g, labels)}</section>`,
+    `<section class="lat-feat-group">${svg(g, labels, bridges)}</section>`,
     `<section class="lat-feat-group"><header><span class="lat-feat-head">most influence</span><span class="lat-count">detection</span></header><ul class="lat-feat-list">${topFeatures(g, labels)}</ul></section>`,
   ].join('')
 }
@@ -283,6 +316,18 @@ export function bindCircuit(rt: Runtime): void {
   const observer = new MutationObserver(show)
   observer.observe(rt.root, { attributes: true, attributeFilter: ['data-latent-focus'] })
   rt.signal.addEventListener('abort', () => observer.disconnect())
+  // a live graph from the selection tab (gemma.ts): shown until the focus moves
+  rt.root.addEventListener(
+    'latent:graph',
+    event => {
+      const g = (event as CustomEvent<Graph>).detail
+      if (!g.passage) return
+      void render(rt, g.passage.row, seq, g).then(() =>
+        rt.probe.querySelector<HTMLButtonElement>('.lat-tab[data-tab="circuit"]')?.click(),
+      )
+    },
+    { signal: rt.signal },
+  )
   rt.probe.addEventListener(
     'pointerover',
     event => {
