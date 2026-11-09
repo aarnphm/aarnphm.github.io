@@ -1,0 +1,199 @@
+@use '../variables.scss' as *;
+
+// `layout: latent`: the probe's selection tab (quartz/components/scripts/latent-client/gemma.ts).
+// It reuses the features tab's groups and rows (.lat-features, latent-features.scss); what is
+// its own is the depth strip, one line a layer, and the reader highlights.
+:is([data-layout='latent'] :where(#quartz-root)) .lat-probe .lat-gemma {
+  .lat-gm-note {
+    margin: 0;
+    font-size: var(--text-meta);
+    color: var(--darkgray);
+  }
+
+  .lat-gm-head .lat-feat-head {
+    font-style: italic;
+    font-weight: normal;
+  }
+
+  .lat-gm-strip {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+      display: grid;
+      grid-template-columns: 2rem minmax(0, 1fr);
+      align-items: baseline;
+      column-gap: 0.45rem;
+      margin: 0;
+      padding: 0.06rem 0;
+    }
+  }
+
+  .lat-gm-l {
+    font-family: var(--lat-mono);
+    font-size: var(--lat-micro);
+    color: var(--gray);
+  }
+
+  .lat-gm-cells {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: 0.35rem;
+    min-width: 0;
+  }
+
+  // a feature: its label (or id) over a hairline as long as its activation, relative to the
+  // layer's strongest token in the passage. Labels with detection >= .75 are ink, others gray
+  .lat-gm-f {
+    display: block;
+    min-width: 0;
+    padding: 0;
+    font: inherit;
+    font-size: var(--lat-micro);
+    line-height: 1.35;
+    text-align: left;
+    color: var(--gray);
+    background: none;
+    border: 0;
+    cursor: pointer;
+
+    span {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    i {
+      display: block;
+      width: calc(var(--a) * 100%);
+      height: 1px;
+      background: var(--lat-hair);
+    }
+
+    &[data-gloss] span {
+      font-style: italic;
+    }
+
+    &[data-strong] {
+      color: var(--dark);
+
+      i {
+        background: var(--dark);
+      }
+    }
+
+    &:hover span {
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
+    }
+  }
+
+  .lat-feat .lat-gm-f {
+    font-size: var(--text-meta);
+    color: var(--dark);
+  }
+
+  .lat-gm-attn {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+
+    button {
+      padding: 0;
+      font-family: var(--lat-mono);
+      font-size: var(--lat-micro);
+      color: var(--gray);
+      background: none;
+      border: 0;
+      cursor: pointer;
+
+      &:hover {
+        color: var(--dark);
+        text-decoration: underline;
+        text-underline-offset: 0.2em;
+      }
+    }
+  }
+}
+
+// the circuit tab's graph: ink features (darker when the label is trusted), gray error squares
+:is([data-layout='latent'] :where(#quartz-root)) .lat-probe .lat-circuit {
+  svg.lat-cx {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .lat-cx-g {
+    stroke: var(--lightgray);
+    stroke-width: 0.25;
+    stroke-opacity: 0.6;
+
+    &[data-major] {
+      stroke-opacity: 1;
+    }
+  }
+
+  .lat-cx-e {
+    stroke: var(--darkgray);
+    stroke-width: 0.6;
+
+    &[data-neg] {
+      stroke: var(--secondary);
+    }
+  }
+
+  svg[data-hover] .lat-cx-e:not([data-on]) {
+    stroke-opacity: 0.04;
+  }
+
+  .lat-cx-n {
+    fill: var(--gray);
+    cursor: default;
+
+    &[data-strong],
+    &[data-kind='logit'] {
+      fill: var(--dark);
+    }
+
+    &[data-kind='error'] {
+      fill: var(--lightgray);
+    }
+
+    &[data-kind='embedding'] {
+      fill: none;
+      stroke: var(--gray);
+    }
+  }
+
+  .lat-cx-t,
+  .lat-cx-tok {
+    font-family: var(--lat-mono);
+    font-size: 7px;
+    fill: var(--gray);
+  }
+
+  .lat-cx-tok {
+    text-anchor: end;
+  }
+
+  .lat-feat-name[data-weak] {
+    color: var(--gray);
+  }
+}
+
+// where a hovered feature fires, or what the selection reads, in three strengths
+::highlight(lat-gemma-1) {
+  background-color: color-mix(in srgb, var(--color-orange, #da702c) 14%, transparent);
+}
+
+::highlight(lat-gemma-2) {
+  background-color: color-mix(in srgb, var(--color-orange, #da702c) 30%, transparent);
+}
+
+::highlight(lat-gemma-3) {
+  background-color: color-mix(in srgb, var(--color-orange, #da702c) 50%, transparent);
+}

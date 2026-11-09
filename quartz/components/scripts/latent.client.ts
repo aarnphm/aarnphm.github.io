@@ -2,9 +2,11 @@ import { RAIL_HEIGHT } from '../../util/latent/rail'
 import { decodeTrack, type LatentDoc, type LatentKind } from '../../util/latent/types'
 import { bindAxesCarousel } from './latent-client/axes-carousel'
 import { openBench } from './latent-client/bench'
+import { bindCircuit } from './latent-client/circuit'
 import { bindFeatures } from './latent-client/features'
 import { bindCallouts, claimTiles, renderFigures } from './latent-client/figures'
 import { bindFolios } from './latent-client/folio'
+import { bindGemma } from './latent-client/gemma'
 import { bindMarquee } from './latent-client/marquee'
 import { bindProbeShortcuts } from './latent-client/probe-shortcuts'
 import { bindRail } from './latent-client/rail'
@@ -227,6 +229,8 @@ export function mountLatent(root: HTMLElement): void {
       bindClicks(rt)
       bindSearch(rt)
       bindFeatures(rt)
+      bindGemma(rt)
+      bindCircuit(rt)
       bindSearchShortcutHint(rt)
       bindProbeShortcuts(rt)
       bindAxesCarousel(rt)
