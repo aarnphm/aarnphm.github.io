@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-11-05 23:42:45 GMT-05:00
+modified: 2026-11-09 17:00:47 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -82,6 +82,21 @@ title: are.na
 
 ## discourse
 
+- https://www.lesswrong.com/posts/pY76hHbdD4jduX3YH/wah-wah-wah-wah-do-more-ai-r-and-d -- Wah wah wah wah do more AI R&D
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [ai governance, capabilities research]
+    - later: true
+- https://nothinghuman.substack.com/p/anthropic-are-the-good-guys -- Anthropic are the Good Guys
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [ai governance, institutional culture]
+    - later: true
+- https://theabundantfuture.substack.com/p/why-young-people-are-organizing-around -- Why Young People Are Organizing Around Abundance
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [abundance agenda, political organizing]
+    - later: true
 - https://x.com/nabeelqu/status/2107528380623319262 -- Nabeel Qureshi recommends Seb Krier's twenty takes on AI
   - [meta]:
     - date: 10/23/2026
@@ -8815,6 +8830,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://erifili.substack.com/p/life-begins-and-ends-with-attention -- life begins and ends with attention
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [attention, awe]
+    - later: true
 - https://rentherapy.substack.com/p/your-partner-isnt-the-enemy-unpacking -- Your Partner Isn't the Enemy: Unpacking Relationship Rage
   - [meta]:
     - date: 11/06/2026
@@ -12744,6 +12764,26 @@ title: are.na
   - view: list
   - json: true
 
+- https://github.com/anthropics/mythos-5-incident-transcript/blob/main/README.md -- Mythos 5 Transcript Release
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [agent security, evaluation incidents]
+    - later: true
+- https://www.lesswrong.com/posts/R5g8YT25G9DXJJ48n/glm-5-3-sometimes-considers-how-train-time-actions-shape -- GLM-5.3 Sometimes Considers How Train-Time Actions Shape Future Behavior
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [update-aware reasoning, alignment faking]
+    - later: true
+- https://www.lesswrong.com/posts/wCSEpT3dTGz4N86Wi/even-illegible-mythos-reasoning-traces-seem-pretty-legible -- Even "illegible" Mythos reasoning traces seem pretty legible
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [chain of thought, monitorability]
+    - later: true
+- https://cameronrwolfe.substack.com/p/subjective-evals -- Evaluating Agents on Highly Subjective Tasks
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [agent evaluation, subjective evaluation]
+    - later: true
 - https://x.com/xeophon/status/2106723814335996151 -- Florian Brand on chain-of-thought monitoring and action obfuscation
   - [meta]:
     - date: 10/23/2026
@@ -16514,6 +16554,11 @@ title: are.na
 
 ## opinions
 
+- https://notmickey1.substack.com/p/i-watched-the-elizabeth-holmes-doc -- Watching the Elizabeth Holmes doc with her Fiance
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [documentary criticism, theranos]
+    - later: true
 - https://x.com/chrislakin/status/2103620465029943764 -- Chris Lakin: Addictions are anesthesia
   - [meta]:
     - date: 10/22/2026
@@ -17129,6 +17174,21 @@ title: are.na
 
 ## life is literature
 
+- https://tianlezhang.substack.com/p/what-does-the-chinese-internet-think-133 -- What does the Chinese Internet think about Sally Rooney's novels?
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [literary reception, translation]
+    - later: true
+- https://viverricious.substack.com/p/my-husband-left-me-6-weeks-postpartum -- My husband left me 6 weeks postpartum and all I got was this pretty cool baby
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [personal essays, parenthood]
+    - later: true
+- https://writesjosephine.substack.com/p/writing-in-a-notebook -- Writing In A Notebook
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [writing practice, articulation]
+    - later: true
 - https://x.com/SchrodingrsBrat/status/2107560613459140937 -- Sherry on fiction as a confession of imagination
   - [meta]:
     - date: 10/23/2026
@@ -19109,6 +19169,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.lesswrong.com/posts/pK4HTxuv6mftHXWC3/prolegomena-to-a-theory-of-fun -- Prolegomena to a Theory of Fun
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [fun theory, hedonic psychology]
+    - later: true
 - https://philosophy.lander.edu/intro/articles/jameslife-a.pdf -- Is Life Worth Living?
   - [meta]:
     - date: 10/22/2026
@@ -21015,6 +21080,11 @@ title: are.na
 
 ## finances
 
+- https://substack.com/home/post/p-220232175?selection=a783b057-708b-4062-bb16-15888967c973#:~:text=Enormous%20profits%20require%20paying%20no%20people%20for%20anything%2C%20just%20selling%20the%20products%2C%20seemingly%20to%20other%20makers%20of%20machines%2C%20who%20also%20seek%20enormous%20profits -- The Shrugflation Triangle: How AI, Oil, and Treasuries are Impacting the Economy
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [inflation, ai investment, treasuries]
+    - later: true
 - https://www.pm.gc.ca/en/news/news-releases/2026/09/15/prime-minister-carney-introduces-new-productivity-mega-deduction -- Prime Minister Carney introduces new Productivity Mega Deduction
   - [meta]:
     - date: 09/21/2026
@@ -25763,6 +25833,36 @@ title: are.na
   - view: list
   - json: true
 
+- https://github.com/jackyzha0/eg-strider -- eg-strider: an Eg-walker-inspired collaborative text algorithm
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [collaborative editing, crdt]
+    - later: true
+- https://github.com/enesozturk/dimensional-drawing -- Dimensional Drawing: technical drawings for UI components
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [design documentation, agent skills]
+    - later: true
+- https://github.com/humanlayer/humanlayer -- HumanLayer: coordinating coding agents across machines
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [coding agents, agent orchestration]
+    - later: true
+- https://github.com/josephg/egwalker-paper -- Eg-walker paper: experiments, benchmarks, and editing traces
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [collaborative editing, reproducibility]
+    - later: true
+- https://github.com/jessfraz/beep-boop -- Beep Boop: persistent agent conversations and Rex workers
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [agent harnesses, durable workflows]
+    - later: true
+- https://github.com/mainplane-ai/mainplane -- Mainplane: a self-hosted agent harness
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [agent harnesses, self-hosting]
+    - later: true
 - https://github.com/tomjohndesign/what-the-port -- WhatThePort
   - [meta]:
     - date: 10/20/2026
@@ -27222,6 +27322,16 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://forum.effectivealtruism.org/posts/8rwLroRx5bcCcshzG/information-security-become-a-hacker-not-a-consultant -- Information security: Become a hacker, not a consultant
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [information security, career development]
+    - later: true
+- https://taekim.substack.com/p/an-interview-with-openais-richard -- An Interview with OpenAI's Richard Ho on Why Jalapeño Is a Groundbreaking AI Chip
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [ai accelerators, inference hardware]
+    - later: true
 - https://x.com/ekzhang1/status/2106839589721632831 -- Eric Zhang: What is a NIC?
   - [meta]:
     - date: 10/23/2026
@@ -28440,6 +28550,11 @@ title: are.na
 
 ## fashion
 
+- https://anotherbrowsertab.substack.com/p/self-actualizing-through-birkenstock -- Self-actualizing through Birkenstock clogs
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [footwear, consumer signaling]
+    - later: true
 - https://www.instagram.com/quida._/ -- Ida
   - [meta]:
     - date: 11/08/2026
@@ -30323,6 +30438,51 @@ title: are.na
   - view: list
   - json: true
 
+- https://alphaxiv.org/abs/2603.03251 -- Speculative Speculative Decoding
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [speculative decoding, llm inference]
+    - later: true
+- https://alphaxiv.org/pdf/2110.01111 -- Is this the simplest (and most surprising) sorting algorithm ever?
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [sorting, algorithms]
+    - later: true
+- https://alphaxiv.org/abs/2501.12084 -- Dissecting the NVIDIA Hopper Architecture through Microbenchmarking and Multiple Level Analysis
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [gpu architecture, microbenchmarking]
+    - later: true
+- https://alphaxiv.org/abs/2401.17975 -- Understanding polysemanticity in neural networks through coding theory
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [polysemanticity, coding theory]
+    - later: true
+- https://alphaxiv.org/abs/2601.17952 -- A Monosemantic Attribution Framework for Stable Interpretability in Clinical Neuroscience Transformer-Based Language Models
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [monosemanticity, feature attribution]
+    - later: true
+- https://alphaxiv.org/abs/2605.08218 -- Deep Dreams Are Made of This: Visualizing Monosemantic Features in Diffusion Models
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [diffusion models, feature visualization]
+    - later: true
+- https://alphaxiv.org/abs/2602.12403 -- MonoLoss: A Training Objective for Interpretable Monosemantic Representations
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [sparse autoencoders, monosemanticity]
+    - later: true
+- https://alphaxiv.org/pdf/1912.01588 -- Leveraging Procedural Generation to Benchmark Reinforcement Learning
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [reinforcement learning, procedural generation]
+    - later: true
+- https://alphaxiv.org/pdf/2609.35525 -- Deep Epistemic Value Functions for Optimistic Exploration
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [reinforcement learning, epistemic uncertainty]
+    - later: true
 - https://advanced.onlinelibrary.wiley.com/doi/10.1002/aisy.202401034 -- Artificial Intelligences: A Bridge Toward Diverse Intelligence and Humanity's Future
   - [meta]:
     - date: 10/22/2026
