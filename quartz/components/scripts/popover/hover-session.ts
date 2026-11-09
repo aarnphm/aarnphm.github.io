@@ -217,9 +217,8 @@ function popoverForLink(link: HTMLAnchorElement): HTMLElement | null {
 }
 
 export function mouseLeaveHandler(this: HTMLAnchorElement, event: MouseEvent | FocusEvent) {
+  if (this.closest('.popover')) return
   if (containsRelatedTarget(this, event.relatedTarget)) return
-  const containingPopover = this.closest<HTMLElement>('.popover')
-  if (containingPopover && containsRelatedTarget(containingPopover, event.relatedTarget)) return
 
   const popover = popoverForLink(this)
   if (popover && containsRelatedTarget(popover, event.relatedTarget)) {
@@ -246,6 +245,9 @@ export async function mouseEnterHandler(
   this: HTMLAnchorElement,
   { clientX, clientY }: { clientX: number; clientY: number },
 ) {
+  // Preview contents retain navigation without taking over the parent hover session.
+  if (this.closest('.popover')) return
+
   // eslint-disable-next-line @typescript-eslint/no-this-alias
   popoverState.anchor = this
   const link = popoverState.anchor

@@ -6,14 +6,19 @@ import { access, mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { createServer } from 'node:http'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import test from 'node:test'
+import test, { type TestContext } from 'node:test'
 import { fileURLToPath } from 'node:url'
 import { compile } from 'sass-embedded'
 import { notebookPreviewFixture } from './custom-page-popovers-fixtures'
 
-const artifacts = 'docs/verification/custom-page-popovers/artifacts'
+const artifactsRoot = 'docs/verification/custom-page-popovers/artifacts'
 
-test('custom page and Curius link popovers use the shared browser lifecycle', async t => {
+test('nested previews preserve their parent and link navigation', t => verifyPopovers(t, true))
+test('custom page and Curius link popovers use the shared browser lifecycle', t =>
+  verifyPopovers(t, false))
+
+async function verifyPopovers(t: TestContext, nestedOnly: boolean) {
+  const artifacts = nestedOnly ? artifactsRoot + '/nested' : artifactsRoot
   let chrome: string | undefined
   for (const candidate of [
     process.env.ARENA_TEST_CHROME,
@@ -80,6 +85,32 @@ test('custom page and Curius link popovers use the shared browser lifecycle', as
         }
         void (async () => {
           try {
+            if (${nestedOnly}) {
+            enter(document.querySelector('#ordinary'))
+            await waitFor(() => document.querySelector('.active-popover article'))
+            check(document.querySelector('.active-popover').textContent.includes('Ordinary note body'), 'ordinary notes retain the article preview')
+            const parentPreview = document.querySelector('.active-popover')
+            for (const nested of parentPreview.querySelectorAll('a.internal')) {
+              enter(nested)
+              nested.focus()
+              await new Promise(r => setTimeout(r, 150))
+              check(document.querySelectorAll('.active-popover').length === 1 && parentPreview.classList.contains('active-popover'), nested.textContent + ': hover and focus preserve the parent preview')
+              check(!nested.dataset.popoverId, nested.textContent + ': no nested preview is created')
+              nested.dispatchEvent(new PointerEvent('pointerout', {pointerType:'mouse', bubbles:true, relatedTarget:parentPreview}))
+              nested.blur()
+              check(parentPreview.classList.contains('active-popover'), nested.textContent + ': leaving a nested link preserves the parent')
+            }
+            const nestedLink = parentPreview.querySelector('a.tag-link')
+            let nestedClickPrevented
+            window.addEventListener('click', event => {
+              nestedClickPrevented = event.defaultPrevented
+              event.preventDefault()
+            }, {once:true})
+            nestedLink.click()
+            check(!nestedClickPrevented, 'preview links retain normal click navigation')
+
+            escape()
+            } else {
             for (const modifiers of [{ metaKey: true }, { ctrlKey: true }, { shiftKey: true }, { metaKey: true, altKey: true }]) {
               let intercepted
               window.addEventListener('click', event => {
@@ -195,10 +226,6 @@ test('custom page and Curius link popovers use the shared browser lifecycle', as
             check(staticCard.textContent.includes('6 blocks'), 'static notebook retains source block counts')
             escape()
             check(!document.querySelector('.active-popover'), 'Escape dismisses without moving focus')
-            enter(document.querySelector('#ordinary'))
-            await waitFor(() => document.querySelector('.active-popover article'))
-            check(document.querySelector('.active-popover').textContent.includes('Ordinary note body'), 'ordinary notes retain the article preview')
-            escape()
             enter(document.querySelector('#stream-entry'))
             await waitFor(() => document.querySelector('.active-popover .stream-entry'))
             check(document.querySelectorAll('.active-popover .stream-entry').length === 1, 'stream entry links retain the isolated entry')
@@ -219,6 +246,7 @@ test('custom page and Curius link popovers use the shared browser lifecycle', as
             document.querySelector('#optout').dispatchEvent(new PointerEvent('pointerover', { pointerType: 'mouse', bubbles: true }))
             await new Promise(r => setTimeout(r, 50))
             check(!document.querySelector('.active-popover'), 'explicit popover opt-out survives')
+            }
             for (const fn of cleanups) fn()
             check(document.querySelectorAll('.popover').length === 0, 'navigation removes cached popovers')
             document.body.textContent = btoa(JSON.stringify({ passed }))
@@ -251,7 +279,7 @@ test('custom page and Curius link popovers use the shared browser lifecycle', as
     '/notebook-described': await notebookPreviewFixture(true, 'An authored overview.'),
     '/notebook-static': await notebookPreviewFixture(false),
     '/ordinary':
-      '<body data-slug="ordinary" data-layout="default"><article class="popover-hint">Ordinary note body</article>',
+      '<body data-slug="ordinary" data-layout="default"><article class="popover-hint">Ordinary note body <a class="internal tag-link" href="/arena">#ml</a><a class="internal" href="/letter">note</a><a class="internal" data-footnote-ref href="#fn">footnote</a></article>',
     '/stream':
       '<body data-slug="stream"><article class="stream popover-hint"><ol class="stream-feed"><li class="stream-entry" id="one">Entry one</li><li class="stream-entry" id="two">Entry two</li></ol></article>',
   }
@@ -375,7 +403,7 @@ test('custom page and Curius link popovers use the shared browser lifecycle', as
     )
     await writeFile(`${artifacts}/fixture.json`, JSON.stringify({ ...output, requests }, null, 2))
     assert.equal(output.error, undefined, output.error)
-    assert.ok(output.passed.length >= 30)
+    assert.ok(output.passed.length >= (nestedOnly ? 12 : 30))
     assert.ok(
       !requests.some(url => url.includes('query=preview')),
       'hover never extracts an article',
@@ -386,4 +414,4 @@ test('custom page and Curius link popovers use the shared browser lifecycle', as
     await new Promise<void>(resolve => server.close(() => resolve()))
     await rm(directory, { recursive: true, force: true })
   }
-})
+}

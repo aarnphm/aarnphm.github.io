@@ -391,6 +391,9 @@ export async function handleFootnote(
   const reference = referenceEntry(link)
   if (!reference) return
   const { entry: footnoteEntry, key } = reference
+  // a shown newspaper note (rail, or opened under its paragraph) already sits beside its mark, and
+  // profile-notes.inline.ts lights it on hover; a folded one still previews here
+  if (footnoteEntry.classList.contains('profile-note') && footnoteEntry.checkVisibility()) return
 
   const popoverId = `popover-footnote-${key}`
   let popoverElement = document.getElementById(popoverId) as HTMLElement | null
