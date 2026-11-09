@@ -1,5 +1,5 @@
-import { isRecord } from './type-guards'
 import type { InquiryClass, InquiryLinkKind } from './inquiry-map'
+import { isRecord } from './type-guards'
 
 /** Short or rich membership in a named thematic graph (`graphs:`). */
 export interface GraphMembership {

@@ -35,6 +35,7 @@ const configuration: GlobalConfiguration = {
     '**/target',
     '**/data',
     'hinterland/healthexporter/**',
+    'thoughts/images/instagram/**',
     'quartz/static/emails.txt',
   ],
   defaultDateType: 'created',
