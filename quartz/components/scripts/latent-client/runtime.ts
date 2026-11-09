@@ -83,7 +83,13 @@ export interface Runtime {
    * the box's `filter:` kinds (null keeps every kind); `mask` is one byte per row, built on the
    * first worker query that needs it (search.ts filterMask)
    */
-  filter?: { kinds: LatentKind[]; mask: Uint8Array | null } | null
+  filter?: { kinds: LatentKind[]; mask: Uint8Array | null; typed?: boolean } | null
+  /**
+   * the kinds the explorer shows (the toggles under the sources, view.ts): the links, the reader's
+   * neighbours in time and the rail's band skip the rest. Unset (an embed) shows every kind;
+   * `filter` is these unless the box names its own (`typed`)
+   */
+  view?: LatentKind[]
 }
 
 export interface Bench {

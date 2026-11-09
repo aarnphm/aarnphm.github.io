@@ -6,6 +6,6 @@ export {
   readerDocument,
   type ReaderMeta,
 } from './markup/reader'
-export { linksPane, type LinkItem } from './document-links'
+export { kindsBar, linksPane, type LinkItem } from './document-links'
 export { railSvg, RAIL_BIN, type RailModel } from './markup/rail'
 export { axisCard, axesCarousel, ledger, scopeFlagsFor } from './markup/axes'

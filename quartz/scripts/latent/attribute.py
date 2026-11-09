@@ -461,7 +461,7 @@ def build(
   probs = mx.softmax(ref, axis=-1)
   order = np.argsort(-np.array(probs))
   keep, mass = [], 0.0
-  for tid in order[: logits]:
+  for tid in order[:logits]:
     keep.append(int(tid))
     mass += float(probs[int(tid)].item())
     if mass >= logit_mass:
@@ -495,7 +495,7 @@ def build(
   )  # first-order influence of each feature on the logits
   order_f: list[int] = []
   while len(order_f) < min(nodes_, n):
-    cand = [j for j in np.argsort(-score) if j not in done_rows][: batch]
+    cand = [j for j in np.argsort(-score) if j not in done_rows][:batch]
     if not cand or score[cand[0]] <= 0:
       break
     items = [G.active[j][:3] for j in cand]
@@ -599,9 +599,7 @@ def build(
   src = np.arange(K, N)
   ordr = src[np.argsort(-infl[src])]
   cum = np.cumsum(infl[ordr]) / max(1e-12, infl[src].sum())
-  kept_src = set(
-    ordr[: int(np.searchsorted(cum, node_share)) + 1].tolist()
-  )
+  kept_src = set(ordr[: int(np.searchsorted(cum, node_share)) + 1].tolist())
   alive = [i for i in range(N) if i < K or i in kept_src]
   # prune edges by |weight| x target influence, keep edge-share
   sub = A[np.ix_(alive, alive)]
@@ -613,9 +611,7 @@ def build(
       min(
         len(flat) - 1,
         int(
-          np.searchsorted(
-            np.cumsum(flat) / max(1e-12, flat.sum()), edge_share
-          )
+          np.searchsorted(np.cumsum(flat) / max(1e-12, flat.sum()), edge_share)
         ),
       )
     ]

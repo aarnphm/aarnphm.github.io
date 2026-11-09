@@ -11,6 +11,7 @@ import { titleText } from '../../../util/latent/title'
 import { yearOfDay } from '../../../util/latent/types'
 import { goTo } from './reader'
 import { measureRail, renderRail } from './search'
+import { shownDoc, stepShown } from './view'
 
 // ---- the rail as a control -----------------------------------------------------------------
 
@@ -19,12 +20,13 @@ function railLayoutOf(rt: Runtime): RailLayout {
   return rt.railLayout
 }
 
-/** The document whose slot is nearest a y in rail viewBox units. */
+/** The document of a shown kind whose slot is nearest a y in rail viewBox units. */
 function docNearY(rt: Runtime, y: number): number {
   const layout = railLayoutOf(rt)
   let best = 0
   let bestDist = Infinity
   for (let i = 0; i < layout.y.length; i++) {
+    if (!shownDoc(rt, i)) continue
     const dist = Math.abs(layout.y[i] - y)
     if (dist < bestDist) {
       bestDist = dist
@@ -71,8 +73,8 @@ export function bindRail(rt: Runtime): void {
       if (Math.abs(wheelBudget) < 40) return
       const direction = Math.sign(wheelBudget)
       wheelBudget = 0
-      const next = rt.open + direction
-      if (next < 0 || next >= rt.docs.length) return
+      const next = stepShown(rt, rt.open, direction > 0 ? 1 : -1)
+      if (next < 0) return
       stepping = true
       void goTo(rt, rt.docs[next].r0).finally(() => {
         stepping = false

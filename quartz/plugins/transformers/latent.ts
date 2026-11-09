@@ -9,6 +9,7 @@ import loader from '../../components/scripts/latent-loader.inline'
 import { QuartzTransformerPlugin } from '../../types/plugin'
 import cachedKatex from '../../util/cached-katex'
 import { codeAttributes, highlightCode } from '../../util/highlight-source'
+import { viewKinds } from '../../util/latent/filter'
 import {
   axesCarousel,
   docHead,
@@ -107,11 +108,16 @@ export const Latent: QuartzTransformerPlugin = () => {
           const focusDoc = docOfRow(sidecar, focus)
           const focusPreview = sidecar.preview(focus)
           const links = sidecar.knn(focus)
-          const items: LinkItem[] = links.neighbours.map(n => {
-            const preview = sidecar.preview(n.r)
-            const doc = docs[preview.d]
-            return { preview, score: n.score, doc, inScope: inScope(doc.id, prefixes) }
-          })
+          // the explorer opens on notes and pdfs (filter.ts viewKinds); the client swaps in the
+          // reader's own pick, kept in local storage, when it differs
+          const view = viewKinds(null, index.kinds)
+          const items: LinkItem[] = links.neighbours
+            .map(n => {
+              const preview = sidecar.preview(n.r)
+              const doc = docs[preview.d]
+              return { preview, score: n.score, doc, inScope: inScope(doc.id, prefixes) }
+            })
+            .filter(item => view.includes(item.doc.s))
           const neighbourDocs = new Map<number, number>()
           const neighbourWeights = new Map<number, number>()
           for (const item of items) {
@@ -139,11 +145,18 @@ export const Latent: QuartzTransformerPlugin = () => {
               weights: neighbourWeights,
               focusChunkIndex,
               scopeFlags: flags,
+              hide: index.kinds.filter(kind => !view.includes(kind)),
             }),
           ])
 
-          const prev = focusDoc.d > 0 ? docs[focusDoc.d - 1] : null
-          const next = focusDoc.d + 1 < docs.length ? docs[focusDoc.d + 1] : null
+          // the reader's neighbours in time are the nearest documents of a shown kind
+          const shownAt = (d: number, step: number) => {
+            for (let i = d + step; i >= 0 && i < docs.length; i += step)
+              if (view.includes(docs[i].s)) return docs[i]
+            return null
+          }
+          const prev = shownAt(focusDoc.d, -1)
+          const next = shownAt(focusDoc.d, 1)
           const stub = (doc: typeof focusDoc) =>
             readerDocument(
               {
@@ -217,7 +230,7 @@ export const Latent: QuartzTransformerPlugin = () => {
             features.length
               ? h('div.lat-panel.lat-features', { dataPanel: 'features', hidden: true })
               : null,
-            ledger(index, prefixes),
+            ledger(index, prefixes, view),
           ])
 
           const root = h(
@@ -231,6 +244,7 @@ export const Latent: QuartzTransformerPlugin = () => {
               dataLatentBlock: String(index.block),
               dataLatentAxes: String(index.axes),
               dataLatentKinds: index.kinds.join(','),
+              dataLatentView: view.join(','),
               dataLatentScope: prefixes.join(','),
               dataLatentRows: String(index.rows),
               dataLatentDocs: String(index.docs),

@@ -1,7 +1,7 @@
 import type { Element } from 'hast'
 import { h } from 'hastscript'
-import type { LatentDoc, LatentKind, LatentPreview } from './types'
 import { titleRuns, titleText } from './title'
+import { KIND_ORDER, type LatentDoc, type LatentKind, type LatentPreview } from './types'
 
 export interface LinkItem {
   preview: LatentPreview
@@ -107,5 +107,30 @@ export function linksPane(
         ),
       ]
     }),
+  ])
+}
+
+// named as the sources ledger and the bench's toggles name them
+const KIND_NAME: Record<LatentKind, string> = {
+  note: 'notes',
+  pdf: 'pdf',
+  image: 'images',
+  base: 'bases',
+}
+
+/**
+ * Under the probe's sources: which kinds the explorer shows, one toggle a kind of the store. The
+ * client (latent-client/search.ts bindKinds) keeps them in step with the box's `filter:`.
+ */
+export function kindsBar(kinds: LatentKind[], shown: LatentKind[]): Element {
+  return h('div.lat-kinds', { role: 'group', ariaLabel: 'kinds shown' }, [
+    h('span.lat-kinds-label', 'show'),
+    ...KIND_ORDER.filter(kind => kinds.includes(kind)).map(kind =>
+      h(
+        'button.lat-kind',
+        { type: 'button', dataKind: kind, ariaPressed: String(shown.includes(kind)) },
+        KIND_NAME[kind],
+      ),
+    ),
   ])
 }

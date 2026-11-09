@@ -2,6 +2,7 @@ import type { Element, ElementContent } from 'hast'
 import { h } from 'hastscript'
 import type { LatentKind, LatentPreview } from '../types'
 import { dropcapSpecimen } from '../../dropcap'
+import { poetryChildren } from '../../poetry'
 import { telescopeHast, telescopicContent } from '../../telescopic'
 import {
   type HtmlOptions,
@@ -13,7 +14,16 @@ import {
   pipeTable,
   repairCuts,
 } from '../html'
-import { type MdHooks, codeText, mdBlocks, mdInline, mdLink, mdSource } from '../md'
+import {
+  type MdHooks,
+  codeText,
+  embedHref,
+  embedName,
+  mdBlocks,
+  mdInline,
+  mdLink,
+  mdSource,
+} from '../md'
 import { pseudocodeBlock } from '../pseudo'
 import { svgDrawings } from '../svg'
 import { displayTex, inlineTex } from '../tex'
@@ -218,6 +228,9 @@ const mdHooks = (options: PassageOptions): MdHooks => {
     display: tex => h('div.math.math-display', decodeEntities(tex)),
     fence: (body, info) => fenceView(body, info, options),
     figure: html => figureBlock(html, inline),
+    triathlon: count => triathlonCard(count, options.page),
+    signature: () => signature(options.page),
+    embed: (href, alias) => embed(href, alias, options.page),
   }
 }
 
@@ -260,30 +273,16 @@ function fenceView(body: string, info: string | undefined, options: PassageOptio
         text ? hooks.inline(text) : [],
       ),
     ])
-  const stanzas = body
-    .replace(/^\n+|\s+$/g, '')
-    .split(/\n[ \t]*\n+/)
-    .filter(s => s.trim())
-  if (kind === 'quotes' && stanzas.length > 0) {
-    const parts = stanzas.map(s => s.trim().replace(/--/g, '—'))
-    const cite = parts.length > 1 ? parts.pop()! : null
-    return h('blockquote.lat-quote.lat-quotes', [
-      ...mdBlocks(parts.join('\n\n'), hooks),
-      cite
-        ? h('p.lat-cite', ['\u2014\u2009', ...hooks.inline(cite.replace(/\s*\n\s*/g, ' '))])
-        : null,
-    ])
-  }
+  // the Aarnphm transformer's fences (transformers/aarnphm/codeblocks.ts), in its markup so the
+  // site's styles set them: a `quotes` block is a blockquote.quotes of markdown whose last
+  // paragraph is the attribution (quotes.scss opens and closes the quote marks and dashes the
+  // attribution), `poetry` is pre.poetry, `sms` the italic p.text between rules
+  const trimmed = body.replace(/^\n+|\s+$/g, '')
+  if (kind === 'quotes' && trimmed) return h('blockquote.quotes', dashes(mdBlocks(trimmed, hooks)))
   if (kind === 'poetry' || kind === 'poem')
-    return h(
-      'div.lat-verse',
-      stanzas.map(s => h('p', hooks.inline(s))),
-    )
+    return h('pre.poetry', { dataCodeblock: kind }, poetryChildren(decodeEntities(trimmed)))
   if (kind === 'sms')
-    return h(
-      'div.lat-sms',
-      stanzas.map(s => h('p', hooks.inline(s.trim()))),
-    )
+    return h('p.text', { dataCodeblock: 'sms' }, hooks.inline(trimmed.replace(/\s+/g, ' ')))
   if (kind === 'tracking') {
     const fields = body
       .split('\n')
@@ -302,6 +301,14 @@ function fenceView(body: string, info: string | undefined, options: PassageOptio
   return fenceBlock(body, info)
 }
 
+// quoteDisplayDashes: a quote's `--` reads as a dash in its text, never in a link's address
+function dashes(nodes: ElementContent[]): ElementContent[] {
+  for (const node of nodes)
+    if (node.type === 'text') node.value = node.value.replace(/--/g, '\u2014')
+    else if (node.type === 'element') dashes(node.children)
+  return nodes
+}
+
 /**
  * A tikz fence. The build typesets tikz on the note page (TikzJax); the reader holds the source
  * and the client swaps in that page's rendered figure the first time the passage shows. A fence
@@ -315,6 +322,72 @@ function tikzFigure(source: string, info: string, page: string | undefined): Ele
     ])
   return h('figure.tikz.lat-tikz', { dataPage: page }, [
     h('pre.lat-code.lat-tikz-source', [h('code', source.replace(/\n+$/, ''))]),
+  ])
+}
+
+/**
+ * A note's latest-activities card. The build fills the note page's marker from the Strava store
+ * (quartz/components/strava-activities.ts); the reader holds the link the page shows without
+ * synced data, and the client swaps in the page's card the first time the passage nears the
+ * screen. `count` picks that card when a page has more than one.
+ */
+function triathlonCard(count: string | undefined, page: string | undefined): Element {
+  return h('div.lat-triathlon', { dataPage: page, dataCount: count }, [
+    h('a.internal', { href: '/triathlon' }, 'latest activities in the training log'),
+  ])
+}
+
+/**
+ * A note's handwritten signature (the Aarnphm transformer draws `[^sign]` from its letter banks,
+ * in the text the page's frontmatter names). The reader holds an empty line of the signature's
+ * height and the client copies the page's drawing in the first time the passage nears the screen.
+ */
+function signature(page: string | undefined): Element {
+  return h('p.signature.lat-signature', { dataPage: page })
+}
+
+const IMAGE = /\.(?:avif|gif|jpe?g|png|svg|webp)$/i
+const VIDEO = /\.(?:mp4|webm|mov)$/i
+const AUDIO = /\.(?:m4a|mp3|wav|ogg|flac)$/i
+
+/**
+ * An embed (`![[…]]`, its target resolved by the builder). An image, a video or a voice memo is drawn here as
+ * the note page draws one (ofm.ts: a captioned image is `figure[data-img-w-caption]`, `|300` or
+ * `|300x200` sizes it). Anything else is what the note page transcluded there: the reader holds a
+ * link to it and the client copies in the page's `blockquote.transclude` for it.
+ */
+function embed(raw: string, alias: string | undefined, page: string | undefined): Element {
+  const href = embedHref(raw)
+  // a web embed (a YouTube video, a tweet) reads as its link
+  if (/^https?:\/\//.test(href))
+    return h('p', mdLink(href, [{ type: 'text', value: embedName(href, alias) }]))
+  const path = href.split('#')[0]
+  const label = alias?.trim() ?? ''
+  const size = /^(\d+)(?:x(\d+))?$/.exec(label)
+  if (IMAGE.test(path)) {
+    const img = h('img', {
+      src: path,
+      alt: size ? '' : label,
+      width: size?.[1],
+      height: size?.[2],
+      loading: 'lazy',
+      decoding: 'async',
+    })
+    return label && !size
+      ? h('figure', { dataImgWCaption: 'true' }, [
+          img,
+          h('figcaption', [h('span.figure-caption', label)]),
+        ])
+      : h('p.lat-embed-media', [img])
+  }
+  if (AUDIO.test(path))
+    return h('p.lat-embed-media', [h('audio', { src: path, controls: true, preload: 'none' })])
+  if (VIDEO.test(path))
+    return h('p.lat-embed-media', [
+      h('video', { src: path, controls: true, preload: 'metadata', width: size?.[1] }),
+    ])
+  return h('div.lat-embed', { dataPage: page, dataEmbed: href }, [
+    h('a.internal', { href }, embedName(href, alias)),
   ])
 }
 

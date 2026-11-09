@@ -84,15 +84,19 @@
       }
     }
 
-    &:hover span {
-      text-decoration: underline;
-      text-underline-offset: 0.2em;
+    // colour only: an underline would sit on the activation hairline
+    &:hover {
+      color: var(--secondary);
     }
   }
 
   .lat-feat .lat-gm-f {
     font-size: var(--text-meta);
     color: var(--dark);
+
+    &:hover {
+      color: var(--secondary);
+    }
   }
 
   .lat-gm-attn {
@@ -125,6 +129,17 @@
     width: 100%;
     height: auto;
     overflow: visible;
+  }
+
+  // one band a layer: hovering it opens that layer's definition (circuit.ts layerTip)
+  .lat-cx-row {
+    fill: transparent;
+    cursor: default;
+    text-decoration: none;
+
+    &:hover {
+      fill: color-mix(in srgb, var(--lightgray) 35%, transparent);
+    }
   }
 
   .lat-cx-g {
@@ -185,15 +200,17 @@
   }
 }
 
-// where a hovered feature fires, or what the selection reads, in three strengths
+// where a hovered feature fires, or what the selection reads, in three strengths of the site's
+// ::selection gold (base/document-defaults.scss); the strongest is the selection itself
 ::highlight(lat-gemma-1) {
-  background-color: color-mix(in srgb, var(--color-orange, #da702c) 14%, transparent);
+  background-color: color-mix(in srgb, var(--gold) 14%, transparent);
 }
 
 ::highlight(lat-gemma-2) {
-  background-color: color-mix(in srgb, var(--color-orange, #da702c) 30%, transparent);
+  background-color: color-mix(in srgb, var(--gold) 26%, transparent);
 }
 
 ::highlight(lat-gemma-3) {
-  background-color: color-mix(in srgb, var(--color-orange, #da702c) 50%, transparent);
+  background-color: color-mix(in srgb, var(--gold) 40%, transparent);
+  color: var(--darkgray);
 }

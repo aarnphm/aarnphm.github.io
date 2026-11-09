@@ -96,7 +96,10 @@ def restore_math(chunks: list[dict], md: str) -> int:
 # garden shows it, so each note chunk also gets its markdown slice (`md`): chunk starts are found
 # again in the source by word n-grams (the text may be a few edits behind the markdown) and snapped
 # to the start of their line. Wikilinks resolve to site paths, citations to author-year, sidenotes
-# to an inline aside; embeds and comments drop. A note where any chunk start is lost keeps text.
+# to an inline aside; comments drop. Embeds (`![[watch]]`, `![[thoughts/writing#^id|alias]]`,
+# `![[img.webp|caption]]`) stay, with their target resolved to a site path (`![[/watch]]`): the
+# reader shows what the note page transcluded there. A note where any chunk start is lost keeps
+# text.
 MD_COMMENT = re.compile(r'<!--[\s\S]*?-->|%%[\s\S]*?%%')
 MD_EMBED = re.compile(r'!\[\[[^\]\n]*\]\]')
 MD_WIKILINK = re.compile(r'\[\[([^\]|#\n]*)(#[^\]|\n]*)?(?:\|([^\]\n]*))?\]\]')
@@ -218,30 +221,51 @@ def figure_line(m: re.Match[str]) -> str:
 def reader_markdown(
   md: str, doc: str, by_name: dict[str, str], bib: dict[str, str]
 ) -> str:
-  md = MD_EMBED.sub('', MD_COMMENT.sub('', md))
+  md = MD_COMMENT.sub('', md)
   md = FIGURE_FENCE.sub(figure_line, md)
   md = sidenotes(md)
 
-  def wikilink(m: re.Match[str]) -> str:
+  def resolve(m: re.Match[str]) -> tuple[str, str]:
     target = m.group(1).strip().rstrip('\\')
     anchor = (m.group(2) or '').rstrip('\\')
-    alias = m.group(3)
     slug = (
       target.replace(' ', '-')
       if '/' in target
       else by_name.get(target.lower(), target.replace(' ', '-'))
     )
-    href = f'/{slug or doc}{slug_anchor(anchor)}'
-    shown = alias or (
+    href = f'/{slug or doc}{slug_anchor(anchor)}'.replace(' ', '-')
+    shown = m.group(3) or (
       target.rsplit('/', 1)[-1] if target else anchor.lstrip('#')
     )
-    return f'[{shown}]({href.replace(" ", "-")})'
+    return href, shown
+
+  def wikilink(m: re.Match[str]) -> str:
+    href, shown = resolve(m)
+    return f'[{shown}]({href})'
+
+  # embeds are held out of the wikilink pass (it would read `![[x]]` as an image of a link) and
+  # come back as `![[/href|alias]]`; the alias is kept only when the note wrote one
+  held: list[str] = []
+
+  def hold(m: re.Match[str]) -> str:
+    link = MD_WIKILINK.fullmatch(m.group(0)[1:])
+    if not link:
+      return ''
+    target = link.group(1).strip()
+    # a web embed (a YouTube video) keeps its address
+    href = target if '://' in target else resolve(link)[0]
+    alias = link.group(3)
+    held.append(f'![[{href}|{alias.strip()}]]' if alias else f'![[{href}]]')
+    return f'\x00{len(held) - 1}\x00'
+
+  md = MD_EMBED.sub(hold, md)
 
   def cite(m: re.Match[str]) -> str:
     keys = MD_CITE_KEY.findall(m.group(1))
     return '(' + '; '.join(bib.get(k, k) for k in keys) + ')'
 
-  return MD_CITE.sub(cite, MD_WIKILINK.sub(wikilink, md))
+  out = MD_CITE.sub(cite, MD_WIKILINK.sub(wikilink, md))
+  return re.sub(r'\x00(\d+)\x00', lambda m: held[int(m.group(1))], out)
 
 
 def find_gram(words: list[str], gram: list[str], start: int) -> int | None:

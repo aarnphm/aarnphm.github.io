@@ -16,6 +16,7 @@ import { bindSearch } from './latent-client/search'
 import { bindSearchShortcutHint } from './latent-client/search-shortcut-hint'
 import { bindShare } from './latent-client/share'
 import { bindTips } from './latent-client/tips'
+import { loadView } from './latent-client/view'
 import { loadPageStyles } from './page-styles'
 import { rootNavSignal } from './root-lifecycle'
 
@@ -225,6 +226,7 @@ export function mountLatent(root: HTMLElement): void {
       const byRow: LatentDoc[] = Array.from({ length: Number(root.dataset.latentRows) })
       for (const doc of docs) for (let r = doc.r0; r < doc.r0 + doc.n; r++) byRow[r] = doc
       rt.docByRow = byRow
+      rt.view = loadView(rt.kinds)
       bindReader(rt)
       bindClicks(rt)
       bindSearch(rt)

@@ -75,13 +75,19 @@ def graph_features(graphs: list[Path], top: int = 0) -> dict[int, list[int]]:
   infl: dict[tuple[int, int], float] = {}
   named: set[tuple[int, int]] = set()
   for g in graphs:
-    feats = [n for n in json.loads(g.read_text())['nodes'] if n['kind'] == 'feature']
+    feats = [
+      n for n in json.loads(g.read_text())['nodes'] if n['kind'] == 'feature'
+    ]
     for n in feats:
       k = (int(n['layer']), int(n['feature']))
       infl[k] = infl.get(k, 0.0) + float(n.get('influence', 0.0))
     feats.sort(key=lambda n: -float(n.get('influence', 0.0)))
     named.update((int(n['layer']), int(n['feature'])) for n in feats[:10])
-  keys = set(infl) if not top else named | set(sorted(infl, key=lambda k: -infl[k])[:top])
+  keys = (
+    set(infl)
+    if not top
+    else named | set(sorted(infl, key=lambda k: -infl[k])[:top])
+  )
   want: dict[int, set[int]] = {}
   for l, f in keys:
     want.setdefault(l, set()).add(f)
@@ -101,7 +107,10 @@ def main() -> None:
   ap.add_argument('--force', action='store_true')
   ap.add_argument('--no-score', action='store_true')
   ap.add_argument(
-    '--top', type=int, default=0, help='only each graph\'s top 10 + the N most influential'
+    '--top',
+    type=int,
+    default=0,
+    help="only each graph's top 10 + the N most influential",
   )
   args = ap.parse_args()
 

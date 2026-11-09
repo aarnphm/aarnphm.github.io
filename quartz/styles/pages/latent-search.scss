@@ -252,10 +252,11 @@
 
 // one line per suggestion: the name, then its meta at the right. Every row of a list shares the
 // operator the box already shows (#, goto:, filter:), so the per-row token is dropped. The
-// picked row is boxed in the accent like a picked link row, without an underline
+// text sits in the middle of its row; the picked row (and the hovered one) only turns the name
+// to the accent: no fill, no rules, no underline
 [data-layout='latent'] :where(#quartz-root) .lat-search .search-completions {
   .search-completions-label {
-    padding: 0.375rem 0.75rem 0.125rem;
+    padding: 0.375rem 0.75rem;
     color: var(--gray);
   }
 
@@ -267,19 +268,15 @@
   .search-completion {
     min-height: 1.75rem;
     padding: 0.25rem 0.75rem;
-    align-items: baseline;
-
-    &[aria-selected='true'] {
-      @include picked-row;
-    }
+    align-items: center;
 
     &[aria-selected='true'] .search-completion-value,
     &:hover .search-completion-value {
       text-decoration: none;
     }
 
-    &:hover:not([aria-selected='true']) {
-      background: var(--ledger-surface);
+    &:is([aria-selected='true'], :hover) .search-completion-value {
+      color: var(--secondary);
     }
   }
 
@@ -304,6 +301,8 @@
   .search-completion-description {
     grid-column: 2;
     min-width: 0;
+    // the counts end on one edge, as the ledger's figures do
+    text-align: right;
     color: var(--gray);
     font-variant-numeric: tabular-nums;
   }

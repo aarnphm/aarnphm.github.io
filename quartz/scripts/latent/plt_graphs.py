@@ -68,7 +68,8 @@ def pick(model, t, ids: list[int], ctx: int, min_p: float):
     nxt = mx.array(seq[1:], dtype=mx.int32)
     lp = logits[:-1]
     p = mx.exp(
-      mx.take_along_axis(lp, nxt[:, None], axis=-1)[:, 0] - mx.logsumexp(lp, axis=-1)
+      mx.take_along_axis(lp, nxt[:, None], axis=-1)[:, 0]
+      - mx.logsumexp(lp, axis=-1)
     )
     top = mx.argmax(lp, axis=-1)
     mx.eval(p, top)
@@ -76,7 +77,9 @@ def pick(model, t, ids: list[int], ctx: int, min_p: float):
 
   p, top = probs(ids)
   cands = []
-  for pos in range(17, len(ids)):  # ids[pos] is predicted at pos-1; >= 16 tokens of context
+  for pos in range(
+    17, len(ids)
+  ):  # ids[pos] is predicted at pos-1; >= 16 tokens of context
     q = float(p[pos - 1])
     if top[pos - 1] != ids[pos] or q < min_p:
       continue
@@ -93,6 +96,31 @@ def pick(model, t, ids: list[int], ctx: int, min_p: float):
   return None
 
 
+def spread_key(content: Path, directory: str):
+  """Sort key over (row, text) that walks every document breadth-first: a passage whose rank in
+  its document has more trailing zero bits comes first (0, then 64, 32, 96, ...), documents
+  interleaved. 54k pdf passages in 243 pdfs would take ~180 h; this way the first few hundred
+  graphs already give every pdf one circuit."""
+  from features import load_side
+
+  root = content / directory / 'latent'
+  digest = json.loads((root / 'index.json').read_text())['hash']
+  _, _, _, doc_of, _ = load_side(root / digest)
+  doc_of = np.asarray(doc_of)
+  first = {}
+  for r, d in enumerate(doc_of.tolist()):
+    first.setdefault(d, r)
+
+  def key(item):
+    r = item[0]
+    d = int(doc_of[r])
+    k = r - first[d]
+    tz = 64 if k == 0 else (k & -k).bit_length() - 1
+    return (-tz, d, k)
+
+  return key
+
+
 def main() -> None:
   ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
   ap.add_argument('--plt', type=Path, required=True)
@@ -100,12 +128,21 @@ def main() -> None:
   ap.add_argument('--directory', default='embeddings')
   ap.add_argument('--kinds', default='note')
   ap.add_argument('--out', type=Path, default=None, help='the bake folder')
-  ap.add_argument('--ctx', type=int, default=32, help='tokens of context before the target')
-  ap.add_argument('--passage', type=int, default=256, help='tokens of the chunk searched')
+  ap.add_argument(
+    '--ctx', type=int, default=32, help='tokens of context before the target'
+  )
+  ap.add_argument(
+    '--passage', type=int, default=256, help='tokens of the chunk searched'
+  )
   ap.add_argument('--nodes', type=int, default=200)
   ap.add_argument('--min-p', type=float, default=0.3)
   ap.add_argument('--limit', type=int, default=0)
   ap.add_argument('--row', type=int, action='append', default=[])
+  ap.add_argument(
+    '--spread',
+    action='store_true',
+    help='cover every document before going deeper: passage 0 of each, then the middles, ...',
+  )
   a = ap.parse_args()
 
   import mlx.core as mx
@@ -116,16 +153,24 @@ def main() -> None:
   from label import MODEL, REVISION, resolve
   from plt_bake import tokenize
 
-  digest, rows = acts.corpus(a.content.resolve(), a.directory, 0, a.kinds.split(','))
-  out = (a.out or Path('quartz/.quartz-cache/latent-bake') / digest[:8]) / 'graphs'
+  digest, rows = acts.corpus(
+    a.content.resolve(), a.directory, 0, a.kinds.split(',')
+  )
+  out = (
+    a.out or Path('quartz/.quartz-cache/latent-bake') / digest[:8]
+  ) / 'graphs'
   out.mkdir(parents=True, exist_ok=True)
   if a.row:
     want = set(a.row)
     rows = [(r, x) for r, x in rows if r in want]
   todo = [(r, x) for r, x in rows if not (out / f'{r}.json').exists()]
+  if a.spread:
+    todo.sort(key=spread_key(a.content.resolve(), a.directory))
   if a.limit:
     todo = todo[: a.limit]
-  log(f'{len(rows)} {a.kinds} rows in sidecar {digest[:8]}, {len(todo)} to trace')
+  log(
+    f'{len(rows)} {a.kinds} rows in sidecar {digest[:8]}, {len(todo)} to trace'
+  )
 
   mx.set_cache_limit(2 << 30)
   model, tok = load(resolve(MODEL, REVISION))
@@ -139,7 +184,9 @@ def main() -> None:
     ids, spans, _ = tokenize(tok, text, a.passage)
     hit = pick(model, t, ids, a.ctx, a.min_p)
     if hit is None:
-      summary.write(json.dumps(dict(row=r, skipped='no confident target')) + '\n')
+      summary.write(
+        json.dumps(dict(row=r, skipped='no confident target')) + '\n'
+      )
       summary.flush()
       continue
     pos, q = hit
@@ -161,7 +208,9 @@ def main() -> None:
       start=int(spans[start - 1][0]),
       end=int(spans[pos - 2][1]),
       target=[int(spans[pos - 1][0]), int(spans[pos - 1][1])],
-      spans=[[int(a), int(b)] for a, b in spans[start - 1 : pos - 1]],  # graph pos 1, 2, ...
+      spans=[
+        [int(a), int(b)] for a, b in spans[start - 1 : pos - 1]
+      ],  # graph pos 1, 2, ...
       token=t.decode([ids[pos]]),
       p=round(q, 4),
     )

@@ -1,6 +1,7 @@
 import type { Element, ElementContent } from 'hast'
 import { h } from 'hastscript'
-import type { LatentAxis, LatentAxisPole, LatentDoc, LatentIndex } from '../types'
+import type { LatentAxis, LatentAxisPole, LatentDoc, LatentIndex, LatentKind } from '../types'
+import { kindsBar } from '../document-links'
 import { truncate } from '../rail'
 import { titleText } from '../title'
 import { inScope } from '../types'
@@ -108,6 +109,18 @@ function poleExemplars(
 const SOURCES_NOTE =
   'every store, embedded by one encoder into one space. counts are rows, one vector each: a note chunk, a pdf passage, an image, a base entry. documents count the wholes.'
 
+// the circuit and selection tabs' transcoders, as models/latent-plt/latest.json (v1) states them;
+// a retrain that changes the shape or the validation FVU updates these
+const TRANSCODERS = { model: 'gemma 4 e4b', layers: 42, width: 8192, k: 64 }
+const TRANSCODER_NOTE = [
+  'Gemma 4 E4B · 4-bit · mlx',
+  'skip transcoder per layer: MLP + PLE',
+  '42 layers · d 2560',
+  '8192 features · top 64',
+  'val FVU 0.32 · worst layer 0.54',
+  'v1 · trained on this sidecar',
+].join('\n')
+
 function modelNote(index: LatentIndex, model: string, scoped: boolean): string {
   const scope = scoped
     ? ' the scope picks the opening passage and greys links that leave it; nothing outside is dropped.'
@@ -211,7 +224,7 @@ const count = (n: number) => n.toLocaleString('en-US')
  * The stores behind the space, one row each: store and rows. An excluded store says why in
  * place of a count.
  */
-export function ledger(index: LatentIndex, scope: string[]): Element {
+export function ledger(index: LatentIndex, scope: string[], shown?: LatentKind[]): Element {
   const rows: ElementContent[] = index.stores.map(store => {
     const name = store.id.replace(/^embeddings\/?/, '') || 'notes'
     return h('li', { dataIncluded: store.included ? '' : undefined }, [
@@ -227,10 +240,16 @@ export function ledger(index: LatentIndex, scope: string[]): Element {
       h('span.lat-count', `${count(index.docs)} documents`),
     ]),
     h('ul', rows),
+    shown ? kindsBar(index.kinds, shown) : null,
     h('p.lat-ledger-note', tipProps(modelNote(index, model, scope.length > 0), 'up'), [
       `${model}, ${index.dims} dimensions, ${index.k} neighbours/passage`,
       scope.length > 0 ? `; scoped to ${scope.join(', ')}` : '',
     ]),
+    h(
+      'p.lat-ledger-note',
+      { ...tipProps(TRANSCODER_NOTE, 'up'), dataTipWide: '' },
+      `${TRANSCODERS.model} transcoders, ${TRANSCODERS.layers} × ${count(TRANSCODERS.width)}, top ${TRANSCODERS.k}`,
+    ),
   ])
 }
 

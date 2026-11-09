@@ -34,6 +34,8 @@ interface Graph {
   logits: { token: string; prob: number }[]
   nodes: GraphNode[]
   links: { source: string; target: string; weight: number }[]
+  /** transcoder fraction of variance unexplained per layer, from training */
+  fvu?: Record<string, number | null>
   /** plt_graphs.py: where the graph sits in its passage, UTF-16 offsets into the chunk text */
   passage?: {
     row: number
@@ -56,6 +58,36 @@ const H = 470
 const PAD = { l: 26, r: 8, t: 14, b: 58 }
 const EDGES = 160
 const SHOWN_TOKENS = 18
+
+// Gemma 4 E4B's text decoder as the graph uses it (mlx-community/gemma-4-e4b-it-4bit; acts.py)
+const GLOBAL = new Set([5, 11, 17, 23, 29, 35, 41])
+const KV_SHARED_FROM = 24 // layers 24..41 reuse the keys and values of L22 (sliding) or L23 (global)
+const MODEL_TIP = [
+  'Gemma 4 E4B · 4-bit',
+  '42 layers · d 2560 · MLP 10240 · PLE 256',
+  'global attn: L05 L11 L17 L23 L29 L35 L41',
+  'sliding attn: the rest',
+  'KV shared: L24–L41 ← L22 / L23',
+  'transcoder per MLP: 8192 × top 64',
+  '● feature  ■ error  ○ embedding',
+].join('\n')
+
+function layerTip(g: Graph, l: number): string {
+  const here = g.nodes.filter(n => n.layer === l && (n.kind === 'feature' || n.kind === 'error'))
+  const sum = (k: string) =>
+    here.filter(n => n.kind === k).reduce((a, n) => a + (n.influence ?? 0), 0)
+  const fvu = g.fvu?.[String(l)]
+  const kv = l >= KV_SHARED_FROM ? ` · KV ← ${GLOBAL.has(l) ? 'L23' : 'L22'}` : ''
+  return [
+    `${ll(l)} · ${GLOBAL.has(l) ? 'global' : 'sliding'} attn${kv}`,
+    fvu != null ? `transcoder FVU ${fvu.toFixed(2)}` : '',
+    `${here.filter(n => n.kind === 'feature').length} features ${sum('feature').toFixed(3)} · error ${sum('error').toFixed(3)}`,
+  ]
+    .filter(Boolean)
+    .join('\n')
+}
+
+const tok = (t: string | undefined) => `“${(t ?? '').replace(/\n/g, '↵')}”`
 
 /**
  * x is the token, but a token with no feature or error node in the graph gets a quarter column:
@@ -111,19 +143,22 @@ function svg(g: Graph, labels: Record<string, Record<string, Label | string>>): 
       const [cx, cy] = at(n)
       const r = 1.2 + 4.5 * Math.sqrt((n.influence ?? 0) / max)
       if (n.kind === 'error')
-        return `<rect class="lat-cx-n" data-kind="error" data-id="${esc(n.id)}" x="${(cx - r).toFixed(1)}" y="${(cy - r).toFixed(1)}" width="${(2 * r).toFixed(1)}" height="${(2 * r).toFixed(1)}"><title>error ${ll(n.layer)} · ${(n.influence ?? 0).toFixed(3)}</title></rect>`
+        return `<rect class="lat-cx-n" data-kind="error" data-id="${esc(n.id)}" data-tip="${esc(`error ${ll(n.layer)} · ${tok(g.tokens[n.pos])}\ntranscoder residual · infl ${(n.influence ?? 0).toFixed(3)}`)}" x="${(cx - r).toFixed(1)}" y="${(cy - r).toFixed(1)}" width="${(2 * r).toFixed(1)}" height="${(2 * r).toFixed(1)}"/>`
       if (n.kind === 'logit')
-        return `<circle class="lat-cx-n" data-kind="logit" data-id="${esc(n.id)}" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="4"><title>${esc(n.token ?? '')} ${(n.prob ?? 0).toFixed(3)}</title></circle>`
+        return `<circle class="lat-cx-n" data-kind="logit" data-id="${esc(n.id)}" data-tip="${esc(`logit ${tok(n.token)} · p ${(n.prob ?? 0).toFixed(3)}`)}" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="4"/>`
       const lab = n.kind === 'feature' ? labelOf(labels, n.layer, n.feature ?? -1) : null
-      const name =
-        n.kind === 'embedding'
-          ? `embedding ${g.tokens[n.pos]}`
-          : (lab?.label ?? n.label ?? `f${n.feature}`)
+      const infl = `infl ${(n.influence ?? 0).toFixed(3)}`
       const tip =
         n.kind === 'feature'
-          ? `${ll(n.layer)} f${n.feature} · ${name}${lab?.score !== undefined ? ` · ${lab.score.toFixed(2)}` : ''}`
-          : name
-      return `<circle class="lat-cx-n" data-kind="${n.kind}"${(lab?.score ?? 0) >= 0.75 ? ' data-strong' : ''} data-id="${esc(n.id)}" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r.toFixed(1)}"><title>${esc(tip)}</title></circle>`
+          ? [
+              `${ll(n.layer)} f${n.feature} · ${tok(g.tokens[n.pos])}`,
+              lab
+                ? `${lab.label}${lab.score !== undefined ? ` · det ${lab.score.toFixed(2)}` : ''}`
+                : 'unlabelled',
+              `act ${(n.act ?? 0).toFixed(2)} · ${infl}`,
+            ].join('\n')
+          : `emb ${tok(g.tokens[n.pos])} · ${infl}`
+      return `<circle class="lat-cx-n" data-kind="${n.kind}"${(lab?.score ?? 0) >= 0.75 ? ' data-strong' : ''} data-id="${esc(n.id)}" data-tip="${esc(tip)}" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r.toFixed(1)}"/>`
     })
     .join('')
   // the grid the graph lives on: a hairline per layer, one per token column
@@ -140,6 +175,12 @@ function svg(g: Graph, labels: Record<string, Record<string, Label | string>>): 
       return `<line class="lat-cx-g" x1="${px}" x2="${px}" y1="${y(41).toFixed(1)}" y2="${y(-1).toFixed(1)}"/>`
     }),
   ].join('')
+  const step = y(0) - y(1)
+  const rows = Array.from(
+    { length: 42 },
+    (_, l) =>
+      `<rect class="lat-cx-row" data-tip="${esc(layerTip(g, l))}" x="0" width="${W}" y="${(y(l) - step / 2).toFixed(1)}" height="${step.toFixed(1)}"/>`,
+  ).join('')
   const ticks = [0, 10, 20, 30, 41]
     .map(l => `<text class="lat-cx-t" x="2" y="${(y(l) + 3).toFixed(1)}">${ll(l)}</text>`)
     .join('')
@@ -151,7 +192,7 @@ function svg(g: Graph, labels: Record<string, Record<string, Label | string>>): 
       return `<text class="lat-cx-tok" transform="translate(${px.toFixed(1)},${py}) rotate(-60)">${esc(t.replace(/\n/g, '↵').slice(0, 14))}</text>`
     })
     .join('')
-  return `<svg class="lat-cx" viewBox="0 0 ${W} ${H}" role="img" aria-label="attribution graph">${grid}${ticks}<g>${edgeSvg}</g><g>${nodeSvg}</g>${toks}</svg>`
+  return `<svg class="lat-cx" viewBox="0 0 ${W} ${H}" role="img" aria-label="attribution graph">${rows}${grid}${ticks}<g>${edgeSvg}</g><g>${nodeSvg}</g>${toks}</svg>`
 }
 
 function shares(g: Graph): string {
@@ -199,7 +240,7 @@ async function render(rt: Runtime, row: number, seq: CircuitState): Promise<void
   const target = g.logits[0]
   panel.innerHTML = [
     `<section class="lat-feat-group lat-gm-head"><header><span class="lat-feat-head">→ “${esc(target?.token ?? '')}”</span><span class="lat-count">p ${(target?.prob ?? 0).toFixed(2)}</span></header>`,
-    `<p class="lat-gm-note">influence ${shares(g)}</p></section>`,
+    `<p class="lat-gm-note"><span data-tip="${esc(MODEL_TIP)}" data-tip-wide>Gemma 4 E4B</span> · influence ${shares(g)}</p></section>`,
     `<section class="lat-feat-group">${svg(g, labels)}</section>`,
     `<section class="lat-feat-group"><header><span class="lat-feat-head">most influence</span><span class="lat-count">detection</span></header><ul class="lat-feat-list">${topFeatures(g, labels)}</ul></section>`,
   ].join('')

@@ -1,7 +1,13 @@
 import { toHtml } from 'hast-util-to-html'
 import type { SemanticEmbedRequest, SemanticWorkerResponse } from '../../../util/semantic-protocol'
 import type { ToastHandle } from '../toast'
-import { filterLabel, keepsAll, parseFilter, rowMask } from '../../../util/latent/filter'
+import {
+  filterLabel,
+  keepsAll,
+  parseFilter,
+  rowMask,
+  withFilter,
+} from '../../../util/latent/filter'
 import {
   completeGoto,
   gotoIndex,
@@ -12,15 +18,16 @@ import {
 } from '../../../util/latent/goto'
 import { railSvg, type LinkItem } from '../../../util/latent/markup'
 import { RAIL_WIDTH } from '../../../util/latent/rail'
-import { inScope, type LatentDoc, type LatentKind } from '../../../util/latent/types'
+import { KIND_ORDER, inScope, type LatentDoc, type LatentKind } from '../../../util/latent/types'
 import { setStatusText } from '../status-flap'
 import { showAxis } from './axes-carousel'
 import { drawBench } from './bench-canvas'
 import { bindChunkPreview } from './chunk-preview'
 import { linkItems, renderDocumentLinks, stepDocumentLinks } from './document-list'
-import { goTo } from './reader'
+import { goTo, reframeReader } from './reader'
 import { knnOf, metaOf, requestVec, type Runtime } from './runtime'
 import { bindSearchCompletion } from './search-completion'
+import { saveView } from './view'
 
 export async function renderLinks(rt: Runtime, row: number): Promise<void> {
   const links = await knnOf(rt, row)
@@ -32,14 +39,19 @@ export async function renderLinks(rt: Runtime, row: number): Promise<void> {
   // A typed query or open goto list holds the pane until it is cleared.
   const owns = !rt.query && rt.links.dataset.goto === undefined
   const filter = rt.filter
-  if (owns && filter) {
-    // `filter:` alone: the focus's nearest chunks of the kept kinds, from the whole store
-    const rows = await filteredNeighbours(rt, row).catch(error => {
-      console.warn('[latent] filter', error)
-      return null
-    })
-    if (rt.signal.aborted || rt.focus !== row || rt.filter !== filter) return
-    items = rows ? linkItems(rt, rows) : items.filter(item => filter.kinds.includes(item.doc.s))
+  if (filter) {
+    const kept = items.filter(item => filter.kinds.includes(item.doc.s))
+    // the shown kinds drop the rare ones, so the precomputed links mostly survive them. A typed
+    // `filter:`, or a focus among hidden kinds (its links are mostly its own kind), scores the
+    // focus against the whole store instead
+    if (owns && (filter.typed || kept.length < Math.ceil(rt.k / 2))) {
+      const rows = await filteredNeighbours(rt, row).catch(error => {
+        console.warn('[latent] filter', error)
+        return null
+      })
+      if (rt.signal.aborted || rt.focus !== row || rt.filter !== filter) return
+      items = rows ? linkItems(rt, rows) : kept
+    } else items = kept
   }
   // the rail measures its pane, so it goes before the list's writes: one restyle, not two
   renderRail(rt, rt.query ? rt.query.items : items)
@@ -50,7 +62,7 @@ export async function renderLinks(rt: Runtime, row: number): Promise<void> {
         rt,
         focusPreview,
         items,
-        filter ? `links · ${filterLabel(filter.kinds)}` : undefined,
+        filter?.typed ? `links · ${filterLabel(filter.kinds)}` : undefined,
       )
     rt.links.dataset.focus = String(row)
   }
@@ -79,12 +91,75 @@ export async function renderLinks(rt: Runtime, row: number): Promise<void> {
 
 const ROWS_URL = (rt: Runtime) => `${rt.base}/vec/rows-256-int8.bin`
 
-/** Keep `kinds` for the box's `filter:`; true when that changed what the pane may show. */
+/**
+ * Keep `kinds` for the box's `filter:`, or the shown kinds (the toggles under the sources) when
+ * the box names none; true when that changed what the pane may show.
+ */
 function setFilter(rt: Runtime, kinds: LatentKind[] | null): boolean {
-  const next = kinds && !keepsAll(kinds, rt.kinds) ? kinds : null
-  if ((next?.join(',') ?? '') === (rt.filter?.kinds.join(',') ?? '')) return false
-  rt.filter = next ? { kinds: next, mask: null } : null
+  const want = kinds ?? rt.view ?? null
+  const next = want && !keepsAll(want, rt.kinds) ? want : null
+  const typed = kinds !== null && next !== null
+  syncKinds(rt, next ?? rt.kinds, kinds !== null)
+  if (
+    (next?.join(',') ?? '') === (rt.filter?.kinds.join(',') ?? '') &&
+    typed === !!rt.filter?.typed
+  )
+    return false
+  rt.filter = next ? { kinds: next, mask: null, typed } : null
   return true
+}
+
+/**
+ * The toggles show what the links keep; `typed` marks kinds the box's `filter:` named. Written
+ * only on change: every attribute write restyles the page (the site's :has() rules).
+ */
+function syncKinds(rt: Runtime, shown: LatentKind[], typed: boolean): void {
+  const bar = rt.probe.querySelector<HTMLElement>('.lat-kinds')
+  if (!bar) return
+  if ((bar.dataset.typed !== undefined) !== typed) bar.toggleAttribute('data-typed', typed)
+  for (const button of bar.querySelectorAll<HTMLButtonElement>('.lat-kind')) {
+    const pressed = String(shown.includes(button.dataset.kind as LatentKind))
+    if (button.getAttribute('aria-pressed') !== pressed)
+      button.setAttribute('aria-pressed', pressed)
+  }
+}
+
+/**
+ * The toggles under the probe's sources: which kinds the explorer shows. With no `filter:`
+ * in the box they set the shown kinds for the links, the reader and the rail, kept for the next
+ * visit; with one, they rewrite it, so the box and the toggles never disagree.
+ */
+function bindKinds(rt: Runtime, input: HTMLInputElement): void {
+  const bar = rt.probe.querySelector<HTMLElement>('.lat-kinds')
+  if (!bar) return
+  bar.addEventListener(
+    'click',
+    event => {
+      const button = (event.target as HTMLElement).closest<HTMLButtonElement>('.lat-kind')
+      const kind = button?.dataset.kind as LatentKind | undefined
+      if (!kind || !rt.kinds.includes(kind)) return
+      const shown = rt.filter?.kinds ?? rt.kinds
+      const next = shown.includes(kind)
+        ? shown.filter(k => k !== kind)
+        : KIND_ORDER.filter(k => k === kind || shown.includes(k))
+      // the last kind stays on: a pane that shows nothing has nothing to come back from
+      if (next.length === 0) return
+      if (parseFilter(input.value).kinds) input.value = withFilter(input.value, next)
+      else {
+        rt.view = next
+        saveView(next)
+        reframeReader(rt)
+        renderRail(
+          rt,
+          rt.railItems.filter(item => next.includes(item.doc.s)),
+        )
+      }
+      // the box reads itself again: the links, a query or a goto list follow the new kinds
+      rt.wanted = ''
+      input.dispatchEvent(new Event('input'))
+    },
+    { signal: rt.signal },
+  )
 }
 
 /** The worker's row mask for the box's `filter:`, or undefined when it keeps every row. */
@@ -363,16 +438,18 @@ export async function runQuery(rt: Runtime, text: string): Promise<void> {
     const t0 = performance.now()
     const only = await filterMask(rt)
     if (stale()) return
+    // a typed filter fills the pane with documents; otherwise the k nearest chunks of the shown
+    // kinds
+    const fill = !!only && !!rt.filter?.typed
     const result = await requestVec(
       rt,
-      { type: 'query', url, vector, scale: meta.scale, k: only ? FILL_K : rt.k, only },
+      { type: 'query', url, vector, scale: meta.scale, k: fill ? FILL_K : rt.k, only },
       [vector.buffer],
     )
     if (result.type !== 'queried' || stale()) return
-    // a filtered query fills the pane with documents; an open one keeps the k nearest chunks
     const items = linkItems(
       rt,
-      only
+      fill
         ? fillDocs(rt, result.hits, result.scores, paneDocs(rt))
         : [...result.hits].map((row, i) => [row, Math.round(Math.max(0, result.scores[i]) * 255)]),
     )
@@ -383,7 +460,7 @@ export async function runQuery(rt: Runtime, text: string): Promise<void> {
       rt,
       { r: -1, d: -1, s: 'note', t: text, c: 0, p: null, l: '', x: '' },
       items,
-      rt.filter ? `query · ${filterLabel(rt.filter.kinds)}` : 'query',
+      rt.filter?.typed ? `query · ${filterLabel(rt.filter.kinds)}` : 'query',
     )
     rt.links.dataset.query = text
     status.done(
@@ -455,7 +532,7 @@ function gotoMode(rt: Runtime, input: HTMLInputElement) {
       keep ? rt.docs.filter(keep).length : rt.docs.length,
       active,
       doc => !inScope(doc.id, rt.scope),
-      kinds ? `goto · ${filterLabel(kinds)}` : 'goto',
+      kinds && rt.filter?.typed ? `goto · ${filterLabel(kinds)}` : 'goto',
     )
     // scroll first: writing scrollTop after the new list would force a restyle of the page
     if (rt.links.scrollTop) rt.links.scrollTop = 0
@@ -494,7 +571,7 @@ function gotoMode(rt: Runtime, input: HTMLInputElement) {
     input.value = ''
     input.blur()
     delete rt.links.dataset.goto
-    rt.filter = null
+    setFilter(rt, null)
     if (rt.query || rt.links.dataset.query) {
       rt.query = null
       delete rt.links.dataset.query
@@ -552,7 +629,12 @@ export function bindSearch(rt: Runtime): void {
     timer = null
   }
   bindChunkPreview(rt)
+  // the shown kinds filter the links from the start; the first screen was built with notes and
+  // pdfs, so a reader who picked others gets the reader's neighbours rebuilt
+  setFilter(rt, null)
+  if (rt.view && rt.root.dataset.latentView !== rt.view.join(',')) reframeReader(rt)
   void renderLinks(rt, rt.focus)
+  bindKinds(rt, input)
   const goto = gotoMode(rt, input)
   bindSearchCompletion(rt, input, form)
   document.addEventListener(
@@ -713,6 +795,7 @@ export function renderRail(rt: Runtime, items: LinkItem[]): void {
     focusChunkIndex,
     scopeFlags: flags,
     height: rt.railHeight,
+    hide: rt.view ? rt.kinds.filter(kind => !rt.view!.includes(kind)) : undefined,
   })
   const current = rt.rail.querySelector('svg.lat-track')
   const html = toHtml(svg as never)

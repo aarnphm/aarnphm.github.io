@@ -112,7 +112,6 @@ def bake_batch(lm, tcs, grid, lens, glob, top, attn_top):
   import mlx.core as mx
   import mlx.nn as nn
 
-
   m = lm.model
   n = len(m.layers)
   inputs = mx.array(grid)
@@ -166,7 +165,10 @@ def bake_batch(lm, tcs, grid, lens, glob, top, attn_top):
     # attribute.encode_tc without its TopK: the --top strongest of the k a token keeps are the
     # --top largest pre-activations, so z itself is never needed (a third of the layer's time)
     tc = tcs[i]
-    xc = x[:, 1:].reshape(B * (P - 1), -1).astype(mx.float32) / tc['sx'] - tc['b_pre']
+    xc = (
+      x[:, 1:].reshape(B * (P - 1), -1).astype(mx.float32) / tc['sx']
+      - tc['b_pre']
+    )
     pre = xc @ tc['W_enc'] + tc['b_enc']
     idx = mx.argpartition(-pre, kth=top - 1, axis=-1)[:, :top]
     za = mx.maximum(mx.take_along_axis(pre, idx, axis=-1), 0)
@@ -222,6 +224,10 @@ def build_index(
   to bound memory. A gloss is a feature's strongest distinct tokens, from the row texts."""
   rows = sorted(out.glob('rows/*.bin'), key=lambda p: int(p.stem))
   log(f'index over {len(rows)} rows')
+  if (
+    len(rows) > 10000
+  ):  # with the pdfs (~60k rows) seven layers at once is ~7 GB of entries
+    group = 2
   (out / 'index').mkdir(exist_ok=True)
   (out / 'gloss').mkdir(exist_ok=True)
   text16 = {r: t.encode('utf-16-le') for r, t in (texts or {}).items()}
@@ -296,7 +302,9 @@ def load_encoders(path: Path, n_layers: int):
   for l in range(n_layers):
     f = path / f'L{l:02d}.safetensors'
     if not f.exists():
-      raise SystemExit(f'{path} has no transcoder for layer {l}: train all layers first')
+      raise SystemExit(
+        f'{path} has no transcoder for layer {l}: train all layers first'
+      )
     w = mx.load(str(f))
     meta = json.loads(f.with_suffix('.json').read_text())
     tc = dict(
@@ -313,6 +321,17 @@ def load_encoders(path: Path, n_layers: int):
     tcs.append(tc)
   mx.clear_cache()
   return tcs
+
+
+def all_texts(a) -> dict[int, str]:
+  """Every baked kind's chunk text: the index spans all of rows/, so its glosses need all the
+  texts, not only this run's --kinds."""
+  import acts
+
+  _, rows = acts.corpus(
+    a.content.resolve(), a.directory, 0, ['note', 'pdf', 'image', 'base']
+  )
+  return dict(rows)
 
 
 def main() -> None:
@@ -345,7 +364,7 @@ def main() -> None:
   meta = json.loads(meta_path.read_text()) if meta_path.exists() else {}
 
   if a.index:
-    build_index(out, meta['layers'], meta['width'], a.index_top, dict(rows))
+    build_index(out, meta['layers'], meta['width'], a.index_top, all_texts(a))
     return
 
   import mlx.core as mx
@@ -421,7 +440,7 @@ def main() -> None:
       mx.reset_peak_memory()
   meta_path.write_text(json.dumps(meta) + '\n')
   if not a.limit:
-    build_index(out, n, M, a.index_top, dict(rows))
+    build_index(out, n, M, a.index_top, all_texts(a))
   log('done', out)
 
 

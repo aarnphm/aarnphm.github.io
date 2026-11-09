@@ -32,6 +32,8 @@ export interface RailModel {
   scopeFlags?: Uint8Array
   /** viewBox height in rail units; RAIL_HEIGHT unless the client has measured its pane */
   height?: number
+  /** kinds the view hides: they keep their slots in time but leave the density band */
+  hide?: LatentKind[]
 }
 
 /** The rail as an inline SVG. Collapsed documents are one path per store. */
@@ -62,6 +64,7 @@ export function railSvg(model: RailModel): Element {
   const totals = new Uint16Array(bins)
   for (let i = 0; i < model.docs.length; i++) {
     const doc = model.docs[i]
+    if (model.hide?.includes(doc.kind)) continue
     if (doc.day === 0) {
       undated.set(doc.kind, (undated.get(doc.kind) ?? 0) + 1)
       continue
@@ -110,6 +113,7 @@ export function railSvg(model: RailModel): Element {
     )
     for (const kind of layout.undatedKinds) {
       const count = undated.get(kind) ?? 0
+      if (!count) continue
       const y = layout.undatedTop + UNDATED_FIRST + layout.undatedKinds.indexOf(kind) * UNDATED_ROW
       const w = Math.max(2, (count / total) * 36)
       children.push(

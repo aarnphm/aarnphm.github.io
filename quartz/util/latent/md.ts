@@ -25,6 +25,21 @@ export interface MdHooks {
   fence: (body: string, info: string) => Element
   /** an html figure or svg block (`<figure>…</figure>`, `<svg>…</svg>`), whole or cut off */
   figure: (html: string) => Element[]
+  /**
+   * a latest-activities marker (`<div data-triathlon-latest data-triathlon-activities="10" />`)
+   * with its row count as written; without the hook the marker drops
+   */
+  triathlon?: (count: string | undefined) => Element
+  /**
+   * the page's handwritten signature, for a paragraph holding the `[^sign]` mark (the Aarnphm
+   * transformer swaps the whole paragraph); without the hook the mark reads as a footnote ref
+   */
+  signature?: () => Element
+  /**
+   * an embed on its own line (`![[/watch]]`, `![[/thoughts/writing#ava-writing|alias]]`, the
+   * builder resolves the target); without the hook, and inside a sentence, it reads as a link
+   */
+  embed?: (href: string, alias: string | undefined) => Element
 }
 
 // Obsidian block ids (`text ^ava-writing`, or `^id` on its own line) are anchors, not text
@@ -56,6 +71,7 @@ const INLINE = new RegExp(
     String.raw`::([^:\n]+?)(?:\{(h[1-7])\})?::`, // 17 marker text, 18 intensity
     String.raw`\^\[((?:[^\[\]\n]|\[[^\[\]\n]*\])+)\]`, // 19 inline footnote
     String.raw`(-{1,2}>|={1,2}>|<-{1,2}|<={1,2})`, // 20 arrow
+    String.raw`!\[\[((?:\/|https?:\/\/)[^\]|\n]*)(?:\|([^\]\n]*))?\]\]`, // 21 embed href, 22 alias
   ].join('|'),
   'g',
 )
@@ -70,6 +86,18 @@ const ARROWS: Record<string, string> = {
   '<--': '⇐',
   '<=': '⇐',
   '<==': '⇐',
+}
+
+/** An embed's address; stores before 2026-11-09 wrote web embeds as `/https://…` */
+export const embedHref = (href: string) => href.replace(/^\/(?=https?:\/\/)/, '')
+
+/** What an embed reads as when it is not shown: its alias, else its target's last segment. */
+export function embedName(href: string, alias: string | undefined): string {
+  if (alias?.trim() && !/^\d+(?:x\d+)?$/.test(alias.trim())) return alias.trim()
+  const web = /^\/?https?:\/\/([^/?#]+)/.exec(href)
+  if (web) return web[1].replace(/^www\./, '')
+  const path = href.split('#')[0]
+  return path.slice(path.lastIndexOf('/') + 1) || href
 }
 
 /** `[text](href)`: a link when the href is a web, mail, site or anchor address, else its text */
@@ -122,6 +150,8 @@ function convert(
   const inner = (s: string) => mdInline(s, math)
   if (m[1] !== undefined) return m[1].trim() ? [math(m[1].trim(), true)] : null
   if (m[2] !== undefined) return [math(m[2], false)]
+  if (m[21] !== undefined)
+    return mdLink(embedHref(m[21]), [{ type: 'text', value: embedName(m[21], m[22]) }])
   if (m[0].startsWith('!')) return []
   if (m[3] !== undefined) return mdLink(m[4] ?? '', inner(m[3]))
   if (m[15] !== undefined) {
@@ -179,6 +209,15 @@ const META = /^([ \t]*)[-*+][ \t]+\[meta\]:[ \t]*$/
 const FIGURE = /^ {0,3}<(figure|svg)\b/
 // raw `<pre>` (a hex dump, a listing with coloured spans) is a code block on the page too
 const PRE = /^ {0,3}<pre\b/i
+// the marker quartz/components/strava-activities.ts fills with the latest activities card; html
+// has no self-closing div, so a `</div>` right after it on the line is the marker's too
+const TRIATHLON = /^ {0,3}<div\b([^>]*?\bdata-triathlon-latest\b[^>]*?)\/?>(?:[ \t]*<\/div>)?/i
+// `![[/href|alias]]`, the builder's embed with its target resolved; EMBEDS is a text of only those
+const EMBED = /!\[\[((?:\/|https?:\/\/)[^\]|\n]*)(?:\|([^\]\n]*))?\]\]/g
+const EMBEDS = /^\s*(?:!\[\[(?:\/|https?:\/\/)[^\]\n]*\]\]\s*)+$/
+// the Aarnphm transformer's signature mark: `[^sign]`, a footnote ref by its syntax
+const SIGN = /\[\^sign\](?!:)/
+const TRIATHLON_COUNT = /\bdata-triathlon-activities\s*=\s*["']?\s*(\d+)/i
 
 /**
  * Where the html block opening `source` ends: after the close that balances its first tag
@@ -205,7 +244,8 @@ const startsBlock = (line: string) =>
   FENCE.test(line) ||
   DISPLAY_OPEN.test(line) ||
   FIGURE.test(line) ||
-  PRE.test(line)
+  PRE.test(line) ||
+  TRIATHLON.test(line)
 
 function dedent(lines: string[], by: number): string[] {
   return lines.map(line => {
@@ -312,6 +352,13 @@ export function mdBlocks(source: string, hooks: MdHooks): Element[] {
       if (body.trim()) out.push(hooks.fence(body, ''))
       out.push(...mdBlocks(rest.slice(end), hooks))
       break
+    } else if (TRIATHLON.test(line)) {
+      // the marker is a block of its own; text after it on the line carries on as markdown
+      const marker = TRIATHLON.exec(line)!
+      if (hooks.triathlon) out.push(hooks.triathlon(TRIATHLON_COUNT.exec(marker[1])?.[1]))
+      const rest = line.slice(marker[0].length)
+      if (rest.trim()) lines[i] = rest
+      else i++
     } else if (FIGURE.test(line)) {
       // a drawing is one block however many lines (and blank lines) it spans; text after its
       // close on the same line carries on as markdown
@@ -382,6 +429,19 @@ function callout(head: RegExpExecArray, body: string, hooks: MdHooks): Element {
 function paragraph(text: string, hooks: MdHooks): Element[] {
   text = unblock(text)
   if (!text.trim()) return []
+  if (hooks.signature && SIGN.test(text)) return [hooks.signature()]
+  // an embed on a line of its own (a list item's, a callout's, or under a sentence that runs on to
+  // it) shows what it transcludes; the lines around it stay paragraphs
+  if (hooks.embed) {
+    const lines = text.split('\n')
+    const at = lines.findIndex(line => EMBEDS.test(line))
+    if (at >= 0)
+      return [
+        ...paragraph(lines.slice(0, at).join('\n'), hooks),
+        ...[...lines[at].matchAll(EMBED)].map(m => hooks.embed!(m[1], m[2])),
+        ...paragraph(lines.slice(at + 1).join('\n'), hooks),
+      ]
+  }
   const joined = text
     .split('\n')
     .map((line, i, all) =>

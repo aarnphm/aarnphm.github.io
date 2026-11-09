@@ -16,7 +16,7 @@ function snapshot(rt: Runtime): SharedView {
     base: rt.base,
     focus: rt.focus,
     tab: selected === 'features' || selected === 'axes' ? selected : 'bench',
-    ...(rt.filter ? { filter: [...rt.filter.kinds] } : {}),
+    ...(rt.filter?.typed ? { filter: [...rt.filter.kinds] } : {}),
     features: snapshotFeatures(rt),
     bench: bench
       ? {
@@ -146,7 +146,7 @@ export async function bindShare(rt: Runtime): Promise<boolean> {
   }
   button.disabled = true
   try {
-    rt.filter = saved.filter?.length ? { kinds: [...saved.filter], mask: null } : null
+    rt.filter = saved.filter?.length ? { kinds: [...saved.filter], mask: null, typed: true } : null
     if (rt.filter && !saved.features?.query) {
       const box = rt.links.querySelector<HTMLInputElement>('form.lat-search input')
       if (box) box.value = `filter:${rt.filter.kinds.join(',')}`
