@@ -17,6 +17,7 @@ final class OutputMaster: ObservableObject {
     private var device: OutputDevice?
     private var paused = false
     private var route: AudioRoute?
+    private var hardwareVolume: HardwareVolume?
     private var failedSignature: String?
     private let settingsKey = "audiooutput.master-levels.v1"
     private let enabledKey = "audiooutput.volume-keys.enabled"
@@ -34,7 +35,23 @@ final class OutputMaster: ObservableObject {
         } else { levels = [:] }
         keys.onKey = { [weak self] key, fine in
             guard let self, self.canControl else { return }
-            self.level.adjust(key, fine: fine)
+            var next = self.level
+            do {
+                if let hardware = self.hardwareVolume {
+                    let current = try hardware.level()
+                    if !next.muted || current > 0 {
+                        next.volume = current
+                        next.muted = false
+                    }
+                }
+                next.adjust(key, fine: fine)
+                try self.hardwareVolume?.setLevel(next.gain)
+                self.level = next
+                self.issue = nil
+            } catch {
+                self.issue = error.localizedDescription
+                return
+            }
             if let device = self.device {
                 self.levels[device.uid] = self.level
                 if let data = try? JSONEncoder().encode(self.levels) {
@@ -56,10 +73,14 @@ final class OutputMaster: ObservableObject {
             failedSignature = nil
             issue = nil
             device = next
+            hardwareVolume = next.flatMap { HardwareVolume(device: $0.id) }
             level = next.flatMap { levels[$0.uid] } ?? MasterLevel()
         }
+        if let hardwareVolume, let current = try? hardwareVolume.level(), !level.muted || current > 0 {
+            level = MasterLevel(volume: current)
+        }
         self.paused = paused
-        eligible = next.map { Hardware.hasStereoOutput($0.id) && (!targetUID.isEmpty || !Hardware.hasOutputVolume($0.id)) } ?? false
+        eligible = next.map { hardwareVolume != nil ? !targetUID.isEmpty : Hardware.hasStereoOutput($0.id) } ?? false
         if enabled { keys.start() }
         keyAccess = keys.available
         if !canControl { stopRoute() }
@@ -74,12 +95,17 @@ final class OutputMaster: ObservableObject {
     }
 
     func factor(for output: OutputDevice) -> Double {
-        canControl && output.uid == device?.uid ? level.gain : 1
+        canControl && hardwareVolume == nil && output.uid == device?.uid ? level.gain : 1
     }
 
     func apply(excluding processes: [AudioObjectID]) {
         defer { writeStatus() }
         guard canControl, let device else { stopRoute(); return }
+        if hardwareVolume != nil {
+            stopRoute()
+            keys.handlesKeys = true
+            return
+        }
         let source = AudioRouteSource.device(excluding: Array(Set(processes)).sorted())
         if let route, route.source != source || route.device != device { stopRoute(); failedSignature = nil }
         let signature = "\(source)-\(device.id)-\(device.sampleRate)"
@@ -125,6 +151,7 @@ final class OutputMaster: ObservableObject {
             let keyTap: Bool
             let handlesKeys: Bool
             let gain: Double
+            let volumeControl: String
             let frames: UInt64
             let nonzeroFrames: UInt64
             let issue: String?
@@ -132,6 +159,7 @@ final class OutputMaster: ObservableObject {
         let status = Status(pid: ProcessInfo.processInfo.processIdentifier, updatedAt: Date(),
             target: device?.uid, enabled: enabled, eligible: eligible, trusted: keys.trusted,
             keyTap: keys.available, handlesKeys: keys.handlesKeys, gain: level.gain,
+            volumeControl: hardwareVolume == nil ? "software" : "hardware",
             frames: route?.frames ?? 0, nonzeroFrames: route?.nonzeroFrames ?? 0,
             issue: issue ?? keys.issue)
         if let data = try? JSONEncoder().encode(status) {
