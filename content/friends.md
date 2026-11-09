@@ -6,7 +6,7 @@ date: '2026-01-17'
 description: my name is Aaron, and on the virtue of friendship
 id: friends
 layout: technical
-modified: 2026-11-03 11:12:44 GMT-05:00
+modified: 2026-11-07 17:57:26 GMT-05:00
 tags:
   - evergreen
   - friend
@@ -107,7 +107,7 @@ Aristotle distinguished three kinds of philia: utility (we help each other), ple
 
 I agree with his emphasis on character as a foundation for friendship. Caring about who someone is gives us a reason to stay when circumstances change. [^1]
 
-[^1]: iirc Karlsson also wrote that "love is friendship on hard mode.", which is true. [[thoughts/love|Romantic]] relationships aren't a different category from friendship, but a superset of [[thoughts/friendship|friendship]]. they're friendship plus difficulty, plus stakes, plus everything that makes it easier to fuck up.
+[^1]: iirc Karlsson also wrote that "love is friendship on hard mode", which is true. [[thoughts/love|Romantic]] relationships aren't a different category from friendship, rather a superset of [[thoughts/friendship|friendship]]. they're friendship plus difficulty, plus stakes, plus grief, plus pain, plus care, plus everything that makes it easier to fuck up.
 
 ```quotes
 friendships are, by their very nature, made of friction, knowing what's going on in someone's day-to-day life, making plans, rescheduling when someone gets sick, bringing over soup.
