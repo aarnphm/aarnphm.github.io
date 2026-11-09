@@ -5396,6 +5396,742 @@ title: are.na
 
 ## places
 
+- https://www.thedirtttylaundry.com/ -- The Dirty Laundry
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [bar]
+    - coord: [43.6428351, -79.4261564]
+    - address: 1186 Queen St W, Toronto, ON M6J 1J6, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DffUh7gFte2/
+- https://oddseoul.ca/ -- Odd Seoul
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [bar]
+    - coord: [43.6462334, -79.4197137]
+    - address: 90 Ossington Ave, Toronto, ON M6J 2Z4, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DffUh7gFte2/
+- https://simplthings.ca/ -- Simpl Things
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [bar]
+    - coord: [43.6408208, -79.43425449999999]
+    - address: 269 Dunn Ave, Toronto, ON M6K 1L8, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DffUh7gFte2/
+- https://www.google.com/maps?cid=11879702498095890221 -- Lonely Diner
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [bar]
+    - coord: [43.6567645, -79.40719849999999]
+    - address: 432 College St, Toronto, ON M5T 1T3, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DffUh7gFte2/
+- https://www.google.com/maps?cid=11832970971817157215 -- Chez Wa
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [bar]
+    - coord: [43.65488089999999, -79.4146848]
+    - address: 617 College St, Toronto, ON M6G 1B5, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DffUh7gFte2/
+- https://goodnightcocktailclub.com/ -- Goodnight Cocktail Club
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [bar]
+    - coord: [43.6434486, -79.39842019999999]
+    - address: 488 Wellington St W, Toronto, ON M5V 1E3, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DffUh7gFte2/
+- https://www.zigzagoyster.com/ -- Zig Zag Oyster Bar
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar, restaurant]
+    - coord: [40.6762851, -73.9631007]
+    - address: 406 Prospect Pl, Brooklyn, NY 11238, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfUolsrFLXe/
+- https://www.google.com/maps?cid=9705930316328574808 -- Only Child
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar]
+    - coord: [40.685171, -73.935322]
+    - address: 567 Jefferson Ave, Brooklyn, NY 11221, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfUolsrFLXe/
+- https://929nyc.com/ -- 929
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar]
+    - coord: [40.7516756, -73.97893499999999]
+    - address: 56 E 41st St 2nd Floor, New York, NY 10017, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfUolsrFLXe/
+- https://www.bodeganightsbk.com/ -- Bodega Nights
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar]
+    - coord: [40.7072933, -73.9223306]
+    - address: 425 Troutman St, Brooklyn, NY 11237, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfUolsrFLXe/
+- https://www.google.com/maps?cid=1316569012726055038 -- Peek Inn
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar]
+    - coord: [40.7236043, -73.9405058]
+    - address: 38 Driggs Ave, Brooklyn, NY 11222, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfUolsrFLXe/
+- https://www.chinupbarnyc.com/ -- Chin Up Bar
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar]
+    - coord: [40.7208685, -73.99275919999999]
+    - address: 171 Chrystie St, New York, NY 10002, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfUolsrFLXe/
+- https://www.google.com/maps?cid=6228310723446904495 -- Bar Chucho
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar, restaurant]
+    - coord: [40.7124073, -73.99464159999999]
+    - address: 37 Market St, New York, NY 10002, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfUolsrFLXe/
+- https://tenderbar.nyc/ -- Tender Bar
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar]
+    - coord: [40.7475891, -73.986913]
+    - address: 22 W 32nd St, 16th Floor, New York, NY 10001, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfUolsrFLXe/
+- https://www.google.com/maps?cid=424110142974442480 -- Thone
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar, coffee shop]
+    - coord: [40.7254163, -73.9835739]
+    - address: 501 E 6th St, New York, NY 10009, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfUolsrFLXe/
+- https://lovethyneighbornyc.com/ -- Love Thy Neighbor
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar]
+    - coord: [40.7338064, -74.0022506]
+    - address: 55 Christopher St, New York, NY 10014, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfUolsrFLXe/
+- https://desertvintage.com/pages/locations -- Desert Vintage
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [shop]
+    - coord: [40.7157464, -73.9912903]
+    - address: 34 Orchard St, New York, NY 10002, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://danafoleynyc.com/ -- Dana Foley NYC
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [shop]
+    - coord: [40.72159569999999, -73.9873527]
+    - address: 174 Ludlow St, New York, NY 10002, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.assemblynewyork.com/ -- Assembly New York
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [shop]
+    - coord: [40.7214982, -73.98753409999999]
+    - address: 170 Ludlow St, New York, NY 10002, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.thereformation.com/stores/lower-east-side.html -- Reformation Lower East Side
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [shop]
+    - coord: [40.720933, -73.9877954]
+    - address: 156 Ludlow St, New York, NY 10002, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.google.com/maps?cid=8842247816402036280 -- Ludlow Coffee Supply
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [coffee shop]
+    - coord: [40.7216825, -73.9873972]
+    - address: 176 Ludlow St, New York, NY 10002, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.newmuseum.org/ -- New Museum
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [museum]
+    - coord: [40.7223376, -73.9928905]
+    - address: 235 Bowery, New York, NY 10002, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.icp.org/ -- International Center of Photography
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [museum]
+    - coord: [40.71822969999999, -73.989171]
+    - address: 84 Ludlow St, New York, NY 10002, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://cornerbarnyc.com/ -- Corner Bar at Nine Orchard
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant, bar]
+    - coord: [40.7145844, -73.9924952]
+    - address: 60 Canal St, New York, NY 10002, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.ledivenyc.com/ -- Le Dive
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant, bar]
+    - coord: [40.71476, -73.99094339999999]
+    - address: 37 Canal St, New York, NY 10002, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.outerheaven.nyc/ -- Outer Heaven
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar, nightclub]
+    - coord: [40.7220384, -73.9924255]
+    - address: 191 Chrystie St, New York, NY 10002, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.rhythmzero.nyc/ -- Rhythm Zero West Village
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [coffee shop]
+    - coord: [40.7332926, -74.0043956]
+    - address: 326-328 Bleecker St, New York, NY 10014, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://whitney.org/ -- Whitney Museum of American Art
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [museum]
+    - coord: [40.7395877, -74.0088629]
+    - address: 99 Gansevoort St, New York, NY 10014, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.thehighline.org/visit/ -- The High Line Gansevoort Entrance
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [park]
+    - coord: [40.7394043, -74.00806229999999]
+    - address: Gansevoort Street and Washington Street, New York, NY 10014, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.thecommerceinn.com/ -- The Commerce Inn
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [40.7313538, -74.0057057]
+    - address: 50 Commerce St, New York, NY 10014, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.viacarota.com/ -- Via Carota
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [40.7331959, -74.0036494]
+    - address: 51 Grove St, New York, NY 10014, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://barpisellino.com/ -- Bar Pisellino
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar]
+    - coord: [40.7329348, -74.0034603]
+    - address: 52 Grove St, New York, NY 10014, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.nycprimerib.com/ -- 4 Charles Prime Rib
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [40.7351398, -74.0006547]
+    - address: 4 Charles St, New York, NY 10014, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.cafecharmantnyc.com/ -- Café Charmant
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [40.7337397, -74.0047008]
+    - address: 340 Bleecker St, New York, NY 10014, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.the86.nyc/ -- The Eighty Six
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [40.7320801, -74.0051089]
+    - address: 86 Bedford St, New York, NY 10014, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.dandelionnewyork.com/ -- Dandelion
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar]
+    - coord: [40.7334062, -74.00543569999999]
+    - address: 115 Christopher St, New York, NY 10014, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.paulscasablanca.com/ -- Paul's Casablanca
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [nightclub, bar]
+    - coord: [40.7261541, -74.00835959999999]
+    - address: 305 Spring St, New York, NY 10013, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://us.lacabra.com/pages/soho -- La Cabra SoHo
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [coffee shop]
+    - coord: [40.72431, -73.9962]
+    - address: 284 Lafayette St, New York, NY 10012, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://stallestudios.com/ -- Ställe Studios
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [spa]
+    - coord: [40.7203677, -74.0020433]
+    - address: 54 Howard St 5th Floor, New York, NY 10013, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.spencers.spa/soho -- Spencer's Spa SoHo
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [spa]
+    - coord: [40.72356569999999, -73.99802509999999]
+    - address: 550 Broadway, 2nd and 4th floors, New York, NY 10012, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.davidzwirner.com/galleries/new-york/tribeca -- David Zwirner Tribeca
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [art gallery]
+    - coord: [40.7191723, -74.0032562]
+    - address: 52 Walker St, New York, NY 10013, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.santambroeus.com/pages/location-soho -- Sant Ambroeus SoHo
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant, coffee shop]
+    - coord: [40.72334619999999, -73.99652569999999]
+    - address: 265 Lafayette St, New York, NY 10012, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.lamercerieny.com/ -- La Mercerie
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [40.7201478, -74.0021708]
+    - address: 53 Howard St, New York, NY 10013, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://balthazarny.com/ -- Balthazar
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [40.722668, -73.99822979999999]
+    - address: 80 Spring St, New York, NY 10012, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.oresh.com/ -- Or'esh
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [40.7260011, -74.0008797]
+    - address: 450 W Broadway, New York, NY 10012, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.thecornerstoresoho.com/ -- The Corner Store
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [40.726568, -73.99983499999999]
+    - address: 475 W Broadway, New York, NY 10012, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.templebar.co/ -- Temple Bar
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar]
+    - coord: [40.7258921, -73.9949405]
+    - address: 332 Lafayette St, New York, NY 10012, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.themulberrybar.com/ -- The Mulberry
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar]
+    - coord: [40.7228238, -73.99573409999999]
+    - address: 240 Mulberry St, Lower Level, New York, NY 10012, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.ninesnyc.com/ -- The Nines
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar]
+    - coord: [40.7272376, -73.9940491]
+    - address: 9 Great Jones St, New York, NY 10012, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.clubroomnyc.com/ -- Club Room at Soho Grand
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar, nightclub]
+    - coord: [40.7221457, -74.0046268]
+    - address: 310 W Broadway, New York, NY 10013, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://zerobondny.com/ -- Zero Bond
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar, nightclub]
+    - coord: [40.72704359999999, -73.9947447]
+    - address: 0 Bond St, New York, NY 10012, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.google.com/maps?cid=10672522444434965572 -- Ralph's Coffee Madison Avenue
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [coffee shop]
+    - coord: [40.77165859999999, -73.9657658]
+    - address: 888 Madison Ave, New York, NY 10021, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.santambroeus.com/pages/location-madison-avenue -- Sant Ambroeus Madison Avenue
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [coffee shop, restaurant]
+    - coord: [40.7754159, -73.9629886]
+    - address: 1000 Madison Ave, New York, NY 10075, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://salon94.com/ -- Salon 94
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [art gallery]
+    - coord: [40.783428, -73.958326]
+    - address: 3 E 89th St, New York, NY 10128, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.guggenheim.org/ -- Solomon R. Guggenheim Museum
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [museum]
+    - coord: [40.7829796, -73.9589706]
+    - address: 1071 5th Ave, New York, NY 10128, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.metmuseum.org/plan-your-visit -- The Met Fifth Avenue
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [museum]
+    - coord: [40.7794366, -73.963244]
+    - address: 1000 5th Ave, New York, NY 10028, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.neuegalerie.org/visit -- Neue Galerie New York
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [museum]
+    - coord: [40.781264, -73.9603267]
+    - address: 1048 5th Ave, New York, NY 10028, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.levygorvydayan.com/locations -- Lévy Gorvy Dayan
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [art gallery]
+    - coord: [40.767004, -73.96939689999999]
+    - address: 19 E 64th St, New York, NY 10065, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.centralparknyc.org/ -- Central Park
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [park]
+    - coord: [40.7825547, -73.9655834]
+    - address: Central Park, Manhattan, New York, NY, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.casatualife.com/Newyork.html -- Casa Tua at The Surrey
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [40.7743678, -73.9640378]
+    - address: 20 E 76th St, New York, NY 10021, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.lowellhotel.com/restaurants-and-bar/majorelle/57-1/ -- Majorelle at The Lowell
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [40.7657388, -73.9692216]
+    - address: 28 E 63rd St, New York, NY 10065, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.casacruz.nyc/ -- Casa Cruz New York
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [40.7643816, -73.9700009]
+    - address: 36 E 61st St, New York, NY 10065, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.rosewoodhotels.com/en/the-carlyle-new-york/dining/bemelmans-bar -- Bemelmans Bar
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar]
+    - coord: [40.7744215, -73.963171]
+    - address: 35 E 76th St, New York, NY 10021, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.chezfifinyc.com/ -- Chez Fifi
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant, bar]
+    - coord: [40.7716972, -73.9615623]
+    - address: 140 E 74th St, New York, NY 10021, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.thebutcherchef.com/ -- The Butcher Chef
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [43.6427331, -79.37629319999999]
+    - address: 8 Harbour St, Toronto, ON M5J 3B1, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfP2kJvAOFM/
+- https://www.aburihana.com/ -- Aburi Hana
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [43.6710006, -79.39259609999999]
+    - address: 102 Yorkville Ave, Unit 4 Lower Level, Toronto, ON M5R 1B9, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfP2kJvAOFM/
+- https://www.1hotels.com/toronto/taste/casa-madera -- Casa Madera Toronto
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [43.6429827, -79.4014722]
+    - address: 550 Wellington St W Ground Floor, Toronto, ON M5V 2V4, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfP2kJvAOFM/
+- https://www.google.com/maps?cid=18293267462603793419 -- Maha's Cafe
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [coffee shop, restaurant]
+    - coord: [43.6612911, -79.3398411]
+    - address: 978 Queen St E (entrance from Carlaw Ave), Toronto, ON M4M 1K1, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfP2kJvAOFM/
+- https://tonobyakirabacktoronto.com/ -- TONO by Akira Back Toronto
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [43.670874, -79.38459379999999]
+    - address: 90 Bloor St E, Toronto, ON M4W 1A7, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfP2kJvAOFM/
+- https://www.anajakthai.com/ -- Anajak Thai
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [34.1515121, -118.4533788]
+    - address: 14704 Ventura Blvd, Sherman Oaks, CA 91403, United States
+    - later: true
+    - source: https://www.instagram.com/reel/DfecCAtJSBS/
+- https://magiccastle.com/ -- The Magic Castle
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar, theatre]
+    - coord: [34.104557, -118.3417885]
+    - address: 7001 Franklin Ave, Los Angeles, CA 90028, United States
+    - later: true
+    - source: https://www.instagram.com/reel/DfecCAtJSBS/
+- https://locations.in-n-out.com/85 -- In-N-Out Burger Sherman Oaks
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [34.1521128, -118.4483241]
+    - address: 4444 Van Nuys Blvd, Sherman Oaks, CA 91403, United States
+    - later: true
+    - source: https://www.instagram.com/reel/DfecCAtJSBS/
+- https://locations.tacobell.com/ca/sherman-oaks/14115-ventura-blvd.html -- Taco Bell Sherman Oaks
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [34.1498379, -118.4406274]
+    - address: 14115 Ventura Blvd, Sherman Oaks, CA 91423, United States
+    - later: true
+    - source: https://www.instagram.com/reel/DfecCAtJSBS/
+- https://figarobistrotla.com/ -- Figaro Bistrot
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [34.10377709999999, -118.2916356]
+    - address: 1802 N Vermont Ave, Los Angeles, CA 90027, United States
+    - later: true
+    - source: https://www.instagram.com/reel/DfecCAtJSBS/
+- https://www.google.com/maps?cid=17518144273148941094 -- Oakobing Koreatown
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [deserts]
+    - coord: [34.0633848, -118.2945921]
+    - address: 3300 W 6th St unit 2, Los Angeles, CA 90020, United States
+    - later: true
+    - source: https://www.instagram.com/reel/DfecCAtJSBS/
+- https://mussoandfrank.com/ -- Musso & Frank Grill
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant, bar]
+    - coord: [34.1017527, -118.335361]
+    - address: 6667 Hollywood Blvd, Hollywood, CA 90028, United States
+    - later: true
+    - source: https://www.instagram.com/reel/DfecCAtJSBS/
+- https://www.noburestaurants.com/malibu/ -- Nobu Malibu
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [34.0390391, -118.6696477]
+    - address: 22706 Pacific Coast Hwy, Malibu, CA 90265, United States
+    - later: true
+    - source: https://www.instagram.com/reel/DfecCAtJSBS/
+- https://www.camillerestaurant.co.uk/ -- Camille Borough Market
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [51.5050373, -0.09080819999999999]
+    - address: 2-3 Stoney Street, Borough Market, London SE1 9AA, United Kingdom
+    - later: true
+    - source: https://www.instagram.com/reel/DeyjHEesYK-/
+- https://www.themorgan.org/ -- The Morgan Library & Museum
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [museum]
+    - coord: [40.7492258, -73.9813971]
+    - address: 225 Madison Ave, New York, NY 10016, United States
+    - later: true
+    - source: https://www.instagram.com/reel/DclWzVNMqJq/
+- https://gulbenkian.pt/museu/ -- Calouste Gulbenkian Museum
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [museum]
+    - coord: [38.7378124, -9.1535455]
+    - address: Av. de Berna 45A, 1067-001 Lisboa, Portugal
+    - later: true
+    - source: https://www.instagram.com/reel/DclWzVNMqJq/
+- https://www.frick.org/ -- The Frick Collection
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [museum]
+    - coord: [40.7710857, -73.9673861]
+    - address: 1 E 70th St, New York, NY 10021, United States
+    - later: true
+    - source: https://www.instagram.com/reel/DclWzVNMqJq/
+- https://www.museothyssen.org/ -- Thyssen-Bornemisza National Museum
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [museum]
+    - coord: [40.4160406, -3.6949254]
+    - address: P.º del Prado, 8, Centro, 28014 Madrid, Spain
+    - later: true
+    - source: https://www.instagram.com/reel/DclWzVNMqJq/
+- https://www.thebroad.org/ -- The Broad
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [museum]
+    - coord: [34.0545021, -118.2501802]
+    - address: 221 S Grand Ave, Los Angeles, CA 90012, United States
+    - later: true
+    - source: https://www.instagram.com/reel/DclWzVNMqJq/
+- https://hearstcastle.org/ -- Hearst Castle
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [museum]
+    - coord: [35.6849825, -121.1699716]
+    - address: 750 Hearst Castle Rd, San Simeon, CA 93452, United States
+    - later: true
+    - source: https://www.instagram.com/reel/DclWzVNMqJq/
+- https://www.getty.edu/visit/center/ -- Getty Center
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [museum]
+    - coord: [34.0773438, -118.4732648]
+    - address: 1200 Getty Center Dr, Los Angeles, CA 90049, United States
+    - later: true
+    - source: https://www.instagram.com/reel/DclWzVNMqJq/
+- https://www.seokrestaurant.com/ -- SEOK by Mingoo Kang
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [48.8689056, 2.3301781]
+    - address: Park Hyatt Paris-Vendôme, 5 Rue de la Paix, 75002 Paris, France
+    - later: true
+    - source: https://www.instagram.com/p/DeWZlMQiVVS/
+- https://lepompon-restaurant.com/ -- Le Pompon
+  - [meta]:
+    - date: 11/07/2026
+    - tags: [restaurant, bar]
+    - coord: [48.868911, 2.3410577]
+    - address: Palais Brongniart, 25 Place de la Bourse, 75002 Paris, France
+    - later: true
+    - source: https://www.instagram.com/p/DfaVwwZEcix/
+- https://www.lepoissonvolant.paris/ -- Le Poisson Volant
+  - [meta]:
+    - date: 11/07/2026
+    - tags: [restaurant, bar, nightclub]
+    - coord: [48.86669999999999, 2.3794086]
+    - address: 5-7 Rue Marguerite Moret, 75011 Paris, France
+    - later: true
+    - source: https://www.instagram.com/p/DfaVwwZEcix/
+- https://www.pamela.paris/ -- Pamela
+  - [meta]:
+    - date: 11/07/2026
+    - tags: [nightclub, bar]
+    - coord: [48.8545626, 2.3379249]
+    - address: 62 Rue Mazarine, 75006 Paris, France
+    - later: true
+    - source: https://www.instagram.com/p/DfaVwwZEcix/
+- https://www.le-carmen.fr/ -- Le Carmen
+  - [meta]:
+    - date: 11/07/2026
+    - tags: [bar, nightclub]
+    - coord: [48.8820846, 2.3342194]
+    - address: 34 Rue Duperré, 75009 Paris, France
+    - later: true
+    - source: https://www.instagram.com/p/DfaVwwZEcix/
+- https://www.instagram.com/envolemoiparis/ -- Envole Moi
+  - [meta]:
+    - date: 11/07/2026
+    - tags: [bar, nightclub]
+    - coord: [48.8710463, 2.3431029]
+    - address: 176 Rue Montmartre, 75002 Paris, France
+    - later: true
+    - source: https://www.instagram.com/p/DfaVwwZEcix/
+- https://www.instagram.com/cavecanaille/ -- Cave Canaille
+  - [meta]:
+    - date: 11/07/2026
+    - tags: [bar, shop]
+    - coord: [48.86784979999999, 2.3784288]
+    - address: 100 Rue Jean-Pierre Timbaud, 75011 Paris, France
+    - later: true
+    - source: https://www.instagram.com/p/DfaVwwZEcix/
 - https://early-june.fr/ -- Early June
   - [meta]:
     - date: 11/06/2026
@@ -7348,9 +8084,10 @@ title: are.na
     - date: 10/30/2026
     - tags: [restaurant]
     - coord: [43.6630633, -79.4033017]
-    - address: 96 Harbord Street, Toronto, ON, Canada
+    - address: 96 Harbord Street, Toronto, ON M5S 1G6, Canada
     - later: true
     - source: https://www.instagram.com/reel/De-bxAeNwZA/
+  - https://dreyfustoronto.com/ -- official website
 - https://www.casapaco.ca/ -- Casa Paco
   - [meta]:
     - date: 10/30/2026
@@ -7839,7 +8576,9 @@ title: are.na
   - [meta]:
     - date: 11/22/2025
     - tags: [restaurant]
-    - coord: [43.6489495, -79.4216355]
+    - coord: [43.6496, -79.4230583]
+    - address: 2 Lakeview Ave, Toronto, ON M6J 3B1, Canada
+    - source: https://www.instagram.com/p/DfP2kJvAOFM/
 - https://maps.app.goo.gl/BdnNkGtSwhyxvPgk6 -- Bang Bang Ice Cream
   - [meta]:
     - date: 11/22/2025
@@ -27698,6 +28437,39 @@ title: are.na
     - date: 10/05/2025
     - tags: [engineering, compilers]
   - see also [[thoughts/pdfs/Efficient Implementation of the Smalltalk-80 System.pdf|Efficient Implementation of the Smalltalk-80 System.pdf]]
+
+## fashion
+
+- https://www.instagram.com/quida._/ -- Ida
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [fashion, style]
+    - later: true
+    - source: https://www.instagram.com/reel/DfXZtNOxJde/
+- https://www.instagram.com/laylavandenbergh/ -- Layla Vanden Bergh
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [fashion, style]
+    - later: true
+    - source: https://www.instagram.com/reel/DfXZtNOxJde/
+- https://www.instagram.com/eugeniamcquarrie/ -- Eugenia McQuarrie
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [fashion, style]
+    - later: true
+    - source: https://www.instagram.com/reel/DfXZtNOxJde/
+- https://www.instagram.com/sannakatano/ -- Sanna
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [fashion, style]
+    - later: true
+    - source: https://www.instagram.com/reel/DfXZtNOxJde/
+- https://www.instagram.com/evameloche/ -- Eva Meloche
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [fashion, style]
+    - later: true
+    - source: https://www.instagram.com/reel/DfXZtNOxJde/
 
 ## watches
 
