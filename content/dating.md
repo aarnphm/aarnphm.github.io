@@ -9,7 +9,7 @@ description: or i might be that fish in the sea, for you.
 dropcap: goudy
 id: dating
 layout: newspaper
-modified: 2026-11-03 11:16:41 GMT-05:00
+modified: 2026-11-09 11:41:26 GMT-05:00
 readonly: true
 separator: grapevine
 slides: true
@@ -17,7 +17,7 @@ tags:
   - evergreen
   - love
   - fruit
-title: don't date me.
+title: dating docs
 ---
 
 _epistemic status: personal anecdote_
@@ -26,33 +26,43 @@ _epistemic status: personal anecdote_
 >
 > I'm more than happy to meet and go on a date should our [Nash equilibrium](https://en.wikipedia.org/wiki/Nash_equilibrium) works out. If you are interested in me as a friend, then I have a [[friends|friends-equivalent]] doc. I love to meet new people, well... _what is life if not the people you share it with?_
 
-Dating is a notorious numbers game, and us [[triathlon|triathletes]] are infamous for _being lethargic_[^lazy] after work and [brick sessions](https://triathlonmagazine.ca/training/why-bricks-matter-more-than-you-think/). I also don't like to repeat myself, therefore, making a dating docs seems like an reasonable next thing—something I can share with someone I find attractive.
+Dating is a notorious numbers game, and us [[triathlon|triathletes]] are infamous for _being lethargic_[^lazy] after work and [brick sessions](https://triathlonmagazine.ca/training/why-bricks-matter-more-than-you-think/). I also don't like to repeat myself, therefore, making a dating doc seems like an reasonable next thing—something I can share with someone I find attractive.
 
 [^lazy]: Or at least I'm 😸
 
 Most people know me online as `aarnphm` /urn-fm/, but you can call me _Aaron_ (or [a-a-ron](https://www.youtube.com/watch?v=zRpsRKuyi3Y&ab_channel=ComedyCentralUK)). I was born in '01. I work on [[thoughts/Machine learning|ML]] system and make sure they _behave themselves_. I'm hoping to find a wonderful woman to be my partner[^partner], someone I can share a life with for many years to come ♥
 
-[^partner]: And I meant, [wife](https://en.wikipedia.org/wiki/Wife). More on spousal responsibility a bit later, but I've been in both polyamorous and monogamous relationship.
+[^partner]: And I meant, [wife](https://en.wikipedia.org/wiki/Wife). _More on spousal responsibility later_
 
 ![[thoughts/images/me-hand-on-cheek.webp]]
 ![[thoughts/images/me-autumn-maples.webp]]
+![[thoughts/images/me-laughing.webp]]
+![[thoughts/images/me-picnic-table.webp]]
 
 <div id="tldr">
 
 Here's me in 30 seconds. By all means explore the rest of the documents.[^onion]
 
-I'm love and _obssessed_ with what [[thoughts/craft|I do]]. Other's wellfare and working on [hard problems](https://en.wikipedia.org/wiki/P_versus_NP_problem) are things I care a lot about. But most importantly, I want to share a life with someone and build a family with. I work a lot—it's all I do these days—but I also want to build for something more than just myself. I'm lucky to date a lot of amazing women and men, but always the _wrong timing_ or we aren't aligned for the same thing. Hence, this document is more/less an encapsulation of what I want as well as the life I wish for as earnestly and openly as possible.
+I'm love and _obssessed_ with what [[thoughts/craft|I do]]. General wellfare and [[thoughts/Alignment|hard problems]] are things I care a lot about. Most importantly, I want to share a life with someone and build a family with. I work a lot—alongside with being an amateur athlete, meaning I don't have a lot of free time otherwise—but I also want to build towards something more than just for myself.<br/>
+I'm lucky to date a lot of amazing women and men alike, but always the _wrong timing_/we aren't aligned for the same thing. Hence, this document is an encapsulation of what I want as well as the life I wish for as earnestly and openly as possible.
 
-I don't really care what you do, as long as there are subjects/topics that excite you: beauty of math and science, the amazing feats of human engineering, the drive to help people, etc. I also value my relationship with my friends. I also travel around with my bike a lot.
+I don't really care what you do, as long as there are things that excite you: beauty of math and science, the amazing feats of human ingenuity, altruism—just to name a few.<br/>
+I'm an open person and tend to be very blunt and straightforward. My [[thoughts/friendship|friends]] are a big part of my life, to the extend that their kids will be well taken care of should anything happen to them.
 
-I'm the 3am call who shows up, so I'm reliable[^reliable]. I was poly with several partners; my last relationship, however, showed me I'm better suited to monogamy.
-My [love languages](https://en.wikipedia.org/wiki/The_Five_Love_Languages) are physical touch and quality time. I'm ["securely attached"](https://en.wikipedia.org/wiki/Attachment_theory#Attachment_styles_in_adults:~:text=%5B116%5D-,Securely%20attached,-%5Bedit%5D). I'm a bit of a free spirit, possibly due to the fact that I moved continents at a young age.
+I'm the 3am calls that show up, so I'm reliable[^reliable]. I was in a poly relationship with several partners while living in San Francisco; my last relationship, however, showed me I'm better suited to monogamy [^monogamy].
+My [love languages](https://en.wikipedia.org/wiki/The_Five_Love_Languages) are physical touch and quality time. I'm ["securely attached"](https://en.wikipedia.org/wiki/Attachment_theory#Attachment_styles_in_adults:~:text=%5B116%5D-,Securely%20attached,-%5Bedit%5D).
 
-[^reliable]: I'm considered to be both type-1 and type-2 fun, but I will make sure we got back home safely 🚶‍♂️‍➡️
+I'm a bit of a free spirit, since I moved continents during adolescence period.
 
-My Myers-Briggs is ENTJ-A, though it often swings to INTJ-T.[^personality]
-I like them em-dash (—) (contrary to _many, many recent_ beliefs), parentheticals and non-sequiturs.
+[^monogamy]: ime polyamorous ends up to be a [binpacking](https://en.wikipedia.org/wiki/Bin_packing_problem) problem and a logistical nightmare lol. I'm glad that I got to experience that, but would prefer to prioritize and focus on _one_ partner.
+
+[^reliable]: I'm considered to be both type-1 and type-2 fun, and I will make sure we got back home safely 🚶‍♂️‍➡️. Though you know, I can be as reliable as a human can be, _at least I try my best_.
+
+My Myers-Briggs is ENTJ-A, though it often swings to INTJ-T.[^personality]<br/>
+I like them em-dash (—) (contrary to _many, many recent_ beliefs), parentheticals and non-sequiturs.<br/>
 I listen to quite a bit of <span style="text-decoration: underline;">Rachmaninoff</span>, Bill Evans, UK garage, and often find myself rabbit-holing on random #math topics.
+
+I [[antilibrary.base|read]] quite a bit, my personal canon includes Simone de Beauvoir, Wittgenstein, Frank Ramsey, and A. J. Ayer. I also know my way around the kitchen, as I used to stage for during my time in San Francisco.
 
 [^personality]: You can also find the [[personality|personality report]] from Clearer Thinking's [Ultimate Personality Test](https://www.clearerthinking.org/tools/the-ultimate-personality-test)
 
@@ -60,16 +70,7 @@ I listen to quite a bit of <span style="text-decoration: underline;">Rachmaninof
 
 </div>
 
-## about me.
-
-I'm an _honest_ person, and I'm not afraid to admit to mistakes. I'm sure I'll make _even more mistakes_, but no one is ✨ _perfect_ ✨ and we only have one life to live 🙂
-I'm someone you can rely on[^1] --when I make a commitment to you, I'll be 100% present.
-I try to live this life well. I'm pretty goofy around my friends and people I trust. That said, I find myself drawn to more spontaneous people, probably because I tend to be more reserved. _Well_:
-
-![[thoughts/images/me-laughing.webp|guess what I'm looking at]]
-![[thoughts/images/me-picnic-table.webp|thinking about a dad joke]]
-
-Here is my friends' attestation of me:
+Here is my [[friends|friends]]' attestation of me:
 
 ```quotes
 Caring, inquisitive, loyal, thoughtful
@@ -89,11 +90,9 @@ I think that Aaron is someone I trust to be there for me at the drop of a hat, n
 C
 ```
 
-[^1]: reliable in both logistics and emotional capacity, but I'm still human at the end of the day.
-
 ---
 
-## professional life.
+## pros. (subjectively)
 
 <figure class='float-right'>
 
@@ -101,27 +100,20 @@ C
 
 </figure>
 
-I was an early [[thoughts/Transformers#inference.|inference]] optimization engineer[^engineer] at [BentoML](https://bentoml.com/) before [Modular](https://www.modular.com/) acquired us. In early May 2026, Qualcomm [acquired](https://www.qualcomm.com/news/releases/2026/06/qualcomm-to-acquire-modular) Modular. I'm now at [NVIDIA](https://www.nvidia.com/en-us/) working on [[thoughts/vllm|vLLM]] and supporting pretraining Nemotron.
+**I'm very selective and attentive to what I work on.** I'm also excited about [[thoughts/Machine learning|the]] [[thoughts/LLMs|problems]] [[thoughts/Transformers|I get]] to tackle everyday, and you can pretty much read through most of the [[/thoughts|notes]] as well as my [[research|research interests]], if you are curious. It's a bit lengthy, so if you do sit through these chances are we are a great fit!
 
-[^engineer]: which means I'm a software engineer working on optimizing [[thoughts/LLMs|LLMs]]
+**I don't define myself by where I work, as long as it aligns with my goals and ambitions.**[^tldr] I'm also very spontaneous and in the camp of _concurrent play_ and sidequest-maxxing (that's what the kids sayin these day 🥰)
 
-I take my [[thoughts/craft|work]] seriously. I interned at the business analytics division of a bank back in 2018, doing behavioral analysis on customer usage patterns.
-This was my first real exposure to [supervised learning](https://en.wikipedia.org/wiki/Supervised_learning) and I was immediately hooked.
+[^tldr]:
+    To give a quick "professional" credibility, I was an early [[thoughts/Transformers#inference.|inference]] optimization engineer at [BentoML](https://bentoml.com/) before [Modular](https://www.modular.com/) acquired us at the tailend of 2025. I then joined Modular to work on more systems problems, under the MAX organization. Then in May 2026, Qualcomm [acquired](https://www.qualcomm.com/news/releases/2026/06/qualcomm-to-acquire-modular) Modular (somewhat of an insane year to went through two consecutive acquisitions). I'm now at [NVIDIA](https://www.nvidia.com/en-us/) working on [[thoughts/vllm|vLLM]] and supports the Nemotron team.
 
-I pretty much didn't know a thing back then, but that didn't bother me much: I found the problem fascinating and knew I would _try_ to solve it, because I wanted to. I definitely still have a ton to learn, but over time you tend to pick up skills along the way.
+    If one can notice I didn't have so-called _traditional pathways_ into machine learning, so _what the hell am I doing here? Early on, I got exposure to the topics through an internship during high school at a bank back home doing some BA stuff. I then noticed that most of [[thoughts/Machine learning|ML]]'s [technical debt](https://proceedings.neurips.cc/paper_files/paper/2015/file/86df7dcfd896fcaf2674f757a2463eba-Paper.pdf) comes down to scaling, which inherently is an \_engineering_ problem. So I picked up a few things here and there, and got some luck along the way to know being here.
 
-Early on, I noticed that most of [[thoughts/Machine learning|ML]]'s [technical debt](https://proceedings.neurips.cc/paper_files/paper/2015/file/86df7dcfd896fcaf2674f757a2463eba-Paper.pdf) comes down to scaling, which inherently is an _engineering_ problem.
-This led me to join BentoML, as a software engineer. The mission statement and positioning have shifted quite a bit since then, but the core remains the same: optimizing [[thoughts/LLMs|statistical models]] to be as fast and accessible as possible.
+**I'm more than happy to be the primary person for financially support the family**. I'm not imposing any specific gender connotations here, though I worry it might give a wrong impression. As a matter of fact, I'm very happy to share financial responsibility! I'm also in the camp of having a _prenup_ to protect both myself and my partner should anything bad happen, while a shared account dedicated to the children is something I believe very strongly.
 
-My approach to problems has stayed consistent since I learned arithmetic: ==don't quit, managed obsession[^obsession], and get your hands dirty==[^work].
+**I'm excited to have a biological kid of my own**. Kids are magical being, the more I interact with my nephews. I think this thread from [Chris Olah](https://x.com/ch402/status/1407002844847173632) capture the intention for men wanting kids very well. If biological descendant is not your thing, I also want to explore the ability to adopt. I do think kids should never have to experience the foster systems, as every kid deserve a loving home. I will make sure that I will [[thoughts/love|love]] them as if they are my own. [^adopt]
 
-[^work]: I should say I've been very fortunate professionally, working at a startup meant tackling loosely-defined problems and developing my own research and engineering [[thoughts/taste|taste]].
-
-[^obsession]: Allocating 15-20 minutes a day to _one_ problem, without distraction. These days it's often 30-60 minute stints for me.
-
-I might not be good at something initially, but i find being autistic enough to care about a specific domain (_scaling [[thoughts/AGI|intelligence]]_) has got me to a spot that makes 5-year-old Aaron proud.
-
-I have some [[research|research interests]] I'm currently chasing — read them if you're curious. I know it's a bit long, so feel free to skip [[#personal life.|to the next topic]]. Otherwise hopefully it captures what I'm fascinated with as of Oct, 2025.
+[^adopt]: should we decide to have our own kid, I still want to adopt _one_, as adoption is something I want to do as a way to _contribute_ to society.
 
 ---
 

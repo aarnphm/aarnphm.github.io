@@ -438,8 +438,10 @@ function cite(aside: Element): Element {
  */
 function chain(tree: Root, marked: Set<string>) {
   const last = { any: '', left: '', right: '', box: '' }
+  const boxLast = { left: '', right: '' }
   let sections = false
   let alternate = 0
+  let boxAlternate = 0
   const link = (box: Element | null) => (el: Element) => {
     if (el.tagName === 'h2') sections = true
     if (el.properties.id === 'tldr' && el !== box) {
@@ -451,9 +453,14 @@ function chain(tree: Root, marked: Set<string>) {
     const vars = [`anchor-name:${name}`, `--cite:${name}-cite`]
     if (marked.has(String(el.properties.id))) vars.push(`--mark:${name}-mark`)
     if (box) {
-      if (last.box) vars.push(`--prev:${last.box}`, `--prev-side:${last.box}`)
-      // Right-rail notes after the box must still clear its notes.
-      last.box = last.any = last.right = name
+      // Box notes alternate rails as well: two citations on neighbouring lines (reliable,
+      // monogamy) then both sit level instead of the second hanging a note's height below.
+      const side = boxAlternate++ % 2 === 1 ? 'left' : 'right'
+      if (side === 'left') el.properties.dataSide = 'left'
+      if (last.box) vars.push(`--prev:${last.box}`)
+      if (boxLast[side]) vars.push(`--prev-side:${boxLast[side]}`)
+      // Notes after the box must still clear its notes on their own rail.
+      last.box = last.any = boxLast[side] = last[side] = name
     } else {
       const side = sections && alternate++ % 2 === 1 ? 'left' : 'right'
       if (side === 'left') el.properties.dataSide = 'left'

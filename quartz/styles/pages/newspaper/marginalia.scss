@@ -51,10 +51,17 @@ body:not(.stack-mode)[data-layout='newspaper'] #quartz-root > section.header {
     hyphens: manual;
     break-inside: avoid;
 
+    // column.scss pins every article p to the body's 30px line (the initials' grid); a note keeps
+    // its own leading, or a footnote sets double-spaced beside a sidenote.
     p {
       margin: 0 0 0.35rem;
+      line-height: inherit;
       text-indent: 0;
       text-align: start;
+    }
+
+    li {
+      line-height: inherit;
     }
 
     ul,
@@ -256,7 +263,10 @@ body:not(.stack-mode)[data-layout='newspaper'] #quartz-root > section.header {
     position: relative;
     padding-right: calc(var(--mag-rail) + var(--mag-gap));
 
-    section.collapsible-header {
+    // Neither a chapter nor the tldr box (positioned in dating.scss) may contain a note: every
+    // note measures its rail from the article.
+    section.collapsible-header,
+    #tldr {
       position: static;
     }
 
@@ -274,7 +284,9 @@ body:not(.stack-mode)[data-layout='newspaper'] #quartz-root > section.header {
           calc(100% - var(--mag-rail))
         );
         width: var(--mag-rail);
-        margin: 0;
+        // Drop the note by half the leading difference so its first baseline sits on the
+        // citation's line, not 5px above it.
+        margin: calc((var(--mag-line) - 1lh) / 2) 0 0;
         padding: 0;
         border: 0;
 
@@ -327,8 +339,7 @@ body:not(.stack-mode)[data-layout='newspaper'] #quartz-root > section.header {
 
       #tldr > .profile-note,
       #tldr > .profile-note:first-of-type {
-        left: calc(100% + var(--mag-offset));
-        margin-top: 0;
+        margin-top: calc((var(--mag-line) - 1lh) / 2);
         padding-top: 0;
         border-top: 0;
       }
