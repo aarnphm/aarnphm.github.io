@@ -2,13 +2,13 @@
 date: '2025-11-02'
 description: building prompt-specific attribution graphs from cross-layer transcoders
 id: circuit tracing
-modified: 2026-06-05 15:08:20 GMT-04:00
+modified: 2026-11-09 10:24:13 GMT-05:00
 socials:
   methods: https://transformer-circuits.pub/2025/attribution-graphs/methods.html
   release: https://www.anthropic.com/research/open-source-circuit-tracing
   repository: https://github.com/decoderesearch/circuit-tracer
 tags:
-  - interp
+  - interpretability
   - ml
 title: circuit tracing
 transclude:

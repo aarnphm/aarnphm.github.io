@@ -2,10 +2,10 @@
 date: '2024-11-04'
 description: sparse decompositions of model activations, gated encoders, and shrinkage from sparsity penalties.
 id: sparse autoencoder
-modified: 2026-10-02 09:15:16 GMT-04:00
+modified: 2026-11-09 10:24:13 GMT-05:00
 tags:
   - ml
-  - interp
+  - interpretability
 title: sparse autoencoder
 transclude:
   title: false

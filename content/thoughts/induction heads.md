@@ -2,12 +2,12 @@
 date: '2025-01-18'
 description: How induction heads copy a continuation from context, and how residual-stream paths connect them.
 id: induction heads
-modified: 2026-09-17 09:05:53 GMT-04:00
+modified: 2026-11-09 10:24:13 GMT-05:00
 seealso:
   - '[[thoughts/Transformers|Transformers]]'
   - '[[thoughts/LLMs|LLMs]]'
 tags:
-  - interp
+  - interpretability
   - ml
 title: induction heads
 transclude:

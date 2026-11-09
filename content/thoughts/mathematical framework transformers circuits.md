@@ -2,10 +2,10 @@
 date: '2025-09-15'
 description: Anthropic, 2021
 id: mathematical framework transformers circuits
-modified: 2026-09-01 09:15:00 GMT-04:00
+modified: 2026-11-09 10:24:13 GMT-05:00
 tags:
   - ml
-  - interp
+  - interpretability
 title: mathematical framework for transformer circuits
 ---
 

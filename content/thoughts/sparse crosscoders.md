@@ -2,12 +2,12 @@
 date: '2024-11-03'
 description: A shared sparse dictionary for activations across layers or models, and the limits of reading model differences from decoder norms.
 id: sparse crosscoders
-modified: 2026-10-02 09:15:16 GMT-04:00
+modified: 2026-11-09 10:24:12 GMT-05:00
 socials:
   circuits: https://transformer-circuits.pub/2024/crosscoders/index.html
 tags:
   - ml
-  - interp
+  - interpretability
 title: sparse crosscoders
 transclude:
   title: false

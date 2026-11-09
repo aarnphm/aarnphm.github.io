@@ -2,15 +2,15 @@
 date: '2025-10-04'
 description: polysemantic activations, superposition, sparse dictionary learning, and the evidence needed to treat an SAE direction as a feature
 id: Polysemantic
-modified: 2026-08-27 09:11:56 GMT-04:00
-socials:
-  circuits: https://transformer-circuits.pub/2023/monosemantic-features/index.html
+modified: 2026-11-09 10:24:12 GMT-05:00
 seealso:
   - '[[thoughts/mechanistic interpretability|mechanistic interpretability]]'
   - '[[thoughts/Negation|Negation]]'
   - '[[thoughts/Compositionality|Compositionality]]'
+socials:
+  circuits: https://transformer-circuits.pub/2023/monosemantic-features/index.html
 tags:
-  - interp
+  - interpretability
   - llm
 title: Polysemantic
 ---

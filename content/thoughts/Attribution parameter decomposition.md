@@ -2,9 +2,9 @@
 date: '2025-01-29'
 description: Decomposing weights into sparsely used mechanisms, and what APD's losses establish.
 id: Attribution parameter decomposition
-modified: 2026-09-17 09:06:25 GMT-04:00
+modified: 2026-11-09 10:24:13 GMT-05:00
 tags:
-  - interp
+  - interpretability
 title: Attribution parameter decomposition
 ---
 
