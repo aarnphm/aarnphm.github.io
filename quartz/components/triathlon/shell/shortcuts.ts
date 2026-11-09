@@ -42,6 +42,7 @@ export const setupShortcuts = (root: HTMLElement): (() => void) => {
     e: '/triathlon/calendar',
     f: '/triathlon/on?view=feed',
     o: '/triathlon/on',
+    u: '/triathlon/fun',
     h: '/triathlon',
   }
   const selectCalculatorTab = (key: string): boolean => {

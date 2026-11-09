@@ -6,7 +6,7 @@ const APEX_ORIGIN = 'https://aarnphm.xyz'
 const SHARED_PATH =
   /^\/(?:api|comments|fonts|models|_plausible|mcp|sse|authorize|register|token|\.well-known)(?:\/|$)/
 const SECTION_PATH =
-  /^\/(?:tools|calc|analytics|maps|training|calendar|feed|data|on)(?:\/|\.(?:html?|md|ics)$|$)/
+  /^\/(?:tools|calc|analytics|maps|training|calendar|feed|data|on|fun)(?:\/|\.(?:html?|md|ics)$|$)/
 
 export function triathlonHostPathname(pathname: string): string {
   const normalized = pathname.startsWith('/') ? pathname : `/${pathname}`

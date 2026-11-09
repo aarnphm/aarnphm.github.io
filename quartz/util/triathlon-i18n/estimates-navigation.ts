@@ -86,6 +86,7 @@ export const en: Record<string, string> = {
   'distance · pace · weight · composition': 'distance · pace · weight · composition',
   'overview · bars': 'overview · bars',
   tools: 'tools',
+  fun: 'fun',
   'pace chart': 'pace chart',
   'pace chart assumption':
     'splits at a constant pace, with no stops, transitions, terrain or fatigue.',
@@ -187,6 +188,7 @@ export const fr: Record<string, string> = {
   'distance · pace · weight · composition': 'distance · allure · poids · composition',
   'overview · bars': "vue d'ensemble · barres",
   tools: 'outils',
+  fun: 'pour le plaisir',
   'pace chart': 'tableau des allures',
   'pace chart assumption':
     'temps de passage à allure constante, sans arrêts, transitions, terrain ni fatigue.',

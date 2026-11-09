@@ -8,6 +8,7 @@ import type { NativeActivityReports } from '../../../util/activity-provider-repo
 import type { CyclingIntensityTrace } from '../../../util/cycling-intensity'
 import type { CyclingPowerTrace } from '../../../util/cycling-power'
 import type { CyclingTorqueTrace } from '../../../util/cycling-torque'
+import type { DailySleepSources } from '../../../util/daily-sleep-health'
 import type { HeartRatePhysiology } from '../../../util/heart-rate-physiology'
 import type { RunHeartCostTrace, RunStrideCadenceTrace } from '../../../util/run-mechanics'
 import type { RunPaceZoneDistribution } from '../../../util/run-pace-zones'
@@ -67,6 +68,7 @@ export interface StravaDay {
 }
 
 export type ActivityHealth = Omit<OuraDaily, 'date'> & {
+  sleepSources?: DailySleepSources
   windKph?: number | null
   windDir?: string | null
   windDirDeg?: number | null

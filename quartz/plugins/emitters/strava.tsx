@@ -18,6 +18,7 @@ import {
 import { isDevelopmentBuild } from '../../util/build-mode'
 import { hashContent } from '../../util/content-hash'
 import { BuildCtx, contentDataFor } from '../../util/ctx'
+import { buildHighParkLoops } from '../../util/high-park-loops'
 import { onModuleRelease, releasedOnReload } from '../../util/module-caches'
 import { FilePath, FullSlug, pathToRoot } from '../../util/path'
 import { StaticResources } from '../../util/resources'
@@ -146,6 +147,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
       const detailArtifacts = serializeStravaDetails(detailPayload)
       const equipment = buildTriathlonEquipment(cache)
       const triathlonRenderData: TriathlonRenderData = {
+        highParkLoops: buildHighParkLoops(Object.values(payload.details), cache?.streams),
         analytics,
         weather: weather?.current ?? null,
         equipment,
@@ -285,6 +287,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
           baseUrl: ctx.cfg.configuration.baseUrl,
           scopePrefix,
           dataFeed,
+          highParkLoops: triathlonRenderData.highParkLoops,
           analytics,
           payload,
           calendar,
