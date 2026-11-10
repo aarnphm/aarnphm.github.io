@@ -34,7 +34,14 @@ export const paletteMode: {
   actionType: ActionType
   fallbackActionType: FallbackActionType
   currentSearchTerm: string
-} = { actionType: 'quick_open', fallbackActionType: 'quick_open', currentSearchTerm: '' }
+  /** A `?`-led quick-open query: Gemma reads the top results into an overview (palette/intelligence.ts). */
+  intelligence: boolean
+} = {
+  actionType: 'quick_open',
+  fallbackActionType: 'quick_open',
+  currentSearchTerm: '',
+  intelligence: false,
+}
 
 export interface PaletteState {
   readonly currentSlug: FullSlug
@@ -65,6 +72,7 @@ export interface PaletteState {
   quickOpenSemantic: SiteSemantic | null
   quickOpenTimer: number
   measuredPaletteWidth: number
+  intelligence: AbortController | null
 }
 
 export function quickOpenProgress(s: PaletteState, loading: boolean) {
@@ -133,6 +141,9 @@ export function hidePalette(s: PaletteState) {
   }
 
   paletteMode.actionType = 'quick_open' // reset search type after closing
+  paletteMode.intelligence = false
+  s.intelligence?.abort()
+  s.intelligence = null
   s.commandHistory = []
   s.commandHistoryIndex = -1
   syncPaletteHelper(s)

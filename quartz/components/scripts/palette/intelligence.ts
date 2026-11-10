@@ -71,6 +71,7 @@ export function normaliseQuery(query: string): string {
   return query
     .toLowerCase()
     .replace(/\s+/g, ' ')
+    .trim()
     .replace(/[?!.。]+$/u, '')
     .trim()
 }
