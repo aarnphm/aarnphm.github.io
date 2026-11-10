@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-11-09 17:00:47 GMT-05:00
+modified: 2026-11-10 09:07:38 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -82,6 +82,11 @@ title: are.na
 
 ## discourse
 
+- https://x.com/joannejang/status/2112639489009127935 -- Joanne Jang on Core Automation’s agent-run businesses
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [agent organizations, entrepreneurship]
+    - later: true
 - https://www.lesswrong.com/posts/pY76hHbdD4jduX3YH/wah-wah-wah-wah-do-more-ai-r-and-d -- Wah wah wah wah do more AI R&D
   - [meta]:
     - date: 11/09/2026
@@ -848,6 +853,16 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/0xadvit/status/2114210602570969163 -- Advit reacts to Qwen neuron steering
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [activation steering, qwen]
+    - later: true
+- https://x.com/QiaochuYuan/status/2114408694113017963 -- Qiaochu Yuan recommends Wilhelm Reich’s Wikipedia article
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [wilhelm reich, psychoanalysis]
+    - later: true
 - https://x.com/noampomsky/status/2118438333978394887 -- Ava on preserving clarity and examining your motives
   - [meta]:
     - date: 11/05/2026
@@ -4053,6 +4068,21 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://en.wikipedia.org/wiki/Wilhelm_Reich -- Wilhelm Reich
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [psychoanalysis, intellectual history]
+    - later: true
+- https://en.wikipedia.org/wiki/Jeff_Buckley -- Jeff Buckley
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [music, singer-songwriters]
+    - later: true
+- https://en.wikipedia.org/wiki/Guy_Debord -- Guy Debord
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [situationism, social theory]
+    - later: true
 - https://bcho.me -- Brandon Cho
   - [meta]:
     - date: 10/22/2026
@@ -5411,6 +5441,62 @@ title: are.na
 
 ## places
 
+- https://www.chezroselondon.com/ -- Chez Rose
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [restaurant]
+    - coord: [51.5135423, -0.1422513]
+    - address: 5 Pollen St, London W1S 1NE, United Kingdom
+    - later: true
+    - source: https://www.instagram.com/reel/DfjknjwsOJ3/
+- https://www.instagram.com/adelaides.kitchen/ -- Adelaide's Kitchen
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [coffee shop]
+    - coord: [-33.8864496, 151.2280982]
+    - address: 9 Regent St, Paddington NSW 2021, Australia
+    - later: true
+    - source: https://www.instagram.com/p/De_OKI_E42N/
+- https://le-baus.com/pages/store -- Lè Baus
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [shop, coffee shop]
+    - coord: [-33.8867191, 151.230513]
+    - address: 3A Victoria St, Paddington NSW 2021, Australia
+    - later: true
+    - source: https://www.instagram.com/p/De_OKI_E42N/
+- https://www.sondercafe.com.au/ -- Sonder Café Paddington
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [coffee shop, restaurant]
+    - coord: [-33.8823314, 151.2280535]
+    - address: 227 Glenmore Rd, Paddington NSW 2021, Australia
+    - later: true
+    - source: https://www.instagram.com/p/De_OKI_E42N/
+- https://25hours-hotels.com/sydney/the-olympia/restaurants-bars/jacob-the-angel/ -- Jacob the Angel Sydney
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [coffee shop]
+    - coord: [-33.8820993, 151.2194193]
+    - address: 5 Oxford St, Paddington NSW 2021, Australia
+    - later: true
+    - source: https://www.instagram.com/p/De_OKI_E42N/
+- https://www.ampersandcafe.com.au/contact -- Ampersand Cafe & Bookstore
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [bookstore, coffee shop]
+    - coord: [-33.8831036, 151.2209812]
+    - address: 78 Oxford St, Paddington NSW 2021, Australia
+    - later: true
+    - source: https://www.instagram.com/p/De_OKI_E42N/
+- https://www.mecca.coffee/pages/mecca-coffee-glenmore-road-paddington -- Mecca Coffee Paddington
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [coffee shop]
+    - coord: [-33.8835254, 151.2223744]
+    - address: Shop 4/2-16 Glenmore Rd, Paddington NSW 2021, Australia
+    - later: true
+    - source: https://www.instagram.com/p/De_OKI_E42N/
 - https://www.thedirtttylaundry.com/ -- The Dirty Laundry
   - [meta]:
     - date: 11/09/2026
@@ -8830,6 +8916,16 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://heelsoff.substack.com/p/goodbye-mckinsey -- Goodbye, McKinsey.
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [consulting, career transitions]
+    - later: true
+- https://thatvastvariety.substack.com/p/top-performers-are-pathologically -- Top Performers are Pathologically Ambitious
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [ambition, career development]
+    - later: true
 - https://erifili.substack.com/p/life-begins-and-ends-with-attention -- life begins and ends with attention
   - [meta]:
     - date: 11/09/2026
@@ -12764,6 +12860,36 @@ title: are.na
   - view: list
   - json: true
 
+- https://x.com/AlexRoseJo/status/2114202656994713690 -- CroissAttn: a zero-sum fix for the FlashAttention backward pass
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [attention kernels, fp4 training]
+    - later: true
+- https://x.com/xdotli/status/2114306522520117275 -- Xiangyi Li on token pressure and reasoning legibility
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [reasoning models, reinforcement learning]
+    - later: true
+- https://x.com/cHHillee/status/2114070883799327084 -- Horace He’s list of model parallelism schemes
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [distributed training, parallelism]
+    - later: true
+- https://x.com/_lyraaaa_/status/2114211024962498831 -- Lyra demonstrates how to find a neuron-steering recipe
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [activation steering, interpretability]
+    - later: true
+- https://x.com/jon_barron/status/2113707875290042665 -- Jon Barron on numerical bugs in softmax and cross-entropy
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [numerical stability, grokking]
+    - later: true
+- https://x.com/_lyraaaa_/status/2113833330429083662 -- Lyra’s neuron-steering recipe for Qwen3.5 4B
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [activation steering, qwen]
+    - later: true
 - https://github.com/anthropics/mythos-5-incident-transcript/blob/main/README.md -- Mythos 5 Transcript Release
   - [meta]:
     - date: 11/09/2026
@@ -16554,6 +16680,16 @@ title: are.na
 
 ## opinions
 
+- https://emjsmith.substack.com/p/seeing-myself-in-elizabeth-holmes -- Seeing Myself In Elizabeth Holmes
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [documentary criticism, startup culture]
+    - later: true
+- https://x.com/noampomsky/status/2112321680563683483 -- Ava on warmth and self-interest in You Can See Everything
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [documentary criticism, interpersonal trust]
+    - later: true
 - https://notmickey1.substack.com/p/i-watched-the-elizabeth-holmes-doc -- Watching the Elizabeth Holmes doc with her Fiance
   - [meta]:
     - date: 11/09/2026
@@ -17174,6 +17310,26 @@ title: are.na
 
 ## life is literature
 
+- https://en.wikipedia.org/wiki/I_Who_Have_Never_Known_Men -- I Who Have Never Known Men
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [dystopian fiction, jacqueline harpman]
+    - later: true
+- https://en.wikipedia.org/wiki/Novacene -- Novacene: The Coming Age of Hyperintelligence
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [superintelligence, environmentalism]
+    - later: true
+- https://x.com/kpaxs/status/2107307376340828662 -- Kpaxs’s book recommendations for business operators
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [book recommendations, business operations]
+    - later: true
+- https://x.com/jonathanbfine/status/2112350472619368691 -- Jonathan Fine’s takedown of In Search of Lost Time
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [marcel proust, literary criticism]
+    - later: true
 - https://tianlezhang.substack.com/p/what-does-the-chinese-internet-think-133 -- What does the Chinese Internet think about Sally Rooney's novels?
   - [meta]:
     - date: 11/09/2026
@@ -18173,6 +18329,21 @@ title: are.na
   - view: list
   - json: true
 
+- https://en.wikipedia.org/wiki/Mersenne_Twister -- Mersenne Twister
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [pseudorandom numbers, algorithms]
+    - later: true
+- https://en.wikipedia.org/wiki/Temporal_logic_of_actions -- Temporal logic of actions
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [formal methods, temporal logic]
+    - later: true
+- https://x.com/hillelogram/status/2113646046840558000 -- Hillel Wayne on Anthropic’s formal verification work
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [formal verification, proof assumptions]
+    - later: true
 - https://dakshitakhurana.substack.com/p/classical-at-heart -- Classical at Heart
   - [meta]:
     - date: 10/21/2026
@@ -19169,6 +19340,26 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://slatestarcodex.com/2014/07/30/meditations-on-moloch/ -- Meditations On Moloch
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [coordination failures, game theory]
+    - later: true
+- https://en.wikipedia.org/wiki/Epistemological_particularism -- Epistemological particularism
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [epistemology, problem of the criterion]
+    - later: true
+- https://x.com/praxiss/status/2114362896428003835 -- Praxis on Borges, Ramon Llull, and thinking machines
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [borges, philosophy of mind]
+    - later: true
+- https://x.com/owenbroadcast/status/2112571423231442951 -- Owen Cyclops on skill beyond conscious deliberation
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [implicit knowledge, philosophy of mind]
+    - later: true
 - https://www.lesswrong.com/posts/pK4HTxuv6mftHXWC3/prolegomena-to-a-theory-of-fun -- Prolegomena to a Theory of Fun
   - [meta]:
     - date: 11/09/2026
@@ -21358,6 +21549,16 @@ title: are.na
 
 ## design
 
+- https://x.com/texturesdev/status/2115805869917315570 -- Textures: a brand-texture library for agents
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [brand textures, creative coding]
+    - later: true
+- https://x.com/jakubkrehel/status/2114379959263502712 -- Jakub Krehel’s teardown illustration skill
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [technical illustration, agent skills]
+    - later: true
 - https://x.com/ryolu_/status/2106337039201505453 -- Ryo Lu: convergence to the mean
   - [meta]:
     - date: 10/23/2026
@@ -22055,6 +22256,11 @@ title: are.na
 
 ## video
 
+- https://en.wikipedia.org/wiki/Into_the_Wild_(film) -- Into the Wild (film)
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [film, literary adaptations]
+    - later: true
 - https://www.youtube.com/watch?v=4Bh4YgzyrQg -- Timothée Chalamet, Austin Butler, Léa Seydoux... racontent le tournage époustouflant de Dune 2 !
   - [meta]:
     - date: 10/11/2026
@@ -22800,6 +23006,16 @@ title: are.na
 
 ## tools
 
+- https://en.wikipedia.org/wiki/Nawmal -- Nawmal
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [animation, text to speech]
+    - later: true
+- https://x.com/kepano/status/2113990622168367440 -- Pele adds math resolvers and diagram rendering improvements
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [diagram rendering, obsidian]
+    - later: true
 - https://obry.app -- Obry for Mac
   - [meta]:
     - date: 10/22/2026
@@ -23100,6 +23316,11 @@ title: are.na
 
 ## arts
 
+- https://en.wikipedia.org/wiki/Obelisk -- Obelisk
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [monuments, architecture]
+    - later: true
 - https://albertomielgo.blogspot.com/2009/12/cosmo-02_11.html -- Alberto Mielgo: COSMO 02
   - [meta]:
     - date: 10/22/2026
@@ -27322,6 +27543,21 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://engineeringx.substack.com/p/the-principle-of-applied-laziness -- The Principle of Applied Laziness
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [problem solving, research strategy]
+    - later: true
+- https://x.com/thorstenball/status/2114386050638336082 -- How I work with Agents
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [coding agents, software delivery]
+    - later: true
+- https://x.com/rahulgs/status/2112643415313907722 -- Ramp’s Laminar agent harness
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [agent harnesses, durable workflows]
+    - later: true
 - https://forum.effectivealtruism.org/posts/8rwLroRx5bcCcshzG/information-security-become-a-hacker-not-a-consultant -- Information security: Become a hacker, not a consultant
   - [meta]:
     - date: 11/09/2026
@@ -29487,6 +29723,16 @@ title: are.na
   - view: list
   - json: true
 
+- https://en.wikipedia.org/wiki/Fractional_Brownian_motion -- Fractional Brownian motion
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [stochastic processes, hurst exponent]
+    - later: true
+- https://en.wikipedia.org/wiki/Conditional_entropy -- Conditional entropy
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [information theory, entropy]
+    - later: true
 - https://en.wikipedia.org/wiki/Kolakoski_sequence -- Kolakoski sequence
   - [meta]:
     - date: 10/21/2026
