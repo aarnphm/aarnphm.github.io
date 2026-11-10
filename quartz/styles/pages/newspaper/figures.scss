@@ -123,9 +123,8 @@ body[data-slug='dating'] article .profile-frame {
   }
 }
 
-// On a phone the testimonials run sideways, one quote at a time, with the next one showing at
-// the edge so the band reads as a row to swipe. Where scroll markers exist, small squares (the
-// footnote mark's shape) under the band say which quote is up.
+// On a phone the testimonials run sideways, one full-width quote at a time. Where scroll markers
+// exist, small squares (the footnote mark's shape) under the band say which quote is up.
 @container profile (width < 48rem) {
   :is(
       body:not(.stack-mode)[data-layout='newspaper'] :where(#quartz-root),
@@ -135,7 +134,7 @@ body[data-slug='dating'] article .profile-frame {
     .profile-pulls {
     display: flex;
     align-items: stretch;
-    gap: 1.25rem;
+    gap: 0;
     overflow-x: auto;
     overscroll-behavior-x: contain;
     scroll-snap-type: x mandatory;
@@ -147,15 +146,13 @@ body[data-slug='dating'] article .profile-frame {
     }
 
     blockquote.quotes {
-      flex: 0 0 85%;
+      flex: 0 0 100%;
       box-sizing: border-box;
-      padding-inline: 0 1.25rem;
+      padding-inline: 0;
       scroll-snap-align: start;
-
-      // The rule closes each quote on its right, so a snapped quote never opens on a bare line.
-      &:not(:last-child) {
-        border-right: 1px solid var(--mag-hair);
-      }
+      scroll-snap-stop: always;
+      // Nothing of the neighbouring quote may bleed across the edge.
+      overflow: clip;
 
       & + blockquote.quotes {
         border-top: 0;

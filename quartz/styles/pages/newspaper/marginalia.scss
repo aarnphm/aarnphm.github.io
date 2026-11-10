@@ -97,7 +97,12 @@ body:not(.stack-mode)[data-layout='newspaper'] #quartz-root > section.header {
     }
   }
 
-  // Long notes (a recipe, a list) are a boxed aside in the body, never in the rail.
+  // A long note's toggle only has work in the rail; opened inline it reads in full.
+  .profile-note-more {
+    display: none;
+  }
+
+  // Notes with a table or figure are a boxed aside in the body, never in the rail.
   .profile-note.profile-note-boxed {
     margin: 1rem 0;
     padding: 0.6rem 0;
@@ -270,6 +275,12 @@ body:not(.stack-mode)[data-layout='newspaper'] #quartz-root > section.header {
       position: static;
     }
 
+    // profile-notes.inline.ts sets the overhang of a rail note that runs past the chapter's end,
+    // so the next chapter's separator starts below it.
+    section.collapsible-header[data-level='2'] {
+      padding-bottom: var(--mag-note-clear, 0px);
+    }
+
     // Profile emits the anchors: --cite on a word joiner at the citation, --prev on the note
     // above on the same rail. A missing --prev falls back so the citation alone decides.
     @supports (anchor-name: --a) {
@@ -337,6 +348,66 @@ body:not(.stack-mode)[data-layout='newspaper'] #quartz-root > section.header {
         outline-color: var(--dark);
       }
 
+      // A long note shows its first seven lines, fading out over the last two, until opened.
+      .profile-note-long:not([data-expanded]) > .profile-note-body {
+        max-height: calc(7 * 1lh);
+        overflow: clip;
+        mask-image: linear-gradient(to bottom, black calc(100% - 2lh), transparent);
+      }
+
+      // Opened, it runs to the end of the text beside it (--note-room from profile-notes.inline.ts,
+      // never shorter than the folded view) and scrolls inside. The fades follow the scroll: none at
+      // the top edge until the note has scrolled, none at the bottom once the end is reached. When
+      // the note fits, the scroll timeline is inactive and neither fade shows.
+      .profile-note-long[data-expanded] > .profile-note-body {
+        --note-fade-top: 0px;
+        --note-fade-bottom: 0px;
+        max-height: max(calc(7 * 1lh), var(--note-room, 100vh));
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        scrollbar-width: none;
+        mask-image: linear-gradient(
+          to bottom,
+          transparent,
+          black var(--note-fade-top),
+          black calc(100% - var(--note-fade-bottom)),
+          transparent
+        );
+        animation: note-scroll-fade linear both;
+        animation-timeline: scroll(self);
+
+        &::-webkit-scrollbar {
+          display: none;
+        }
+      }
+
+      .profile-note-more {
+        display: block;
+        margin: 0.2rem 0 0;
+        padding: 0;
+        border: 0;
+        background: none;
+        font-family: var(--codeFont);
+        font-size: 10px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--darkgray);
+        cursor: var(--cursor-pointer, pointer);
+
+        &::after {
+          content: ' \2193';
+        }
+
+        &[aria-expanded='true']::after {
+          content: ' \2191';
+        }
+
+        &:is(:hover, :focus-visible) {
+          color: var(--dark);
+          text-decoration: underline;
+        }
+      }
+
       #tldr > .profile-note,
       #tldr > .profile-note:first-of-type {
         margin-top: calc((var(--mag-line) - 1lh) / 2);
@@ -344,6 +415,36 @@ body:not(.stack-mode)[data-layout='newspaper'] #quartz-root > section.header {
         border-top: 0;
       }
     }
+  }
+}
+
+@property --note-fade-top {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --note-fade-bottom {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@keyframes note-scroll-fade {
+  0% {
+    --note-fade-top: 0px;
+    --note-fade-bottom: 2.5rem;
+  }
+
+  8%,
+  92% {
+    --note-fade-top: 2.5rem;
+    --note-fade-bottom: 2.5rem;
+  }
+
+  100% {
+    --note-fade-top: 2.5rem;
+    --note-fade-bottom: 0px;
   }
 }
 

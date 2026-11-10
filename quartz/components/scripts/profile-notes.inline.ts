@@ -85,6 +85,102 @@ function hydrateArticle(article: HTMLElement) {
         { signal },
       )
   }
+
+  // A rail note hangs from its citation and takes no room, so near a chapter's end it can run
+  // into the next chapter's separator. Pad the chapter by the overhang: measure every rail note
+  // first, then write.
+  const railNotes = [
+    ...article.querySelectorAll<HTMLElement>('.profile-note:not(.profile-note-boxed)'),
+  ]
+  const chapterSections = [
+    ...article.querySelectorAll<HTMLElement>("section.collapsible-header[data-level='2']"),
+  ]
+  const nextChapter = (chapter: HTMLElement) => {
+    let el = chapter.nextElementSibling
+    while (el && !el.matches("section.collapsible-header[data-level='2']"))
+      el = el.nextElementSibling
+    return el
+  }
+  let fitFrame = 0
+  const fit = () => {
+    fitFrame = 0
+    const need = new Map<HTMLElement, number>()
+    const room = new Map<HTMLElement, string>()
+    for (const note of railNotes) {
+      if (getComputedStyle(note).position !== 'absolute') continue
+      // An opened long note may run down to the end of the text it sits beside (its chapter's
+      // body, or the tldr box) and scrolls inside past that.
+      const body = note.classList.contains('profile-note-long')
+        ? note.querySelector<HTMLElement>(':scope > .profile-note-body')
+        : null
+      if (body) {
+        const text =
+          note.closest<HTMLElement>(".collapsible-header-content[data-level='2']") ??
+          note.closest<HTMLElement>('#tldr')
+        room.set(
+          body,
+          text
+            ? `${Math.floor(text.getBoundingClientRect().bottom - body.getBoundingClientRect().top)}px`
+            : '',
+        )
+      }
+      const chapter = note.closest<HTMLElement>("section.collapsible-header[data-level='2']")
+      const next = chapter && nextChapter(chapter)
+      if (!chapter || !next) continue
+      const padded = parseFloat(chapter.style.getPropertyValue('--mag-note-clear')) || 0
+      const over =
+        note.getBoundingClientRect().bottom + 24 - (next.getBoundingClientRect().top - padded)
+      need.set(chapter, Math.max(need.get(chapter) ?? 0, over))
+    }
+    for (const [body, value] of room) {
+      if (body.style.getPropertyValue('--note-room') === value) continue
+      if (value) body.style.setProperty('--note-room', value)
+      else body.style.removeProperty('--note-room')
+    }
+    for (const chapter of chapterSections) {
+      const over = Math.ceil(need.get(chapter) ?? 0)
+      const value = over > 0 ? `${over}px` : ''
+      if (chapter.style.getPropertyValue('--mag-note-clear') === value) continue
+      if (value) chapter.style.setProperty('--mag-note-clear', value)
+      else chapter.style.removeProperty('--mag-note-clear')
+    }
+  }
+  const scheduleFit = () => {
+    if (!fitFrame) fitFrame = requestAnimationFrame(fit)
+  }
+  if (railNotes.length && chapterSections.length) {
+    scheduleFit()
+    void document.fonts?.ready.then(() => {
+      if (!signal.aborted) scheduleFit()
+    })
+    const observer = new ResizeObserver(scheduleFit)
+    observer.observe(article)
+    for (const note of railNotes) observer.observe(note)
+    signal.addEventListener(
+      'abort',
+      () => {
+        observer.disconnect()
+        cancelAnimationFrame(fitFrame)
+      },
+      { once: true },
+    )
+  }
+
+  // Long notes sit folded to a few lines in the rail; the toggle under them opens the rest.
+  for (const button of article.querySelectorAll<HTMLButtonElement>('.profile-note-more')) {
+    const note = button.closest<HTMLElement>('.profile-note-long')
+    if (!note) continue
+    button.addEventListener(
+      'click',
+      () => {
+        const open = !note.hasAttribute('data-expanded')
+        note.toggleAttribute('data-expanded', open)
+        button.setAttribute('aria-expanded', String(open))
+        button.textContent = open ? 'less' : 'more'
+      },
+      { signal },
+    )
+  }
 }
 
 function hydrate(root: Document | HTMLElement) {

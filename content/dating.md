@@ -9,7 +9,7 @@ description: or i might be that fish in the sea, for you.
 dropcap: goudy
 id: dating
 layout: newspaper
-modified: 2026-11-09 11:41:26 GMT-05:00
+modified: 2026-11-10 08:57:31 GMT-04:00
 readonly: true
 separator: grapevine
 slides: true
@@ -107,13 +107,13 @@ C
 [^tldr]:
     To give a quick "professional" credibility, I was an early [[thoughts/Transformers#inference.|inference]] optimization engineer at [BentoML](https://bentoml.com/) before [Modular](https://www.modular.com/) acquired us at the tailend of 2025. I then joined Modular to work on more systems problems, under the MAX organization. Then in May 2026, Qualcomm [acquired](https://www.qualcomm.com/news/releases/2026/06/qualcomm-to-acquire-modular) Modular (somewhat of an insane year to went through two consecutive acquisitions). I'm now at [NVIDIA](https://www.nvidia.com/en-us/) working on [[thoughts/vllm|vLLM]] and supports the Nemotron team.
 
-    If one can notice I didn't have so-called _traditional pathways_ into machine learning, so _what the hell am I doing here? Early on, I got exposure to the topics through an internship during high school at a bank back home doing some BA stuff. I then noticed that most of [[thoughts/Machine learning|ML]]'s [technical debt](https://proceedings.neurips.cc/paper_files/paper/2015/file/86df7dcfd896fcaf2674f757a2463eba-Paper.pdf) comes down to scaling, which inherently is an \_engineering_ problem. So I picked up a few things here and there, and got some luck along the way to know being here.
+    If one can notice I didn't have so-called _traditional pathways_ into machine learning, so _what the hell am I doing here?_ Early on, I got exposure to the topics through an internship during high school at a bank back home doing some BA stuff. I then noticed that most of [[thoughts/Machine learning|ML]]'s [technical debt](https://proceedings.neurips.cc/paper_files/paper/2015/file/86df7dcfd896fcaf2674f757a2463eba-Paper.pdf) comes down to scaling, which inherently is an _engineering_ problem. So I picked up a few things here and there, and got some luck along the way to know being here.
 
 **I'm more than happy to be the primary person for financially support the family**. I'm not imposing any specific gender connotations here, though I worry it might give a wrong impression. As a matter of fact, I'm very happy to share financial responsibility! I'm also in the camp of having a _prenup_ to protect both myself and my partner should anything bad happen, while a shared account dedicated to the children is something I believe very strongly.
 
-**I'm excited to have a biological kid of my own**. Kids are magical being, the more I interact with my nephews. I think this thread from [Chris Olah](https://x.com/ch402/status/1407002844847173632) capture the intention for men wanting kids very well. If biological descendant is not your thing, I also want to explore the ability to adopt. I do think kids should never have to experience the foster systems, as every kid deserve a loving home. I will make sure that I will [[thoughts/love|love]] them as if they are my own. [^adopt]
+**I'm excited to have a biological kid of my own**. Kids are magical being, the more I interact with my nephews. I think this thread from [Chris Olah](https://x.com/ch402/status/1407002844847173632) capture the intention for men wanting kids very well. If biological descendant is not your thing, I also want to explore the ability to adopt. I do think kids should never have to experience the foster systems, as every kid deserves a loving home. I will make sure that I will [[thoughts/love|love]] them as if they are my own. [^adopt]
 
-[^adopt]: should we decide to have our own kid, I still want to adopt _one_, as adoption is something I want to do as a way to _contribute_ to society.
+[^adopt]: should we decide to have biological kid(s), I still want to adopt _one_.
 
 ---
 

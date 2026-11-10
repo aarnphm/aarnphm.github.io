@@ -198,6 +198,12 @@
       line-height: inherit;
     }
 
+    // document-defaults.scss sets strong to 500, a weight the sans has. Source Serif 4 ships 400
+    // and 600 only, and a 500 request falls back to 400, so bold read as body text.
+    :is(strong, b) {
+      font-weight: 600;
+    }
+
     p + p {
       text-indent: 1.4em;
     }
