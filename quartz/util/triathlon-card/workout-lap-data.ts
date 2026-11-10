@@ -227,10 +227,14 @@ export const runWorkoutLaps = (
   d: StravaActivityDetail,
 ): RunLapSplit[] => {
   const laps: RunLapSplit[] = []
-  for (const [index, range] of validAnalysisRanges(d)
+  let ranges = validAnalysisRanges(d)
     .filter(candidate => candidate.kind === 'lap')
     .sort((left, right) => left.startElapsedS - right.startElapsedS)
-    .entries()) {
+  if (ranges.length <= 1) {
+    const mileSplits = projectedRunSplits({ ...presentation, distance: 'imperial' }, d)
+    if (mileSplits.length > 0) ranges = mileSplits
+  }
+  for (const [index, range] of ranges.entries()) {
     const speedKph =
       range.averageSpeedKph != null && range.averageSpeedKph > 0
         ? range.averageSpeedKph

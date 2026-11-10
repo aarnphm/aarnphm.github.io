@@ -87,6 +87,7 @@ import {
   cyclingDynamicsIndexAtDistance,
   dominantTrainingEffectGroup,
   buildRoute,
+  buildRecovery,
   buildRunGroundContactTrace,
   buildRunStrideTrace,
   buildRunVerticalOscillationTrace,
@@ -5622,6 +5623,89 @@ test('selects Strava metric or standard run splits from the active distance unit
   assert.deepEqual(
     byClass(standardSplits, 'tri-run-split').map(row => row.properties.dataRangeId),
     ['split:standard:1', 'split:standard:2'],
+  )
+})
+
+test('shows recovery source popovers only for individual Garmin fallback fields', () => {
+  const health = { ...emptyHealth(), sleepScore: 89, sleepDurationS: 33360 }
+  for (const sleepSources of [
+    undefined,
+    { sleepScore: 'oura', sleepDurationS: 'oura' },
+  ] satisfies Array<StravaActivityDetail['health']['sleepSources']>) {
+    const rendered = buildRecovery(factory, { ...health, sleepSources })
+    assert.ok(rendered)
+    assert.deepEqual(byClass(rendered, 'tri-act-stat-v').map(text), ['89', "9h16'"])
+    assert.equal(byClass(rendered, 'tri-act-source').length, 0)
+  }
+  for (const field of ['sleepScore', 'sleepDurationS'] satisfies Array<
+    keyof NonNullable<StravaActivityDetail['health']['sleepSources']>
+  >) {
+    const rendered = buildRecovery(factory, { ...health, sleepSources: { [field]: 'garmin' } })
+    assert.ok(rendered)
+    assert.deepEqual(byClass(rendered, 'tri-act-stat-v').map(text), ['89', "9h16'"])
+    const hints = byClass(rendered, 'tri-act-source')
+    assert.equal(hints.length, 1)
+    assert.equal(text(hints[0]), field === 'sleepScore' ? '89' : "9h16'")
+    assert.equal(hints[0].properties.dataGlossDef, 'Garmin')
+    assert.equal(hints[0].properties.tabIndex, 0)
+  }
+})
+
+test('uses mile splits for run workout bars only when recorded laps lack boundaries', () => {
+  const run = analysisDetail()
+  run.sport = 'run'
+  const recorded = run.analysisRanges.filter(range => range.kind === 'lap')
+  recorded.push({
+    ...recorded[0],
+    id: 'lap-3',
+    label: 'Lap 3',
+    startElapsedS: 2400,
+    endElapsedS: 3600,
+    startDistanceKm: 15,
+    endDistanceKm: 22.5,
+  })
+  run.runSplitsStandard = [
+    {
+      split: 1,
+      distanceKm: 1.609344,
+      elapsedTimeS: 490,
+      movingTimeS: 480,
+      averageSpeedKph: 12.07008,
+      elevationDifferenceM: 5,
+      paceZone: 2,
+    },
+    {
+      split: 2,
+      distanceKm: 0.804672,
+      elapsedTimeS: 280,
+      movingTimeS: 270,
+      averageSpeedKph: 10.72896,
+      elevationDifferenceM: -3,
+      paceZone: 3,
+    },
+  ]
+  const bars = () => byClass(buildActivity(factory, run, true), 'tri-run-workout-lap')
+  for (const count of [0, 1]) {
+    run.analysisRanges = recorded.slice(0, count)
+    assert.deepEqual(
+      bars().map(bar => bar.properties.dataRangeId),
+      ['split:standard:1', 'split:standard:2'],
+    )
+    assert.deepEqual(
+      bars().map(bar => bar.properties.dataDistanceKm),
+      ['1.609344', '0.804672'],
+    )
+  }
+  run.analysisRanges = recorded
+  assert.deepEqual(
+    bars().map(bar => bar.properties.dataRangeId),
+    recorded.map(lap => lap.id),
+  )
+  run.analysisRanges = recorded.slice(0, 1)
+  run.runSplitsStandard = []
+  assert.deepEqual(
+    bars().map(bar => bar.properties.dataRangeId),
+    [recorded[0].id],
   )
 })
 
