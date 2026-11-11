@@ -5441,6 +5441,542 @@ title: are.na
 
 ## places
 
+- https://www.graciesny.com/ -- Gracie's Luncheonette
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [restaurant, bakery]
+    - coord: [42.253562, -73.8947084]
+    - address: 969 Main Street, Leeds, NY 12451, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfk-PGSFcyB/
+
+- https://www.stissinghouse.com/ -- Stissing House
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [restaurant]
+    - coord: [41.9795121, -73.6564422]
+    - address: 7801 South Main Street, Pine Plains, NY 12567, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfk-PGSFcyB/
+
+- https://www.urbancowboy.com/catskills/ -- Urban Cowboy Lodge
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [hotel, restaurant, bar]
+    - coord: [42.052525, -74.45846999999999]
+    - address: 37 Alpine Road, Big Indian, NY 12410, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfk-PGSFcyB/
+
+- https://www.bovinafarmfermentory.com/ -- Bovina Farm & Fermentory
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [restaurant, hotel]
+    - coord: [42.3006557, -74.7666921]
+    - address: 2951 County Road 5, Bovina Center, NY 13740, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfk-PGSFcyB/
+
+- https://phoeniciadiner.com/ -- Phoenicia Diner
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [restaurant]
+    - coord: [42.0710505, -74.3077531]
+    - address: 5681 State Route 28, Phoenicia, NY 12464, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfk-PGSFcyB/
+
+- https://www.themaker.com/ -- The Maker Hotel
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [hotel, restaurant, bar]
+    - coord: [42.253036, -73.7908903]
+    - address: 302 Warren Street, Hudson, NY 12534, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfk-PGSFcyB/
+
+- https://www.rosehillferments.com/ -- Rose Hill Farm
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [bar]
+    - coord: [42.0093311, -73.84949139999999]
+    - address: 19 Rose Hill, Red Hook, NY 12571, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfk-PGSFcyB/
+
+- https://www.cafemutton.com/ -- Cafe Mutton
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [restaurant]
+    - coord: [42.2471202, -73.78039749999999]
+    - address: 757 Columbia Street, Hudson, NY 12534, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfk-PGSFcyB/
+
+- https://auberge.com/wildflower-farms/ -- Wildflower Farms
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [hotel]
+    - coord: [41.6860566, -74.1820163]
+    - address: 2702 Main Street, Gardiner, NY 12525, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfk-PGSFcyB/
+
+- https://www.eastwindhotels.com/oliverea-valley -- Eastwind Oliverea Valley
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [hotel, restaurant]
+    - coord: [42.0713691, -74.47403709999999]
+    - address: 212-220 McKenley Hollow Road, Big Indian, NY 12410, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfk-PGSFcyB/
+
+- https://www.feastandfloret.com/ -- Feast & Floret
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [restaurant]
+    - coord: [42.2527188, -73.7918413]
+    - address: 13 South 3rd Street, Hudson, NY 12534, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfk-PGSFcyB/
+
+- https://www.deermountaininn.com/ -- Deer Mountain Inn
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [hotel, restaurant]
+    - coord: [42.2207973, -74.1193351]
+    - address: 790 County Route 25, Tannersville, NY 12485, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfk-PGSFcyB/
+
+- https://www.royalmansour.com/en/marrakech/ -- Royal Mansour Marrakech
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [hotel]
+    - coord: [31.6251861, -7.9983783]
+    - address: Rue Abou El Abbas Sebti, 40000 Marrakech, Morocco
+    - later: true
+    - source: https://www.instagram.com/reel/DbWZKJ0oDJu/
+  - Amanda Wakeley interview: The guest praises its local craftsmanship, private riads and discreet butler service, describing her arrival as breathtaking.
+- https://mamounia.com/en/ -- La Mamounia Marrakech
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [hotel]
+    - coord: [31.6215239, -7.997488]
+    - address: Avenue Bab Jdid, 40040 Marrakech-Medina, Morocco
+    - later: true
+    - source: https://www.instagram.com/reel/DbWZKJ0oDJu/
+  - Amanda Wakeley interview: Mentioned in passing as a hotel the guest’s mother had visited before their stay at Royal Mansour.
+- https://www.villafeltrinelli.com/en/ -- Villa Feltrinelli
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [hotel]
+    - coord: [45.69381, 10.6703873]
+    - address: Via Rimembranza 38-40, 25084 Gargnano BS, Italy
+    - later: true
+    - source: https://www.instagram.com/reel/DbWZKJ0oDJu/
+  - Amanda Wakeley interview: The guest strongly recommends it and recounts Michael Winner calling it his favourite hotel after a stay.
+- https://www.la-colombe-dor.com/ -- La Colombe d'Or Saint-Paul-de-Vence
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [hotel]
+    - coord: [43.6987531, 7.1219831]
+    - address: 1 Place du Général de Gaulle, 06570 Saint-Paul-de-Vence, France
+    - later: true
+    - source: https://www.instagram.com/reel/DbWZKJ0oDJu/
+  - Amanda Wakeley interview: The guest’s own holiday choice, praised for its art collection, intimate bar and enduring atmosphere.
+- https://turismo.gov.st/en -- São Tomé and Príncipe
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [destination]
+    - address: São Tomé and Príncipe
+    - later: true
+    - source: https://www.instagram.com/reel/DdbKY5Xo7Y-/
+  - The Stanza reel: The guest recommends it as an overlooked travel destination.
+- https://www.casapolanco.com/ -- Casa Polanco
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [hotel]
+    - coord: [19.4291182, -99.19775799999999]
+    - address: Luis G. Urbina 84, Polanco, Miguel Hidalgo, 11560 Ciudad de México, Mexico
+    - later: true
+    - source: https://www.instagram.com/reel/DdbKY5Xo7Y-/
+  - The Stanza reel: The guest names Casa Polanco as her most underrated hotel.
+- https://singita.com/lodge/singita-kataza-house/ -- Singita Kataza House
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [hotel]
+    - coord: [-1.5007223, 29.6325193]
+    - address: Singita Volcanoes National Park, Nyange Sector, Kinigi, Musanze, Rwanda
+    - later: true
+    - source: https://www.instagram.com/reel/DdbKY5Xo7Y-/
+  - The Stanza reel: The guest singles out Kataza House as a recent stay she enjoyed.
+- https://capellahotels.com/en/capella-taipei -- Capella Taipei
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [hotel]
+    - coord: [25.0532393, 121.549923]
+    - address: No. 139 Dunhua North Road, Songshan District, Taipei 105021, Taiwan
+    - later: true
+    - source: https://www.instagram.com/reel/DdbKY5Xo7Y-/
+  - The Stanza reel: The guest recommends Capella Taipei when asked about a recent suite she enjoyed.
+- https://www.oetkerhotels.com/hotels/eden-rock-st-barths/ -- Eden Rock St Barths
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [hotel]
+    - coord: [17.9034357, -62.836107]
+    - address: Baie de St Jean, 97133 Saint-Barthélemy, French West Indies
+    - later: true
+    - source: https://www.instagram.com/reel/DdbKY5Xo7Y-/
+  - The Stanza reel: The guest lists it among SmartFlyer’s three most-booked hotels in 2025.
+- https://borgosantandrea.it/ -- Borgo Santandrea
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [hotel]
+    - coord: [40.6189891, 14.5765026]
+    - address: Via Giovanni Augustariccio 33, 84011 Amalfi SA, Italy
+    - later: true
+    - source: https://www.instagram.com/reel/DdbKY5Xo7Y-/
+  - The Stanza reel: The guest lists it among SmartFlyer’s three most-booked hotels in 2025.
+- https://www.fourseasons.com/paris/ -- Four Seasons Hotel George V Paris
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [hotel]
+    - coord: [48.8688005, 2.3008313]
+    - address: 31 avenue George V, 75008 Paris, France
+    - later: true
+    - source: https://www.instagram.com/reel/DdbKY5Xo7Y-/
+  - The Stanza reel: The guest lists it among SmartFlyer’s three most-booked hotels in 2025.
+- https://loulou-ramatuelle.com/ -- Loulou Ramatuelle
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [restaurant, bar]
+    - coord: [43.2394803, 6.6626813]
+    - address: 962 Chemin des Tamaris, 83350 Ramatuelle, France
+    - later: true
+    - source: https://www.instagram.com/reel/DcELev6PF2E/
+  - Creator rating: 8/10 (@spiritual.materialist). A singles scene, especially recommended to men looking to meet women.
+- https://bagatelle.com/venues/st-tropez/ -- Bagatelle Saint-Tropez
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [restaurant, bar]
+    - coord: [43.2348605, 6.662128999999999]
+    - address: Les Tamaris, Chemin de la Matarane, 83350 Ramatuelle, France
+    - later: true
+    - source: https://www.instagram.com/reel/DcELev6PF2E/
+  - Creator rating: 6/10 (@spiritual.materialist). Loud, American-style partying that the creator finds tacky and very fun.
+- https://casaamor.fr/ -- Casa Amor Saint-Tropez
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [restaurant, bar]
+    - coord: [43.23463479999999, 6.661876299999999]
+    - address: Chemin de Matarane, 83350 Ramatuelle, France
+    - later: true
+    - source: https://www.instagram.com/reel/DcELev6PF2E/
+  - Creator rating: 9/10 (@spiritual.materialist). Fun and classy, with a balanced crowd.
+- https://shellona.com/en/home-st-tropez/ -- Shellona Saint-Tropez
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [restaurant, bar]
+    - coord: [43.2375775, 6.6627021]
+    - address: 1010 Chemin des Tamaris, 83350 Ramatuelle, France
+    - later: true
+    - source: https://www.instagram.com/reel/DcELev6PF2E/
+  - Creator rating: 5/10 (@spiritual.materialist). A wealthy crowd the creator sees as preoccupied with status and approval.
+- https://gigi-restaurant.com/saint-tropez/ -- Gigi Ramatuelle
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [restaurant, bar]
+    - coord: [43.2219847, 6.6605231]
+    - address: 1050 Chemin des Barraques, 83350 Ramatuelle, France
+    - later: true
+    - source: https://www.instagram.com/reel/DcELev6PF2E/
+  - Creator rating: 7/10 (@spiritual.materialist). An older, affluent crowd with polished style and expensive handbags.
+- https://www.club55.fr/ -- Le Club 55
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [restaurant, bar]
+    - coord: [43.2275238, 6.661304299999999]
+    - address: 43 Boulevard Patch, 83350 Ramatuelle, France
+    - later: true
+    - source: https://www.instagram.com/reel/DcELev6PF2E/
+  - Creator rating: 8.5/10 (@spiritual.materialist). Relaxed clientele, though the creator thinks they tolerate being overcharged.
+- https://www.indiegroup.fr/en/indiebeach/ -- Indie Beach Ramatuelle
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [restaurant, bar]
+    - coord: [43.2135391, 6.6628694]
+    - address: Route de Bonne Terrasse, 83350 Ramatuelle, France
+    - later: true
+    - source: https://www.instagram.com/reel/DcELev6PF2E/
+  - Creator rating: 7/10 (@spiritual.materialist). A pleasant, down-to-earth crowd.
+- https://yeeels.com/en/services/verdebeach -- Verde Beach Saint-Tropez
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [restaurant, bar]
+    - coord: [43.2211202, 6.6620013]
+    - address: 1149 Chemin de l’Épi, 83350 Ramatuelle, France
+    - later: true
+    - source: https://www.instagram.com/reel/DcELev6PF2E/
+  - Creator rating: 5.5/10 (@spiritual.materialist). The creator finds the crowd forgettable and boring.
+- https://www.kalamatabeach.com/en -- Kalamata Beach Saint-Tropez
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [restaurant, bar]
+    - coord: [43.2392863, 6.6630812]
+    - address: 1095 Chemin des Tamaris, 83350 Ramatuelle, France
+    - later: true
+    - source: https://www.instagram.com/reel/DcELev6PF2E/
+  - Creator rating: 4.5/10 (@spiritual.materialist). The creator considers the crowd young or childish.
+- https://www.google.com/maps?cid=1047354685528464138 -- Salto Ramatuelle
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [restaurant, bar]
+    - coord: [43.2124585, 6.6637371]
+    - address: 471 Chemin Garonne, access via Route de Bonne Terrasse, 83350 Ramatuelle, France
+    - later: true
+    - source: https://www.instagram.com/reel/DcELev6PF2E/
+  - Creator rating: 10/10 (@spiritual.materialist). The creator’s favourite, with an affluent, unpretentious crowd.
+- https://www.google.com/maps?cid=6089939336588562412 -- Asters Patisserie Lake Shore
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [bakery]
+    - coord: [43.6166231, -79.48806829999999]
+    - address: 2340 Lake Shore Blvd W, Etobicoke, ON M8V 1B6, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.google.com/maps?cid=14955891741252735362 -- Asters Patisserie Brookfield Place
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [bakery]
+    - coord: [43.6467484, -79.3785852]
+    - address: 181 Bay St, Unit C370, Toronto, ON M5J 2T3, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.google.com/maps?cid=12718061841617362281 -- Matcha Matcha Church Street
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [coffee shop]
+    - coord: [43.6623054, -79.37926019999999]
+    - address: 407 Church St, Toronto, ON M5B 1J2, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.google.com/maps?cid=16775605942358152543 -- Matcha Matcha Markham Lab
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [coffee shop]
+    - coord: [43.8217771, -79.344633]
+    - address: 200 Steelcase Rd E, Unit 5, Markham, ON L3R 1G2, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.google.com/maps?cid=6383950637601079542 -- Matcha Matcha Markham Studio
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [coffee shop]
+    - coord: [43.8477764, -79.3487871]
+    - address: 11 Fairburn Dr Unit 8, Markham, ON L6G 0A4, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.google.com/maps?cid=16178833691107815840 -- Andrea's Cookies Bloor West
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [bakery]
+    - coord: [43.6557504, -79.4561578]
+    - address: 1632 Bloor St W, Toronto, ON M6P 1A7, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.google.com/maps?cid=8073623855946966913 -- Andrea's Cookies Ossington
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [bakery]
+    - coord: [43.6479274, -79.4204848]
+    - address: 166 Ossington Ave, Toronto, ON M6J 2Z7, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.google.com/maps?cid=11930073260659268820 -- Andrea's Cookies Midtown
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [bakery]
+    - coord: [43.7150291, -79.4003889]
+    - address: 2614 Yonge St, Toronto, ON M4P 2J4, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.google.com/maps?cid=9746043470302101679 -- Andrea's Cookies Oakville
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [bakery]
+    - coord: [43.4469964, -79.66670289999999]
+    - address: 270 Lakeshore Rd E, Oakville, ON L6J 1J1, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.google.com/maps?cid=8438111103222065220 -- nutbar Yorkville
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [coffee shop]
+    - coord: [43.66959869999999, -79.3918249]
+    - address: 102 Bloor St W Unit 4, Toronto, ON M5S 1M8, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://g.co/kgs/rg3dW5m -- nutbar Midtown
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [coffee shop]
+    - coord: [43.714634245, -79.40031965]
+    - address: 2592 Yonge St, Toronto, ON M4P 2J4, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.google.com/maps?cid=15396067068323346433 -- nutbar Summerhill
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [coffee shop]
+    - coord: [43.6829246, -79.39228539999999]
+    - address: 1240 Yonge St, Toronto, ON M4T 1W5, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.google.com/maps?cid=16864735026558959763 -- nutbar Leslieville
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [coffee shop]
+    - coord: [43.6605751, -79.3417134]
+    - address: 905 Queen St E, Toronto, ON M4M 1J4, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.google.com/maps?cid=13293596554439861274 -- nutbar Adelaide
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [coffee shop]
+    - coord: [43.6460984, -79.39774059999999]
+    - address: 425 Adelaide St W Ste 101, Toronto, ON M5V 3C1, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.google.com/maps?cid=4752440046136642502 -- nutbar Ossington Pop-Up
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [coffee shop]
+    - coord: [43.6470739, -79.4196508]
+    - address: 127 Ossington Ave, Toronto, ON M6J 2Z6, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://tinymarketco.com/ -- Tiny Market Co.
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [market, restaurant]
+    - coord: [43.6691176, -79.4129306]
+    - address: 938 Bathurst St, Toronto, ON M5R 3G4, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DejhK8HuY3A/
+- https://order.incentivio.com/c/rosiesburgers/locations/firstcanadianplace/menu -- Rosie's Burgers First Canadian Place
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [restaurant]
+    - coord: [43.6492335, -79.3814503]
+    - address: Mezzanine Level Food Court, 100 King St W, Toronto, ON M5X 1C0, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://order.incentivio.com/c/rosiesburgers/locations/queenwest/menu -- Rosie's Burgers Queen West
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [restaurant]
+    - coord: [43.6476774, -79.4010423]
+    - address: 573 Queen St W, Toronto, ON M5V 2B6, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://order.incentivio.com/c/rosiesburgers/locations/thewell/menu -- Rosie's Burgers The Well
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [restaurant]
+    - coord: [43.64255, -79.39614949999999]
+    - address: The Well, 486 Front St W, Toronto, ON M5V 0V2, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://order.incentivio.com/c/rosiesburgers/locations/avenuerd/menu -- Rosie's Burgers Avenue Road
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [restaurant]
+    - coord: [43.7230837, -79.4162398]
+    - address: 1542 Avenue Rd, Toronto, ON M5M 3X5, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://order.incentivio.com/c/rosiesburgers/locations/donmills/menu -- Rosie's Burgers Don Mills
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [restaurant]
+    - coord: [43.7342452, -79.3436734]
+    - address: 49 Clock Tower Rd, North York, ON M3C 0G4, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://order.incentivio.com/c/rosiesburgers/locations/portcredit/menu -- Rosie's Burgers Port Credit
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [restaurant]
+    - coord: [43.5524166, -79.58449399999999]
+    - address: 61 Lakeshore Rd E, Mississauga, ON L5G 1C9, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://order.incentivio.com/c/rosiesburgers/locations/appleby/menu -- Rosie's Burgers Appleby
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [restaurant]
+    - coord: [43.40542629999999, -79.80810699999999]
+    - address: 2500 Appleby Line, Burlington, ON L7L 0A2, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://order.incentivio.com/c/rosiesburgers/locations/whitby/menu -- Rosie's Burgers Whitby
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [restaurant]
+    - coord: [43.8857809, -78.91492869999999]
+    - address: 1525 Dundas St E Unit 4, Whitby, ON L1N 2K6, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.google.com/maps?cid=4389737039265115169 -- Easterbrook's Hotdog Stand
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [restaurant]
+    - coord: [43.289076, -79.874785]
+    - address: 694 Spring Gardens Rd, Burlington, ON L7T 1J3, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.phancybodega.com/ -- Phancy's Bodega
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [sandwich shop, market]
+    - coord: [43.6597176, -79.453807]
+    - address: 2473 Dundas St W, Toronto, ON M6P 1X3, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.instagram.com/molacafe.to/ -- Mola Cafe Market
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [coffee shop]
+    - coord: [43.6518575, -79.4092287]
+    - address: 822 Dundas St W, Toronto, ON M6J 1V3, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://harbordbakery.ca/ -- Harbord Bakery
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [bakery]
+    - coord: [43.6624483, -79.4044268]
+    - address: 115 Harbord St, Toronto, ON M5S 1G7, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.google.com/maps?cid=4427152423491785569 -- Kajiken North York
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [restaurant]
+    - coord: [43.7625578, -79.4115791]
+    - address: 4850 Yonge St, North York, ON M2N 5N2, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.instagram.com/sleepypetes/ -- Sleepy Pete's
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [sandwich shop]
+    - coord: [43.65440419999999, -79.4004856]
+    - address: 69 Kensington Ave, Toronto, ON M5T 2K2, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
 - https://www.chezroselondon.com/ -- Chez Rose
   - [meta]:
     - date: 11/10/2026
@@ -8904,6 +9440,7 @@ title: are.na
     - date: 10/27/2025
     - tags: [diner]
     - coord: [43.6554828, -79.4115051]
+    - address: 539 College St, Toronto, ON M6G 1A9, Canada
 - https://maps.app.goo.gl/mvVfWEPSqNNUsjVN7 -- La Plume
   - [meta]:
     - date: 12/22/2025
