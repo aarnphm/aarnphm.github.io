@@ -56,6 +56,24 @@ namespace_id = "1002"
 limit = 10
 period = 60
 
+# /api/gemma/read (worker/gemma.ts): Gemma on Modal. URL, key and secret are wrangler secrets
+# (GEMMA_MODAL_URL, GEMMA_MODAL_KEY, GEMMA_MODAL_SECRET); without them the route answers 503.
+[[ratelimits]]
+name = "GEMMA_RATE_LIMITER"
+namespace_id = "1003"
+
+[ratelimits.simple]
+limit = 6
+period = 60
+
+[[ratelimits]]
+name = "GEMMA_GLOBAL_RATE_LIMITER"
+namespace_id = "1004"
+
+[ratelimits.simple]
+limit = 30
+period = 60
+
 [[durable_objects.bindings]]
 name = "MULTIPLAYER_COMMENTS"
 class_name = "MultiplayerComments"
