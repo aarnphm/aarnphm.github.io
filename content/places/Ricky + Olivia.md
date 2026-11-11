@@ -8,7 +8,7 @@ coordinates:
 date: '2026-11-01'
 description: 'Restaurant, lounge and Ontario bottle shop on Queen Street East.'
 id: 'Ricky + Olivia'
-modified: '2026-11-01'
+modified: '2026-11-10'
 source: 'https://www.instagram.com/p/DfDUc1yoNEc/'
 tags:
   - 'places'
@@ -18,3 +18,7 @@ type:
   - 'bar'
 url: 'https://www.rickyandolivia.com/'
 ---
+
+[Nat Doumkos’s Toronto eats post](https://www.instagram.com/p/DfiwUD_HATy/), slide 2.
+
+![[thoughts/images/nczkX7lTUACLfzbeSAiUCdXqR9Gr57-MkHaJjREt14k.jpg|Devilled eggs and steak tartare at Ricky + Olivia]]
