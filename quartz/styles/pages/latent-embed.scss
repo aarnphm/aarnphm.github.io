@@ -284,8 +284,7 @@
     scrollbar-width: thin;
   }
 
-  // the card in an embed: its title keeps one line (cut with …), and the id chip and + are the
-  // size of the chips beneath them, not the header's line height
+  // the card in an embed: its title keeps one line (cut with …)
   // outranks the explorer's `.lat-probe .lat-features … .lat-feat-head` wrap rule
   .lat-embed-box .lat-embed-features.lat-features .lat-feat-card > header .lat-feat-head {
     display: block;
@@ -294,18 +293,6 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     text-wrap: nowrap;
-  }
-
-  .lat-embed-features .lat-feat-card-tools {
-    align-items: center;
-
-    > .lat-chip,
-    > .lat-feat-add {
-      display: inline-block;
-      width: auto;
-      padding: 0 0.3rem;
-      line-height: 1.45;
-    }
   }
 
   // the "in" row: chips start right after the label, not at the ledger's label column, and each

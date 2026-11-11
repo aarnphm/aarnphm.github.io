@@ -41,27 +41,27 @@ export async function featureCard(
   const key = steerKey(dict.meta.name, f)
   const steered = st.steer.get(key)?.w ?? 0
   return h('section.lat-feat-card', { dataDict: dict.meta.name, dataF: String(f) }, [
-    h('header', [
-      h('span.lat-feat-head', featureName(row)),
-      h('span.lat-feat-card-tools', [
-        h(
-          'span.lat-chip',
-          `${dict.meta.name} #${f}${row.level === undefined ? '' : ` · L${row.level}`} · ${share(dict, row)}`,
-        ),
-        // add this feature to the steering set (another press steps it a unit further)
-        h(
-          'button.lat-feat-add',
-          {
-            type: 'button',
-            dataTerm: key,
-            dataSteer: '1',
-            title: steered
-              ? `steer one unit further toward it (now ${amount(steered)})`
-              : 'add it to steering',
-          },
-          '+',
-        ),
-      ]),
+    h('header', [h('span.lat-feat-head', featureName(row))]),
+    // the table's first row: the id chip, and a + that adds the feature to the steering set
+    // (another press steps it a unit further)
+    h('p.lat-feat-near.lat-feat-meta-row', [
+      h('span', 'meta'),
+      h(
+        'span.lat-chip',
+        `${dict.meta.name} #${f}${row.level === undefined ? '' : ` · L${row.level}`} · ${share(dict, row)}`,
+      ),
+      h(
+        'button.lat-feat-add',
+        {
+          type: 'button',
+          dataTerm: key,
+          dataSteer: '1',
+          title: steered
+            ? `steer one unit further toward it (now ${amount(steered)})`
+            : 'add it to steering',
+        },
+        '+',
+      ),
     ]),
     up.length
       ? h('p.lat-feat-path', [
@@ -77,30 +77,40 @@ export async function featureCard(
           ),
         ])
       : null,
-    // one line, cut with an ellipsis; hover scrolls it to its end (marquee.ts)
-    row.about ? h('p.lat-feat-about', row.about) : null,
-    // the label's score, and an arrow whose note lists the label's terms
-    h('p.lat-feat-terms', [
-      row.score === undefined
-        ? null
-        : h(
-            'span.lat-feat-score',
-            {
-              dataTip:
-                'detection score: a second prompt picks, from 5 held-out rows that fire the feature and 5 that do not, the ones the label fits. 0.5 is chance.',
-              dataTipAt: 'up',
-              tabIndex: 0,
-            },
-            `label ${row.score.toFixed(2)}`,
-          ),
-      row.terms.length
-        ? h(
-            'span.lat-feat-more',
-            { dataTip: row.terms.join(' · '), tabIndex: 0, ariaLabel: 'all terms' },
-            '→',
-          )
-        : null,
-    ]),
+    // the label's sentence as the table's first text row: one line, cut with an ellipsis, and
+    // hover scrolls it to its end (marquee.ts). The marquee span ships in the markup, so the
+    // first hover inserts no node (a node insertion restyles the page through its :has() rules)
+    row.about
+      ? h('p.lat-feat-near.lat-feat-line.lat-feat-desc', [
+          h('span', 'description'),
+          h('span.lat-feat-text', h('span.lat-marquee-text', row.about)),
+        ])
+      : null,
+    // the label's detection score, and an arrow whose note lists the label's terms
+    row.score === undefined && !row.terms.length
+      ? null
+      : h('p.lat-feat-near.lat-feat-label-row', [
+          h('span', 'label'),
+          row.score === undefined
+            ? null
+            : h(
+                'span.lat-feat-score',
+                {
+                  dataTip:
+                    'detection score: a second prompt picks, from 5 held-out rows that fire the feature and 5 that do not, the ones the label fits. 0.5 is chance.',
+                  dataTipAt: 'up',
+                  tabIndex: 0,
+                },
+                row.score.toFixed(2),
+              ),
+          row.terms.length
+            ? h(
+                'span.lat-feat-more',
+                { dataTip: row.terms.join(' · '), tabIndex: 0, ariaLabel: 'all terms' },
+                '→',
+              )
+            : null,
+        ]),
     said?.w.length
       ? h(
           'p.lat-feat-near.lat-feat-words',
@@ -151,7 +161,7 @@ export async function featureCard(
     timeline(dict, row),
     unit
       ? h(
-          'p.lat-feat-near.lat-feat-unit',
+          'p.lat-feat-near.lat-feat-line.lat-feat-unit',
           {
             dataTip:
               'steering ranks rows by cosine plus weight × this feature’s detector; one unit is the weight at which half of a focus’s links fire it',
@@ -161,7 +171,7 @@ export async function featureCard(
           [
             h('span', 'steers'),
             h(
-              'span',
+              'span.lat-feat-text',
               unit[2]
                 ? `weakly: under half the links fire it at ${st.tablesNow!.grid}`
                 : `1 unit = ${unit[0]} · ${Math.round(unit[1] * 100)} % of links fire it`,

@@ -168,12 +168,6 @@
     }
   }
 
-  .lat-feat-terms {
-    font-style: italic;
-    color: var(--darkgray);
-    font-size: var(--text-meta);
-  }
-
   .lat-feat-kinds {
     display: flex;
     flex-wrap: wrap;
@@ -245,33 +239,16 @@
     }
   }
 
-  // one line, cut with an ellipsis; hover scrolls it through (latent-client/marquee.ts)
-  .lat-feat-about {
-    font-size: var(--text-meta);
-    color: var(--dark);
-    line-height: 1.35;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  // the label's score and the arrow whose note lists the label's terms
-  .lat-feat-terms {
-    display: flex;
-    align-items: baseline;
-    gap: 0.4rem;
-  }
-
+  // the label row's detection score, and the arrow whose note lists the label's terms
   .lat-feat-score {
-    font-style: normal;
     font-family: var(--lat-mono);
     font-size: var(--lat-micro);
-    color: var(--gray);
+    color: var(--darkgray);
+    font-variant-numeric: tabular-nums;
     white-space: nowrap;
   }
 
   .lat-feat-more {
-    font-style: normal;
     font-family: var(--lat-mono);
     font-size: var(--lat-micro);
     color: var(--gray);
@@ -281,11 +258,10 @@
     }
   }
 
-  // the card's title reads whole on its own line; the id chip and + sit on the row below
+  // the card's title reads whole on its own line; the id chip and + are the table's meta row
   .lat-feat-card > header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.25rem;
 
     .lat-feat-head {
       white-space: normal;
@@ -294,17 +270,12 @@
     }
   }
 
-  .lat-feat-card-tools {
-    display: flex;
-    align-items: stretch;
-    gap: 0.25rem;
-  }
-
+  // the + is a square the chip's height beside it, its glyph centred
   .lat-feat-add {
-    display: inline-grid;
-    place-items: center;
+    box-sizing: border-box;
     width: 1.3rem;
     padding: 0;
+    text-align: center;
     font-family: var(--lat-mono);
     font-size: var(--lat-micro);
     line-height: inherit;
@@ -636,6 +607,48 @@
     ol {
       margin: 0;
     }
+  }
+
+  // one-line text values (description, steers) on the same two columns: the value is cut with
+  // an ellipsis and scrolls through on hover (latent-client/marquee.ts). With reduced motion it
+  // wraps instead, so the whole sentence reads without anything moving.
+  .lat-feat-card > .lat-feat-near.lat-feat-line {
+    display: grid;
+    grid-template-columns: var(--lat-feat-label) minmax(0, 1fr);
+    align-items: baseline;
+    gap: 0;
+    padding-left: 0;
+    line-height: 1.45;
+
+    > *,
+    > span:first-child {
+      display: block;
+      width: auto;
+      max-width: none;
+      margin: 0;
+    }
+
+    > .lat-feat-text {
+      min-width: 0;
+      color: var(--dark);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      // the scrolling span is one atomic box, which an ellipsis would hide whole
+      &[data-marquee] {
+        text-overflow: clip;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        white-space: normal;
+        text-wrap: pretty;
+      }
+    }
+  }
+
+  .lat-feat-card > .lat-feat-near.lat-feat-unit > .lat-feat-text {
+    color: var(--gray);
   }
 }
 

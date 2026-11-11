@@ -20291,18 +20291,6 @@
    ],
    "score": 0.38
   },
-  "1744": {
-   "at": "2026-11-04T11:22:29Z",
-   "description": "Mentions of specific ML models, software projects, and engineering roles.",
-   "label": "ml models and software engineering projects",
-   "model": "mlx-community/gemma-4-e4b-it-4bit",
-   "rows": [
-    "thoughts/lenses#0",
-    "thoughts/Summer-fellows#1",
-    "thoughts/Summer-fellows#2",
-    "thoughts/craft#3"
-   ]
-  },
   "1745": {
    "at": "2026-11-05T02:40:12Z",
    "description": "formalizing concepts like sets, functions, and optimization across domains.",
