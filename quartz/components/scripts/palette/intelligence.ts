@@ -146,10 +146,29 @@ export type ReadSource =
 
 const isLocal = () => ['localhost', '127.0.0.1'].includes(window.location.hostname)
 
-/** Where an overview can come from on this page, in order of preference. */
-export async function readSources(query: string, sidecar8: string | null): Promise<ReadSource[]> {
+const WORKER_READ = '/api/gemma/read'
+
+/** The site's Worker route (worker/gemma.ts → Modal) answers HEAD with 204 once its secrets exist
+ *  and 503 otherwise. Probing first keeps the caller from loading passages nobody will read. */
+async function workerReads(signal?: AbortSignal): Promise<boolean> {
+  try {
+    const response = await fetch(WORKER_READ, { method: 'HEAD', cache: 'no-store', signal })
+    return response.ok
+  } catch {
+    return false
+  }
+}
+
+/** Where an overview can come from on this page, in order of preference: the Mac reader on
+ *  localhost, then the Worker route when it answers, then a baked overview. */
+export async function readSources(
+  query: string,
+  sidecar8: string | null,
+  signal?: AbortSignal,
+): Promise<ReadSource[]> {
   const sources: ReadSource[] = []
   if (isLocal()) sources.push({ kind: 'live', url: `http://localhost:${PORT}/read` })
+  if (await workerReads(signal)) sources.push({ kind: 'live', url: WORKER_READ })
   if (sidecar8) {
     const hash = await queryHash(query)
     sources.push({ kind: 'baked', url: `/models/latent-plt/bake/${sidecar8}/reads/${hash}.json` })
@@ -211,7 +230,8 @@ export function mountOverviewBlock(
   section.setAttribute('aria-live', 'polite')
   section.setAttribute('aria-busy', 'true')
   section.classList.add('is-loading')
-  section.innerHTML = `<header class="intelligence-head"><span class="intelligence-glyph">${INTELLIGENCE_GLYPH}</span><span class="intelligence-status">reading…</span></header><p class="intelligence-text"></p><ol class="intelligence-cites" aria-label="sources"></ol><p class="intelligence-hops"></p>`
+  // A div, not <header>: the site's header rules push a <header>'s children to the right.
+  section.innerHTML = `<div class="intelligence-head"><span class="intelligence-glyph">${INTELLIGENCE_GLYPH}</span><span class="intelligence-status">reading…</span></div><p class="intelligence-text"></p><ol class="intelligence-cites" aria-label="sources"></ol><p class="intelligence-hops"></p>`
   const status = section.querySelector<HTMLElement>('.intelligence-status')!
   const text = section.querySelector<HTMLElement>('.intelligence-text')!
   const cites = section.querySelector<HTMLElement>('.intelligence-cites')!

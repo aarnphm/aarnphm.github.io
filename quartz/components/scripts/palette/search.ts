@@ -284,10 +284,14 @@ async function readIntelligence(
       received = true
       block.push(event)
     }
-    if (!received && live())
-      block.fail(
-        sources[0]?.kind === 'live' ? 'no reader at localhost:8093' : 'overview is local for now',
+    if (!received && live()) {
+      const readers = sources.flatMap(source =>
+        source.kind === 'live' ? [source.url.replace(/^https?:\/\//, '')] : [],
       )
+      block.fail(
+        readers.length ? `no reader at ${readers.join(' or ')}` : 'overview is local for now',
+      )
+    }
   } catch (error) {
     if (controller.signal.aborted) return block.dispose()
     console.warn('[intelligence] overview failed:', error)

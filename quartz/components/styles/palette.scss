@@ -633,14 +633,26 @@ body[data-slug='index'] .palette > #palette-container > #space {
 
   &.is-unavailable {
     color: var(--darkgray);
+    padding-bottom: 8px;
 
     .intel-grid {
       opacity: 0.45;
+    }
+
+    // Nothing was read: the status line is the whole block.
+    .intelligence-head {
+      margin-bottom: 0;
+    }
+
+    .intelligence-text,
+    .intelligence-cites {
+      display: none;
     }
   }
 
   .intelligence-head {
     display: flex;
+    justify-content: flex-start;
     align-items: center;
     gap: 6px;
     font-size: var(--text-meta);
