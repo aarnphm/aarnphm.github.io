@@ -1,8 +1,10 @@
+import type { AppleSleepDay } from '../plugins/stores/apple-sleep'
 import type { GarminSleepSummary } from '../plugins/stores/garmin'
 import type { OuraDayDetail } from '../plugins/stores/oura'
 import { isRecord } from './type-guards'
 
 export interface SleepMetrics {
+  apple?: AppleSleepDay | null
   averageBreathsPerMinute: number | null
   respirationSource: 'oura' | 'garmin' | null
   garmin: GarminSleepSummary | null
@@ -16,6 +18,7 @@ const positive = (value: number | null | undefined): number | null =>
 export function resolveSleepMetrics(
   oura: Pick<OuraDayDetail, 'avgBreath' | 'health'> | null | undefined,
   garmin: GarminSleepSummary | null | undefined,
+  apple?: AppleSleepDay | null,
 ): SleepMetrics | null {
   const ouraBreath = positive(oura?.avgBreath)
   const garminBreath = positive(garmin?.averageBreathsPerMinute)
@@ -25,19 +28,26 @@ export function resolveSleepMetrics(
   }
   const garminOxygen = saturation(garmin?.averageSpO2)
   const ouraOxygen = saturation(oura?.health?.spo2?.averagePct)
-  const averagePct = garminOxygen ?? ouraOxygen
+  const averagePct = ouraOxygen ?? garminOxygen
   const bdi = oura?.health?.spo2?.breathingDisturbanceIndex
   const breathingDisturbanceIndex =
     bdi != null && Number.isFinite(bdi) && bdi >= 0 && bdi <= 100 ? bdi : null
-  if (ouraBreath == null && !garmin && averagePct == null && breathingDisturbanceIndex == null)
+  if (
+    ouraBreath == null &&
+    !garmin &&
+    !apple &&
+    averagePct == null &&
+    breathingDisturbanceIndex == null
+  )
     return null
   return {
     averageBreathsPerMinute: ouraBreath ?? garminBreath,
     respirationSource: ouraBreath != null ? 'oura' : garminBreath != null ? 'garmin' : null,
     garmin: garmin ?? null,
+    ...(apple ? { apple } : {}),
     ...(averagePct == null
       ? {}
-      : { oxygenSaturation: { averagePct, source: garminOxygen != null ? 'garmin' : 'oura' } }),
+      : { oxygenSaturation: { averagePct, source: ouraOxygen != null ? 'oura' : 'garmin' } }),
     ...(breathingDisturbanceIndex == null ? {} : { breathingDisturbanceIndex }),
   }
 }
@@ -170,6 +180,28 @@ const garminSleepIsValid = (value: unknown, date: string): boolean =>
       value.restlessMoments,
     ].every(nullableNumber))
 
+const appleSessionIsValid = (value: unknown): boolean =>
+  isRecord(value) &&
+  typeof value.id === 'string' &&
+  sleepWindowIsValid(value.start, value.end) &&
+  typeof value.totalSleepS === 'number' &&
+  value.totalSleepS > 0 &&
+  value.totalSleepS <= (Date.parse(String(value.end)) - Date.parse(String(value.start))) / 1000 &&
+  [value.deepS, value.lightS, value.remS, value.awakeS].every(
+    n => nullableNumber(n) && (n === null || Number(n) >= 0),
+  ) &&
+  typeof value.sourceName === 'string' &&
+  typeof value.sourceBundleIdentifier === 'string' &&
+  sleepStagesAreValid(value.stages)
+
+const appleSleepIsValid = (value: unknown, date: string): boolean =>
+  value == null ||
+  (isRecord(value) &&
+    value.date === date &&
+    (value.sleep === null || appleSessionIsValid(value.sleep)) &&
+    Array.isArray(value.naps) &&
+    value.naps.every(appleSessionIsValid))
+
 export const isSleepMetrics = (value: unknown, date: string): value is SleepMetrics | null =>
   value === null ||
   (isRecord(value) &&
@@ -178,6 +210,7 @@ export const isSleepMetrics = (value: unknown, date: string): value is SleepMetr
       ? value.respirationSource === null
       : value.respirationSource === 'oura' || value.respirationSource === 'garmin') &&
     garminSleepIsValid(value.garmin, date) &&
+    appleSleepIsValid(value.apple, date) &&
     (value.oxygenSaturation === undefined ||
       (isRecord(value.oxygenSaturation) &&
         typeof value.oxygenSaturation.averagePct === 'number' &&

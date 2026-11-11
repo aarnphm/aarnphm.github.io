@@ -1,9 +1,10 @@
+import type { AppleSleepDay, AppleSleepSession } from '../plugins/stores/apple-sleep'
 import type { GarminSleepSummary } from '../plugins/stores/garmin'
 import type { OuraDaily, OuraDayDetail, OuraSeries, OuraSleepDetail } from '../plugins/stores/oura'
 import { sleepStagesAreValid } from './sleep-metrics'
 import { isRecord } from './type-guards'
 
-export type SleepProvider = 'oura' | 'garmin'
+export type SleepProvider = 'oura' | 'garmin' | 'apple'
 export type OuraDailySleep = Pick<OuraDaily, 'sleepScore' | 'sleepDurationS'>
 type SourcedDailySleep = OuraDailySleep & {
   sleepSources?: Partial<Record<keyof OuraDailySleep, SleepProvider>>
@@ -54,14 +55,20 @@ export interface TriathlonDaySleep extends SleepFields {
 }
 
 export const sleepProviderLabel = (source: SleepProvider): string =>
-  source === 'garmin' ? 'Garmin' : 'Oura'
+  source === 'apple' ? 'Apple Health' : source === 'garmin' ? 'Garmin' : 'Oura'
 
 export function ouraDailySleep(day: SourcedDailySleep | undefined): OuraDailySleep | undefined {
   if (!day) return undefined
   // Daily payloads created before source tracking only carried Oura sleep.
   return {
-    sleepScore: day.sleepSources?.sleepScore === 'garmin' ? null : day.sleepScore,
-    sleepDurationS: day.sleepSources?.sleepDurationS === 'garmin' ? null : day.sleepDurationS,
+    sleepScore:
+      day.sleepSources?.sleepScore && day.sleepSources.sleepScore !== 'oura'
+        ? null
+        : day.sleepScore,
+    sleepDurationS:
+      day.sleepSources?.sleepDurationS && day.sleepSources.sleepDurationS !== 'oura'
+        ? null
+        : day.sleepDurationS,
   }
 }
 
@@ -154,7 +161,10 @@ export const sleepIsValid = (value: unknown): boolean =>
       value.skinTemperatureDeviationC,
     ].every(item => item === undefined || nullableFiniteNumber(item)) &&
     sleepStagesAreValid(value.stages) &&
-    (value.nightSource == null || value.nightSource === 'oura' || value.nightSource === 'garmin') &&
+    (value.nightSource == null ||
+      value.nightSource === 'oura' ||
+      value.nightSource === 'garmin' ||
+      value.nightSource === 'apple') &&
     (value.fieldSources === undefined ||
       (isRecord(value.fieldSources) &&
         Object.entries(value.fieldSources).every(
@@ -163,7 +173,7 @@ export const sleepIsValid = (value: unknown): boolean =>
             key !== 'nightSource' &&
             Object.hasOwn(value, key) &&
             value[key] != null &&
-            (source === 'oura' || source === 'garmin'),
+            (source === 'oura' || source === 'garmin' || source === 'apple'),
         ))) &&
     sleepSeriesIsValid(value.hrv) &&
     sleepSeriesIsValid(value.heartRate) &&
@@ -191,17 +201,29 @@ export function resolveSleepTotals(
   detail: OuraSleepDetail | null | undefined,
   garmin: GarminSleepSummary | null | undefined,
   daily?: OuraDailySleep | null,
+  apple?: AppleSleepDay | null,
 ): OuraDailySleep & { sleepSources: NonNullable<SourcedDailySleep['sleepSources']> } {
   const ouraDuration = positive(detail?.totalSleepS) ?? positive(daily?.sleepDurationS)
   const garminDuration =
     ouraDuration == null && !hasOuraNight(detail) ? garmin?.sleep?.totalSleepS : null
+  const appleDuration =
+    ouraDuration == null && garminDuration == null && !hasOuraNight(detail)
+      ? apple?.sleep?.totalSleepS
+      : null
   const ouraScore = detail?.sleepScore ?? daily?.sleepScore
   const garminScore = garmin?.sleep?.sleepScore
   return {
-    sleepDurationS: ouraDuration ?? garminDuration ?? null,
+    sleepDurationS: ouraDuration ?? garminDuration ?? appleDuration ?? null,
     sleepScore: ouraScore ?? garminScore ?? null,
     sleepSources: {
-      sleepDurationS: ouraDuration != null ? 'oura' : garminDuration != null ? 'garmin' : undefined,
+      sleepDurationS:
+        ouraDuration != null
+          ? 'oura'
+          : garminDuration != null
+            ? 'garmin'
+            : appleDuration != null
+              ? 'apple'
+              : undefined,
       sleepScore: ouraScore != null ? 'oura' : garminScore != null ? 'garmin' : undefined,
     },
   }
@@ -211,7 +233,11 @@ export function resolveSleepSummary(
   detail: OuraSleepDetail | null | undefined,
   garmin: GarminSleepSummary | null | undefined,
   daily?: OuraDailySleep | null,
+  apple?: AppleSleepDay | null,
 ): TriathlonDaySleep | null {
+  if (!hasOuraNight(detail) && !positive(daily?.sleepDurationS) && !garmin?.sleep && apple?.sleep) {
+    return appleSessionSummary(apple.sleep, resolveSleepSummary(detail, garmin, daily))
+  }
   const ouraNight = hasOuraNight(detail)
   const garminNight = garmin?.sleep
   const useGarminTiming = !ouraNight && garminNight != null
@@ -330,7 +356,7 @@ export function resolveSleepSummary(
 export const sleepSummary = (detail: OuraSleepDetail | undefined): TriathlonDaySleep | null =>
   resolveSleepSummary(detail, null)
 
-export const napSummaries = (
+const providerNaps = (
   detail: OuraDayDetail | null | undefined,
   garmin?: GarminSleepSummary | null,
 ): TriathlonDayNap[] | undefined => {
@@ -381,4 +407,75 @@ export const napSummaries = (
         ]
       : []
   })
+}
+
+function appleSessionSummary(
+  session: AppleSleepSession,
+  existing?: TriathlonDaySleep | null,
+): TriathlonDaySleep {
+  const base =
+    existing ??
+    resolveSleepSummary(null, null, { sleepDurationS: session.totalSleepS, sleepScore: null })!
+  const fields = {
+    bedtimeStart: session.start,
+    bedtimeEnd: session.end,
+    totalSleepS: session.totalSleepS,
+    deepS: session.deepS,
+    lightS: session.lightS,
+    remS: session.remS,
+    awakeS: session.awakeS,
+  }
+  const fieldSources: TriathlonDaySleep['fieldSources'] = { ...base.fieldSources }
+  for (const key of Object.keys(fields)) {
+    if (
+      key === 'bedtimeStart' ||
+      key === 'bedtimeEnd' ||
+      key === 'totalSleepS' ||
+      key === 'deepS' ||
+      key === 'lightS' ||
+      key === 'remS' ||
+      key === 'awakeS'
+    ) {
+      if (fields[key] != null) fieldSources[key] = 'apple'
+    }
+  }
+  if (session.stages?.length) fieldSources.stages = 'apple'
+  return {
+    ...base,
+    ...fields,
+    ...(session.stages?.length ? { stages: session.stages } : {}),
+    nightSource: 'apple',
+    fieldSources,
+  }
+}
+
+export function napSummaries(
+  detail: OuraDayDetail | null | undefined,
+  garmin?: GarminSleepSummary | null,
+  apple?: AppleSleepDay | null,
+): TriathlonDayNap[] | undefined {
+  const existing = providerNaps(detail, garmin)
+  if (existing?.length || !apple) return existing
+  const naps: TriathlonDayNap[] = []
+  for (const session of apple.naps) {
+    const start = Date.parse(session.start),
+      end = Date.parse(session.end)
+    const overlaps = (a: string | null | undefined, b: string | null | undefined): boolean =>
+      Date.parse(a ?? '') < end && Date.parse(b ?? '') > start
+    if (
+      overlaps(detail?.bedtimeStart, detail?.bedtimeEnd) ||
+      overlaps(garmin?.startTime, garmin?.endTime)
+    )
+      continue
+    naps.push({
+      ...appleSessionSummary(session),
+      id: session.id,
+      type: 'sleep',
+      reportedDay: null,
+      sleepScoreDelta: null,
+      readinessScoreDelta: null,
+      providerFeedback: `Inferred daytime sleep session · ${session.sourceName || session.sourceBundleIdentifier}`,
+    })
+  }
+  return naps.sort((a, b) => Date.parse(a.bedtimeStart ?? '') - Date.parse(b.bedtimeStart ?? ''))
 }

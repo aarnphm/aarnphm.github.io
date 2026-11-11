@@ -26,10 +26,17 @@ import {
   mergeAppleDay,
   parseAppleJson,
 } from '../plugins/stores/apple'
+import {
+  aggregateAppleSleep,
+  matchAppleSleepRecord,
+  parseAppleSleepSamples,
+  type AppleSleepDay,
+  type AppleSleepSample,
+} from '../plugins/stores/apple-sleep'
 import { joinSegments, QUARTZ } from '../util/path'
 import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
 
-const CACHE_VERSION = 9
+const CACHE_VERSION = 10
 const cacheFile = joinSegments(QUARTZ, '.quartz-cache', 'apple-health.json')
 const healthExporterICloudContainer = 'iCloud~xyz~aarnphm~healthexporter'
 const healthExporterImportFile = 'apple-health-import.json'
@@ -100,12 +107,14 @@ async function readCache(): Promise<AppleCache | null> {
 }
 
 interface AppleEntries {
+  sleep?: Record<string, AppleSleepDay>
   days: AppleDaily[]
   swims: AppleSwim[]
   workouts: AppleWorkout[]
 }
 
 async function parseXmlFile(path: string): Promise<AppleEntries> {
+  const sleepSamples: AppleSleepSample[] = []
   const records: AppleRecord[] = []
   const distanceLaps: AppleSwimDistanceRecord[] = []
   const strokeLaps: AppleSwimLap[] = []
@@ -113,6 +122,8 @@ async function parseXmlFile(path: string): Promise<AppleEntries> {
   let pendingStroke: AppleSwimStrokeRecord | null = null
   const rl = readline.createInterface({ input: createReadStream(path), crlfDelay: Infinity })
   for await (const line of rl) {
+    const sleep = matchAppleSleepRecord(line)
+    if (sleep) sleepSamples.push(sleep)
     const r = matchAppleRecord(line)
     if (r) records.push(r)
     const dist = matchSwimDistance(line)
@@ -137,6 +148,7 @@ async function parseXmlFile(path: string): Promise<AppleEntries> {
     }
   }
   return {
+    sleep: aggregateAppleSleep(sleepSamples),
     days: aggregateAppleRecords(records),
     swims: aggregateSwimLaps(strokeLaps, distanceLaps, swimWorkouts),
     workouts: [],
@@ -159,7 +171,10 @@ async function loadEntries(path: string): Promise<AppleEntries> {
   const delays = [1000, 2000, 4000, 8000]
   for (let attempt = 0; ; attempt += 1) {
     try {
-      if (path.endsWith('.json')) return parseAppleJson(JSON.parse(await fs.readFile(path, 'utf8')))
+      if (path.endsWith('.json')) {
+        const raw: unknown = JSON.parse(await fs.readFile(path, 'utf8'))
+        return { ...parseAppleJson(raw), sleep: aggregateAppleSleep(parseAppleSleepSamples(raw)) }
+      }
       return await parseXmlFile(path)
     } catch (error) {
       const detail = error instanceof Error ? error.message : String(error)
@@ -207,6 +222,7 @@ export function mergeAppleSwims(
 async function main(): Promise<void> {
   const prev = await readCache()
   const days: Record<string, AppleDaily> = { ...prev?.days }
+  const sleep = { ...prev?.sleep }
   let swims: Record<string, AppleSwim> = { ...prev?.swims }
   const workouts: Record<string, AppleWorkout> = { ...prev?.workouts }
 
@@ -226,10 +242,11 @@ async function main(): Promise<void> {
       days[e.date] = mergeAppleDay(days[e.date], e)
       touched += 1
     }
+    Object.assign(sleep, entries.sleep)
     swims = mergeAppleSwims(swims, entries.swims)
     for (const workout of entries.workouts) workouts[workout.id] = workout
     console.log(
-      `[apple] read ${entries.days.length} days, ${entries.swims.length} swims, ${entries.workouts.length} workouts from ${path}`,
+      `[apple] read ${entries.days.length} days, ${entries.swims.length} swims, ${entries.workouts.length} workouts, ${Object.keys(entries.sleep ?? {}).length} sleep days from ${path}`,
     )
   }
 
@@ -244,7 +261,14 @@ async function main(): Promise<void> {
     return
   }
 
-  const cache: AppleCache = { version: CACHE_VERSION, lastSync: Date.now(), days, swims, workouts }
+  const cache: AppleCache = {
+    version: CACHE_VERSION,
+    lastSync: Date.now(),
+    days,
+    swims,
+    workouts,
+    sleep,
+  }
   await fs.mkdir(joinSegments(QUARTZ, '.quartz-cache'), { recursive: true })
   await fs.writeFile(cacheFile, JSON.stringify(cache, null, 2))
   await refreshTriathlonRouteSource()

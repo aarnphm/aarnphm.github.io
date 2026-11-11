@@ -22,7 +22,7 @@ type SleepBands = { startTs: string; lanes: (number | null)[] } & (
   | { boundariesS: number[] }
 )
 
-const garminBands = (sleep: TriathlonDaySleep, offset: number | undefined): SleepBands | null => {
+const nativeBands = (sleep: TriathlonDaySleep, offset: number | undefined): SleepBands | null => {
   const first = sleep.stages?.[0]
   if (!sleep.stages || !first) return null
   const bedtime = Date.parse(sleep.bedtimeStart ?? '')
@@ -41,7 +41,14 @@ const garminBands = (sleep: TriathlonDaySleep, offset: number | undefined): Slee
     push(DAY_ANALYTICS_SLEEP_LANES.indexOf(stage.stage), stage.endTime)
   }
   if (wakeup > last) push(null, wakeup)
-  return { startTs: sleepTimestampWithOffset(start, offset), lanes, boundariesS }
+  return {
+    startTs:
+      sleep.nightSource === 'apple' && sleep.bedtimeStart && start === bedtime
+        ? sleep.bedtimeStart
+        : sleepTimestampWithOffset(start, offset),
+    lanes,
+    boundariesS,
+  }
 }
 
 export const dayAnalyticsSleepStages = <N>(
@@ -53,10 +60,12 @@ export const dayAnalyticsSleepStages = <N>(
 ): N | null => {
   const movement = kind === 'movement'
   const garmin = !movement && sleep.nightSource === 'garmin'
+  const apple = !movement && sleep.nightSource === 'apple'
+  const native = garmin || apple
   const title = movement ? 'sleep movement' : 'sleep stages'
   const labels = movement
     ? DAY_ANALYTICS_MOVEMENT_LANES
-    : garmin &&
+    : native &&
         ((sleep.unmeasurableS ?? 0) > 0 || sleep.stages?.some(row => row.stage === 'unmeasurable'))
       ? DAY_ANALYTICS_SLEEP_LANES
       : DAY_ANALYTICS_SLEEP_LANES.slice(0, 4)
@@ -77,8 +86,8 @@ export const dayAnalyticsSleepStages = <N>(
         ['unmeasurable', sleep.unmeasurableS ?? null],
       ]
   const bedtimeStart = sleep.bedtimeStart
-  const bands: SleepBands | null = garmin
-    ? garminBands(sleep, garminOffset)
+  const bands: SleepBands | null = native
+    ? nativeBands(sleep, garminOffset)
     : phase && phase.length >= 2 && bedtimeStart
       ? {
           startTs: bedtimeStart,
@@ -95,7 +104,13 @@ export const dayAnalyticsSleepStages = <N>(
   if (!phase && !bands && durations.every(([, seconds]) => seconds == null)) return null
   const boundaries = bands && 'boundariesS' in bands ? bands.boundariesS : undefined
   const width = boundaries?.at(-1) ?? bands?.lanes.length ?? 0
-  const source = garmin ? (garminOffset == null ? 'Garmin (UTC)' : 'Garmin') : 'Oura'
+  const source = apple
+    ? 'Apple Health'
+    : garmin
+      ? garminOffset == null
+        ? 'Garmin (UTC)'
+        : 'Garmin'
+      : 'Oura'
   const readoutId = `tri-day-${date}-sleep-${kind}-readout`
   const chart = f.el(
     'section',

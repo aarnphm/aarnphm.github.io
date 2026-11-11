@@ -102,20 +102,28 @@ test('preserves respiration timestamps and gaps through the serialized sleep bou
   )
 })
 
-test('oxygen uses Garmin first and Oura only when Garmin has no valid average', () => {
+test('oxygen prefers Oura and falls back to Garmin when Oura has no valid average', () => {
   const health = {
     ...emptyOuraHealth(date),
     spo2: { averagePct: 95.4, breathingDisturbanceIndex: 0 },
   }
   const oura = { avgBreath: null, health }
   assert.deepEqual(resolveSleepMetrics(oura, garmin)?.oxygenSaturation, {
-    averagePct: 97,
-    source: 'garmin',
+    averagePct: 95.4,
+    source: 'oura',
   })
   for (const averageSpO2 of [null, 0, -1, 101, NaN]) {
     const metrics = resolveSleepMetrics(oura, { ...garmin, averageSpO2 })
     assert.deepEqual(metrics?.oxygenSaturation, { averagePct: 95.4, source: 'oura' })
     assert.equal(metrics?.breathingDisturbanceIndex, 0)
+  }
+  for (const averagePct of [null, 0, -1, 101, NaN]) {
+    const fallback = resolveSleepMetrics(
+      { ...oura, health: { ...health, spo2: { averagePct, breathingDisturbanceIndex: null } } },
+      garmin,
+    )
+    assert.deepEqual(fallback?.oxygenSaturation, { averagePct: 97, source: 'garmin' })
+    assert.equal(isSleepMetrics(fallback, date), true)
   }
   assert.equal(isSleepMetrics(resolveSleepMetrics(oura, null), date), true)
   assert.deepEqual(resolveSleepMetrics(oura, null)?.oxygenSaturation, {

@@ -49,10 +49,12 @@ export function buildBody(scope: BodyScope): BodyPhase {
   let latestWeight: PowerRankMass | null = null
   for (const d of daily) {
     const o = ouraDays[d.date]
+    const appleSleep = inputs.apple?.sleep?.[d.date]
     const garminSleep = inputs.garmin?.sleep?.[d.date]
     const naps = napSummaries(
       inputs.oura?.details?.[d.date],
       garminSleep?.date === d.date ? garminSleep : null,
+      appleSleep,
     )
     d.napDurationS = naps ? naps.reduce((sum, nap) => sum + (nap.totalSleepS ?? 0), 0) : null
     d.napCount = naps?.length ?? null
@@ -62,6 +64,7 @@ export function buildBody(scope: BodyScope): BodyPhase {
     d.sleepMetrics = resolveSleepMetrics(
       inputs.oura?.details?.[d.date],
       garminSleep?.date === d.date ? garminSleep : null,
+      appleSleep,
     )
     if (o) {
       d.readiness = o.readiness
@@ -72,11 +75,11 @@ export function buildBody(scope: BodyScope): BodyPhase {
     }
     Object.assign(
       d,
-      resolveDailySleepHealth(d.date, o, inputs.oura?.details?.[d.date], garminSleep),
+      resolveDailySleepHealth(d.date, o, inputs.oura?.details?.[d.date], garminSleep, appleSleep),
     )
     const napSource =
       naps?.[0]?.nightSource ?? (naps && inputs.oura?.details?.[d.date]?.naps ? 'oura' : null)
-    if (napSource)
+    if (napSource && naps?.every(nap => nap.nightSource === napSource))
       d.sleepSources = { ...d.sleepSources, napDurationS: napSource, napCount: napSource }
     const w = weightByDate.get(d.date)
     if (w != null) carriedWeight = w

@@ -217,9 +217,11 @@ export const buildSleepDayDetail = (
   wrap.appendChild(head)
   const charts = buildDaySleepAnalytics(createDomFactory(formatter.presentation), {
     date,
-    sleep: resolveSleepSummary(detail, sleepMetrics?.garmin, daily),
-    naps: napSummaries(detail, sleepMetrics?.garmin),
-    sleepMetrics: detail ? resolveSleepMetrics(detail, sleepMetrics?.garmin) : sleepMetrics,
+    sleep: resolveSleepSummary(detail, sleepMetrics?.garmin, daily, sleepMetrics?.apple),
+    naps: napSummaries(detail, sleepMetrics?.garmin, sleepMetrics?.apple),
+    sleepMetrics: detail
+      ? resolveSleepMetrics(detail, sleepMetrics?.garmin, sleepMetrics?.apple)
+      : sleepMetrics,
     garminHealth: health,
     ouraHealth: detail?.health ?? null,
     restorationBaseline,

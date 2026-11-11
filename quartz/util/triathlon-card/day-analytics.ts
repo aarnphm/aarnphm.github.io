@@ -65,7 +65,7 @@ export const sleepSupplementMetrics = (
       label: 'Pulse Ox',
       value: `${number(oxygen.averagePct, 1)}%`,
       detail: [
-        oxygen.source === 'oura' ? 'Oura · Garmin unavailable' : 'Garmin',
+        sleepProviderLabel(oxygen.source),
         garmin?.lowestSpO2 != null
           ? `${oxygen.source === 'oura' ? 'Garmin: ' : ''}${detail('lowest Pulse Ox', garmin.lowestSpO2, '%')}`
           : null,
@@ -284,7 +284,7 @@ const buildDaySleepPeriod = <N>(f: TriNodeFactory<N>, summary: TriathlonDayAnaly
     f.add(group, contributions)
   }
   if (sleep) {
-    const sourceLabel = (source: 'oura' | 'garmin' = 'oura'): string =>
+    const sourceLabel = (source: 'oura' | 'garmin' | 'apple' = 'oura'): string =>
       source === 'garmin' && garminOffset == null ? 'Garmin (UTC)' : sleepProviderLabel(source)
     const stages = dayAnalyticsSleepStages(f, summary.date, sleep, 'stages', garminOffset)
     const hrv = dayAnalyticsSleepSeries(
@@ -381,7 +381,9 @@ export const buildDaySleepAnalytics = <N>(
   const naps = f.el('div', 'tri-sleep-naps')
   if (summary.naps?.length) {
     const total = summary.naps.reduce((sum, nap) => sum + (nap.totalSleepS ?? 0), 0)
-    const source = sleepProviderLabel(summary.naps[0].nightSource ?? 'oura')
+    const source = [
+      ...new Set(summary.naps.map(nap => sleepProviderLabel(nap.nightSource ?? 'oura'))),
+    ].join(' · ')
     f.add(
       naps,
       f.el(
@@ -420,7 +422,11 @@ export const buildDaySleepAnalytics = <N>(
       if (nap.reportedDay && nap.reportedDay !== summary.date)
         deltas.push({ label: 'score date', value: nap.reportedDay, detail: 'Oura' })
       if (nap.providerFeedback)
-        deltas.push({ label: 'nap feedback', value: nap.providerFeedback, detail: 'Garmin' })
+        deltas.push({
+          label: 'nap feedback',
+          value: nap.providerFeedback,
+          detail: sleepProviderLabel(nap.nightSource ?? 'oura'),
+        })
       if (deltas.length)
         f.add(entry, dayAnalyticsList(f, `${summary.date}-nap-${index}`, 'nap', deltas))
       if (period) f.add(entry, period)

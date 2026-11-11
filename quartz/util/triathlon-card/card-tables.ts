@@ -118,8 +118,8 @@ export const buildRecovery = <N>(f: TriNodeFactory<N>, h: ActivityHealth): N | n
     f.el('span', 'tri-act-health-h', 'recovery'),
     statsTable(f, rows, label => {
       const key = label === 'sleep' ? 'sleepScore' : label === 'slept' ? 'sleepDurationS' : null
-      return key && h.sleepSources?.[key] === 'garmin'
-        ? { 'data-source-description': 'Garmin' }
+      return key && h.sleepSources?.[key] && h.sleepSources[key] !== 'oura'
+        ? { 'data-source-description': h.sleepSources[key] === 'apple' ? 'Apple Health' : 'Garmin' }
         : undefined
     }),
   )
