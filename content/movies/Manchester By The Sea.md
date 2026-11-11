@@ -20,3 +20,5 @@ title: Manchester by the Sea
 watched: '2024-02-15'
 year: 2016
 ---
+
+Included in [Bingelog’s films about grief and loss](https://www.instagram.com/p/DfZlpl8Dwfh/).
