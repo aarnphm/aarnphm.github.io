@@ -299,3 +299,4 @@ docs/
 /content/thoughts/images/instagram/**/*.json
 /content/thoughts/images/instagram/**/*.txt
 !/content/thoughts/images/instagram/attribution.json
+/.build
