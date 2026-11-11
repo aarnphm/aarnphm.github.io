@@ -1,0 +1,1262 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="flashinfer.mamba.ssd_combined_fwd" href="flashinfer.mamba.ssd_combined_fwd.html" /><link rel="prev" title="flashinfer.mamba.selective_state_update" href="flashinfer.mamba.selective_state_update.html" />
+
+    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+        <title>flashinfer.mamba.checkpointing_ssu - FlashInfer 0.7.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=a5c4661c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">FlashInfer 0.7.4 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../_static/FlashInfer-white-background.png" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../_static/FlashInfer-black-background.png" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">FlashInfer 0.7.4 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cli.html">Command Line Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fi_trace.html">fi_trace — Operation Schema Extraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../trace_apply.html">Trace Apply</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../autotuning.html">Autotuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../experimental.html">Experimental APIs and Backends</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/recursive_attention.html">Attention States and Recursive Attention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/kv_layout.html">KV-Cache Layout in FlashInfer</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/generated/jax_tvm_ffi/index.html">FlashInfer on JAX with TVM FFI</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of FlashInfer on JAX with TVM FFI</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/generated/jax_tvm_ffi/flashinfer_jax_tvm_ffi.html">Enabling FlashInfer GPU Kernels on JAX with the JAX TVM FFI Bridge</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/generated/jax_tvm_ffi/gemma3_flashinfer_jax.html">Gemma 3 on JAX with FlashInfer and the JAX TVM FFI Bridge</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/cake_kimi_k3_situ.html">Cake SiTU backend</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">PyTorch API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/attention.html">FlashInfer Attention Kernels</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of FlashInfer Attention Kernels</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.decode.single_decode_with_kv_cache.html">flashinfer.decode.single_decode_with_kv_cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.decode.single_decode_with_kv_cache_with_jit_module.html">flashinfer.decode.single_decode_with_kv_cache_with_jit_module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.decode.cudnn_batch_decode_with_kv_cache.html">flashinfer.decode.cudnn_batch_decode_with_kv_cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.decode.trtllm_batch_decode_with_kv_cache.html">flashinfer.decode.trtllm_batch_decode_with_kv_cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.decode.xqa_batch_decode_with_kv_cache.html">flashinfer.decode.xqa_batch_decode_with_kv_cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.get_dcp_spec_workspace_size_bytes.html">flashinfer.get_dcp_spec_workspace_size_bytes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.get_dcp_spec_counter_bytes.html">flashinfer.get_dcp_spec_counter_bytes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.plan_cake_fmha_request_ordered_paged_decode.html">flashinfer.plan_cake_fmha_request_ordered_paged_decode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.CakeFmhaRequestOrderedDecodePlan.html">flashinfer.CakeFmhaRequestOrderedDecodePlan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.xqa.xqa.html">flashinfer.xqa.xqa</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.xqa.xqa_mla.html">flashinfer.xqa.xqa_mla</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.prefill.single_prefill_with_kv_cache.html">flashinfer.prefill.single_prefill_with_kv_cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.prefill.single_prefill_with_kv_cache_return_lse.html">flashinfer.prefill.single_prefill_with_kv_cache_return_lse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.prefill.single_prefill_with_kv_cache_with_jit_module.html">flashinfer.prefill.single_prefill_with_kv_cache_with_jit_module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.prefill.cudnn_batch_prefill_with_kv_cache.html">flashinfer.prefill.cudnn_batch_prefill_with_kv_cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.prefill.trtllm_batch_context_with_kv_cache.html">flashinfer.prefill.trtllm_batch_context_with_kv_cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.prefill.trtllm_ragged_attention_deepseek.html">flashinfer.prefill.trtllm_ragged_attention_deepseek</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.prefill.fmha_v2_prefill_deepseek.html">flashinfer.prefill.fmha_v2_prefill_deepseek</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.prefill.trtllm_fmha_v2_prefill.html">flashinfer.prefill.trtllm_fmha_v2_prefill</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.prefill.fmha_v2_prefill_sm120.html">flashinfer.prefill.fmha_v2_prefill_sm120</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.nvfp4_attention_sm120.nvfp4_attention_sm120_quantize_qkv.html">flashinfer.nvfp4_attention_sm120.nvfp4_attention_sm120_quantize_qkv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.nvfp4_attention_sm120.nvfp4_attention_sm120_fwd.html">flashinfer.nvfp4_attention_sm120.nvfp4_attention_sm120_fwd</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.mla.trtllm_batch_decode_with_kv_cache_mla.html">flashinfer.mla.trtllm_batch_decode_with_kv_cache_mla</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.mla.trtllm_prefill_with_kv_cache_mla.html">flashinfer.mla.trtllm_prefill_with_kv_cache_mla</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.mla.trtllm_batch_decode_sparse_mla_dsv4.html">flashinfer.mla.trtllm_batch_decode_sparse_mla_dsv4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.mla.nvfp4_quantize_pack_sparse_mla_cache.html">flashinfer.mla.nvfp4_quantize_pack_sparse_mla_cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.mla.nvfp4_quantize_append_sparse_mla_cache.html">flashinfer.mla.nvfp4_quantize_append_sparse_mla_cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.mla.dsv41_fp4_quantize_pack_sparse_mla_cache.html">flashinfer.mla.dsv41_fp4_quantize_pack_sparse_mla_cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.mla.dsv41_fp4_quantize_append_sparse_mla_cache.html">flashinfer.mla.dsv41_fp4_quantize_append_sparse_mla_cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.mla.dsv41_fp8_quantize_pack_sparse_mla_cache.html">flashinfer.mla.dsv41_fp8_quantize_pack_sparse_mla_cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.mla.dsv41_fp8_quantize_append_sparse_mla_cache.html">flashinfer.mla.dsv41_fp8_quantize_append_sparse_mla_cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.mla.convert_compressed_page_aligned_sparse_indices_to_hca_metadata.html">flashinfer.mla.convert_compressed_page_aligned_sparse_indices_to_hca_metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.mla.DSV4HCAMetadata.html">flashinfer.mla.DSV4HCAMetadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.mla.xqa_batch_decode_with_kv_cache_mla.html">flashinfer.mla.xqa_batch_decode_with_kv_cache_mla</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.mla.supported_sparse_mla_sm120_configs.html">flashinfer.mla.supported_sparse_mla_sm120_configs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.mla.SparseMLASm120DecodeConfig.html">flashinfer.mla.SparseMLASm120DecodeConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.mla.SparseMLASm120Wrapper.html">flashinfer.mla.SparseMLASm120Wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.mla.cake_sparse_mla_sm120_dsv4_nvfp4_decode.html">flashinfer.mla.cake_sparse_mla_sm120_dsv4_nvfp4_decode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.mla.cake_sparse_mla_sm120_dsv4_nvfp4_prefill.html">flashinfer.mla.cake_sparse_mla_sm120_dsv4_nvfp4_prefill</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.mla.cake_sparse_mla_sm120_dsv4_nvfp4_select_kernel.html">flashinfer.mla.cake_sparse_mla_sm120_dsv4_nvfp4_select_kernel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.mla.cake_sparse_mla_sm120_dsv4_nvfp4_plan_prefill.html">flashinfer.mla.cake_sparse_mla_sm120_dsv4_nvfp4_plan_prefill</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.mla.cake_sparse_mla_sm120_dsv4_nvfp4_plan_head_tiles.html">flashinfer.mla.cake_sparse_mla_sm120_dsv4_nvfp4_plan_head_tiles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.mla.cake_sparse_mla_sm120_dsv4_nvfp4_plan_splits.html">flashinfer.mla.cake_sparse_mla_sm120_dsv4_nvfp4_plan_splits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.mla.cake_sparse_mla_sm120_dsv4_nvfp4_scratch_bytes.html">flashinfer.mla.cake_sparse_mla_sm120_dsv4_nvfp4_scratch_bytes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.mla.cake_dsv4_nvfp4_rope_quantize_insert.html">flashinfer.mla.cake_dsv4_nvfp4_rope_quantize_insert</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.mla.cake_dsv4_nvfp4_kv_rope_quantize_insert.html">flashinfer.mla.cake_dsv4_nvfp4_kv_rope_quantize_insert</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/attn_scores.html">flashinfer.attn_scores</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of flashinfer.attn_scores</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fp8_paged_mqa_logits.html">flashinfer.fp8_paged_mqa_logits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fp4_paged_mqa_logits.html">flashinfer.fp4_paged_mqa_logits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.compute_paged_mqa_logits_schedule.html">flashinfer.compute_paged_mqa_logits_schedule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.min_block_table_width.html">flashinfer.min_block_table_width</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.padded_seq_len.html">flashinfer.padded_seq_len</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.precompile_paged_mqa_logits.html">flashinfer.precompile_paged_mqa_logits</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/cake_fmha.html">flashinfer.cake_fmha</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of flashinfer.cake_fmha</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_fmha.cake_batch_decode_with_kv_cache.html">flashinfer.cake_fmha.cake_batch_decode_with_kv_cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_fmha.cake_batch_context_with_kv_cache.html">flashinfer.cake_fmha.cake_batch_context_with_kv_cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_fmha.cake_fmha_manifest.html">flashinfer.cake_fmha.cake_fmha_manifest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_fmha.get_cake_fmha_module.html">flashinfer.cake_fmha.get_cake_fmha_module</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/cake_fused_qk_rope_append.html">flashinfer.cake_fused_qk_rope_append</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of flashinfer.cake_fused_qk_rope_append</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_fused_qk_rope_append.cake_fused_qk_rmsnorm_rope_append_paged_kv_cache.html">flashinfer.cake_fused_qk_rope_append.cake_fused_qk_rmsnorm_rope_append_paged_kv_cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_fused_qk_rope_append.launch_plan.html">flashinfer.cake_fused_qk_rope_append.launch_plan</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/cake_fused_qk_rope_fp8_append.html">flashinfer.cake_fused_qk_rope_fp8_append</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of flashinfer.cake_fused_qk_rope_fp8_append</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_fused_qk_rope_fp8_append.cake_fused_qk_rmsnorm_rope_quantize_fp8_append_paged_kv_cache.html">flashinfer.cake_fused_qk_rope_fp8_append.cake_fused_qk_rmsnorm_rope_quantize_fp8_append_paged_kv_cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_fused_qk_rope_fp8_append.launch_plan.html">flashinfer.cake_fused_qk_rope_fp8_append.launch_plan</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/cake_moe_grouped_det_gemm.html">Cake ragged BF16 grouped GEMM (experimental)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Cake ragged BF16 grouped GEMM (experimental)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.grouped_mm.grouped_det_gemm_fwd.html">flashinfer.grouped_mm.grouped_det_gemm_fwd</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.grouped_mm.grouped_det_gemm_dgrad.html">flashinfer.grouped_mm.grouped_det_gemm_dgrad</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.grouped_mm.grouped_det_gemm_wgrad.html">flashinfer.grouped_mm.grouped_det_gemm_wgrad</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.grouped_mm.cake_grouped_det_mm.html">flashinfer.grouped_mm.cake_grouped_det_mm</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api/cake_moe_grouped_gemm.html">Cake ragged BF16 grouped GEMM with a selectable numerical mode (experimental)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/cake_mxfp4_situ_moe.html">flashinfer.fused_moe.cake / cake_cute (MXFP4 SiTU routed MoE)</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/cake_sampling.html">flashinfer.cake_sampling</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of flashinfer.cake_sampling</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_sampling.top_k_top_p_sampling_from_probs.html">flashinfer.cake_sampling.top_k_top_p_sampling_from_probs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_sampling.top_k_probs_to_slab.html">flashinfer.cake_sampling.top_k_probs_to_slab</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_sampling.cake_sampling_route.html">flashinfer.cake_sampling.cake_sampling_route</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_sampling.choose_stage1.html">flashinfer.cake_sampling.choose_stage1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_sampling.choose_stage23.html">flashinfer.cake_sampling.choose_stage23</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_sampling.stage23_variant_flags.html">flashinfer.cake_sampling.stage23_variant_flags</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/cake_stepfun_moe.html">flashinfer.experimental.cake_stepfun_moe</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of flashinfer.experimental.cake_stepfun_moe</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.experimental.cake_stepfun_moe.stepfun_moe.html">flashinfer.experimental.cake_stepfun_moe.stepfun_moe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.experimental.cake_stepfun_moe.routing.html">flashinfer.experimental.cake_stepfun_moe.routing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.experimental.cake_stepfun_moe.fc1.html">flashinfer.experimental.cake_stepfun_moe.fc1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.experimental.cake_stepfun_moe.requant.html">flashinfer.experimental.cake_stepfun_moe.requant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.experimental.cake_stepfun_moe.fc2.html">flashinfer.experimental.cake_stepfun_moe.fc2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.experimental.cake_stepfun_moe.finalize.html">flashinfer.experimental.cake_stepfun_moe.finalize</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/gemm.html">flashinfer.gemm</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of flashinfer.gemm</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.mm_bf16.html">flashinfer.gemm.mm_bf16</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.bmm_bf16.html">flashinfer.gemm.bmm_bf16</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.mm_fp4.html">flashinfer.gemm.mm_fp4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.mm_nvfp4_svdquant.html">flashinfer.gemm.mm_nvfp4_svdquant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.nvfp4_quantize_smooth.html">flashinfer.gemm.nvfp4_quantize_smooth</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.svdquant_linear.html">flashinfer.gemm.svdquant_linear</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.mm_nvfp4_lora.html">flashinfer.gemm.mm_nvfp4_lora</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.mm_fp8_lora.html">flashinfer.gemm.mm_fp8_lora</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.prepare_nvfp4_lora_adapter.html">flashinfer.gemm.prepare_nvfp4_lora_adapter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.PreparedNvFp4LoraAdapter.html">flashinfer.gemm.PreparedNvFp4LoraAdapter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.StaleAdapterError.html">flashinfer.gemm.StaleAdapterError</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.prepare_bf16_fp4_weights.html">flashinfer.gemm.prepare_bf16_fp4_weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.mm_bf16_fp4.html">flashinfer.gemm.mm_bf16_fp4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.mm_mxfp8.html">flashinfer.gemm.mm_mxfp8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.bmm_mxfp8.html">flashinfer.gemm.bmm_mxfp8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.mm_fp8.html">flashinfer.gemm.mm_fp8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.bmm_fp8.html">flashinfer.gemm.bmm_fp8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.gemm_fp8_nt_blockscaled.html">flashinfer.gemm.gemm_fp8_nt_blockscaled</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.gemm_fp8_nt_groupwise.html">flashinfer.gemm.gemm_fp8_nt_groupwise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.group_gemm_fp8_nt_groupwise.html">flashinfer.gemm.group_gemm_fp8_nt_groupwise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.group_gemm_fp8_nt_groupwise_contiguous.html">flashinfer.gemm.group_gemm_fp8_nt_groupwise_contiguous</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.group_deepgemm_fp8_nt_groupwise.html">flashinfer.gemm.group_deepgemm_fp8_nt_groupwise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.batch_deepgemm_fp8_nt_groupwise.html">flashinfer.gemm.batch_deepgemm_fp8_nt_groupwise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.fp8_blockscale_gemm_sm90.html">flashinfer.gemm.fp8_blockscale_gemm_sm90</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.trtllm_low_latency_gemm.prepare_low_latency_gemm_weights.html">flashinfer.trtllm_low_latency_gemm.prepare_low_latency_gemm_weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.group_gemm_mxfp8_mxfp4_nt_groupwise.html">flashinfer.gemm.group_gemm_mxfp8_mxfp4_nt_groupwise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.group_gemm_nvfp4_nt_groupwise.html">flashinfer.gemm.group_gemm_nvfp4_nt_groupwise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.mm_M1_16_K7168_N128.html">flashinfer.gemm.mm_M1_16_K7168_N128</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.mm_M1_16_K7168_N256.html">flashinfer.gemm.mm_M1_16_K7168_N256</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.mm_M1_16_K6144_N256.html">flashinfer.gemm.mm_M1_16_K6144_N256</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.mm_M1_16_K7168_N256_bf16.html">flashinfer.gemm.mm_M1_16_K7168_N256_bf16</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.mm_M1_16_K7168_N384.html">flashinfer.gemm.mm_M1_16_K7168_N384</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.mm_M1_16_K7168_N384_bf16.html">flashinfer.gemm.mm_M1_16_K7168_N384_bf16</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.mm_M1_16_K7168_N896.html">flashinfer.gemm.mm_M1_16_K7168_N896</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.mm_M1_16_K7168_N896_bf16.html">flashinfer.gemm.mm_M1_16_K7168_N896_bf16</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.tinygemm_bf16.html">flashinfer.gemm.tinygemm_bf16</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.tgv_gemm_sm100.html">flashinfer.gemm.tgv_gemm_sm100</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.gemm_alpha_beta.html">flashinfer.gemm.gemm_alpha_beta</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.masked_bmm.html">flashinfer.gemm.masked_bmm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.masked_scaled_bmm.html">flashinfer.gemm.masked_scaled_bmm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.ragged_bmm.html">flashinfer.gemm.ragged_bmm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.ragged_block_scaled_bmm.html">flashinfer.gemm.ragged_block_scaled_bmm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.ragged_scaled_bmm.html">flashinfer.gemm.ragged_scaled_bmm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.grouped_gemm_nt_masked.html">flashinfer.gemm.grouped_gemm_nt_masked</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.fp8_linear.html">flashinfer.gemm.fp8_linear</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.fp8_linear_swiglu.html">flashinfer.gemm.fp8_linear_swiglu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.fp8_qkv_qknorm_rope.html">flashinfer.gemm.fp8_qkv_qknorm_rope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.fp4_linear.html">flashinfer.gemm.fp4_linear</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.fp4_linear_swiglu.html">flashinfer.gemm.fp4_linear_swiglu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gemm.fp4_qkv_qknorm_rope.html">flashinfer.gemm.fp4_qkv_qknorm_rope</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/grouped_mm.html">flashinfer.grouped_mm</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of flashinfer.grouped_mm</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.grouped_mm.grouped_mm_bf16.html">flashinfer.grouped_mm.grouped_mm_bf16</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.grouped_mm.grouped_mm_fp8.html">flashinfer.grouped_mm.grouped_mm_fp8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.grouped_mm.grouped_mm_mxfp8.html">flashinfer.grouped_mm.grouped_mm_mxfp8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.grouped_mm.grouped_mm_fp4.html">flashinfer.grouped_mm.grouped_mm_fp4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.grouped_mm.moe_gemm_mxfp8_nt_groupwise.html">flashinfer.grouped_mm.moe_gemm_mxfp8_nt_groupwise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.grouped_mm.moe_gemm_fp8_nt_groupwise.html">flashinfer.grouped_mm.moe_gemm_fp8_nt_groupwise</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/fused_moe.html">flashinfer.fused_moe</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of flashinfer.fused_moe</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.RoutingMethodType.html">flashinfer.fused_moe.RoutingMethodType</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.WeightLayout.html">flashinfer.fused_moe.WeightLayout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.tllm_enums.is_gated_activation.html">flashinfer.tllm_enums.is_gated_activation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.MoEConfig.html">flashinfer.fused_moe.MoEConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.RoutingConfig.html">flashinfer.fused_moe.RoutingConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.QuantConfig.html">flashinfer.fused_moe.QuantConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.QuantFormat.html">flashinfer.fused_moe.QuantFormat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.ExpertConfig.html">flashinfer.fused_moe.ExpertConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.ExecutionConfig.html">flashinfer.fused_moe.ExecutionConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.MoEFinalizeConfig.html">flashinfer.fused_moe.MoEFinalizeConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.BackendOptions.html">flashinfer.fused_moe.BackendOptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.MoEActivationPack.html">flashinfer.fused_moe.MoEActivationPack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.MoEWeightPack.html">flashinfer.fused_moe.MoEWeightPack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CudnnFrostBf16Config.html">flashinfer.fused_moe.CudnnFrostBf16Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CudnnFrostMxfp8Config.html">flashinfer.fused_moe.CudnnFrostMxfp8Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CudnnFrostNvfp4Config.html">flashinfer.fused_moe.CudnnFrostNvfp4Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CudnnFrostMxfp8Mxfp4Config.html">flashinfer.fused_moe.CudnnFrostMxfp8Mxfp4Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.FrostLowLatencyConfig.html">flashinfer.fused_moe.FrostLowLatencyConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.convert_to_block_layout.html">flashinfer.fused_moe.convert_to_block_layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.reorder_rows_for_gated_act_gemm.html">flashinfer.fused_moe.reorder_rows_for_gated_act_gemm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.interleave_cute_dsl_moe_weights.html">flashinfer.fused_moe.interleave_cute_dsl_moe_weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.interleave_moe_weights_for_sm90_mixed_gemm.html">flashinfer.fused_moe.interleave_moe_weights_for_sm90_mixed_gemm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.interleave_moe_scales_for_sm90_mixed_gemm.html">flashinfer.fused_moe.interleave_moe_scales_for_sm90_mixed_gemm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.preprocess_moe_weights_for_sm90_mixed_gemm_humming.html">flashinfer.fused_moe.preprocess_moe_weights_for_sm90_mixed_gemm_humming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.fused_topk_deepseek.html">flashinfer.fused_moe.fused_topk_deepseek</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.hash_topk.html">flashinfer.fused_moe.hash_topk</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.AlphaMoERoutePlan.html">flashinfer.fused_moe.AlphaMoERoutePlan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.allocate_alphamoe_route_plan.html">flashinfer.fused_moe.allocate_alphamoe_route_plan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.alphamoe_fused_router.html">flashinfer.fused_moe.alphamoe_fused_router</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.bgmv_moe.html">flashinfer.fused_moe.bgmv_moe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.prepare_bgmv_moe.html">flashinfer.fused_moe.prepare_bgmv_moe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.BGMVMoECakePlan.html">flashinfer.fused_moe.BGMVMoECakePlan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.BGMVMoEPortablePlan.html">flashinfer.fused_moe.BGMVMoEPortablePlan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.bgmv_moe_shrink.html">flashinfer.fused_moe.bgmv_moe_shrink</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.bgmv_moe_expand.html">flashinfer.fused_moe.bgmv_moe_expand</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.bgmv_moe_gemm1_lora_delta.html">flashinfer.fused_moe.bgmv_moe_gemm1_lora_delta</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.bgmv_moe_gemm2_lora_delta.html">flashinfer.fused_moe.bgmv_moe_gemm2_lora_delta</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.cutlass_fused_moe.html">flashinfer.fused_moe.cutlass_fused_moe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CuTileBf16Config.html">flashinfer.fused_moe.CuTileBf16Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CuTileBf16Runner.html">flashinfer.fused_moe.CuTileBf16Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CuTileFp8PerTensorBf16Config.html">flashinfer.fused_moe.CuTileFp8PerTensorBf16Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CuTileFp8PerTensorBf16Runner.html">flashinfer.fused_moe.CuTileFp8PerTensorBf16Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CuTileFp8PerTensorConfig.html">flashinfer.fused_moe.CuTileFp8PerTensorConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CuTileFp8PerTensorRunner.html">flashinfer.fused_moe.CuTileFp8PerTensorRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CuTileMxfp4Bf16Config.html">flashinfer.fused_moe.CuTileMxfp4Bf16Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CuTileMxfp4Bf16Runner.html">flashinfer.fused_moe.CuTileMxfp4Bf16Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CuTileMxfp4Config.html">flashinfer.fused_moe.CuTileMxfp4Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CuTileMxfp4Runner.html">flashinfer.fused_moe.CuTileMxfp4Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CuTileMxfp4Mxfp8Config.html">flashinfer.fused_moe.CuTileMxfp4Mxfp8Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CuTileMxfp4Mxfp8Runner.html">flashinfer.fused_moe.CuTileMxfp4Mxfp8Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CuTileMxfp8Bf16Config.html">flashinfer.fused_moe.CuTileMxfp8Bf16Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CuTileMxfp8Bf16Runner.html">flashinfer.fused_moe.CuTileMxfp8Bf16Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CuTileMxfp8Config.html">flashinfer.fused_moe.CuTileMxfp8Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CuTileMxfp8Runner.html">flashinfer.fused_moe.CuTileMxfp8Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CuTileNvfp4Bf16Config.html">flashinfer.fused_moe.CuTileNvfp4Bf16Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CuTileNvfp4Bf16Runner.html">flashinfer.fused_moe.CuTileNvfp4Bf16Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CuTileNvfp4Config.html">flashinfer.fused_moe.CuTileNvfp4Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CuTileNvfp4Runner.html">flashinfer.fused_moe.CuTileNvfp4Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.trtllm_bf16_moe.html">flashinfer.fused_moe.trtllm_bf16_moe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.trtllm_bf16_routed_moe.html">flashinfer.fused_moe.trtllm_bf16_routed_moe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.trtllm_fp4_block_scale_moe.html">flashinfer.fused_moe.trtllm_fp4_block_scale_moe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.trtllm_fp4_block_scale_routed_moe.html">flashinfer.fused_moe.trtllm_fp4_block_scale_routed_moe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.trtllm_fp8_block_scale_moe.html">flashinfer.fused_moe.trtllm_fp8_block_scale_moe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.trtllm_fp8_block_scale_routed_moe.html">flashinfer.fused_moe.trtllm_fp8_block_scale_routed_moe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.trtllm_fp8_per_channel_scale_moe.html">flashinfer.fused_moe.trtllm_fp8_per_channel_scale_moe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.trtllm_fp8_per_channel_scale_routed_moe.html">flashinfer.fused_moe.trtllm_fp8_per_channel_scale_routed_moe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.trtllm_fp8_per_tensor_scale_moe.html">flashinfer.fused_moe.trtllm_fp8_per_tensor_scale_moe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.trtllm_fp8_per_tensor_scale_routed_moe.html">flashinfer.fused_moe.trtllm_fp8_per_tensor_scale_routed_moe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.trtllm_mxint4_block_scale_moe.html">flashinfer.fused_moe.trtllm_mxint4_block_scale_moe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.trtllm_mxint4_block_scale_routed_moe.html">flashinfer.fused_moe.trtllm_mxint4_block_scale_routed_moe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.trtllm_fused_moe_workspace_size.html">flashinfer.fused_moe.trtllm_fused_moe_workspace_size</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.alphamoe_interleave_gated_weights.html">flashinfer.fused_moe.alphamoe_interleave_gated_weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.alphamoe_fp8_block_scale_aligned_moe.html">flashinfer.fused_moe.alphamoe_fp8_block_scale_aligned_moe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.alphamoe_nvfp4_aligned_moe.html">flashinfer.fused_moe.alphamoe_nvfp4_aligned_moe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.alphamoe_nvfp4_routed_moe.html">flashinfer.fused_moe.alphamoe_nvfp4_routed_moe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.prepare_nvfp4_w1_data.html">flashinfer.fused_moe.prepare_nvfp4_w1_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.prepare_nvfp4_w1_gate_up_data.html">flashinfer.fused_moe.prepare_nvfp4_w1_gate_up_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.prepare_nvfp4_w1_gate_up_scales.html">flashinfer.fused_moe.prepare_nvfp4_w1_gate_up_scales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.prepare_nvfp4_w1_scales.html">flashinfer.fused_moe.prepare_nvfp4_w1_scales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.prepare_nvfp4_w2_data.html">flashinfer.fused_moe.prepare_nvfp4_w2_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.prepare_nvfp4_w2_data_k256.html">flashinfer.fused_moe.prepare_nvfp4_w2_data_k256</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.prepare_nvfp4_w2_scales.html">flashinfer.fused_moe.prepare_nvfp4_w2_scales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.prepare_nvfp4_w2_scales_k256.html">flashinfer.fused_moe.prepare_nvfp4_w2_scales_k256</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CakeWarpDecodeConfig.html">flashinfer.fused_moe.CakeWarpDecodeConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CakeWarpDecodeRunner.html">flashinfer.fused_moe.CakeWarpDecodeRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.PrimsTsConfig.html">flashinfer.fused_moe.PrimsTsConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.PrimsTsRunner.html">flashinfer.fused_moe.PrimsTsRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.prims_ts_bf16_moe.html">flashinfer.fused_moe.prims_ts_bf16_moe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.prims_ts_bf16_routed_moe.html">flashinfer.fused_moe.prims_ts_bf16_routed_moe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.prims_ts_fp4_block_scale_moe.html">flashinfer.fused_moe.prims_ts_fp4_block_scale_moe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.prims_ts_fp4_block_scale_routed_moe.html">flashinfer.fused_moe.prims_ts_fp4_block_scale_routed_moe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.prims_ts_fp8_block_scale_moe.html">flashinfer.fused_moe.prims_ts_fp8_block_scale_moe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.prims_ts_fp8_block_scale_routed_moe.html">flashinfer.fused_moe.prims_ts_fp8_block_scale_routed_moe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.prims_ts_fp8_per_tensor_scale_moe.html">flashinfer.fused_moe.prims_ts_fp8_per_tensor_scale_moe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.prims_ts_bf16_moe_partitioned.html">flashinfer.fused_moe.prims_ts_bf16_moe_partitioned</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.prims_ts_fp4_block_scale_moe_partitioned.html">flashinfer.fused_moe.prims_ts_fp4_block_scale_moe_partitioned</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.prims_ts_fp8_block_scale_moe_partitioned.html">flashinfer.fused_moe.prims_ts_fp8_block_scale_moe_partitioned</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.prims_ts_fp8_per_tensor_scale_moe_partitioned.html">flashinfer.fused_moe.prims_ts_fp8_per_tensor_scale_moe_partitioned</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.trtllm_gen_routing.html">flashinfer.fused_moe.trtllm_gen_routing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.TrtllmGenRoutingResult.html">flashinfer.fused_moe.TrtllmGenRoutingResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.cute_dsl_fused_moe_bf16.html">flashinfer.fused_moe.cute_dsl_fused_moe_bf16</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.cute_dsl_fused_moe.html">flashinfer.fused_moe.cute_dsl_fused_moe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.cute_dsl_fused_moe_nvfp4.html">flashinfer.fused_moe.cute_dsl_fused_moe_nvfp4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.cute_dsl_fused_moe_mxfp8_mxfp4.html">flashinfer.fused_moe.cute_dsl_fused_moe_mxfp8_mxfp4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.b12x_fused_moe.html">flashinfer.fused_moe.b12x_fused_moe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.has_monomoe.html">flashinfer.fused_moe.has_monomoe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.get_scratchpad_size_bytes.html">flashinfer.fused_moe.get_scratchpad_size_bytes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.alloc_scratchpad.html">flashinfer.fused_moe.alloc_scratchpad</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.interleave_for_tma_wgmma_up.html">flashinfer.fused_moe.interleave_for_tma_wgmma_up</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.mono_moe.html">flashinfer.fused_moe.mono_moe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CudnnGroupedGemmBf16Config.html">flashinfer.fused_moe.CudnnGroupedGemmBf16Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CudnnGroupedGemmBf16Runner.html">flashinfer.fused_moe.CudnnGroupedGemmBf16Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CudnnGroupedGemmFp8PerTensorConfig.html">flashinfer.fused_moe.CudnnGroupedGemmFp8PerTensorConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CudnnGroupedGemmFp8PerTensorRunner.html">flashinfer.fused_moe.CudnnGroupedGemmFp8PerTensorRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CudnnGroupedGemmMxfp8Config.html">flashinfer.fused_moe.CudnnGroupedGemmMxfp8Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CudnnGroupedGemmMxfp8Runner.html">flashinfer.fused_moe.CudnnGroupedGemmMxfp8Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CudnnGroupedGemmNvfp4Config.html">flashinfer.fused_moe.CudnnGroupedGemmNvfp4Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.CudnnGroupedGemmNvfp4Runner.html">flashinfer.fused_moe.CudnnGroupedGemmNvfp4Runner</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/megamoe.html">flashinfer.megamoe</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of flashinfer.megamoe</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.megamoe.MegaMoESymmBuffer.html">flashinfer.megamoe.MegaMoESymmBuffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.megamoe.nvfp4_mega_moe.html">flashinfer.megamoe.nvfp4_mega_moe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.megamoe.mxfp4_mega_moe.html">flashinfer.megamoe.mxfp4_mega_moe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.megamoe.transform_nvfp4_weights_for_mega_moe.html">flashinfer.megamoe.transform_nvfp4_weights_for_mega_moe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.megamoe.transform_mxfp4_weights_for_mega_moe.html">flashinfer.megamoe.transform_mxfp4_weights_for_mega_moe</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/moe_ep_communication.html">flashinfer.moe_ep: Expert-Parallel Communication</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of flashinfer.moe_ep: Expert-Parallel Communication</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.moe_ep.BootstrapConfig.html">flashinfer.moe_ep.BootstrapConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.moe_ep.MoEEpCommunication.html">flashinfer.moe_ep.MoEEpCommunication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.moe_ep.MoEEpCommParams.html">flashinfer.moe_ep.MoEEpCommParams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.moe_ep.MoEEpDispatchResult.html">flashinfer.moe_ep.MoEEpDispatchResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.moe_ep.NVLinkOneSidedAlltoAll.html">flashinfer.moe_ep.NVLinkOneSidedAlltoAll</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.moe_ep.NVLinkOneSidedConfig.html">flashinfer.moe_ep.NVLinkOneSidedConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.moe_ep.CakeAlltoAll.html">flashinfer.moe_ep.CakeAlltoAll</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.moe_ep.CakeAlltoAllConfig.html">flashinfer.moe_ep.CakeAlltoAllConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.moe_ep.NVLinkTwoSidedAlltoAll.html">flashinfer.moe_ep.NVLinkTwoSidedAlltoAll</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.moe_ep.NVLinkTwoSidedConfig.html">flashinfer.moe_ep.NVLinkTwoSidedConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.moe_ep.create_communication.html">flashinfer.moe_ep.create_communication</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/cascade.html">flashinfer.cascade</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of flashinfer.cascade</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cascade.merge_state.html">flashinfer.cascade.merge_state</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cascade.merge_state_in_place.html">flashinfer.cascade.merge_state_in_place</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cascade.merge_states.html">flashinfer.cascade.merge_states</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/comm.html">flashinfer.comm</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of flashinfer.comm</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.CudaRTLibrary.html">flashinfer.comm.CudaRTLibrary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.create_shared_buffer.html">flashinfer.comm.create_shared_buffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.free_shared_buffer.html">flashinfer.comm.free_shared_buffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.pack_strided_memory.html">flashinfer.comm.pack_strided_memory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.Mapping.html">flashinfer.comm.Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.all_gather_matmul.html">flashinfer.comm.all_gather_matmul</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.prepare_all_gather_matmul.html">flashinfer.comm.prepare_all_gather_matmul</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.fp8_rowwise_gemm_allreduce.html">flashinfer.comm.fp8_rowwise_gemm_allreduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.prepare_fp8_rowwise_gemm_allreduce.html">flashinfer.comm.prepare_fp8_rowwise_gemm_allreduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.AllReduceFusionOp.html">flashinfer.comm.AllReduceFusionOp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.AllReduceFusionPattern.html">flashinfer.comm.AllReduceFusionPattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.AllReduceStrategyConfig.html">flashinfer.comm.AllReduceStrategyConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.AllReduceStrategyType.html">flashinfer.comm.AllReduceStrategyType</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.QuantizationSFLayout.html">flashinfer.comm.QuantizationSFLayout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.trtllm_allreduce_fusion.html">flashinfer.comm.trtllm_allreduce_fusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.trtllm_moe_allreduce_fusion.html">flashinfer.comm.trtllm_moe_allreduce_fusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.trtllm_moe_finalize_allreduce_fusion.html">flashinfer.comm.trtllm_moe_finalize_allreduce_fusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.trtllm_create_ipc_workspace_for_all_reduce_fusion.html">flashinfer.comm.trtllm_create_ipc_workspace_for_all_reduce_fusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.trtllm_destroy_ipc_workspace_for_all_reduce.html">flashinfer.comm.trtllm_destroy_ipc_workspace_for_all_reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.trtllm_destroy_ipc_workspace_for_all_reduce_fusion.html">flashinfer.comm.trtllm_destroy_ipc_workspace_for_all_reduce_fusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.trtllm_lamport_initialize.html">flashinfer.comm.trtllm_lamport_initialize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.trtllm_lamport_initialize_all.html">flashinfer.comm.trtllm_lamport_initialize_all</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.compute_fp4_swizzled_layout_sf_size.html">flashinfer.comm.compute_fp4_swizzled_layout_sf_size</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.allreduce_fusion.html">flashinfer.comm.allreduce_fusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.create_allreduce_fusion_workspace.html">flashinfer.comm.create_allreduce_fusion_workspace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.AllReduceFusionWorkspace.html">flashinfer.comm.AllReduceFusionWorkspace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.is_mnnvl_cutedsl_supported.html">flashinfer.comm.is_mnnvl_cutedsl_supported</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.CakeFp4AllReduceWorkspace.html">flashinfer.comm.CakeFp4AllReduceWorkspace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.CakeFp4AllReduceFusedNormOutput.html">flashinfer.comm.CakeFp4AllReduceFusedNormOutput</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.CakeFp4AllReduceFusedNormSpec.html">flashinfer.comm.CakeFp4AllReduceFusedNormSpec</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.CakeFp4AllReduceFusedNormResult.html">flashinfer.comm.CakeFp4AllReduceFusedNormResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.cake_fp4_allreduce.html">flashinfer.comm.cake_fp4_allreduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.cake_fp4_allreduce_nvfp4.html">flashinfer.comm.cake_fp4_allreduce_nvfp4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.cake_fp4_allreduce_rmsnorm.html">flashinfer.comm.cake_fp4_allreduce_rmsnorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.cake_fp4_allreduce_rmsnorm_nvfp4.html">flashinfer.comm.cake_fp4_allreduce_rmsnorm_nvfp4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.quantized_all_reduce.html">flashinfer.comm.quantized_all_reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.vllm_all_reduce.html">flashinfer.comm.vllm_all_reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.vllm_dispose.html">flashinfer.comm.vllm_dispose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.vllm_init_custom_ar.html">flashinfer.comm.vllm_init_custom_ar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.vllm_register_buffer.html">flashinfer.comm.vllm_register_buffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.vllm_register_graph_buffers.html">flashinfer.comm.vllm_register_graph_buffers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.vllm_get_graph_buffer_ipc_meta.html">flashinfer.comm.vllm_get_graph_buffer_ipc_meta</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.vllm_meta_size.html">flashinfer.comm.vllm_meta_size</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.PcieIpcAllReduceWorkspace.html">flashinfer.comm.PcieIpcAllReduceWorkspace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.PcieIpcLaunchConfig.html">flashinfer.comm.PcieIpcLaunchConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.PcieIpcVariant.html">flashinfer.comm.PcieIpcVariant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.get_pcie_ipc_launch_config.html">flashinfer.comm.get_pcie_ipc_launch_config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.probe_pcie_ipc_rank_topology.html">flashinfer.comm.probe_pcie_ipc_rank_topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.resolve_pcie_ipc_profile.html">flashinfer.comm.resolve_pcie_ipc_profile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.PcieIpcAllGatherWorkspace.html">flashinfer.comm.PcieIpcAllGatherWorkspace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.PcieIpcAllGatherLaunchConfig.html">flashinfer.comm.PcieIpcAllGatherLaunchConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.PcieIpcAllGatherVariant.html">flashinfer.comm.PcieIpcAllGatherVariant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.get_pcie_ipc_all_gather_launch_config.html">flashinfer.comm.get_pcie_ipc_all_gather_launch_config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.PcieIpcReduceScatterWorkspace.html">flashinfer.comm.PcieIpcReduceScatterWorkspace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.PcieIpcReduceScatterLaunchConfig.html">flashinfer.comm.PcieIpcReduceScatterLaunchConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.PcieIpcReduceScatterVariant.html">flashinfer.comm.PcieIpcReduceScatterVariant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.get_pcie_ipc_reduce_scatter_launch_config.html">flashinfer.comm.get_pcie_ipc_reduce_scatter_launch_config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm._ulysses_lowp.capability.html">flashinfer.comm._ulysses_lowp.capability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm._ulysses_lowp.payload_spec.html">flashinfer.comm._ulysses_lowp.payload_spec</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm._ulysses_lowp.k_sum_v_amax.html">flashinfer.comm._ulysses_lowp.k_sum_v_amax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm._ulysses_lowp.q_grouped_amax.html">flashinfer.comm._ulysses_lowp.q_grouped_amax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm._ulysses_lowp.k_grouped_amax.html">flashinfer.comm._ulysses_lowp.k_grouped_amax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm._ulysses_lowp.boundary_descriptors.html">flashinfer.comm._ulysses_lowp.boundary_descriptors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm._ulysses_lowp.merge_boundary_amax.html">flashinfer.comm._ulysses_lowp.merge_boundary_amax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm._ulysses_lowp.k_boundary_minmax.html">flashinfer.comm._ulysses_lowp.k_boundary_minmax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm._ulysses_lowp.derive_k_boundary_amax.html">flashinfer.comm._ulysses_lowp.derive_k_boundary_amax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm._ulysses_lowp.zero_scale_and_padding.html">flashinfer.comm._ulysses_lowp.zero_scale_and_padding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm._ulysses_lowp.quant_q_into_payload.html">flashinfer.comm._ulysses_lowp.quant_q_into_payload</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm._ulysses_lowp.quant_kv_into_payload.html">flashinfer.comm._ulysses_lowp.quant_kv_into_payload</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm._ulysses_lowp.quant_qkv_pack.html">flashinfer.comm._ulysses_lowp.quant_qkv_pack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm._ulysses_lowp.unpack_for_sage.html">flashinfer.comm._ulysses_lowp.unpack_for_sage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm._ulysses_lowp.local_stats.html">flashinfer.comm._ulysses_lowp.local_stats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm._ulysses_lowp.finalize_stats.html">flashinfer.comm._ulysses_lowp.finalize_stats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm._ulysses_lowp.quant_and_pack.html">flashinfer.comm._ulysses_lowp.quant_and_pack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm._ulysses_lowp.verify_duplicate_scale_slots.html">flashinfer.comm._ulysses_lowp.verify_duplicate_scale_slots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm._ulysses_lowp.quant_v_fp8_with_scale.html">flashinfer.comm._ulysses_lowp.quant_v_fp8_with_scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.QkvNormRopeExchangeOverlap.html">flashinfer.comm.QkvNormRopeExchangeOverlap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.UlyssesBackendDecision.html">flashinfer.comm.UlyssesBackendDecision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.UlyssesRankTopology.html">flashinfer.comm.UlyssesRankTopology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.UlyssesPciePlan.html">flashinfer.comm.UlyssesPciePlan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.UlyssesBackendError.html">flashinfer.comm.UlyssesBackendError</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.init_ulysses_a2a.html">flashinfer.comm.init_ulysses_a2a</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.dispose_ulysses_a2a.html">flashinfer.comm.dispose_ulysses_a2a</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.ulysses_a2a.html">flashinfer.comm.ulysses_a2a</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.mnnvl.MnnvlMemory.html">flashinfer.comm.mnnvl.MnnvlMemory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.mnnvl.McastGPUBuffer.html">flashinfer.comm.mnnvl.McastGPUBuffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.trtllm_mnnvl_ar.trtllm_mnnvl_all_reduce.html">flashinfer.comm.trtllm_mnnvl_ar.trtllm_mnnvl_all_reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.trtllm_mnnvl_ar.trtllm_mnnvl_allreduce.html">flashinfer.comm.trtllm_mnnvl_ar.trtllm_mnnvl_allreduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.trtllm_mnnvl_ar.trtllm_mnnvl_fused_allreduce_add_rmsnorm.html">flashinfer.comm.trtllm_mnnvl_ar.trtllm_mnnvl_fused_allreduce_add_rmsnorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.trtllm_mnnvl_ar.trtllm_mnnvl_fused_allreduce_add_rmsnorm_quant.html">flashinfer.comm.trtllm_mnnvl_ar.trtllm_mnnvl_fused_allreduce_add_rmsnorm_quant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.trtllm_mnnvl_ar.trtllm_mnnvl_fused_allreduce_rmsnorm.html">flashinfer.comm.trtllm_mnnvl_ar.trtllm_mnnvl_fused_allreduce_rmsnorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.trtllm_mnnvl_ar.mpi_barrier.html">flashinfer.comm.trtllm_mnnvl_ar.mpi_barrier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.decode_cp_a2a_workspace_size.html">flashinfer.comm.decode_cp_a2a_workspace_size</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.decode_cp_a2a_allocate_mnnvl_workspace.html">flashinfer.comm.decode_cp_a2a_allocate_mnnvl_workspace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.decode_cp_a2a_init_workspace.html">flashinfer.comm.decode_cp_a2a_init_workspace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.decode_cp_a2a_alltoall.html">flashinfer.comm.decode_cp_a2a_alltoall</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.decode_cp_a2a_lse_reduce_workspace_size.html">flashinfer.comm.decode_cp_a2a_lse_reduce_workspace_size</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.decode_cp_a2a_lse_reduce_create_workspace.html">flashinfer.comm.decode_cp_a2a_lse_reduce_create_workspace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.decode_cp_a2a_lse_reduce.html">flashinfer.comm.decode_cp_a2a_lse_reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.init_tp_moe_finalize_rmsnorm.html">flashinfer.comm.init_tp_moe_finalize_rmsnorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.supports_tp_moe_finalize_rmsnorm.html">flashinfer.comm.supports_tp_moe_finalize_rmsnorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.tp_moe_finalize_rmsnorm.html">flashinfer.comm.tp_moe_finalize_rmsnorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.mnnvl_cutedsl_moe_finalize.MNNVLCuteDSLMoEFinalizeAllReduceWorkspace.html">flashinfer.comm.mnnvl_cutedsl_moe_finalize.MNNVLCuteDSLMoEFinalizeAllReduceWorkspace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.mnnvl_cutedsl_moe_finalize.supports_moe_finalize_rmsnorm_allreduce.html">flashinfer.comm.mnnvl_cutedsl_moe_finalize.supports_moe_finalize_rmsnorm_allreduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.mnnvl_cutedsl_moe_finalize.moe_finalize_rmsnorm_allreduce.html">flashinfer.comm.mnnvl_cutedsl_moe_finalize.moe_finalize_rmsnorm_allreduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.mnnvl_cutedsl_ag.MNNVLCuteDSLAllGatherDualNormWorkspace.html">flashinfer.comm.mnnvl_cutedsl_ag.MNNVLCuteDSLAllGatherDualNormWorkspace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.mnnvl_cutedsl_ag.supports_all_gather_gated_residual_next_rmsnorm.html">flashinfer.comm.mnnvl_cutedsl_ag.supports_all_gather_gated_residual_next_rmsnorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.mnnvl_cutedsl_ag.all_gather_gated_residual_next_rmsnorm.html">flashinfer.comm.mnnvl_cutedsl_ag.all_gather_gated_residual_next_rmsnorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.mnnvl_cutedsl_ag.MNNVLCuteDSLAllGatherNormQuantWorkspace.html">flashinfer.comm.mnnvl_cutedsl_ag.MNNVLCuteDSLAllGatherNormQuantWorkspace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.mnnvl_cutedsl_ag.supports_all_gather_rmsnorm_fp4_quantize.html">flashinfer.comm.mnnvl_cutedsl_ag.supports_all_gather_rmsnorm_fp4_quantize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.mnnvl_cutedsl_ag.all_gather_rmsnorm_fp4_quantize.html">flashinfer.comm.mnnvl_cutedsl_ag.all_gather_rmsnorm_fp4_quantize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.mixed_comm.MixedCommOp.html">flashinfer.comm.mixed_comm.MixedCommOp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.mixed_comm.MixedCommMode.html">flashinfer.comm.mixed_comm.MixedCommMode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.mixed_comm.MixedCommHandler.html">flashinfer.comm.mixed_comm.MixedCommHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.comm.mixed_comm.run_mixed_comm.html">flashinfer.comm.mixed_comm.run_mixed_comm</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/sparse.html">flashinfer.sparse</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle navigation of flashinfer.sparse</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_vsa.plan_cake_vsa.html">flashinfer.cake_vsa.plan_cake_vsa</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_vsa.run_cake_vsa.html">flashinfer.cake_vsa.run_cake_vsa</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.token_sparse.token_sparse_kv_indices.html">flashinfer.token_sparse.token_sparse_kv_indices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.token_sparse.group_union_masks.html">flashinfer.token_sparse.group_union_masks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.sdsa.indexer_scores.html">flashinfer.sdsa.indexer_scores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.sdsa.indexer_threshold_select.html">flashinfer.sdsa.indexer_threshold_select</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.sdsa.top_k_from_candidates.html">flashinfer.sdsa.top_k_from_candidates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.sdsa.gather_key_sample.html">flashinfer.sdsa.gather_key_sample</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.sdsa.thresholds_from_sample.html">flashinfer.sdsa.thresholds_from_sample</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.sdsa.quantize_write_index_qk_nvfp4.html">flashinfer.sdsa.quantize_write_index_qk_nvfp4</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/sparse.html#flashinfer-msa-ops">flashinfer.msa_ops</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of flashinfer.msa_ops</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.msa_ops.msa_proxy_score.html">flashinfer.msa_ops.msa_proxy_score</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.msa_ops.msa_proxy_score_fp4.html">flashinfer.msa_ops.msa_proxy_score_fp4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.msa_ops.MSASparseAttentionWorkspace.html">flashinfer.msa_ops.MSASparseAttentionWorkspace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.msa_ops.supports_packed_kv.html">flashinfer.msa_ops.supports_packed_kv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.msa_ops.msa_sparse_attention.html">flashinfer.msa_ops.msa_sparse_attention</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.msa_ops.msa_sparse_decode_attention.html">flashinfer.msa_ops.msa_sparse_decode_attention</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.msa_ops.msa_topk_select.html">flashinfer.msa_ops.msa_topk_select</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.msa_ops.prepare_msa_nvfp4_sparse_decode.html">flashinfer.msa_ops.prepare_msa_nvfp4_sparse_decode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.msa_ops.prepare_msa_icp_indexer.html">flashinfer.msa_ops.prepare_msa_icp_indexer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.msa_ops.msa_icp_index_score_sharded_plan.html">flashinfer.msa_ops.msa_icp_index_score_sharded_plan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.msa_ops.msa_icp_index_score_sharded_plan_device.html">flashinfer.msa_ops.msa_icp_index_score_sharded_plan_device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.msa_ops.msa_icp_index_score_sharded.html">flashinfer.msa_ops.msa_icp_index_score_sharded</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.msa_ops.msa_icp_topk_select_prefill.html">flashinfer.msa_ops.msa_icp_topk_select_prefill</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.msa_ops.msa_icp_prefill_score_select.html">flashinfer.msa_ops.msa_icp_prefill_score_select</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.msa_ops.msa_icp_decode_index_score_sharded.html">flashinfer.msa_ops.msa_icp_decode_index_score_sharded</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.msa_ops.msa_icp_topk_select_publish.html">flashinfer.msa_ops.msa_icp_topk_select_publish</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.msa_ops.msa_icp_decode_score_publish.html">flashinfer.msa_ops.msa_icp_decode_score_publish</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.msa_ops.msa_icp_merge_candidates.html">flashinfer.msa_ops.msa_icp_merge_candidates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.msa_ops.msa_icp_index_score_plan_storage.html">flashinfer.msa_ops.msa_icp_index_score_plan_storage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.msa_ops.msa_icp_index_score_columns.html">flashinfer.msa_ops.msa_icp_index_score_columns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.msa_ops.msa_icp_decode_score_columns.html">flashinfer.msa_ops.msa_icp_decode_score_columns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.msa_ops.msa_icp_decode_pool_bytes.html">flashinfer.msa_ops.msa_icp_decode_pool_bytes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.msa_ops.msa_icp_prefill_pool_bytes.html">flashinfer.msa_ops.msa_icp_prefill_pool_bytes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.msa_ops.msa_icp_comm_layout.html">flashinfer.msa_ops.msa_icp_comm_layout</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/qsa.html">flashinfer.qsa</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of flashinfer.qsa</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.qsa.qsa_forward.html">flashinfer.qsa.qsa_forward</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.qsa.qsa_indexed_forward.html">flashinfer.qsa.qsa_indexed_forward</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api/pod.html">flashinfer.pod</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/cudnn.html">flashinfer.cudnn</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle navigation of flashinfer.cudnn</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cudnn.cudnn_batch_decode_with_kv_cache.html">flashinfer.cudnn.cudnn_batch_decode_with_kv_cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cudnn.cudnn_batch_prefill_with_kv_cache.html">flashinfer.cudnn.cudnn_batch_prefill_with_kv_cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cudnn.cudnn_chunk_gated_delta_product.html">flashinfer.cudnn.cudnn_chunk_gated_delta_product</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cudnn.cudnn_chunk_gated_delta_rule.html">flashinfer.cudnn.cudnn_chunk_gated_delta_rule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cudnn.cudnn_chunk_gated_delta_rule2.html">flashinfer.cudnn.cudnn_chunk_gated_delta_rule2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cudnn.cudnn_recurrent_kda.html">flashinfer.cudnn.cudnn_recurrent_kda</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/cute_dsl.html">flashinfer.cute_dsl</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle navigation of flashinfer.cute_dsl</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cute_dsl.is_cute_dsl_available.html">flashinfer.cute_dsl.is_cute_dsl_available</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cute_dsl.rmsnorm_fp4quant.html">flashinfer.cute_dsl.rmsnorm_fp4quant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cute_dsl.add_rmsnorm_fp4quant.html">flashinfer.cute_dsl.add_rmsnorm_fp4quant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cute_dsl.sparse.bsa_attn_sm100_blk128.bsa_attn_sm100_blk128_fwd.html">flashinfer.cute_dsl.sparse.bsa_attn_sm100_blk128.bsa_attn_sm100_blk128_fwd</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cute_dsl.sparse.bsa_attn_sm100_blk64.bsa_attn_sm100_blk64_fwd.html">flashinfer.cute_dsl.sparse.bsa_attn_sm100_blk64.bsa_attn_sm100_blk64_fwd</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cute_dsl.sparse.bsa_attn_sm120.bsa_attn_sm120_blk64_fwd.html">flashinfer.cute_dsl.sparse.bsa_attn_sm120.bsa_attn_sm120_blk64_fwd</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cute_dsl.sparse.bsa_attn_sm120.bsa_attn_sm120_blk64_sage_fwd.html">flashinfer.cute_dsl.sparse.bsa_attn_sm120.bsa_attn_sm120_blk64_sage_fwd</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cute_dsl.attention.wrappers.batch_hca.cute_dsl_hca_decode.html">flashinfer.cute_dsl.attention.wrappers.batch_hca.cute_dsl_hca_decode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.cute_dsl.cute_dsl_fused_moe_bf16.html">flashinfer.fused_moe.cute_dsl.cute_dsl_fused_moe_bf16</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.cute_dsl.cute_dsl_fused_moe_nvfp4.html">flashinfer.fused_moe.cute_dsl.cute_dsl_fused_moe_nvfp4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.cute_dsl.cute_dsl_fused_moe_mxfp8_mxfp4.html">flashinfer.fused_moe.cute_dsl.cute_dsl_fused_moe_mxfp8_mxfp4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.fused_moe.cute_dsl.b12x_fused_moe.html">flashinfer.fused_moe.cute_dsl.b12x_fused_moe</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/concat_ops.html">flashinfer.concat_ops</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of flashinfer.concat_ops</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.concat_ops.concat_mla_k.html">flashinfer.concat_ops.concat_mla_k</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/concat_ops.html#flashinfer-mla-kv-pack">flashinfer.mla_kv_pack</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of flashinfer.mla_kv_pack</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.mla_kv_pack.concat_mla_kv_quant_fp8.html">flashinfer.mla_kv_pack.concat_mla_kv_quant_fp8</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/diffusion_ops.html">flashinfer.diffusion_ops</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><div class="visually-hidden">Toggle navigation of flashinfer.diffusion_ops</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.diffusion_ops.minimax_h3_bf16_pre_attention.html">flashinfer.diffusion_ops.minimax_h3_bf16_pre_attention</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.diffusion_ops.minimax_h3_fp8_pre_attention.html">flashinfer.diffusion_ops.minimax_h3_fp8_pre_attention</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.diffusion_ops.minimax_h3_nvfp4_pre_attention.html">flashinfer.diffusion_ops.minimax_h3_nvfp4_pre_attention</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.diffusion_ops.quantize_minimax_h3_qkv_weight_fp8.html">flashinfer.diffusion_ops.quantize_minimax_h3_qkv_weight_fp8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.diffusion_ops.quantize_minimax_h3_qkv_weight_nvfp4.html">flashinfer.diffusion_ops.quantize_minimax_h3_qkv_weight_nvfp4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.diffusion_ops.minimax_h3_fp8_out_proj.html">flashinfer.diffusion_ops.minimax_h3_fp8_out_proj</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.diffusion_ops.minimax_h3_nvfp4_out_proj.html">flashinfer.diffusion_ops.minimax_h3_nvfp4_out_proj</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.diffusion_ops.quantize_minimax_h3_o_weight_fp8.html">flashinfer.diffusion_ops.quantize_minimax_h3_o_weight_fp8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.diffusion_ops.quantize_minimax_h3_o_weight_nvfp4.html">flashinfer.diffusion_ops.quantize_minimax_h3_o_weight_nvfp4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.diffusion_ops.minimax_h3_sm120_varlen_attention_fp8.html">flashinfer.diffusion_ops.minimax_h3_sm120_varlen_attention_fp8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.diffusion_ops.minimax_h3_sm120_varlen_attention_nvfp4.html">flashinfer.diffusion_ops.minimax_h3_sm120_varlen_attention_nvfp4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.diffusion_ops.minimax_h3_sm120_varlen_attention_nvfp4_nodelta.html">flashinfer.diffusion_ops.minimax_h3_sm120_varlen_attention_nvfp4_nodelta</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.diffusion_ops.minimax_h3_fc1_swiglu_fp8.html">flashinfer.diffusion_ops.minimax_h3_fc1_swiglu_fp8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.diffusion_ops.prepare_minimax_h3_fc1_weight_fp8.html">flashinfer.diffusion_ops.prepare_minimax_h3_fc1_weight_fp8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.diffusion_ops.minimax_h3_mlp_fp8_sm120.html">flashinfer.diffusion_ops.minimax_h3_mlp_fp8_sm120</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.diffusion_ops.minimax_h3_mlp_nvfp4_sm120.html">flashinfer.diffusion_ops.minimax_h3_mlp_nvfp4_sm120</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.diffusion_ops.prepare_minimax_h3_fc2_weight_fp8.html">flashinfer.diffusion_ops.prepare_minimax_h3_fc2_weight_fp8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.diffusion_ops.prepare_minimax_h3_fc2_weight_nvfp4_sm120.html">flashinfer.diffusion_ops.prepare_minimax_h3_fc2_weight_nvfp4_sm120</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.diffusion_ops.fused_qk_rmsnorm_rope.html">flashinfer.diffusion_ops.fused_qk_rmsnorm_rope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.diffusion_ops.fused_dit_residual_layernorm_scale_shift.html">flashinfer.diffusion_ops.fused_dit_residual_layernorm_scale_shift</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.diffusion_ops.fused_dit_gate_residual_layernorm_scale_shift.html">flashinfer.diffusion_ops.fused_dit_gate_residual_layernorm_scale_shift</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.diffusion_ops.fused_dit_gate_residual_layernorm_gamma_beta.html">flashinfer.diffusion_ops.fused_dit_gate_residual_layernorm_gamma_beta</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/page.html">flashinfer.page</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><div class="visually-hidden">Toggle navigation of flashinfer.page</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.page.append_paged_kv_cache.html">flashinfer.page.append_paged_kv_cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.page.append_paged_mla_kv_cache.html">flashinfer.page.append_paged_mla_kv_cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.page.nvfp4_quantize_append_paged_kv_cache.html">flashinfer.page.nvfp4_quantize_append_paged_kv_cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.page.nvfp4_quantize_append_paged_kv_cache_with_slot_mapping.html">flashinfer.page.nvfp4_quantize_append_paged_kv_cache_with_slot_mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.page.nvfp4_quantize_append_paged_mla_kv_cache.html">flashinfer.page.nvfp4_quantize_append_paged_mla_kv_cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.page.get_batch_indices_positions.html">flashinfer.page.get_batch_indices_positions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/sampling.html">flashinfer.sampling</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><div class="visually-hidden">Toggle navigation of flashinfer.sampling</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.sampling.sampling_from_probs.html">flashinfer.sampling.sampling_from_probs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.sampling.sampling_from_logits.html">flashinfer.sampling.sampling_from_logits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.sampling.softmax.html">flashinfer.sampling.softmax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.sampling.top_p_sampling_from_probs.html">flashinfer.sampling.top_p_sampling_from_probs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.sampling.top_k_sampling_from_probs.html">flashinfer.sampling.top_k_sampling_from_probs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.sampling.min_p_sampling_from_probs.html">flashinfer.sampling.min_p_sampling_from_probs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.sampling.top_k_top_p_sampling_from_logits.html">flashinfer.sampling.top_k_top_p_sampling_from_logits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.sampling.top_k_top_p_sampling_from_probs.html">flashinfer.sampling.top_k_top_p_sampling_from_probs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.sampling.top_p_renorm_probs.html">flashinfer.sampling.top_p_renorm_probs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.sampling.top_k_renorm_probs.html">flashinfer.sampling.top_k_renorm_probs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.sampling.top_k_mask_logits.html">flashinfer.sampling.top_k_mask_logits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.sampling.chain_speculative_sampling.html">flashinfer.sampling.chain_speculative_sampling</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/topk.html">flashinfer.topk</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><div class="visually-hidden">Toggle navigation of flashinfer.topk</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.top_k.html">flashinfer.top_k</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.top_k_varlen.html">flashinfer.top_k_varlen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.top_k_page_table_transform.html">flashinfer.top_k_page_table_transform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.top_k_ragged_transform.html">flashinfer.top_k_ragged_transform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.topk.can_implement_filtered_topk.html">flashinfer.topk.can_implement_filtered_topk</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/logits_processor.html">flashinfer.logits_processor</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><div class="visually-hidden">Toggle navigation of flashinfer.logits_processor</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.logits_processor.LogitsPipe.html">flashinfer.logits_processor.LogitsPipe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.logits_processor.LogitsProcessor.html">flashinfer.logits_processor.LogitsProcessor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.logits_processor.Temperature.html">flashinfer.logits_processor.Temperature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.logits_processor.Softmax.html">flashinfer.logits_processor.Softmax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.logits_processor.TopK.html">flashinfer.logits_processor.TopK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.logits_processor.TopP.html">flashinfer.logits_processor.TopP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.logits_processor.MinP.html">flashinfer.logits_processor.MinP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.logits_processor.Sample.html">flashinfer.logits_processor.Sample</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.logits_processor.TensorType.html">flashinfer.logits_processor.TensorType</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.logits_processor.TaggedTensor.html">flashinfer.logits_processor.TaggedTensor</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/norm.html">flashinfer.norm</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><div class="visually-hidden">Toggle navigation of flashinfer.norm</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.norm.rmsnorm.html">flashinfer.norm.rmsnorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.norm.rmsnorm_quant.html">flashinfer.norm.rmsnorm_quant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.norm.fused_add_rmsnorm.html">flashinfer.norm.fused_add_rmsnorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.norm.fused_add_rmsnorm_quant.html">flashinfer.norm.fused_add_rmsnorm_quant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.norm.fused_add_rmsnorm_fp8_block_quant.html">flashinfer.norm.fused_add_rmsnorm_fp8_block_quant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.norm.gemma_rmsnorm.html">flashinfer.norm.gemma_rmsnorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.norm.gemma_fused_add_rmsnorm.html">flashinfer.norm.gemma_fused_add_rmsnorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.norm.layernorm.html">flashinfer.norm.layernorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.norm.layernorm_quant.html">flashinfer.norm.layernorm_quant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.norm.fused_rmsnorm_silu.html">flashinfer.norm.fused_rmsnorm_silu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.norm.fused_qk_rmsnorm_rope.html">flashinfer.norm.fused_qk_rmsnorm_rope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.norm.fused_dit_residual_layernorm_scale_shift.html">flashinfer.norm.fused_dit_residual_layernorm_scale_shift</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.norm.fused_dit_gate_residual_layernorm_scale_shift.html">flashinfer.norm.fused_dit_gate_residual_layernorm_scale_shift</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.norm.fused_dit_gate_residual_layernorm_gamma_beta.html">flashinfer.norm.fused_dit_gate_residual_layernorm_gamma_beta</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.norm.gated_residual_rmsnorm.html">flashinfer.norm.gated_residual_rmsnorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.norm.supports_gated_residual_rmsnorm.html">flashinfer.norm.supports_gated_residual_rmsnorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.norm.gated_residual_next_rmsnorm.html">flashinfer.norm.gated_residual_next_rmsnorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.norm.supports_gated_residual_next_rmsnorm.html">flashinfer.norm.supports_gated_residual_next_rmsnorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.norm.rmsnorm_sigmoid_gate.html">flashinfer.norm.rmsnorm_sigmoid_gate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.norm.supports_rmsnorm_sigmoid_gate.html">flashinfer.norm.supports_rmsnorm_sigmoid_gate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_rmsnorm_det_train.cake_rmsnorm_det.html">flashinfer.cake_rmsnorm_det_train.cake_rmsnorm_det</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_rmsnorm_det_train.cake_rmsnorm_det_train_forward.html">flashinfer.cake_rmsnorm_det_train.cake_rmsnorm_det_train_forward</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_rmsnorm_det_train.cake_rmsnorm_det_train_backward.html">flashinfer.cake_rmsnorm_det_train.cake_rmsnorm_det_train_backward</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_rmsnorm_det_train.cake_rmsnorm_det_train_backward_workspace_bytes.html">flashinfer.cake_rmsnorm_det_train.cake_rmsnorm_det_train_backward_workspace_bytes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_rmsnorm_det_train.cake_rmsnorm_det_train_backward_workspace.html">flashinfer.cake_rmsnorm_det_train.cake_rmsnorm_det_train_backward_workspace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_rmsnorm_det_train.program_windows.html">flashinfer.cake_rmsnorm_det_train.program_windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_rmsnorm_det_train.weight_dtypes.html">flashinfer.cake_rmsnorm_det_train.weight_dtypes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_rmsnorm_det_train.CakeRMSNormDetFunction.html">flashinfer.cake_rmsnorm_det_train.CakeRMSNormDetFunction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_rmsnorm_train.cake_rmsnorm.html">flashinfer.cake_rmsnorm_train.cake_rmsnorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_rmsnorm_train.cake_rmsnorm_train_forward.html">flashinfer.cake_rmsnorm_train.cake_rmsnorm_train_forward</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_rmsnorm_train.cake_rmsnorm_train_backward.html">flashinfer.cake_rmsnorm_train.cake_rmsnorm_train_backward</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_rmsnorm_train.cake_rmsnorm_train_backward_workspace_bytes.html">flashinfer.cake_rmsnorm_train.cake_rmsnorm_train_backward_workspace_bytes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_rmsnorm_train.cake_rmsnorm_train_backward_workspace.html">flashinfer.cake_rmsnorm_train.cake_rmsnorm_train_backward_workspace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_rmsnorm_train.CakeRMSNormFunction.html">flashinfer.cake_rmsnorm_train.CakeRMSNormFunction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_rmsnorm_train.is_cake_rmsnorm_train_supported.html">flashinfer.cake_rmsnorm_train.is_cake_rmsnorm_train_supported</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_rmsnorm_silu_gate_det_train.cake_rmsnorm_silu_gate_det.html">flashinfer.cake_rmsnorm_silu_gate_det_train.cake_rmsnorm_silu_gate_det</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_rmsnorm_silu_gate_det_train.cake_rmsnorm_silu_gate_det_train_forward.html">flashinfer.cake_rmsnorm_silu_gate_det_train.cake_rmsnorm_silu_gate_det_train_forward</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_rmsnorm_silu_gate_det_train.cake_rmsnorm_silu_gate_det_train_backward.html">flashinfer.cake_rmsnorm_silu_gate_det_train.cake_rmsnorm_silu_gate_det_train_backward</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_rmsnorm_silu_gate_det_train.cake_rmsnorm_silu_gate_det_train_backward_workspace_bytes.html">flashinfer.cake_rmsnorm_silu_gate_det_train.cake_rmsnorm_silu_gate_det_train_backward_workspace_bytes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_rmsnorm_silu_gate_det_train.cake_rmsnorm_silu_gate_det_train_backward_workspace.html">flashinfer.cake_rmsnorm_silu_gate_det_train.cake_rmsnorm_silu_gate_det_train_backward_workspace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_rmsnorm_silu_gate_det_train.CakeRMSNormSiLUGateDetFunction.html">flashinfer.cake_rmsnorm_silu_gate_det_train.CakeRMSNormSiLUGateDetFunction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_rmsnorm_silu_gate_train.cake_rmsnorm_silu_gate.html">flashinfer.cake_rmsnorm_silu_gate_train.cake_rmsnorm_silu_gate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_rmsnorm_silu_gate_train.cake_rmsnorm_silu_gate_train_forward.html">flashinfer.cake_rmsnorm_silu_gate_train.cake_rmsnorm_silu_gate_train_forward</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_rmsnorm_silu_gate_train.cake_rmsnorm_silu_gate_train_backward.html">flashinfer.cake_rmsnorm_silu_gate_train.cake_rmsnorm_silu_gate_train_backward</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_rmsnorm_silu_gate_train.cake_rmsnorm_silu_gate_train_backward_workspace_bytes.html">flashinfer.cake_rmsnorm_silu_gate_train.cake_rmsnorm_silu_gate_train_backward_workspace_bytes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_rmsnorm_silu_gate_train.cake_rmsnorm_silu_gate_train_backward_workspace.html">flashinfer.cake_rmsnorm_silu_gate_train.cake_rmsnorm_silu_gate_train_backward_workspace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_rmsnorm_silu_gate_train.cake_rmsnorm_silu_gate_train_reset_workspace.html">flashinfer.cake_rmsnorm_silu_gate_train.cake_rmsnorm_silu_gate_train_reset_workspace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_rmsnorm_silu_gate_train.CakeRMSNormSiLUGateFunction.html">flashinfer.cake_rmsnorm_silu_gate_train.CakeRMSNormSiLUGateFunction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_rmsnorm_silu_gate_train.is_cake_rmsnorm_silu_gate_train_supported.html">flashinfer.cake_rmsnorm_silu_gate_train.is_cake_rmsnorm_silu_gate_train_supported</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/rope.html">flashinfer.rope</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><div class="visually-hidden">Toggle navigation of flashinfer.rope</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.rope.apply_rope_inplace.html">flashinfer.rope.apply_rope_inplace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.rope.apply_llama31_rope_inplace.html">flashinfer.rope.apply_llama31_rope_inplace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.rope.apply_rope.html">flashinfer.rope.apply_rope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.rope.apply_llama31_rope.html">flashinfer.rope.apply_llama31_rope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.rope.apply_rope_pos_ids.html">flashinfer.rope.apply_rope_pos_ids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.rope.apply_rope_pos_ids_inplace.html">flashinfer.rope.apply_rope_pos_ids_inplace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.rope.apply_llama31_rope_pos_ids.html">flashinfer.rope.apply_llama31_rope_pos_ids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.rope.apply_llama31_rope_pos_ids_inplace.html">flashinfer.rope.apply_llama31_rope_pos_ids_inplace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.rope.apply_rope_with_cos_sin_cache.html">flashinfer.rope.apply_rope_with_cos_sin_cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.rope.apply_rope_with_cos_sin_cache_inplace.html">flashinfer.rope.apply_rope_with_cos_sin_cache_inplace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.rope.rope_quantize_fp8.html">flashinfer.rope.rope_quantize_fp8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.rope.rope_quantize_fp8_append_paged_kv_cache.html">flashinfer.rope.rope_quantize_fp8_append_paged_kv_cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.rope.mla_rope_quantize_fp8.html">flashinfer.rope.mla_rope_quantize_fp8</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/activation.html">flashinfer.activation</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" role="switch" type="checkbox"/><label for="toctree-checkbox-31"><div class="visually-hidden">Toggle navigation of flashinfer.activation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.activation.silu_and_mul.html">flashinfer.activation.silu_and_mul</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.activation.gelu_tanh_and_mul.html">flashinfer.activation.gelu_tanh_and_mul</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.activation.gelu_and_mul.html">flashinfer.activation.gelu_and_mul</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.activation.silu_and_mul_scaled_nvfp4_experts_quantize.html">flashinfer.activation.silu_and_mul_scaled_nvfp4_experts_quantize</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/gdn_decode.html">flashinfer.gdn_decode</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" role="switch" type="checkbox"/><label for="toctree-checkbox-32"><div class="visually-hidden">Toggle navigation of flashinfer.gdn_decode</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gdn_decode.gated_delta_rule_decode.html">flashinfer.gdn_decode.gated_delta_rule_decode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gdn_decode.gated_delta_rule_decode_pretranspose.html">flashinfer.gdn_decode.gated_delta_rule_decode_pretranspose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gdn_decode.gated_delta_rule_mtp.html">flashinfer.gdn_decode.gated_delta_rule_mtp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gdn_decode.gated_delta_rule_replayssm_commit.html">flashinfer.gdn_decode.gated_delta_rule_replayssm_commit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gdn_decode.ugpu_state_pool.html">flashinfer.gdn_decode.ugpu_state_pool</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/gdn_fused_decode.html">flashinfer.gdn_fused_decode_step</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" role="switch" type="checkbox"/><label for="toctree-checkbox-33"><div class="visually-hidden">Toggle navigation of flashinfer.gdn_fused_decode_step</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gdn_fused_decode_step.html">flashinfer.gdn_fused_decode_step</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gdn_fused_decode_step_supported.html">flashinfer.gdn_fused_decode_step_supported</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/gdn_prefill.html">flashinfer.gdn_prefill</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" role="switch" type="checkbox"/><label for="toctree-checkbox-34"><div class="visually-hidden">Toggle navigation of flashinfer.gdn_prefill</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gdn_prefill.chunk_gated_delta_rule.html">flashinfer.gdn_prefill.chunk_gated_delta_rule</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/gdn_paged.html">flashinfer.gdn_paged</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" role="switch" type="checkbox"/><label for="toctree-checkbox-35"><div class="visually-hidden">Toggle navigation of flashinfer.gdn_paged</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gdn_paged.chunk_gated_delta_rule_paged.html">flashinfer.gdn_paged.chunk_gated_delta_rule_paged</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gdn_paged.gated_delta_rule_decode_paged.html">flashinfer.gdn_paged.gated_delta_rule_decode_paged</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gdn_paged.gdn_paged_prefill_slots.html">flashinfer.gdn_paged.gdn_paged_prefill_slots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gdn_paged.gdn_paged_decode_slots.html">flashinfer.gdn_paged.gdn_paged_decode_slots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gdn_paged.GDNPagedPrefillSlots.html">flashinfer.gdn_paged.GDNPagedPrefillSlots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gdn_paged.GDNPagedDecodeSlots.html">flashinfer.gdn_paged.GDNPagedDecodeSlots</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/gdn2_prefill.html">flashinfer.gdn2_prefill</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" role="switch" type="checkbox"/><label for="toctree-checkbox-36"><div class="visually-hidden">Toggle navigation of flashinfer.gdn2_prefill</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gdn2_prefill.chunk_gated_delta_rule2.html">flashinfer.gdn2_prefill.chunk_gated_delta_rule2</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/gdp_prefill.html">flashinfer.gdp_prefill</a><input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" role="switch" type="checkbox"/><label for="toctree-checkbox-37"><div class="visually-hidden">Toggle navigation of flashinfer.gdp_prefill</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gdp_prefill.chunk_gated_delta_product.html">flashinfer.gdp_prefill.chunk_gated_delta_product</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_gdp.cake_gated_delta_product_mtp.html">flashinfer.cake_gdp.cake_gated_delta_product_mtp</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/kda.html">Kimi Delta Attention (KDA)</a><input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" role="switch" type="checkbox"/><label for="toctree-checkbox-38"><div class="visually-hidden">Toggle navigation of Kimi Delta Attention (KDA)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.kda.recurrent_kda.html">flashinfer.kda.recurrent_kda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.kda_decode.fused_kda_decode.html">flashinfer.kda_decode.fused_kda_decode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.kda_decode.packed_fused_kda_decode.html">flashinfer.kda_decode.packed_fused_kda_decode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.kda_decode.packed_kda_decode.html">flashinfer.kda_decode.packed_kda_decode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.kda_decode.recurrent_kda.html">flashinfer.kda_decode.recurrent_kda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.kda_prefill.RecurrentKDAPrefillWorkspace.html">flashinfer.kda_prefill.RecurrentKDAPrefillWorkspace</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../api/mamba.html">flashinfer.mamba</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-39" name="toctree-checkbox-39" role="switch" type="checkbox"/><label for="toctree-checkbox-39"><div class="visually-hidden">Toggle navigation of flashinfer.mamba</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.mamba.selective_state_update.html">flashinfer.mamba.selective_state_update</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">flashinfer.mamba.checkpointing_ssu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.mamba.ssd_combined_fwd.html">flashinfer.mamba.ssd_combined_fwd</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.mamba.replayssm_materialize.html">flashinfer.mamba.replayssm_materialize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.mamba.causal_conv1d_fn.html">flashinfer.mamba.causal_conv1d_fn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.mamba.causal_conv1d_update.html">flashinfer.mamba.causal_conv1d_update</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_causal_conv1d_det_train.cake_causal_conv1d_det.html">flashinfer.cake_causal_conv1d_det_train.cake_causal_conv1d_det</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_causal_conv1d_det_train.cake_causal_conv1d_det_train_forward.html">flashinfer.cake_causal_conv1d_det_train.cake_causal_conv1d_det_train_forward</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_causal_conv1d_det_train.cake_causal_conv1d_det_train_backward.html">flashinfer.cake_causal_conv1d_det_train.cake_causal_conv1d_det_train_backward</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_causal_conv1d_det_train.cake_causal_conv1d_det_train_backward_workspace_bytes.html">flashinfer.cake_causal_conv1d_det_train.cake_causal_conv1d_det_train_backward_workspace_bytes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_causal_conv1d_det_train.cake_causal_conv1d_det_train_backward_workspace.html">flashinfer.cake_causal_conv1d_det_train.cake_causal_conv1d_det_train_backward_workspace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_causal_conv1d_det_train.CakeCausalConv1dDetFunction.html">flashinfer.cake_causal_conv1d_det_train.CakeCausalConv1dDetFunction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_causal_conv1d_det_train_kcp.cake_causal_conv1d_det_kcp.html">flashinfer.cake_causal_conv1d_det_train_kcp.cake_causal_conv1d_det_kcp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_causal_conv1d_det_train_kcp.cake_causal_conv1d_det_multi_kcp.html">flashinfer.cake_causal_conv1d_det_train_kcp.cake_causal_conv1d_det_multi_kcp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_causal_conv1d_det_train_kcp.RecomputeHandleDetKcp.html">flashinfer.cake_causal_conv1d_det_train_kcp.RecomputeHandleDetKcp</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/mhc.html">flashinfer.mhc</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" role="switch" type="checkbox"/><label for="toctree-checkbox-40"><div class="visually-hidden">Toggle navigation of flashinfer.mhc</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.mhc.mhc_post.html">flashinfer.mhc.mhc_post</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.mhc.mhc_pre_big_fuse.html">flashinfer.mhc.mhc_pre_big_fuse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.mhc.mhc_pre_big_fuse_with_prenorm.html">flashinfer.mhc.mhc_pre_big_fuse_with_prenorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_mhc_det_train.cake_mhc_det_train_forward_prepare.html">flashinfer.cake_mhc_det_train.cake_mhc_det_train_forward_prepare</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_mhc_det_train.cake_mhc_det_train_forward_stats.html">flashinfer.cake_mhc_det_train.cake_mhc_det_train_forward_stats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_mhc_det_train.cake_mhc_det_train_forward_finish.html">flashinfer.cake_mhc_det_train.cake_mhc_det_train_forward_finish</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_mhc_det_train.cake_mhc_det_train_backward_prepare.html">flashinfer.cake_mhc_det_train.cake_mhc_det_train_backward_prepare</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_mhc_det_train.cake_mhc_det_train_backward_finish.html">flashinfer.cake_mhc_det_train.cake_mhc_det_train_backward_finish</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_mhc_det_train.cake_mhc_det_train_prepare.html">flashinfer.cake_mhc_det_train.cake_mhc_det_train_prepare</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_mhc_det_train.cake_mhc_det_train_finish.html">flashinfer.cake_mhc_det_train.cake_mhc_det_train_finish</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_mhc_det_train.CakeMHCDetTrainPrepareFunction.html">flashinfer.cake_mhc_det_train.CakeMHCDetTrainPrepareFunction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_mhc_det_train.CakeMHCDetTrainFinishFunction.html">flashinfer.cake_mhc_det_train.CakeMHCDetTrainFinishFunction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_mhc_det_train.cake_mhc_det_train_head_forward.html">flashinfer.cake_mhc_det_train.cake_mhc_det_train_head_forward</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_mhc_det_train.cake_mhc_det_train_head_backward.html">flashinfer.cake_mhc_det_train.cake_mhc_det_train_head_backward</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_mhc_det_train.cake_mhc_det_train_head.html">flashinfer.cake_mhc_det_train.cake_mhc_det_train_head</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_mhc_det_train.CakeMHCDetTrainHeadFunction.html">flashinfer.cake_mhc_det_train.CakeMHCDetTrainHeadFunction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_mhc_det_train.is_cake_mhc_det_train_head_supported.html">flashinfer.cake_mhc_det_train.is_cake_mhc_det_train_head_supported</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_mhc_train.cake_mhc_train_forward_prepare.html">flashinfer.cake_mhc_train.cake_mhc_train_forward_prepare</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_mhc_train.cake_mhc_train_forward_stats.html">flashinfer.cake_mhc_train.cake_mhc_train_forward_stats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_mhc_train.cake_mhc_train_forward_finish.html">flashinfer.cake_mhc_train.cake_mhc_train_forward_finish</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_mhc_train.cake_mhc_train_backward_prepare.html">flashinfer.cake_mhc_train.cake_mhc_train_backward_prepare</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_mhc_train.cake_mhc_train_backward_finish.html">flashinfer.cake_mhc_train.cake_mhc_train_backward_finish</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_mhc_train.cake_mhc_train_prepare.html">flashinfer.cake_mhc_train.cake_mhc_train_prepare</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_mhc_train.cake_mhc_train_finish.html">flashinfer.cake_mhc_train.cake_mhc_train_finish</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_mhc_train.cake_mhc_train_head_forward.html">flashinfer.cake_mhc_train.cake_mhc_train_head_forward</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_mhc_train.cake_mhc_train_head_backward.html">flashinfer.cake_mhc_train.cake_mhc_train_head_backward</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.cake_mhc_train.cake_mhc_train_head.html">flashinfer.cake_mhc_train.cake_mhc_train_head</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/quantization.html">flashinfer.quantization</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" role="switch" type="checkbox"/><label for="toctree-checkbox-41"><div class="visually-hidden">Toggle navigation of flashinfer.quantization</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.SfLayout.html">flashinfer.quantization.SfLayout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.NVFP44Over6Config.html">flashinfer.quantization.NVFP44Over6Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.NVFP44Over6ErrMode.html">flashinfer.quantization.NVFP44Over6ErrMode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.packbits.html">flashinfer.quantization.packbits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.segment_packbits.html">flashinfer.quantization.segment_packbits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.resolve_nvfp4_4over6.html">flashinfer.quantization.resolve_nvfp4_4over6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.nvfp4_4over6_code.html">flashinfer.quantization.nvfp4_4over6_code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.nvfp4_4over6_from_code.html">flashinfer.quantization.nvfp4_4over6_from_code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.make_nvfp4_global_scale.html">flashinfer.quantization.make_nvfp4_global_scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.nvfp4_e4m3_max.html">flashinfer.quantization.nvfp4_e4m3_max</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.fp4_quantize.html">flashinfer.quantization.fp4_quantize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.nvfp4_quantize.html">flashinfer.quantization.nvfp4_quantize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.nvfp4_batched_quantize.html">flashinfer.quantization.nvfp4_batched_quantize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.mxfp4_quantize.html">flashinfer.quantization.mxfp4_quantize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.mxfp4_dequantize.html">flashinfer.quantization.mxfp4_dequantize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.mxfp4_dequantize_host.html">flashinfer.quantization.mxfp4_dequantize_host</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.block_scale_interleave.html">flashinfer.quantization.block_scale_interleave</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.e2m1_and_ufp8sf_scale_to_float.html">flashinfer.quantization.e2m1_and_ufp8sf_scale_to_float</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.scaled_fp4_grouped_quantize.html">flashinfer.quantization.scaled_fp4_grouped_quantize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.silu_and_mul_nvfp4_quantize.html">flashinfer.quantization.silu_and_mul_nvfp4_quantize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.shuffle_matrix_a.html">flashinfer.quantization.shuffle_matrix_a</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.shuffle_matrix_sf_a.html">flashinfer.quantization.shuffle_matrix_sf_a</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.nvfp4_kv_quantize.html">flashinfer.quantization.nvfp4_kv_quantize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.nvfp4_kv_dequantize.html">flashinfer.quantization.nvfp4_kv_dequantize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.nvfp4_kv_dequantize_paged.html">flashinfer.quantization.nvfp4_kv_dequantize_paged</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.nvfp4_quantize_paged_kv_cache.html">flashinfer.quantization.nvfp4_quantize_paged_kv_cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.kernels.nvfp4_kv_materialize.nvfp4_kv_materialize_fp8.html">flashinfer.quantization.kernels.nvfp4_kv_materialize.nvfp4_kv_materialize_fp8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.encode_csf_scales.html">flashinfer.quantization.encode_csf_scales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.expand_csf_scales.html">flashinfer.quantization.expand_csf_scales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.mxfp8_quantize.html">flashinfer.quantization.mxfp8_quantize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.mxfp8_grouped_quantize.html">flashinfer.quantization.mxfp8_grouped_quantize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.silu_and_mul_mxfp8_experts_quantize.html">flashinfer.quantization.silu_and_mul_mxfp8_experts_quantize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.mxfp8_dequantize_host.html">flashinfer.quantization.mxfp8_dequantize_host</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.quantization.per_token_group_quant_8bit.html">flashinfer.quantization.per_token_group_quant_8bit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gated_act_mxfp8.silu_and_mul_mxfp8_quantize.html">flashinfer.gated_act_mxfp8.silu_and_mul_mxfp8_quantize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.gated_act_mxfp8.silu_and_mul_mxfp8_quantize_backward.html">flashinfer.gated_act_mxfp8.silu_and_mul_mxfp8_quantize_backward</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/green_ctx.html">flashinfer.green_ctx</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" role="switch" type="checkbox"/><label for="toctree-checkbox-42"><div class="visually-hidden">Toggle navigation of flashinfer.green_ctx</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.green_ctx.split_device_green_ctx.html">flashinfer.green_ctx.split_device_green_ctx</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.green_ctx.split_device_green_ctx_by_sm_count.html">flashinfer.green_ctx.split_device_green_ctx_by_sm_count</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.green_ctx.get_locality_domain_count.html">flashinfer.green_ctx.get_locality_domain_count</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.green_ctx.split_device_green_ctx_by_locality_domain.html">flashinfer.green_ctx.split_device_green_ctx_by_locality_domain</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.green_ctx.empty_per_locality_domain.html">flashinfer.green_ctx.empty_per_locality_domain</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api/fp4_quantization.html">flashinfer.fp4_quantization</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/testing.html">flashinfer.testing</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" role="switch" type="checkbox"/><label for="toctree-checkbox-43"><div class="visually-hidden">Toggle navigation of flashinfer.testing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.testing.set_seed.html">flashinfer.testing.set_seed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.testing.sleep_after_kernel_run.html">flashinfer.testing.sleep_after_kernel_run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.testing.attention_flops.html">flashinfer.testing.attention_flops</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.testing.attention_flops_with_actual_seq_lens.html">flashinfer.testing.attention_flops_with_actual_seq_lens</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.testing.attention_tflops_per_sec.html">flashinfer.testing.attention_tflops_per_sec</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.testing.attention_tflops_per_sec_with_actual_seq_lens.html">flashinfer.testing.attention_tflops_per_sec_with_actual_seq_lens</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.testing.attention_tb_per_sec.html">flashinfer.testing.attention_tb_per_sec</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.testing.attention_tb_per_sec_with_actual_seq_lens.html">flashinfer.testing.attention_tb_per_sec_with_actual_seq_lens</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.testing.bench_gpu_time.html">flashinfer.testing.bench_gpu_time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.testing.bench_gpu_time_with_cuda_event.html">flashinfer.testing.bench_gpu_time_with_cuda_event</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.testing.bench_gpu_time_with_cudagraph.html">flashinfer.testing.bench_gpu_time_with_cudagraph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashinfer.testing.bench_gpu_time_with_cupti.html">flashinfer.testing.bench_gpu_time_with_cupti</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/generated/flashinfer.mamba.checkpointing_ssu.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="flashinfer-mamba-checkpointing-ssu">
+<h1>flashinfer.mamba.checkpointing_ssu<a class="headerlink" href="#flashinfer-mamba-checkpointing-ssu" title="Link to this heading">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="flashinfer.mamba.checkpointing_ssu">
+<span class="sig-prename descclassname"><span class="pre">flashinfer.mamba.</span></span><span class="sig-name descname"><span class="pre">checkpointing_ssu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ring_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prev_num_accepted_tokens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">D</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt_bias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt_softplus</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_batch_indices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad_slot_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rand_seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">philox_rounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d_split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cu_seqlens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_seqlen</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_pdl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cb_scaled</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cumAdt_vec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cb_old</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precompute_heads_per_cta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algorithm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#flashinfer.mamba.checkpointing_ssu" title="Link to this definition">¶</a></dt>
+<dd><p>Checkpointing SSU with MTP replay using matmul-based parallel token processing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state</strong> (<em>torch.Tensor</em>) – SSM state, shape (state_cache_size, nheads, dim, dstate). Updated in-place.</p></li>
+<li><p><strong>x_cache</strong> (<em>torch.Tensor</em>) – Ring of cached x, shape (state_cache_size, nheads, RING_BUFFER_LEN, dim).
+RING_BUFFER_LEN is implicit (= size(2)); the LOGICAL replay window is
+max_window = RING_BUFFER_LEN - T (flush rule pnat + 2T &gt; RING_BUFFER_LEN).</p></li>
+<li><p><strong>B_cache</strong> (<em>torch.Tensor</em>) – Ring of cached B, shape (state_cache_size, ngroups, RING_BUFFER_LEN, dstate).</p></li>
+<li><p><strong>dt_cache</strong> (<em>torch.Tensor</em>) – Ring of cached processed dt, shape (state_cache_size, nheads,
+RING_BUFFER_LEN), f32.  Replay decays are recomputed from it (no
+cumAdt is cached — prefix sums are not ring-shift-invariant).</p></li>
+<li><p><strong>ring_start</strong> (<em>torch.Tensor</em>) – Ring head per slot (oldest live row), shape (state_cache_size,), int32.
+The HOST owns bookkeeping: advance by the replayed count on flush.
+May be a strided 1-D view (stride(0) in [1, 2^31)), e.g. a per-slot field
+inside a larger cache page.  Only read by the kernels.</p></li>
+<li><p><strong>prev_num_accepted_tokens</strong> (<em>torch.Tensor</em>) – Number of old tokens to replay, shape (state_cache_size,), int32.
+May be a strided 1-D view, like <code class="docutils literal notranslate"><span class="pre">ring_start</span></code>.  Only read by the kernels.</p></li>
+<li><p><strong>x</strong> (<em>torch.Tensor</em>) – New token inputs, shape (batch, T, nheads, dim).</p></li>
+<li><p><strong>dt</strong> (<em>torch.Tensor</em>) – Delta time, shape (batch, T, nheads, dim) with tie_hdim (stride[-1]=0).
+Accepted in native dtype (e.g. bf16) — converted to f32 internally.</p></li>
+<li><p><strong>A</strong> (<em>torch.Tensor</em>) – Decay rate, shape (nheads, dim, dstate) with tie_hdim.</p></li>
+<li><p><strong>B</strong> (<em>torch.Tensor</em>) – Input projection, shape (batch, T, ngroups, dstate).</p></li>
+<li><p><strong>C</strong> (<em>torch.Tensor</em>) – Output projection, shape (batch, T, ngroups, dstate).</p></li>
+<li><p><strong>out</strong> (<em>torch.Tensor</em>) – Preallocated output, shape (batch, T, nheads, dim).</p></li>
+<li><p><strong>D</strong> (<em>Optional</em><em>[</em><em>torch.Tensor</em><em>]</em>) – Skip connection, shape (nheads, dim).</p></li>
+<li><p><strong>z</strong> (<em>Optional</em><em>[</em><em>torch.Tensor</em><em>]</em>) – Gate, shape (batch, T, nheads, dim).</p></li>
+<li><p><strong>dt_bias</strong> (<em>Optional</em><em>[</em><em>torch.Tensor</em><em>]</em>) – Bias added to dt, shape (nheads, dim) with tie_hdim.</p></li>
+<li><p><strong>dt_softplus</strong> (<em>bool</em>) – Whether to apply softplus to dt.</p></li>
+<li><p><strong>state_batch_indices</strong> (<em>Optional</em><em>[</em><em>torch.Tensor</em><em>]</em>) – Maps batch index to cache slot, shape (batch,), int32 | int64.</p></li>
+<li><p><strong>pad_slot_id</strong> (<em>int</em>) – Sentinel value for padded entries.</p></li>
+<li><p><strong>state_scale</strong> (<em>Optional</em><em>[</em><em>torch.Tensor</em><em>]</em>) – Block-scale decode factors for quantized state, shape (state_cache_size, nheads, dim), f32.</p></li>
+<li><p><strong>rand_seed</strong> (<em>Optional</em><em>[</em><em>torch.Tensor</em><em>]</em>) – Single-element int64 CUDA tensor for stochastic rounding seed.</p></li>
+<li><p><strong>philox_rounds</strong> (<em>int</em>) – Philox PRNG rounds for stochastic rounding (default 10).</p></li>
+<li><p><strong>d_split</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – Per-head DIM split factor.  This is only exposed for benchmarking.
+Do not use it cause it will make things slow.</p></li>
+<li><p><strong>cu_seqlens</strong> (<em>Optional</em><em>[</em><em>torch.Tensor</em><em>]</em>) – Cumulative sequence boundaries for packed variable-length input, as a
+one-dimensional int32 CUDA tensor of shape <code class="docutils literal notranslate"><span class="pre">(batch</span> <span class="pre">+</span> <span class="pre">1,)</span></code>.  It must
+start at 0, be monotonically nondecreasing, and end at <code class="docutils literal notranslate"><span class="pre">total_tokens</span></code>.
+When provided, <code class="docutils literal notranslate"><span class="pre">x</span></code> must have shape
+<code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">total_tokens,</span> <span class="pre">nheads,</span> <span class="pre">dim)</span></code> and <code class="docutils literal notranslate"><span class="pre">max_seqlen</span></code> is required.</p></li>
+<li><p><strong>max_seqlen</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – Upper bound on every packed sequence length.  In variable-length mode
+this is the JIT-specialized predicted-token count used to derive the
+logical replay window from the ring-buffer size.  Must be <code class="docutils literal notranslate"><span class="pre">None</span></code> when
+<code class="docutils literal notranslate"><span class="pre">cu_seqlens</span></code> is not provided.</p></li>
+<li><p><strong>precompute_heads_per_cta</strong> (<em>int</em>) – Two-kernel PRECOMPUTE head-tiling: heads per precompute CTA.  0 (default) uses the
+launcher’s co-residency heuristic; &gt;0 overrides it and must be on the
+<code class="docutils literal notranslate"><span class="pre">HEADS_PER_GROUP</span> <span class="pre">&gt;&gt;</span> <span class="pre">k</span></code> halving chain.  Tuning knob — two-kernel path only.</p></li>
+<li><p><strong>algorithm</strong> (<em>str</em>) – Kernel selection: <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> (default), <code class="docutils literal notranslate"><span class="pre">&quot;monolith&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;two-kernel&quot;</span></code>.
+With the scratch trio and no explicit tuning knobs, <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> uses
+FlashInfer’s cached autotuner tactic, which may be monolithic or
+two-kernel. Inside an <code class="docutils literal notranslate"><span class="pre">autotune(True)</span></code> context, it profiles monolithic
+<code class="docutils literal notranslate"><span class="pre">d_split={1,</span> <span class="pre">2}</span></code> and every supported two-kernel combination of
+<code class="docutils literal notranslate"><span class="pre">d_split</span></code>, precompute heads/CTA, main pipeline stages, and main
+CTAs/SM. Quantized int8/fp8 state profiles only its supported
+monolithic <code class="docutils literal notranslate"><span class="pre">d_split=1</span></code> launch. Without a cached tactic it retains the
+production fallback: use the split when
+<code class="docutils literal notranslate"><span class="pre">batch</span> <span class="pre">*</span> <span class="pre">nheads</span> <span class="pre">&gt;=</span> <span class="pre">sm_count</span></code> and otherwise uses monolithic.
+<code class="docutils literal notranslate"><span class="pre">&quot;two-kernel&quot;</span></code> forces the split (scratch trio required), while
+<code class="docutils literal notranslate"><span class="pre">&quot;monolith&quot;</span></code> forces the monolithic kernel (scratch ignored).
+Benches and tests that must pin a path should force it.</p></li>
+<li><p><strong>enable_pdl</strong> (<em>bool</em>) – When True the kernel is launched with
+<cite>cudaLaunchAttributeProgrammaticStreamSerialization</cite>, enabling the
+in-kernel <cite>griddepcontrol.{wait,launch_dependents}</cite> PTX to gate on
+the upstream (e.g. conv1d) and signal the downstream kernel.
+Caller’s responsibility: upstream/downstream kernels must also be
+PDL-paired for the wait/signal to have effect.  Defaults to False.</p></li>
+<li><p><strong>cb_scaled</strong> (<em>Optional</em><em>[</em><em>torch.Tensor</em><em>]</em>) – Pre-allocated input-dtype (same as <code class="docutils literal notranslate"><span class="pre">x</span></code>) scratch for the precomputed
+new-token CB matrix, fragment-native layout
+(batch, nheads, WARP_SIZE, MMA_FRAG_SIZE) — each (batch, head)’s CB is
+one m16n8k16 MMA A-fragment stored as [warp lane, register].  Providing
+it (together with <code class="docutils literal notranslate"><span class="pre">cumAdt_vec</span></code> / <code class="docutils literal notranslate"><span class="pre">cb_old</span></code>) makes the
+<strong>two-kernel</strong> (precompute + main) path available — <code class="docutils literal notranslate"><span class="pre">algorithm</span></code> decides
+whether it runs; leaving all four <code class="docutils literal notranslate"><span class="pre">None</span></code> always runs the monolithic
+kernel.  Caller-allocated so the path is CUDA-graph-safe (no in-wrapper
+allocation, like <code class="docutils literal notranslate"><span class="pre">out</span></code>).</p></li>
+<li><p><strong>cumAdt_vec</strong> (<em>Optional</em><em>[</em><em>torch.Tensor</em><em>]</em>) – Pre-allocated fp32 scratch for the per-head raw cumAdt vector, shape
+(batch, nheads, T_pad); the main kernel exponentiates it on the fly to
+get the decay/β factor.  Must be provided iff <code class="docutils literal notranslate"><span class="pre">cb_scaled</span></code> is.</p></li>
+<li><p><strong>cb_old</strong> (<em>Optional</em><em>[</em><em>torch.Tensor</em><em>]</em>) – Pre-allocated input-dtype (same as <code class="docutils literal notranslate"><span class="pre">x</span></code>) scratch for the precomputed
+old-token CB matrix, fragment-native layout
+(batch, nheads, WARP_SIZE, K_old // 2) where
+K_old = next_multiple_of_8(max_window) — the m16n8k{K_old} MMA
+A-fragment consumed on the no-write (replay) path, stored as
+[warp lane, register].  Must be provided iff <code class="docutils literal notranslate"><span class="pre">cb_scaled</span></code> is.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>out</strong> – Output tensor, shape (batch, T, nheads, dim).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="flashinfer.mamba.ssd_combined_fwd.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">flashinfer.mamba.ssd_combined_fwd</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="flashinfer.mamba.selective_state_update.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">flashinfer.mamba.selective_state_update</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023-2026, FlashInfer Contributors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">flashinfer.mamba.checkpointing_ssu</a><ul>
+<li><a class="reference internal" href="#flashinfer.mamba.checkpointing_ssu"><code class="docutils literal notranslate"><span class="pre">checkpointing_ssu()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=020ce317"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    
+    <!-- RunLLM Widget Script -->
+    <script type="module" id="runllm-widget-script" src="https://widget.runllm.com" crossorigin="true" version="stable" runllm-keyboard-shortcut="Mod+j" runllm-name="FlashInfer Assistant" runllm-position="BOTTOM_RIGHT" runllm-assistant-id="1052" async></script>
+    
+</body>
+</html>

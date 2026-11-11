@@ -54,6 +54,7 @@
     "migrations/",
     "quartz/static/pdfjs/",
     "content/triathlon/wind/",
-    "content/triathlon/memos/"
+    "content/triathlon/memos/",
+    "content/hinterland/papers/**/*.html"
   ]
 }
