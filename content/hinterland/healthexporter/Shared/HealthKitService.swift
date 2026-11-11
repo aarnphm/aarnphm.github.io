@@ -123,7 +123,7 @@ final class HealthKitService: @unchecked Sendable {
   }
 
   private var allSampleTypes: [HKSampleType] {
-    allQuantityTypes + [HKObjectType.workoutType(), HKSeriesType.workoutRoute()]
+    allQuantityTypes + [HKObjectType.workoutType(), HKSeriesType.workoutRoute(), HKCategoryType(.sleepAnalysis)]
   }
 
   private var backgroundTriggerTypes: Set<HKSampleType> {
@@ -135,7 +135,7 @@ final class HealthKitService: @unchecked Sendable {
       .waterTemperature,
     ]
     let quantities = identifiers.compactMap { HKQuantityType.quantityType(forIdentifier: $0) }
-    return Set(quantities + [HKObjectType.workoutType(), HKSeriesType.workoutRoute()])
+    return Set(quantities + [HKObjectType.workoutType(), HKSeriesType.workoutRoute(), HKCategoryType(.sleepAnalysis)])
   }
 
   func requestAuthorization() async throws {
@@ -240,6 +240,7 @@ final class HealthKitService: @unchecked Sendable {
       start: start,
       end: end
     )
+    async let sleepSamples = sleepExports(start: start, end: end, timeZone: calendar.timeZone)
     async let workoutSamples = workouts(start: start, end: end)
     let queriedWorkouts = try await workoutSamples
     let swimmingScopes = try swimmingScopes(workouts: queriedWorkouts)
@@ -255,17 +256,53 @@ final class HealthKitService: @unchecked Sendable {
     quantitySamples += try await vo2Max
     let swims = try await swimValues
     let exportedWorkouts = try await workoutValues
-    return HealthExportPayload(
-      document: HealthAggregator.document(
+    var document = HealthAggregator.document(
         quantitySamples: quantitySamples,
         swimSamples: swims.samples,
         swimSessions: swims.sessions,
         workouts: exportedWorkouts.workouts,
         generatedAt: now,
         calendar: calendar
-      ),
-      routes: exportedWorkouts.routes
-    )
+      )
+    document.sleepSamples = try await sleepSamples
+    return HealthExportPayload(document: document, routes: exportedWorkouts.routes)
+  }
+
+  private func sleepExports(start: Date, end: Date, timeZone: TimeZone) async throws -> [AppleHealthSleepSample] {
+    let type = HKCategoryType(.sleepAnalysis)
+    // Include samples crossing the refresh boundary so an overnight session stays whole.
+    let predicate = HKQuery.predicateForSamples(withStart: start, end: end, options: [])
+    return try await withCheckedThrowingContinuation { continuation in
+      let query = HKSampleQuery(sampleType: type, predicate: predicate, limit: HKObjectQueryNoLimit,
+        sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)]) { _, samples, error in
+        if let error {
+          continuation.resume(throwing: error)
+          return
+        }
+        let exported = (samples as? [HKCategorySample] ?? []).compactMap { sample -> AppleHealthSleepSample? in
+          let value: String
+          switch HKCategoryValueSleepAnalysis(rawValue: sample.value) {
+          case .inBed: value = "inBed"
+          case .awake: value = "awake"
+          case .asleepUnspecified: value = "asleepUnspecified"
+          case .asleepCore: value = "asleepCore"
+          case .asleepDeep: value = "asleepDeep"
+          case .asleepREM: value = "asleepREM"
+          default: return nil
+          }
+          return AppleHealthSleepSample(
+            id: sample.uuid.uuidString,
+            start: HealthExporterFormat.timestampString(sample.startDate, timeZone: timeZone),
+            end: HealthExporterFormat.timestampString(sample.endDate, timeZone: timeZone),
+            value: value,
+            sourceName: sample.sourceRevision.source.name,
+            sourceBundleIdentifier: sample.sourceRevision.source.bundleIdentifier
+          )
+        }
+        continuation.resume(returning: exported.sorted { ($0.start, $0.id) < ($1.start, $1.id) })
+      }
+      store.execute(query)
+    }
   }
 
   private func quantityType(_ identifier: HKQuantityTypeIdentifier) throws -> HKQuantityType {
