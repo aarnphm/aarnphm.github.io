@@ -2,6 +2,40 @@
 @use '../variables.scss' as *;
 @use '../mixin.scss' as *;
 
+body[data-slug='dating'][data-layout='newspaper']:not(.stack-mode)
+  article
+  :is(h1, h2, h3, h4, h5, h6) {
+  width: min(100%, var(--mag-measure));
+  margin-inline: auto;
+  text-align: start;
+
+  .collapse-toggle {
+    display: flex;
+    justify-content: flex-start;
+  }
+}
+
+@container profile-page (min-width: 70rem) {
+  body[data-slug='dating'][data-layout='newspaper']:not(.stack-mode) article {
+    section.collapsible-header[data-level='2'] {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      align-items: first baseline;
+
+      > .mag-chapter-vine {
+        grid-area: 1 / 1;
+      }
+
+      // Share the shell's first text baseline while the running head sticks independently.
+      > .mag-running-head,
+      > .collapse-shell {
+        grid-area: 2 / 1;
+        align-self: first baseline;
+      }
+    }
+  }
+}
+
 [data-slug^='friends/slides/'],
 [data-slug='friends'],
 [data-slug^='dating/slides/'],

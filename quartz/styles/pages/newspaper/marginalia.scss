@@ -363,6 +363,7 @@ body:not(.stack-mode)[data-layout='newspaper'] #quartz-root > section.header {
         --note-fade-top: 0px;
         --note-fade-bottom: 0px;
         max-height: max(calc(7 * 1lh), var(--note-room, 100vh));
+        overflow-x: hidden;
         overflow-y: auto;
         overscroll-behavior: contain;
         scrollbar-width: none;

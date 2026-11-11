@@ -9,7 +9,7 @@ description: or i might be that fish in the sea, for you.
 dropcap: goudy
 id: dating
 layout: newspaper
-modified: 2026-11-10 08:57:31 GMT-04:00
+modified: 2026-11-10 14:12:54 GMT-04:00
 readonly: true
 separator: grapevine
 slides: true
@@ -148,18 +148,14 @@ So, yes, I _care_. I care a lot about people, both in its abstract and physical 
 
 I have the attention-span of a three-year-old, but an old soul (some said). So I like to explore and do a lot of things.
 
-### triathlon
+### sports
 
-- <div data-triathlon-latest data-triathlon-activities="10" />
-- I'm training for IRONMAN. Feel free to check out progress in [daily stream](https://stream.aarnphm.xyz) or the [feed](https://t.aarnphm.xyz/feed)/[calendar](https://t.aarnphm.xyz/calendar)
-- More/less an excuse for me to travel. Here is a random picture of me on a backpacking trip with my colleague at Yosemite Fall
+- <div data-triathlon-latest data-triathlon-activities="11" />
+- I'm training for various distances, including IRONMAN and some extreme events. Feel free to check out progress in [daily stream](https://stream.aarnphm.xyz) or the [feed](https://t.aarnphm.xyz/feed)/[calendar](https://t.aarnphm.xyz/calendar)
+- An excuse for me to travel. I'm a bit of a homebody, so this forces me to get out of my comfort zone. Here is a random picture of me on a backpacking trip with my colleague at Yosemite Fall
+- I used to do rock climbing. My goal was to comfortably climb {{sidenotes[V7-V8.]: Grading varies from gym-to-gym. I mostly climb at Joe's Rock, which their grading systems somewhat follows [Olympic standard for grades](https://en.wikipedia.org/wiki/Sport_climbing_at_the_Summer_Olympics)}}, but currenty on pause indefintely for triathlon training
 
   ![[thoughts/images/me-in-yosemite.webp#{width:100%; height:auto; margin:0}]]
-
-### bouldering
-
-- I used to climb a lot, V3-V5 most days. My goal is to comfortably climb {{sidenotes[V7-V8.]: Grading varies from gym-to-gym. I mostly climb at Joe's Rock, which their grading systems somewhat follows [Olympic standard for grades](https://en.wikipedia.org/wiki/Sport_climbing_at_the_Summer_Olympics)}}
-- On pause current indefintely for IRONMAN training.
 
 ### cooking
 
@@ -220,6 +216,8 @@ I have the attention-span of a three-year-old, but an old soul (some said). So I
 - I also maintain an [[antilibrary.base|antilibrary]] of literature that I've enjoyed.
 - I read [[/arena/papers|papers]] and #math textbooks for fun sometimes.
   - Yes, I know, it is a thing.
+
+![[embeddings#focus=18895#view=eyJ2IjoxLCJiYXNlIjoiL2VtYmVkZGluZ3MvbGF0ZW50L2YwODQ3ZThmN2NkMTYzNTdiMjdjMzI2OTU4M2Q2OWQyNmJkYWY4ZmQ1OWRkOTBlYTRkYmZkZTU2YTc5YzA1NzYiLCJmb2N1cyI6MTg4OTUsInRhYiI6ImZlYXR1cmVzIiwiZmVhdHVyZXMiOnsic2VsZWN0ZWQiOnsiZGljdCI6InRleHQiLCJmIjoxNzk0fSwic3RlZXIiOltbInRleHQ6MTMzIiwyLjRdLFsidGV4dDoxNzk0IiwxLjI1XV0sImV4cGxhaW4iOnRydWUsInF1ZXJ5IjoiIiwicGluIjpmYWxzZSwiY2x1c3RlciI6ZmFsc2V9LCJiZW5jaCI6eyJ5YXciOjAuNiwicGl0Y2giOjAuNSwiem9vbSI6MSwicGFuWCI6MCwicGFuWSI6MCwiYXhlcyI6WzIsMyw0XSwibGV2ZWwiOiJkb2NzIiwiaGlkZGVuIjo4LCJmZWF0c09uIjpmYWxzZSwicGlja2VkIjpmYWxzZSwiZmVhdHVyZSI6bnVsbH19]]
 
 ### photography
 
