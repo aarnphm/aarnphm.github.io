@@ -8,6 +8,7 @@ import { bindCallouts, claimTiles, renderFigures } from './latent-client/figures
 import { bindFolios } from './latent-client/folio'
 import { bindGemma } from './latent-client/gemma'
 import { bindMarquee } from './latent-client/marquee'
+import { bindPanes } from './latent-client/panes'
 import { bindProbeShortcuts } from './latent-client/probe-shortcuts'
 import { bindRail } from './latent-client/rail'
 import { bindReader, chunkUnderLine, goTo, keepLine } from './latent-client/reader'
@@ -239,6 +240,7 @@ export function mountLatent(root: HTMLElement): void {
       bindMarquee(rt, rt.probe)
       bindTips(rt)
       bindRail(rt)
+      bindPanes(rt)
       const shared = await bindShare(rt)
       root.dataset.latentLive = ''
       if (shared || signal.aborted) return

@@ -252,7 +252,7 @@ export const Latent: QuartzTransformerPlugin = () => {
               dataLatentFeatures: features.map(d => d.name).join(',') || undefined,
               dataLatentMacros: JSON.stringify(customMacros),
             },
-            [rail, reader, linksEl, probeEl],
+            [rail, reader, linksEl, probeEl, paneBar()],
           )
           highlightPassages(reader)
           // passages carry math as `.math-inline` / `.math-display` spans; the Latex plugin's
@@ -266,6 +266,19 @@ export const Latent: QuartzTransformerPlugin = () => {
       return { js: [{ script: loader, contentType: 'inline', loadTime: 'afterDOMReady' }] }
     },
   }
+}
+
+// The bar a narrow screen gets (latent-panes.scss, latent-client/panes.ts): the reader has no
+// end, so a pane the layout stacks under it opens as a sheet from here instead.
+function paneBar(): Element {
+  const pane = (id: string, label: string, pressed = false) =>
+    h('button', { type: 'button', dataPane: id, ariaPressed: String(pressed) }, label)
+  return h('nav.lat-panes', { ariaLabel: 'panes' }, [
+    pane('reader', 'read', true),
+    pane('rail', 'time'),
+    pane('links', 'links'),
+    pane('probe', 'probe'),
+  ])
 }
 
 declare module 'vfile' {

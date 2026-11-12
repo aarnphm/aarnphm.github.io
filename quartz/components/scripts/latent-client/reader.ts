@@ -350,6 +350,8 @@ export async function goTo(rt: Runtime, row: number): Promise<void> {
   const top = chunk.getBoundingClientRect().top + window.scrollY - readingLineY() + 8
   window.scrollTo({ top, behavior: 'instant' })
   anchorTo(chunk)
+  // a pane open over the reader (panes.ts) steps aside for the document it asked for
+  rt.root.dispatchEvent(new CustomEvent('latent:goto'))
   await setFocus(rt, row)
   // a scroll clamped at 0 fires no scroll event; let the reader look for stubs to mount anyway
   window.dispatchEvent(new Event('scroll'))

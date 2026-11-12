@@ -23,8 +23,10 @@
   }
 
   // a stream entry's body is already its own wide column: the figure sits on the entry's text
-  // edge and within its width
-  .stream-entry-content &[data-wide] {
+  // edge and within its width. The newspaper layout sets text in every track to the left, so
+  // the figure stays in its band there too (column.scss gives its department the full band)
+  .stream-entry-content &[data-wide],
+  [data-layout='newspaper'] &[data-wide] {
     margin-inline-start: 0;
   }
 
