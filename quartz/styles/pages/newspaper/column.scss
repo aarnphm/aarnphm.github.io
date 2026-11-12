@@ -566,6 +566,16 @@
       }
     }
 
+    // A latent embed needs the band's width for its two panes: its department spans the columns
+    // and the figure closes it, clear of the list above.
+    section.collapsible-header[data-level='3']:has(.latent-embed) {
+      column-span: all;
+
+      .latent-embed {
+        margin-block: 1.25rem 0;
+      }
+    }
+
     // Pull quotes span every column; testimonials sit side by side.
     blockquote.quotes {
       column-span: all;

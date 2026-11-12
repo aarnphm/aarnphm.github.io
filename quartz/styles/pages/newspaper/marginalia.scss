@@ -17,6 +17,14 @@ body:not(.stack-mode)[data-layout='newspaper'] #quartz-root > section.header {
   > .header-content {
     height: 0;
     padding: 0;
+    // a zero-height row centres its items on the page's top edge, which cut the phone's search
+    // and theme controls in half: they hang under the edge, on paper where they ride over text
+    align-items: flex-start;
+
+    > :is(.search, .darkmode) {
+      margin-top: 0.5rem;
+      background: var(--light);
+    }
   }
 }
 
