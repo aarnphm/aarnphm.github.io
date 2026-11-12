@@ -16,6 +16,7 @@ Keep the same signing identity across rebuilds so macOS can recognize the app's 
 ## Current behavior
 
 - Native SwiftUI window, Garden paper/sage palette, light/dark appearance, and a generated Garden mascot icon.
+- Connection, sync/cancel and device options share the header with FIT import. The person icon opens Garmin Connect in the default browser; Device → Account opens Tether's login settings.
 - Event-driven USB discovery. Known devices survive reconnect; vendor-specific Garmin USB interfaces do not become saved MTP devices. Readiness notifications act immediately, with 50 ms fallback checks during the first five seconds and 250 ms checks afterward while preparing. Ready devices have no polling timer; wake and app activation refresh the registry.
 - Automatic sync on each stable USB attachment, including launch with a watch attached. Repeated notifications do not start another transfer; cancellation stays cancelled until reconnect or an explicit retry.
 - Sync progress shows connection, reading, saving, upload and verification stages, then actual activity counts. Numeric changes flip over 120 ms; Reduce Motion keeps them static. The progress strip closes after completion, cancellation or failure.
@@ -27,7 +28,7 @@ Keep the same signing identity across rebuilds so macOS can recognize the app's 
 - Uncertain uploads are reconciled by comparing exact bytes with Garmin's original downloads. An uncertain POST is never automatically repeated.
 - Import local FIT files with Command-O; sync with Command-R. The activity menu reveals local files; confirmed rows link to Connect.
 
-`~/Library/Application Support/app.aarnphm.tether/` contains private device and transfer records. Credentials use a non-synchronizing Keychain item. The first account connection currently imports an existing `garmin_tokens.json` session. Only its access token is retained; the original token store and refresh owner remain untouched. Import a current session again after expiry.
+`~/Library/Application Support/app.aarnphm.tether/` contains private device and transfer records. Credentials use a non-synchronizing Keychain item. Device → Account → Login opens Garmin Connect in the default browser. Tether does not host the login form. Browser sign-in and Tether's stored API session are separate; opening Connect does not import or refresh that session. Existing imported credentials remain access-only, and their original files and refresh owners remain untouched.
 
 ## Boundaries
 

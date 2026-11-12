@@ -334,28 +334,6 @@ final class TetherModel: ObservableObject {
     }
   }
 
-  func importAccount() {
-    let panel = NSOpenPanel()
-    panel.allowedContentTypes = [.json]
-    panel.canChooseDirectories = false
-    panel.message =
-      "Choose your Garmin session JSON. Tether stores only its access token in Keychain."
-    panel.begin { [weak self] result in
-      guard result == .OK, let url = panel.url else { return }
-      Task { @MainActor in
-        guard let self else { return }
-        do {
-          try await self.client.importSession(from: url)
-          self.accountStatus = await self.client.connectionStatus()
-          self.showAccount = false
-          self.error = nil
-          self.automaticSync.retryConnected()
-          self.startNextAutomaticSync()
-        } catch { self.error = error.localizedDescription }
-      }
-    }
-  }
-
   func authorizeAccount() {
     guard accountStatus != "waiting for keychain" else { return }
     accountStatus = "waiting for keychain"

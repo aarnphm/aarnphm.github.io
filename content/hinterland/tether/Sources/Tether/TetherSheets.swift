@@ -13,26 +13,23 @@ struct TetherAccountSheet: View {
         Spacer()
         Button("done") { dismiss() }.keyboardShortcut(.cancelAction)
           .buttonStyle(GardenButtonStyle())
+          .focusEffectDisabled()
       }
-      VStack(alignment: .leading, spacing: 10) {
-        Text(model.accountStatus).font(GardenTheme.meta)
-      }
-      VStack(alignment: .leading, spacing: 12) {
+      HStack(spacing: 12) {
+        if let connectURL = URL(string: "https://connect.garmin.com/modern/") {
+          Link("login", destination: connectURL)
+            .buttonStyle(GardenButtonStyle(prominent: true))
+            .focusEffectDisabled()
+            .help("Open Garmin Connect in browser")
+        }
         if model.accountStatus == "keychain unavailable"
           || model.accountStatus == "waiting for keychain"
         {
-          Button("allow keychain access", action: model.authorizeAccount)
-            .buttonStyle(GardenButtonStyle(prominent: true))
+          Button("unlock keychain", action: model.authorizeAccount)
+            .buttonStyle(GardenButtonStyle())
+            .focusEffectDisabled()
             .disabled(model.accountStatus == "waiting for keychain")
-          Text("Choose Always Allow in the macOS prompt.")
-            .foregroundStyle(theme.muted)
         }
-        Button("choose access-token file…", action: model.importAccount)
-          .buttonStyle(GardenButtonStyle())
-      }.frame(maxWidth: .infinity, alignment: .leading)
-      if let error = model.error {
-        Label(error, systemImage: "exclamationmark.triangle")
-          .font(GardenTheme.meta).textSelection(.enabled)
       }
     }
     .padding(32).frame(width: 490)
