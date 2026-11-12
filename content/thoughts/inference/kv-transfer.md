@@ -1,44 +1,10 @@
-# hetero TP in P/D disagg + the KV layout fight (BLHNC vs LBHNC)
-
-_the whole debate reduces to one question: which axis do you make contiguous, and who pays for the axes you didn't._
-
-vllm main @ [`c059bee8`](https://github.com/vllm-project/vllm/tree/c059bee812842fb76c2b045e240c02f37c0d498d) (2026-10-11). every `file:line` below is at that commit. slack was unreachable from here (the connector failed to connect), so this is built from code, git history, the RFC, and PR review threads. claims marked _(inferred)_ are my reading of the code and haven't been run.
-
+---
+title: 'Heterogeneous TP KV transfer'
 ---
 
-## 0. the vocabulary (RFC #42082, Lucas Wilkinson, 2026-05-08)
+# hetero TP KV transfer
 
-the RFC is almost certainly the link you're waiting on: [vllm#42082 "[RFC]: Standardize KV-cache Layouts"](https://github.com/vllm-project/vllm/issues/42082). it's open, assigned to Lucas, Nick Lucchesi, and Matt Bonanni.
-
-one **logical** shape for every backend, every cache type:
-
-```
-[L, B, H, N, C]
- L = layer slot
- B = block
- H = heads            (1 for MLA / headless)
- N = states per block (block_size for attention, block_size/4 for DSV4 c4a, 1 for recurrent state)
- C = state content    (always contiguous; GQA: [2, head_dim], so K and V are packed per token)
-```
-
-physical layout = a stride permutation of that logical shape. the enum is at [`vllm/v1/kv_cache_layout.py:15`](https://github.com/vllm-project/vllm/blob/c059bee812842fb76c2b045e240c02f37c0d498d/vllm/v1/kv_cache_layout.py#L15):
-
-| layout    | physical order | old name | what is contiguous                               | the RFC's pitch                                 |
-| --------- | -------------- | -------- | ------------------------------------------------ | ----------------------------------------------- |
-| **LBHNC** | `[L,B,H,N,C]`  | HND      | one layer's page; inside it, one head's `[N,C]`  | hetero-TP friendly (head slices contiguous)     |
-| LBNHC     | `[L,B,N,H,C]`  | NHD      | one layer's page; inside it, one token's `[H,C]` | hetero block size friendly                      |
-| **BLHNC** | `[B,L,H,N,C]`  | none     | one **block across all layers**                  | one RDMA per block, homogeneous TP + block size |
-| BHLNC     | `[B,H,L,N,C]`  | none     | one **(block, head) across all layers**          | big transfers _and_ hetero TP                   |
-| LHBNC     | `[L,H,B,N,C]`  | none     | per-head pools (ROCm K/V group-first kernels)    | AITER / ROCm kernels                            |
-| BLNHC     | `[B,L,N,H,C]`  | none     | block across layers, token-major inside          | completeness                                    |
-
-the predicates on the enum are the actual decision rules everyone downstream keys off:
-
-- `is_block_contiguous`: last three dims are `H,N,C`. true for LBHNC, BLHNC. **false for BHLNC.** NIXL gates hetero TP on this.
-- `is_block_compact`: L and B are the two outermost dims. true for LBHNC, LBNHC, BLHNC, BLNHC. required when specs with different `(H,N,C)` alias the same bytes (hybrid models).
-- `is_block_outermost`: B first. BLHNC, BLNHC, BHLNC. NIXL calls these "packed caches."
-
-legacy `NHD`/`HND` survive as aliases: `NHD→LBNHC`, `HND→LBHNC` ([`config/cache.py:21`](https://github.com/vllm-project/vllm/blob/c059bee812842fb76c2b045e240c02f37c0d498d/vllm/config/cache.py#L21)).
+See [KV layout](kv-layout.md) for the layout vocabulary and kernel constraints.
 
 ## 1. the problem hetero TP creates
 
@@ -77,36 +43,13 @@ how to read that table:
 3. **today, NIXL mostly doesn't realize BLHNC's win even under homogeneous TP** _(inferred, worth verifying)_. registration ([`base_worker.py:1555-1622`](https://github.com/vllm-project/vllm/blob/c059bee812842fb76c2b045e240c02f37c0d498d/vllm/distributed/kv_transfer/kv_connector/v1/nixl/base_worker.py#L1555)) registers a whole storage row only when the layer view is _not_ page-contiguous **and** it's packed MLA (the DSV4 case). a plain dense BLHNC layer view is page-contiguous, so it falls through to one strided region per layer. history: the original cross-layer NIXL PR (#33339, Liran Schour, IBM) registered one `"ALL_LAYERS"` tensor. during the [6/N] refactor (#51718), Lucas hit a **TP1→TP2 accuracy of 0.0** on AMD CI because regular BLHNC storage took the whole-row path and got head-sliced as if it were a flat page. the fix restricted whole-row registration to MLA. okorzh-amd flagged the flip side in the same review: MLA under BLHNC now registers one region per layer, so descriptor counts multiply on large models. the `TODO(Lucas): handle TP slicing for packed_storage` at [`:1587`](https://github.com/vllm-project/vllm/blob/c059bee812842fb76c2b045e240c02f37c0d498d/vllm/distributed/kv_transfer/kv_connector/v1/nixl/base_worker.py#L1587) is that open problem.
 4. **BHLNC is the layout that wins both ways on paper, and nothing can use it.** the RFC calls it "larger P/D transfers for hetero-TP." but `is_block_contiguous` is false for it, so NIXL's hetero-TP gate rejects it, and NIXL's descriptor model is per-layer-region anyway: a BHLNC layer view isn't a contiguous page (heads are strided by `L·N·C`). worse, the RFC itself rules it out for hybrid models: when HMA aliases one `KVCacheTensor` across groups, per-layer-per-block `[H,N,C]` must be contiguous, which leaves only LBHNC and BLHNC. DSV4, Kimi K3, and qwen4-next are all hybrid. so BHLNC is legal only for uniform dense models.
 
-**two real models already live inside point 3's constraint.** (this came from the new-architectures thread, [README](/mnt/project-files/exploration/new-architectures/README.md); I re-checked it against the code.)
+**two real models already live inside point 3's constraint.** This is summarized in the [[thoughts/inference/architectures|new-architectures notes]] and checked against the code.
 
 - **DSv4.1** and **Qwen4Exp** pack pages of different sizes side by side inside one physical block. that only works block-outermost: Qwen4Exp's QSA cache declares `(BLNHC, BLHNC)` only ([`qwen4_exp/common/qsa_cache.py:754`](https://github.com/vllm-project/vllm/blob/c059bee812842fb76c2b045e240c02f37c0d498d/vllm/models/qwen4_exp/common/qsa_cache.py#L754)), and the DSv4 kpool-tail indexer declares `BLHNC` alone ([`mla/indexer.py:313`](https://github.com/vllm-project/vllm/blob/c059bee812842fb76c2b045e240c02f37c0d498d/vllm/v1/attention/backends/mla/indexer.py#L313)). for these models, LBHNC isn't an option at all.
 - DSv4.1 is all 1-head latents, so it never head-slices, and the whole-row registration path is safe.
 - Qwen4Exp has real KV heads (2 of them), and its packed rows transfer as whole blocks. so NIXL **refuses any P/D pair that straddles the KV-head sharding boundary**: `(local_TP < 2) != (remote_TP < 2)` raises ([`base_worker.py:967-983`](https://github.com/vllm-project/vllm/blob/c059bee812842fb76c2b045e240c02f37c0d498d/vllm/distributed/kv_transfer/kv_connector/v1/nixl/base_worker.py#L967)). TP1↔TP2 fails; TP2↔TP4 works because both sides hold one (replicated) head per page and nothing gets sliced. that's the `TODO(Lucas)` showing up as a user-visible limit: a whole-row BLHNC transfer can't head-slice, so hetero TP survives only where no slicing is needed.
 
 **is the descriptor count the bottleneck at all?** the 640 MiB pull takes about 14 ms on a ~45 GB/s effective 400G NIC. the 8k prefill on 70B at TP2 takes about 1 s (≈1.15 PFLOP at ~1.2 PFLOP/s across 2 GPUs). so the raw transfer is ~1.5% of prefill time. layout matters at the margin: NIC message rate under many concurrent requests, CPU-side descriptor prep (NIXL's `prep_xfer` / numpy desc stacking, ~41k descs per request per rank), and TTFT tail on D. **16 KiB sits near the knee where RDMA READs stop being bandwidth-bound** (rule of thumb, unmeasured here). LBNHC's 1 KiB pieces are deep in message-rate territory, which is why it's banned. LBHNC vs BLHNC at 16 KiB vs 2.5 MiB is a second-order fight that matters most for long contexts, small head counts per rank (high D_TP), and MLA, where pages are small and L is big (DeepSeek: 61 layers).
-
-## 3. what each layout costs the kernels
-
-the attention kernel sees one layer at a time: a 4D view `[B, H, N, C]` with whatever strides the layout implies (`layer_view_order`).
-
-- **LBHNC**: FlashInfer's native HND. on Blackwell, FlashInfer's trtllm-gen kernels _only_ take head-major block interiors: `supported_kv_cache_layouts` returns `(LBHNC, BLHNC)` on SM100 ([`flashinfer.py:605`](https://github.com/vllm-project/vllm/blob/c059bee812842fb76c2b045e240c02f37c0d498d/vllm/v1/attention/backends/flashinfer.py#L605)). the comment says it straight: "the L/B nesting outside the block is immaterial to them." FA handles HND through strides (see #47314 for the packed-HND reshape bug).
-- **BLHNC**: identical interior, but the block stride is `L×` bigger. every kernel that assumed `stride(0) == page_bytes` breaks: the TRT-LLM contiguity assertion (#34158), MLA kernels (disabled in #37090, re-enabled via stride-aware kernels in #45111, Yifan Qiao), per-token-head quant scales (cross-layer disabled in #49226), FlashInfer sparse MLA addressing (#54465). the per-step kernel cost is roughly neutral _(inferred)_: each page is still one contiguous run. you pay in kernel-compatibility surface area, not FLOPs.
-- **BHLNC**: per-layer view has head stride `L·N·C`, so each head's `[N,C]` tile in a layer is a separate run of `N × C × 2 B` (16 × 256 × 2 = 8 KiB). still coalescable. but backends must support an arbitrary head stride, and almost none declare BHLNC (FlashInfer maps it to "HND" in its name table, [`backends/utils.py:175`](https://github.com/vllm-project/vllm/blob/c059bee812842fb76c2b045e240c02f37c0d498d/vllm/v1/attention/backends/utils.py#L175), but SM100 doesn't list it as supported).
-- **K/V packing** ([2/N] #44455): C = `[2, head_dim]`, so one token's K row and V row sit adjacent. this is what made "one descriptor per (layer, block)" possible at all; the old `(2, num_blocks, ...)` shape doubled descriptors by splitting K and V.
-
-## 4. who decides the layout
-
-single writer, once, in engine core: [`resolve_kv_cache_layout`, `backends/utils.py:259`](https://github.com/vllm-project/vllm/blob/c059bee812842fb76c2b045e240c02f37c0d498d/vllm/v1/attention/backends/utils.py#L259). priority:
-
-1. already set on `cache_config` (tests / tools)
-2. intersect every backend's `supported_kv_cache_layouts()` (most preferred first)
-3. narrow to `is_block_compact` if specs have mixed `(H, N, page_bytes)` (hybrid models)
-4. narrow to `is_block_outermost` if DCP mixes a sharded target with a replicated draft at different page sizes
-5. `VLLM_KV_CACHE_LAYOUT` must be a surviving candidate, or it's a hard error
-6. else the connector's preference (NIXL says **LBHNC** for non-MLA), dropped with a warning if it's illegal
-7. else LBNHC
-
-then it's broadcast to workers via the `set_kv_cache_layout` RPC. P and D resolve **independently**, and nothing guarantees they agree until the NIXL handshake checks.
 
 ## 5. reading order
 

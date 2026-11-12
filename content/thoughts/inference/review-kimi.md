@@ -1,0 +1,58 @@
+---
+title: 'Kimi K3 review'
+---
+
+# grill answer keys (spoilers)
+
+questions with answer keys from each section. the quiz also draws on cross-cutting questions; read the answers only after responding.
+
+---
+
+# Kimi K3
+
+## Grill questions (answer key)
+
+**Q1.** Kimi K3 is a hybrid model. Why does its `MLAAttentionSpec` set `max_tp_shards=1`, while the KDA `MambaSpec` is TP-sharded? What does this imply for per-GPU memory at TP8 and 1M context?
+**A.** The MLA cache is one latent "head", `num_kv_heads=1, head_size=576` (`mla.py:417-433`). It is identical on every TP rank, so it is replicated. KDA state has shape `(96/TP,128,128)` (`mamba_utils.py:326`). Per GPU per sequence: MLA ≈ 27.6 GB (bf16, 24 layers × 1152 B × 1M) vs KDA ≈ 56 MB. Long context needs DCP to shard the MLA tokens. TP does not help MLA.
+
+**Q2.** Write the K3 KDA gate. What breaks if `gate_lower_bound` is missing?
+**A.** `g = lb·σ(exp(A_log)·(raw+dt_bias))`, with lb ∈ [-5,0) (`recoverssm.py:17-33`, `kda.py:609-615`). Without it, FlashKDA, the FlashInfer prefill, and FlashInfer spec are all unsupported (`kda.py:240,356,377`). The prefill falls back to Triton, `kda_prefill_checkpoint_alignment` returns None, and `num_prefill_checkpoint_blocks=0`, so internal prefill checkpoints are disabled (`kda_checkpoint.py:16-17`, `kda.py:829-837`).
+
+**Q3.** In AttnRes, what are the "keys", "query" and "values"? Is the query token-dependent?
+**A.** Keys are the RMS-normalized sources (completed block sums plus the current partial sum) dotted with `norm_w ⊙ w`. The query `w` is a static per-layer vector (`*_res_proj`, 7168→1). Values are the **un-normalized** sources. Only the keys depend on the token (`attn_res.py:102-146`). The mixed vector is then RMS-normed with `input_layernorm.weight` and fed to attention.
+
+**Q4.** How many AttnRes sources does the final LM-head mix see, and what does `blocks[0]` hold?
+**A.** `num_attn_res_blocks = cdiv(93,12) = 8` (`model.py:1171-1175`), plus the partial prefix (layers 84–92), for 9 sources. `blocks[0]` = token embedding, written at layer 0 with `block_write_idx=0` (`model.py:975-977,1024-1035`). The native kernel's `num_blocks ≤ 8` limit matches exactly (`attn_res.py:196`).
+
+**Q5.** Native vs RecoverSSM spec decode for KDA: what is stored per draft token, and how is the post-acceptance state produced?
+**A.** Native stores a full state per draft position (`spec_state_indices[:, :k+1]`, `num_speculative_blocks=k`), and the next step indexes the accepted slot via `num_accepted_tokens` (`kda.py:1136-1150`). RecoverSSM stores `c_t` (fp32, [H,1+k,128]) and `[k̂|raw_g]` (bf16, [H,1+k,256]). It never writes S during verify. Commit replays `S←exp(g)S + c kᵀ` for the accepted prefix across all layers in one kernel (`recoverssm.py:63-231,399-585,909`). Memory per layer for k=7: about 44 MB vs 0.79 MB.
+
+**Q6.** Why does `FlashKDAPrefillCheckpointExporter` read **raw QKV rows** to build the checkpoint conv state rather than the conv output?
+**A.** The conv state is the last `W-1=3` _inputs_ to the causal conv, so the exporter copies `raw_qkv[ckpt_end-3 : ckpt_end]` (`kda_checkpoint.py:101-119`). The recurrent part comes from FlashKDA's `checkpoint_state` at `checkpoint_offsets` (`kda.py:1211-1245`). Both land in the block reserved at `cdiv(num_tokens,B)-2`.
+
+**Q7.** State the conditions under which a prefill chunk may export an internal checkpoint.
+**A.** All of these must hold (`kv_cache_interface.py:1125-1146`):
+
+- `query_start % hash_block == 0`
+- checkpoint column > initial-state column
+- `start + hash_block ≤ ckpt`
+- `start < ckpt < end`
+- `(ckpt-start) % 16 == 0` (FlashKDA alignment)
+
+Here `ckpt = ((n-1)//hash)*hash`, minus one unit with EAGLE block drop (`:1110-1122`). The scheduler then also requires `end ≥ prefill_end` (`scheduler.py:488-500`).
+
+**Q8.** A user runs P/D with prefill TP2 and decode DP2/TP1, with prefix caching on the decoder. What happens, and which env var does the test set for P/D in general? Why?
+**A.** The test disables decoder prefix caching, because NIXL rejects it on a hybrid model with a different TP. The guard is the `physical_blocks_per_logical` mismatch for Mamba (`base_worker.py:2467-2479`; test `:159-163`). P/D sets `VLLM_SSM_CONV_STATE_LAYOUT=DS` so that the Q/K/V conv sub-projections are contiguous per rank for the hetero-TP 3-read (`ssm_conv_transfer_utils.py:1-15`). DS layout also disables the FlashInfer fused decode and spec paths (`kda.py:215,243`).
+
+**Q9.** Why is the routed-expert up-projection in latent MoE **replicated** rather than row/column-parallel, and what does that buy at decode?
+**A.** With a replicated `3584→7168` weight, each rank can all-reduce `[latent partial | shared partial]` in **one** collective, then up-project and add the shared output locally with no second collective. The shared output is folded into the GEMM beta-add (`model.py:304-333,665-676`). For prefill, `LatentMoERunner` switches to a column-parallel tier that reads the same weight as a row shard, at 1/tp of the FLOPs (`latent_moe_runner.py:25-51`).
+
+**Q10.** Why does `KimiLinearModel.forward` return **pre-norm** hidden states and apply `model.norm` in `compute_logits`? What does K3 hand EAGLE3/DFlash as an aux state under AttnRes?
+**A.** The MTP draft consumes pre-norm `h` (`model.py:1413-1414,1689-1696`). Under AttnRes there is no single residual stream, so aux capture returns either the prefix sum (default) or, with `VLLM_KIMI_K3_AUX_ATTN_RES_STREAM=1`, the AttnRes mixture that the _next_ layer would consume, computed with that layer's `self_attention_res_{norm,proj}` (`:1246-1281`; #50487). This mixture cannot cross a PP boundary (`:1226-1232,1268`).
+
+**Q11 (bonus).** Which slots does the KDA metadata builder use for a spec batch with RecoverSSM, and why can one CUDA graph replay any mix of 1..k+1 query lengths?
+**A.** It uses `spec_state_slots=1` (only the checkpoint slot, `kda_metadata.py:323,550-552`). The builder declares `AttentionCGSupport.ALWAYS`. KDA reads per-request offsets from the device `query_start_loc` within a fixed k+1 window, and padding rows are staged with `NULL_BLOCK_ID` and `num_accepted=1` (`:303-306,624-648`).
+
+---
+
+---

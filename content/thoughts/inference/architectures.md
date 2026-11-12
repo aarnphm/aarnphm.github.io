@@ -1,14 +1,20 @@
+---
+title: 'Inference architectures'
+---
+
 # new architectures in vllm: dsv4.1, kimi k3, qwen3.8-flash-next, replayssm
 
-vllm main @ `c059bee81` (2026-10-11). all `path:line` refs are to that tree. sources: code, ~6000 commits of history (back to 2026-05-21), arXiv/blogs read through a fetcher. slack was unreachable (connector failed to connect), and huggingface.co is blocked from this sandbox, so HF config numbers are second-hand unless cross-checked against code arithmetic (marked where it matters).
+vllm main @ `c059bee81` (2026-10-11). all `path:line` refs are to that tree. sources: code, ~6000 commits of history (back to 2026-05-21), arXiv/blogs read through a fetcher. Slack was unavailable through the connector, and huggingface.co was blocked from the research environment, so HF config numbers are second-hand unless cross-checked against code arithmetic (marked where it matters).
 
-| file                         | what                                                                                                                     |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| [dsv41.md](dsv41.md)         | DeepSeek-V4.1-Flash: CSA2 + cross-layer KV reuse, encoder/decoder split, Engram, delayed mHC, SWA bounded replay, DSpark |
-| [kimik3.md](kimik3.md)       | Kimi K3: 69 KDA + 24 NoPE-MLA, Block AttnRes, latent MoE, recurrent-state prefix checkpoints, RecoverSSM                 |
-| [qwen4next.md](qwen4next.md) | Qwen3.8-Flash-Next = `Qwen4Exp`: QSA, Gated-Residual hyper-connections, PLE (Engram under another name), QSA-MTP         |
-| [replayssm.md](replayssm.md) | ReplaySSM for Mamba2 (Johnny Liou's kernel, Andrii Skliar's FlashInfer + MTP backends)                                   |
-| [grill-key.md](grill-key.md) | per-model questions with answer keys. spoilers; the grill runs in the thread                                             |
+For the model grill questions, see the [architecture review index](architecture-review.md).
+
+| file                                                                            | what                                                                                                                     |
+| ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| [[thoughts/papers/deepseekai2026deepseekv41flashpushinglimitskv\|dsv41.md]]     | DeepSeek-V4.1-Flash: CSA2 + cross-layer KV reuse, encoder/decoder split, Engram, delayed mHC, SWA bounded replay, DSpark |
+| [[thoughts/papers/kimiteam2026kimik3openfrontier\|kimik3.md]]                   | Kimi K3: 69 KDA + 24 NoPE-MLA, Block AttnRes, latent MoE, recurrent-state prefix checkpoints, RecoverSSM                 |
+| [[thoughts/papers/qiu2026designqwen38nextarchitectureevaluation\|qwen4next.md]] | Qwen3.8-Flash-Next = `Qwen4Exp`: QSA, Gated-Residual hyper-connections, PLE (Engram under another name), QSA-MTP         |
+| [[thoughts/inference/replayssm\|replayssm.md]]                                  | ReplaySSM for Mamba2 (Johnny Liou's kernel, Andrii Skliar's FlashInfer + MTP backends)                                   |
+| [[thoughts/inference/architecture-review\|grill-key.md]]                        | per-model questions with answer keys; spoilers, consult after answering                                                  |
 
 ---
 

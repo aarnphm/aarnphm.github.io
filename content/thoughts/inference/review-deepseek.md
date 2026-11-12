@@ -1,0 +1,57 @@
+---
+title: 'DeepSeek-V4.1-Flash review'
+---
+
+# grill answer keys (spoilers)
+
+questions with answer keys from each section. the quiz also draws on cross-cutting questions; read the answers only after responding.
+
+---
+
+# DeepSeek-V4.1-Flash
+
+## grill questions (answer key follows each)
+
+**Q1.** During a 10k-token prefill, layers 21..39 compute only 128 rows per request, yet decode later attends over all 10k positions at those layers. Where does that global KV come from, and what exactly is lost?
+
+> Ratio-1 layers 21..39 own no compressed cache. They read layer 20's full-length (ratio-1) cache plus index K, both projected from layer 20's input H(L/2). `write_kv` writes these for every row before trimming (`nvidia/model.py:627-659`, `attention.py:689-715`, `get_kv_cache_spec` returns None for non-sources `:1143`). What is lost is exactness of the decoder layers' SWA KV and hidden states for the first rows of the window: their SWA is clamped at `kv_start = max(replay_start, seq_len−128)` (`model_state.py:131-134`). That is the report's train-aware approximation.
+
+**Q2.** Why did #59894 move the replay cut from layer 21 to layer 20, and what state did that let it delete?
+
+> Layers 21..23 consume `topk_indices_buffer`, and 24..36 consume `candidate_block_buffer`, both written per row by layer 20's indexer (index and candidate source). With the cut at 21, those row-indexed buffers held full-batch rows and had to be compacted in place to replay rows (`row_buffers`, removed in the diff). With layer 20 inside the replay batch, its indexer writes per-replay-row directly. The KV that every row needs is produced by `forward_kv` beforehand, which is also why layer 20's SWA metadata keeps the batch's `replay_start` rather than `kept_kv_start` (`model_state.py:529-542`).
+
+**Q3.** Derive 890 B/token, and say what changes on H200.
+
+> SM100 + mega attention + `nvfp4_ds_mla` + MXFP4 indexer: main = 288·(½+½+½+1) = 720, index = 68·(½+½+½+1) = 170. On H200 (SM90) `_use_v41_mxfp8_kv_record()` is False, so the record is the 584 B V4 record (576-aligned) and NVFP4 is rejected (`attention.py:128-130, 523-527`): 584·2.5 = 1460 + index (132·2.5 = 330 FP8) ≈ 1790.
+
+**Q4.** A request hits 1000 cached tokens through local prefix caching, with block size 256 and window 128. Walk through the scheduler and worker.
+
+> The hit is 768, because local hits are block-aligned; external hits are trimmed by `ext_tokens -= ext_tokens % block_size`, `scheduler.py:1004`. 768 > 128, so it is kept. `_mark_prefix_replay` sets `replay_start = 640` and rewinds `num_computed_tokens` to 640 (`:3113-3131`). The worker pads slots for positions 640..767 in all prefix-cacheable groups, so compressed, index-K and ring writes are skipped (`model_state.py:69-98`, `compressor_utils.py:197-203`). Only SWA KV is rebuilt, with SWA clamped at 640 (`sparse_swa.py:369-371`). Tokens 768+ compute normally.
+
+**Q5.** Same request, but the KV arrives through NIXL P/D. What differs, and why does P stop at N−1?
+
+> NIXL reports all transfer groups loaded (`nixl/connector.py:170-171`), SWA included, so `_load_restores_replay_window` is True: no block trim, `replay_start=0` (`scheduler.py:993-1004, 3104-3111`). P computes N−1 tokens (`_prefill_backoff`, `nixl/base_scheduler.py:379-395`) so the transferred window is laid out for the last token D recomputes; replay would not fix it after a load. A Mooncake _store_ / CPU offload hit returns only the prefix-cacheable groups and replays.
+
+**Q6.** Engram at layer 14 needs the token ids at p−1..p−3. Where do they come from on a P/D decode instance's first chunk, and why not from the KV cache?
+
+> The slot `hash_cache` is keyed on the first local layer's SWA slots, but it is not KV, so a transfer does not fill it. MRv2 passes `lookback_token_ids` gathered from `req_states.all_token_ids` at `num_computed−1−k` (`model_state.py:41-66, 278-298`), and they take precedence (`engram.py:27-35`). Without them, the model raises unless the slot cache is in use (`nvidia/model.py:956-965`).
+
+**Q7.** You port V4's `build_deepseek_v4_rope` unchanged. Which layers break, and how?
+
+> V4 selects `compress_rope_theta` and YaRN iff `compress_ratio > 1`. In V4.1, ratio 1 is a compressed layer, so layers 20..39 (and layer 20's compressor insert) would get theta 10000 with no YaRN. Their compressed KV and queries would be rotated inconsistently with the checkpoint (`M41/common/rope.py:23-33`).
+
+**Q8.** Why is the ratio-2 compressor ring safe to exclude from prefix caching, and what was #58560?
+
+> Prefix hits must align to every cacheable spec's `tokens_per_state` (`kv_cache_utils.py:887-897`). Ratio 2 forces even hits, so no open group spans a hit boundary, and the ring only ever holds the current open group plus spec drafts (capacity ≥ k+2, `compressor.py:150-153`). #58560: padding and dummy rows map to block 0 (null), and the ring kernel wrote `0*cap+pos%cap` into it. Fix: mask `block != 0` (`compressor.py:78-84`).
+
+**Q9.** In layer l, which pre-mix collapses the attention input and which the FFN input? What collapses the final output, and why must Engram finalize the preceding MoE?
+
+> Attention uses the pre-mix carried in from layer l−1's FFN (identity / copy 0 for layer 0). The FFN uses layer l's attention pre-mix (`model.py:491-493, 599-613`). The final collapse uses the last FFN pre-mix, since there is no hc_head (`:1066-1070`). Engram needs the explicit previous post (`mhc_post_tilelang`) on the full hc stream before its own pre (`:531-561`). That stops the post from folding into the fused post+pre GEMM, so the layer before it cannot defer its MoE finalize into that boundary's all-reduce (`:789-798`).
+
+**Q10.** You enable a custom drafter with sliding_window 256 on V4.1. What silently changes, and why?
+
+> Decoder replay is disabled (`_decoder_replay_supported`, `model.py:1227-1235`). The drafter reads target aux hidden states at layers 37..39, which exist only for the last 128 kept rows in replay steps. A wider-window or non-SWA drafter would read zeros (trimmed rows stay zero, `decoder_replay_layers.py:125-130`). Prefill then pays for all 40 layers on every token. DSpark itself is fine: window 128, all `sliding_attention`, context KV only for the window.
+
+---
+
+---

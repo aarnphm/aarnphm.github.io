@@ -1,0 +1,48 @@
+---
+title: 'ReplaySSM review'
+---
+
+# grill answer keys (spoilers)
+
+questions with answer keys from each section. the quiz also draws on cross-cutting questions; read the answers only after responding.
+
+---
+
+# ReplaySSM
+
+## Grill questions (with answer key)
+
+1. **On a non-flush step, which HBM traffic does Triton ReplaySSM eliminate, and why is the kernel ceiling ~2×?**
+   It eliminates the full-state store. `S_0` is still loaded every step for `S_0·C` (`selective_state_update_replayssm_output_only.py:317-331`). The store happens only in the flush branch (`:458`). Traffic is about R + W/L + ring ≈ 0.55× of R+W.
+
+2. **Why is `B·C` precomputed per group in a separate kernel, and why does that kernel launch even when every row flushes?**
+   `k_jᵀq` is per group, so there is a 16× reuse for 128 heads / 8 groups (`:25-118`). It always launches because a host-side branch can't be captured in a CUDA graph. Flush rows self-skip instead (`:65-68`, `:602-604`).
+
+3. **Triton, L=16, request just admitted with a 100-token prompt. At which decode step is the first state write, and what is `write_pos` at num_computed=117?**
+   `decode_base = 100` (`gpu_input_batch.py:387-390`), so `write_pos = (num_computed−100) mod 16` and the first flush is at num_computed=115 (`write_pos 15`, `mamba_attn.py:570-573`). At 117, write_pos = 1 in none mode. In align mode with block 16, the anchor is max(100,112)=112, so write_pos=5 (`tests/v1/attention/test_replayssm_metadata_builder.py:119-121`).
+
+4. **Why does FlashInfer need a ring of L+1 (or L+1+K) rows while Triton uses L?**
+   Triton folds the current token into the flush and never stores row L−1. FlashInfer replays up to `prev ≤ L` committed rows plus appends the T current rows before host bookkeeping moves `ring_start`. So live rows reach L+T (`mamba_utils.py:243-246`; FI doc: logical window = RING_BUFFER_LEN − T).
+
+5. **Under MTP, why is the tracker commit done by the _first_ layer and the standard-decode advance by the _last_ layer?**
+   The commit consumes the previous step's acceptance and must precede every layer's read. The advance mutates cursors the current step reads, so it must follow the last layer. Trackers are shared per KV-cache group (`mamba_mixer2.py:1152-1215`, `:908-935`, `:1039`).
+
+6. **How is a rejected draft token "rolled back" for the SSM state and for the conv state?**
+   SSM: nothing to do. Its ring row lies past `ring_start+prev`, and the commit adds only `num_accepted` (`ssu_dispatch.py:111-124`). No per-draft state exists (`abstract.py:77-83`). Conv: `causal_conv1d_update(num_accepted_tokens=…)` as in the baseline (`mixer2:937-952`).
+
+7. **Why are trackers per KV-cache group and not global or per layer?**
+   Slot indices are a per-group namespace: different groups may give the same request different block IDs (`mixer2:1155-1164`). Per layer would be redundant, since all layers in a group advance identically.
+
+8. **Why is `--use-replayssm` incompatible with P/D disaggregation and KV offload, and what would you need to fix it?**
+   `ssm_state` is a stale checkpoint between flushes. The true state is checkpoint + ring + cursor, and the cursor is not in the page (CPU `decode_base` for Triton, GPU trackers for FI). Validator: `config/vllm.py:3430-3437`. A fix would either force a flush before save/transfer or ship the rings plus cursors and re-anchor `decode_base`/trackers on load.
+
+9. **Why does the e2e test compare logprobs instead of greedy ids, and what did #60515 change?**
+   Replay arithmetic differs: a single exp of the summed decay, bf16 `scale⊙B` before the GEMM, and one rounding per flush instead of per step. That can flip near-ties (`test_replayssm_decode.py:56-58`). #60515 only swapped the prompts for the FI NVFP4 model, because that model isn't reproducible across engine instances (`:28-33`).
+
+10. **Memory math: Nemotron-3-Super geometry, fp32 state, MTP K=3, L=16. ReplaySSM vs baseline per request per Mamba layer?**
+    Baseline is (1+3)×4 MiB = 16 MiB (`kv_cache_interface.py:1082`, `num_speculative_blocks=3`). Replay is 4 MiB + ring 20×(128·64·2 + 128·4) + 8·20·128·2 = 370 KiB ≈ 4.36 MiB, so ≈3.7× less (conv state excluded).
+
+11. **Kimi-K3 accepts `--use-replayssm`. What does it actually run, and why can't it cache `(x,B,dt)` like Mamba2?**
+    It runs RecoverSSM (spec only, `kda.py:594-596`). KDA/GDN updates are state-dependent: `u = β(v − S k)`. It caches `u` (correction, fp32) and `k‖g` (`mamba_utils.py:330-347`), after which recovery is linear rank-1 folding.
+
+---
