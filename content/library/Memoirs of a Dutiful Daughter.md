@@ -5,15 +5,15 @@ author:
   - '[[thoughts/Simone de Beauvoir|Simone de Beauvoir]]'
 category:
   - philosophy
-date: '2025-12-06'
-description: first volume of de beauvoir's autobiography, tracing her youth in bourgeois paris, rejection of catholicism, and early intellectual development leading to her relationship with sartre.
-finished: null
+date: 2025-12-06
+description: a four-book first volume of de beauvoir's autobiography, tracing her youth in bourgeois paris, rejection of catholicism, and early intellectual development leading to her relationship with sartre.
+finished: 2026
 id: Memoirs of a Dutiful Daughter
 modified: 2026-11-09 10:17:10 GMT-05:00
-notebook: null
-pdf: null
+notebook:
+pdf:
 posters: '[[library/posters/memoirs-of-a-dutiful-daughter.jpg|memoirs-of-a-dutiful-daughter.jpg]]'
-status: current
+status: finished
 subcategory:
   - love
   - o/relationship
@@ -34,3 +34,7 @@ Zaza's father had belonged to [[thoughts/Le Sillon|Le Sillon]], the Catholic dem
 - **p. 131, envy:** explore Beauvoir's argument against envy alongside the way her father communicates grievances and disagreements. What happens to a grievance when it is explained as envy? Does that explanation account for the disagreement, or allow its substance to go unexamined? Distinguish the judgments she inherits from her father from the account she gives of them as the memoir's author.
 
 ## Jacques
+
+draft: _in a world full of Jacques, be more like Sartre_
+
+## Zaza
