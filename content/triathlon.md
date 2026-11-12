@@ -77,25 +77,27 @@ layout: triathlon
 maintenance:
   OSPW:
     - - type: Ultegra R8100 Pulley Wheel
-      - distance: 1335
+      - distance: 1335.00
+      - id: ultegra
       - range:
           - end: '2026-08-10'
             start: '2026-05-16'
       - reason: upgrades to CeramicSpeed OSPW
     - - type: CeramicSpeed OSPW RS 5 Spoke
-      - distance: 799.02
+      - id: ceramicspeed
+      - distance: 2215.13
       - range:
           - end: null
             start: '2026-08-10'
   bottom bracket:
     - - type: FSA, T47 BBright for 24mm spindle
-      - distance: null
+      - distance: 3101.78
       - range:
           - end: '2026-10-08'
             start: '2026-05-16'
       - reason: upgrades to CeramicSpeed
     - - type: CeramicSpeed T47 BBright for Shimano
-      - distance: 380.62
+      - distance: 486.31
       - range:
           - end: null
             start: '2026-10-08'
@@ -108,7 +110,7 @@ maintenance:
             start: '2026-05-16'
       - reason: upgrades to BRAKCO Graphene
     - - type: BRAKCO Airpads Graphene Venting Disc Brake Pads
-      - distance: 380.62
+      - distance: 1796.73
       - range:
           - end: null
             start: '2026-08-26'
@@ -116,41 +118,83 @@ maintenance:
   chain:
     '1':
       chainring: ultegra
-      distance: 621
+      cycles:
+        - end: '2026-07-16'
+          reasoning: upgrade to new chain for race
+      distance: 751.81
       lubricant: Muc-Off Dry Lube
       ospw: ultegra
       since: '2026-05-16'
+      wax: null
       waxed: false
     '2':
       chainring: ultegra
-      distance: 419.42
+      cycles:
+        - end: '2026-08-10'
+          reasoning: upgrade to waxed drip-on
+      distance: 619.84
       lubricant: Muc-Off Dry Lube
       ospw: ultegra
       since: '2026-07-16'
       waxed: false
     '3':
       chainring: ultegra
-      distance: 418.39
+      cycles:
+        - end: '2026-08-26'
+          reasoning: upgrade to carbon-ti, need new chainring
+      distance: 453.57
       lubricant: UFO Wax Drip-On
       ospw: ceramicspeed
       since: '2026-08-10'
+      wax: null
       waxed: true
     '4':
       chainring: carbonti
-      distance: 380.62
+      cycles:
+        - end: '2026-11-12'
+          reasoning: waxed with cyclowax
+      distance: 1774.35
       lubricant: UFO Wax Drip-On
       ospw: ceramicspeed
+      range:
+        - end: '2026-11-11'
+          start: '2026-08-26'
       since: '2026-08-26'
+      status: backup
+      wax: Cyclowax Performance Tablet
+      waxKit:
+        name: Cyclowax Performance Wax Kit
+        url: https://www.cyclowax.com/en-ca/products/performance-wax-kit
+      waxed: true
+    '5':
+      chainring: carbonti
+      cycles:
+        - end: '2026-11-12'
+          reasoning: waxed with cyclowax
+      distance: 22.39
+      lubricant: null
+      ospw: ceramicspeed
+      range:
+        - end: null
+          start: '2026-11-12'
+      since: '2026-11-12'
+      status: active
+      wax: Cyclowax Performance Tablet
+      waxKit:
+        name: Cyclowax Performance Wax Kit
+        url: https://www.cyclowax.com/en-ca/products/performance-wax-kit
       waxed: true
   chainrings:
     - - type: Ultegra FC-R8100 52-36T
+      - id: ultegra
       - distance: 1731.28
       - range:
           - end: '2026-08-22'
             reason: upgrades to CarbonTi
             start: '2026-05-16'
     - - type: CarbonTi 54-40T
-      - distance: 380.62
+      - id: carbonti
+      - distance: 1796.73
       - range:
           - end: null
             reason: null
@@ -163,7 +207,7 @@ maintenance:
             start: '2026-05-16'
       - reason: upgrades to Selle Italia SLR 3D Elite L3 145mm
     - - type: Selle Italia SLR 3D Elite L3 145mm
-      - distance: 11.34
+      - distance: 426.22
       - range:
           - end: null
             start: '2026-10-09'
@@ -184,7 +228,7 @@ maintenance:
                 start: '2026-05-16'
           - reason: training to race tires
         - - type: Pirelli P Zero Race TLR RS 700x28c
-          - distance: 619.84
+          - distance: null
           - range:
               - end: '2026-08-10'
                 reason: punctures
@@ -193,7 +237,7 @@ maintenance:
                 reason: big big punctures GG
                 start: '2026-09-07'
         - - type: Pirelli P Zero Race SL-R 700x28c
-          - distance: 776.9
+          - distance: null
           - range:
               - end: null
                 reason: null
@@ -225,7 +269,7 @@ maintenance:
                 start: '2026-07-16'
           - reason: punctures
         - - type: Pirelli P Zero TPU
-          - distance: 776.9
+          - distance: 2193.00
           - range:
               - end: null
                 reason: null
@@ -253,13 +297,13 @@ maintenance:
                 reason: big punctures cut
                 start: '2026-08-12'
         - - type: Pirelli P Zero Race TLR RS 700x28c
-          - distance: null
+          - distance: 888.50
           - range:
               - end: '2026-10-05'
                 reason: upgrade to HUNT wheelset
                 start: '2026-09-07'
         - - type: Pirelli P Zero Race TLR RS 700x28c
-          - distance: null
+          - distance: 522.06
           - range:
               - end: null
                 reason: null
@@ -273,7 +317,7 @@ maintenance:
                 repaired: true
                 start: '2026-07-16'
         - - type: Pirelli P Zero TPU
-          - distance: 521.66
+          - distance: 1937.76
           - range:
               - end: '2026-09-03'
                 reason: slow punctures
@@ -283,18 +327,18 @@ maintenance:
                 start: '2026-09-04'
   wheelset:
     - - type: Reserve 40|44 Road
-      - distance: 2760.16
+      - distance: 3018.30
       - range:
           - end: '2026-10-05'
             reason: rotates to HUNT 54_58 Aerodynamicist UD Carbon Spoke
             start: '2026-05-16'
     - - type: HUNT 54_58 Aerodynamicist UD Carbon Spoke
-      - distance: 0
+      - distance: 522.06
       - range:
           - end: null
             start: '2026-10-05'
       - reason: null
-modified: 2026-11-07 19:16:26 GMT-05:00
+modified: 2026-11-12 15:07:34 GMT-05:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'

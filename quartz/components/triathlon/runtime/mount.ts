@@ -28,6 +28,7 @@ import {
   setupSeasonSummary,
 } from '../shell/presentation'
 import { setupShortcuts } from '../shell/shortcuts'
+import { releaseQueuedTap } from '../shell/tap-queue'
 import { setup } from '../shell/timeline'
 import { setupCalc } from '../tools/calculator-controller'
 import { setupCalculatorTabs } from '../tools/calculator-tabs'
@@ -109,6 +110,8 @@ export const mountTriathlon = (signal: AbortSignal): MountedTriathlon => {
   }
   if (root) addCleanup(setupCalendarPanel(root))
   addCleanup(setupCalendars(context))
+  // last: every control is listening before a tap held from before the mount is replayed
+  if (root) addCleanup(releaseQueuedTap(root))
   let active = true
   const cleanup = (): void => {
     if (!active) return

@@ -1,11 +1,47 @@
+import { useId } from 'preact/hooks'
 import type {
+  TriathlonComponentMaintenance,
   TriathlonMaintenance,
   TriathlonMaintenanceRange,
 } from '../../../util/triathlon-maintenance'
 import { formatTriathlonMaintenanceDistance } from '../../../util/triathlon-maintenance'
 
+const componentAnchor = (scope: string, index: number) => `${scope}-component-${index}`
+
+const ComponentLink = ({
+  id,
+  component,
+  components,
+  scope,
+}: {
+  id: string | undefined
+  component: string
+  components: TriathlonComponentMaintenance[]
+  scope: string
+}) => {
+  if (!id) return null
+  const matches = components.flatMap((entry, index) =>
+    entry.component === component && entry.id === id ? [{ entry, index }] : [],
+  )
+  const match = matches.length === 1 ? matches[0] : undefined
+  return (
+    <span>
+      <span data-i18n={component}>{component}</span>:{' '}
+      {match ? (
+        <a href={`#${componentAnchor(scope, match.index)}`} data-no-popover>
+          {match.entry.type}
+        </a>
+      ) : (
+        id
+      )}
+    </span>
+  )
+}
+
 const MaintenanceDistance = ({ distanceMiles }: { distanceMiles: number | null }) =>
-  distanceMiles === null ? null : (
+  distanceMiles === null ? (
+    <span>–</span>
+  ) : (
     <span class="tri-unit-distance" data-kind="maintenance" data-mi={distanceMiles}>
       {formatTriathlonMaintenanceDistance(distanceMiles, 'imperial')}
     </span>
@@ -61,6 +97,7 @@ const ServiceRecords = ({ maintenance }: { maintenance: TriathlonMaintenance }) 
             </div>
             <span class="tri-maintenance-meta">
               <span>{entry.date}</span>
+              {entry.type && <span>{entry.type}</span>}
               <MaintenanceDistance distanceMiles={entry.distanceMiles} />
             </span>
           </li>
@@ -70,7 +107,13 @@ const ServiceRecords = ({ maintenance }: { maintenance: TriathlonMaintenance }) 
   )
 }
 
-const ComponentRecords = ({ maintenance }: { maintenance: TriathlonMaintenance }) => {
+const ComponentRecords = ({
+  maintenance,
+  scope,
+}: {
+  maintenance: TriathlonMaintenance
+  scope: string
+}) => {
   if (maintenance.components.length === 0) return null
   return (
     <div class="tri-maintenance-group">
@@ -78,8 +121,8 @@ const ComponentRecords = ({ maintenance }: { maintenance: TriathlonMaintenance }
         components
       </span>
       <ol class="tri-maintenance-list">
-        {maintenance.components.map(entry => (
-          <li class="tri-maintenance-entry">
+        {maintenance.components.map((entry, index) => (
+          <li class="tri-maintenance-entry" id={componentAnchor(scope, index)} tabIndex={-1}>
             <div class="tri-maintenance-entry-head">
               <span class="tri-maintenance-entry-label" data-i18n={entry.component}>
                 {entry.component}
@@ -98,7 +141,13 @@ const ComponentRecords = ({ maintenance }: { maintenance: TriathlonMaintenance }
   )
 }
 
-const ChainRecords = ({ maintenance }: { maintenance: TriathlonMaintenance }) => {
+const ChainRecords = ({
+  maintenance,
+  scope,
+}: {
+  maintenance: TriathlonMaintenance
+  scope: string
+}) => {
   if (maintenance.chains.length === 0) return null
   return (
     <div class="tri-maintenance-group">
@@ -107,23 +156,83 @@ const ChainRecords = ({ maintenance }: { maintenance: TriathlonMaintenance }) =>
       </span>
       <ol class="tri-maintenance-list">
         {maintenance.chains.map(entry => (
-          <li class="tri-maintenance-entry">
+          <li class="tri-maintenance-entry" data-chain-id={entry.id}>
             <div class="tri-maintenance-entry-head">
               <span class="tri-maintenance-entry-label">
                 <span data-i18n="chain">chain</span> {entry.id}
               </span>
-              <span class="tri-maintenance-entry-name">{entry.lubricant}</span>
+              <span class="tri-maintenance-entry-name">
+                {entry.wax ?? entry.lubricant ?? '–'}
+                {entry.wax && (
+                  <span class="tri-maintenance-tag" data-i18n="wax">
+                    wax
+                  </span>
+                )}
+                {entry.status && (
+                  <span class="tri-maintenance-tag" data-i18n={entry.status}>
+                    {entry.status}
+                  </span>
+                )}
+              </span>
             </div>
             <span class="tri-maintenance-meta">
-              <span>
-                <span data-i18n="since">since</span> {entry.since}
-              </span>
+              {entry.ranges ? (
+                entry.ranges.map(range => (
+                  <span>
+                    {range.start} → {range.end ?? <span data-i18n="current">current</span>}
+                  </span>
+                ))
+              ) : (
+                <span>
+                  <span data-i18n="since">since</span> {entry.since}
+                </span>
+              )}
               <MaintenanceDistance distanceMiles={entry.distanceMiles} />
               <span>
                 <span data-i18n="waxed">waxed</span>{' '}
                 <span data-i18n={entry.waxed ? 'yes' : 'no'}>{entry.waxed ? 'yes' : 'no'}</span>
               </span>
             </span>
+            <span class="tri-maintenance-meta">
+              <ComponentLink
+                id={entry.chainring}
+                component="chainrings"
+                components={maintenance.components}
+                scope={scope}
+              />
+              <ComponentLink
+                id={entry.ospw}
+                component="OSPW"
+                components={maintenance.components}
+                scope={scope}
+              />
+              {entry.waxKit && (
+                <span>
+                  <a href={entry.waxKit.url}>{entry.waxKit.name}</a>
+                </span>
+              )}
+            </span>
+            {entry.cycles && entry.cycles.length > 0 && (
+              <ol
+                class="tri-maintenance-cycles"
+                aria-label="chain cycles"
+                data-i18n-aria-label="chain cycles"
+              >
+                {entry.cycles.map((cycle, index) => (
+                  <li class="tri-maintenance-meta">
+                    <span>
+                      <span data-i18n="cycle">cycle</span> {index + 1}
+                    </span>
+                    <span>
+                      {cycle.start && <>{cycle.start} → </>}
+                      {cycle.end ?? <span data-i18n="current">current</span>}
+                    </span>
+                    <MaintenanceDistance distanceMiles={cycle.distanceMiles} />
+                    {cycle.reasoning && <span>{cycle.reasoning}</span>}
+                  </li>
+                ))}
+              </ol>
+            )}
           </li>
         ))}
       </ol>
@@ -162,6 +271,7 @@ const WheelRecords = ({ maintenance }: { maintenance: TriathlonMaintenance }) =>
 }
 
 export const Maintenance = ({ maintenance }: { maintenance: TriathlonMaintenance | null }) => {
+  const scope = useId()
   if (!maintenance) return null
   return (
     <section class="tri-maintenance" aria-label="maintenance" data-i18n-aria-label="maintenance">
@@ -169,8 +279,8 @@ export const Maintenance = ({ maintenance }: { maintenance: TriathlonMaintenance
         maintenance
       </span>
       <ServiceRecords maintenance={maintenance} />
-      <ComponentRecords maintenance={maintenance} />
-      <ChainRecords maintenance={maintenance} />
+      <ComponentRecords maintenance={maintenance} scope={scope} />
+      <ChainRecords maintenance={maintenance} scope={scope} />
       <WheelRecords maintenance={maintenance} />
     </section>
   )

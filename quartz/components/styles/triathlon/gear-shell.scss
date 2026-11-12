@@ -18,7 +18,8 @@
 .tri-pace-btn,
 .tri-map-btn,
 .tri-calendar-btn,
-.tri-analytics-btn {
+.tri-analytics-btn,
+.triathlon a.tri-fun-link {
   padding: 0;
   background: none;
   border: 0;
@@ -34,6 +35,18 @@
   &:hover {
     color: var(--dark);
     border-bottom-color: var(--dark);
+  }
+}
+
+// Tapped before the runtime mounted (shell/tap-queue.ts): the control holds the tap in ink,
+// with a static mark, until the runtime opens it.
+.triathlon [data-tri-queued] {
+  color: var(--dark);
+  border-bottom-color: var(--dark);
+  cursor: progress;
+
+  > span:first-child::after {
+    content: ' …';
   }
 }
 

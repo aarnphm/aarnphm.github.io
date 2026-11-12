@@ -360,6 +360,7 @@ const toolsMarkdown = (opts: TriathlonMarkdownOptions): string => {
             ranges: maintenanceRangeText(entry.ranges),
             distanceMiles: entry.distanceMiles,
             reason: entry.reason,
+            id: entry.id ?? null,
           })),
           { title: 'maintenance.components', headingDepth: 3 },
         ),
@@ -371,6 +372,26 @@ const toolsMarkdown = (opts: TriathlonMarkdownOptions): string => {
             since: entry.since,
             distanceMiles: entry.distanceMiles,
             waxed: entry.waxed,
+            wax: entry.wax ?? null,
+            waxKit: entry.waxKit?.name ?? null,
+            waxKitUrl: entry.waxKit?.url ?? null,
+            status: entry.status ?? null,
+            chainring: entry.chainring ?? null,
+            ospw: entry.ospw ?? null,
+            ranges: entry.ranges ? maintenanceRangeText(entry.ranges) : null,
+            cycles:
+              entry.cycles
+                ?.map(cycle =>
+                  [
+                    cycle.start,
+                    cycle.end ?? 'current',
+                    cycle.distanceMiles === null ? null : `${cycle.distanceMiles} mi`,
+                    cycle.reasoning,
+                  ]
+                    .filter(value => value !== null)
+                    .join(' · '),
+                )
+                .join('; ') ?? null,
           })),
           { title: 'maintenance.chains', headingDepth: 3 },
         ),

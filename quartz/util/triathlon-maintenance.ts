@@ -5,12 +5,26 @@ import { isRecord, type UnknownRecord } from './type-guards'
 export type TriathlonMaintenancePosition = 'front' | 'rear'
 export type TriathlonMaintenancePart = 'tire' | 'tube'
 
+export interface TriathlonChainCycle {
+  start: string | null
+  end: string | null
+  reasoning: string | null
+  distanceMiles: number | null
+}
+
 export interface TriathlonChainMaintenance {
   id: string
   distanceMiles: number | null
-  lubricant: string
+  lubricant: string | null
   since: string
   waxed: boolean
+  chainring?: string
+  ospw?: string
+  wax?: string | null
+  waxKit?: { name: string; url: string }
+  status?: 'active' | 'backup' | 'retired'
+  cycles?: TriathlonChainCycle[]
+  ranges?: TriathlonMaintenanceRange[]
 }
 
 export interface TriathlonMaintenanceRange {
@@ -19,6 +33,7 @@ export interface TriathlonMaintenanceRange {
 }
 
 export interface TriathlonComponentMaintenance {
+  id?: string
   component: string
   type: string
   distanceMiles: number | null
@@ -31,6 +46,7 @@ export interface TriathlonServiceMaintenance {
   date: string
   distanceMiles: number | null
   place: string
+  type?: string | null
 }
 
 export interface TriathlonWheelMaintenance {
@@ -83,13 +99,45 @@ const parseChain = (id: string, value: unknown): TriathlonChainMaintenance | nul
   const waxed = value.waxed
   if (
     distanceMiles === undefined ||
-    typeof lubricant !== 'string' ||
+    (lubricant !== null && typeof lubricant !== 'string') ||
     typeof since !== 'string' ||
     typeof waxed !== 'boolean'
   ) {
     return null
   }
-  return { id, distanceMiles, lubricant, since, waxed }
+  const chain: TriathlonChainMaintenance = { id, distanceMiles, lubricant, since, waxed }
+  if (typeof value.chainring === 'string') chain.chainring = value.chainring
+  if (typeof value.ospw === 'string') chain.ospw = value.ospw
+  const wax = nullableString(value, 'wax')
+  if (wax !== undefined) chain.wax = wax
+  if (value.status === 'active' || value.status === 'backup' || value.status === 'retired')
+    chain.status = value.status
+  if (
+    isRecord(value.waxKit) &&
+    typeof value.waxKit.name === 'string' &&
+    typeof value.waxKit.url === 'string' &&
+    /^https?:\/\//.test(value.waxKit.url)
+  )
+    chain.waxKit = { name: value.waxKit.name, url: value.waxKit.url }
+  if (Array.isArray(value.cycles)) {
+    chain.cycles = value.cycles.filter(isRecord).flatMap(cycle => {
+      const end = nullableString(cycle, 'end')
+      if (end === undefined) return []
+      return [
+        {
+          start: nullableString(cycle, 'start') ?? null,
+          end,
+          reasoning: nullableString(cycle, 'reasoning') ?? null,
+          distanceMiles: nullableDistanceMiles(cycle) ?? null,
+        },
+      ]
+    })
+  }
+  if (value.range !== undefined) {
+    const ranges = parseRanges(value)
+    if (ranges) chain.ranges = maintenanceRanges(ranges)
+  }
+  return chain
 }
 
 const mergeMaintenanceFields = (value: unknown): UnknownRecord | null => {
@@ -215,6 +263,7 @@ const parseComponentEntry = (
   const metadata = parseRangeMetadata(record, ranges)
   if (!metadata) return null
   return {
+    ...(typeof record.id === 'string' ? { id: record.id } : {}),
     component,
     type,
     distanceMiles,
@@ -245,9 +294,15 @@ const parseServiceEntry = (bike: string, value: unknown): TriathlonServiceMainte
   const date = value.date
   const distanceMiles = nullableDistanceMiles(value)
   const place = value.place
-  if (typeof date !== 'string' || distanceMiles === undefined || typeof place !== 'string')
+  const type = nullableString(value, 'type')
+  if (
+    typeof date !== 'string' ||
+    distanceMiles === undefined ||
+    typeof place !== 'string' ||
+    (value.type !== undefined && type === undefined)
+  )
     return null
-  return { bike, date, distanceMiles, place }
+  return { bike, date, distanceMiles, place, type: type ?? null }
 }
 
 const parseServices = (value: unknown): TriathlonServiceMaintenance[] => {

@@ -1,6 +1,6 @@
 .tri-maintenance-heading {
   color: var(--dark);
-  font-size: 0.62rem;
+  font-size: var(--text-meta);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -13,8 +13,8 @@
 }
 
 .tri-maintenance-group-label {
-  color: var(--gray);
-  font-size: 0.58rem;
+  color: var(--darkgray);
+  font-size: var(--text-meta);
   line-height: 1.45;
   text-transform: uppercase;
 }
@@ -46,12 +46,12 @@
   grid-template-columns: 4.5rem minmax(0, 1fr);
   gap: 0.55rem;
   align-items: baseline;
-  font-size: 0.64rem;
+  font-size: var(--text-meta);
   line-height: 1.4;
 }
 
 .tri-maintenance-entry-label {
-  color: var(--gray);
+  color: var(--darkgray);
   text-wrap: balance;
   white-space: normal;
 }
@@ -66,13 +66,56 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.08rem 0.45rem;
-  color: var(--gray);
-  font-size: 0.52rem;
+  color: var(--darkgray);
+  font-size: var(--text-meta);
   line-height: 1.45;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+
+  > span {
+    min-width: 0;
+  }
 
   > span + span::before {
     content: '·';
     margin-inline-end: 0.45rem;
+  }
+}
+
+.tri-maintenance-tag {
+  display: inline-block;
+  margin-inline-start: 0.45rem;
+  padding: 0 0.25rem;
+  border: 1px solid var(--gray);
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-size: var(--text-meta);
+  text-transform: uppercase;
+}
+
+.tri-maintenance-cycles {
+  display: grid;
+  gap: 0.2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tri-maintenance {
+  a:focus-visible,
+  .tri-maintenance-entry:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+
+  .tri-maintenance-entry:target {
+    background: color-mix(in srgb, var(--dark) 6%, var(--light));
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    a:hover {
+      text-decoration: underline;
+    }
   }
 }
 
