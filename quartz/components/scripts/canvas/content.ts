@@ -3,6 +3,13 @@ import type { NodeData } from './data'
 import { fetchCanonical } from '../../../util/fetch-canonical'
 import { normalizeRelativeURLs } from '../../../util/path'
 import { loadPageStyles } from '../page-styles'
+import {
+  createPdfEmbed,
+  isPdfUrl,
+  mountPdfPreviews,
+  pdfPageFromHash,
+  PDF_PREVIEW_OPTIONS,
+} from '../popover/pdf-preview'
 import { cleanupHydratedRoot } from '../root-lifecycle'
 
 // page chunks share one `marked` module, so canvas options stay off its global instance
@@ -88,6 +95,7 @@ export async function hydrateFileNodeContent(
       detail: { article: container, content: container, slug: node.resolvedSlug },
     })
     document.dispatchEvent(event)
+    mountPdfPreviews(container)
   } finally {
     if (isActive()) {
       container.dataset.loading = 'false'
@@ -98,6 +106,18 @@ export async function hydrateFileNodeContent(
 async function getFileNodeMarkup(node: NodeData): Promise<string | null> {
   const targetUrl = resolveFileNodeUrl(node)
   if (!targetUrl) return null
+  if (isPdfUrl(targetUrl)) {
+    const article = document.createElement('article')
+    const pdf = createPdfEmbed(targetUrl.toString(), node.displayName, {
+      ...PDF_PREVIEW_OPTIONS,
+      page: pdfPageFromHash(targetUrl.hash),
+    })
+    pdf.style.height = '100%'
+    pdf.style.minHeight = '0'
+    pdf.style.margin = '0'
+    article.append(pdf)
+    return article.outerHTML
+  }
   targetUrl.hash = ''
 
   const cacheKey = targetUrl.toString()
