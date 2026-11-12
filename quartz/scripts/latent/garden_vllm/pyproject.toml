@@ -1,0 +1,17 @@
+[project]
+name = "garden-vllm"
+version = "0.1.0"
+description = "Gemma 4 E4B transcoder readout, steering and taps as a vLLM general plugin"
+requires-python = ">=3.11"
+dependencies = ["torch", "numpy", "safetensors"]
+
+[project.entry-points."vllm.general_plugins"]
+garden = "garden_vllm.plugin:register"
+
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["garden_vllm"]
+package-dir = { "garden_vllm" = "." }

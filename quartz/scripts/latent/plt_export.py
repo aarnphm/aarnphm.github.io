@@ -61,7 +61,7 @@ def sidecar_of(log: Path | None, content: Path) -> str:
 
 
 CARD = """---
-license: gemma
+license: apache-2.0
 base_model: google/gemma-4-e4b-it
 tags: [transcoder, interpretability, circuit-tracing, gemma4, mlx]
 ---

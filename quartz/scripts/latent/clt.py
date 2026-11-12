@@ -50,7 +50,9 @@ from typing import Iterable, Iterator
 import numpy as np
 import torch
 
-Batch = dict[tuple[int, str], torch.Tensor]  # (layer, 'in' | 'out') -> (n, d), acts.stream() shape
+Batch = dict[
+  tuple[int, str], torch.Tensor
+]  # (layer, 'in' | 'out') -> (n, d), acts.stream() shape
 
 
 def log(*args: object) -> None:
@@ -71,9 +73,9 @@ class CLT(torch.nn.Module):
     self.L, self.d, self.M, self.k, self.span = L, d, M, k, span
     self.W_enc = torch.nn.Parameter(torch.zeros(L, d, M))
     self.b_enc = torch.nn.Parameter(torch.zeros(L, M))
-    self.W_dec = torch.nn.ParameterList(
-      [torch.nn.Parameter(torch.zeros(M, self.reach(s), d)) for s in range(L)]
-    )
+    self.W_dec = torch.nn.ParameterList([
+      torch.nn.Parameter(torch.zeros(M, self.reach(s), d)) for s in range(L)
+    ])
     self.b_dec = torch.nn.Parameter(torch.zeros(L, d))
     # fixed once fitted: scales, input mean, the linear part of each layer
     self.register_buffer('sx', torch.ones(L))
@@ -99,11 +101,15 @@ class CLT(torch.nn.Module):
     """Normalised inputs, codes and reconstructions for every target layer:
     ({s: x'_s}, {s: (pre, z)}, {t: y'_t hat}, {t: y'_t})"""
     L = self.L
-    xc = {l: batch[l, 'in'].float() / self.sx[l] - self.b_pre[l] for l in range(L)}
+    xc = {
+      l: batch[l, 'in'].float() / self.sx[l] - self.b_pre[l] for l in range(L)
+    }
     codes = {s: self.encode(s, xc[s]) for s in range(L)}
     # one matmul a source: z_s (n, M) @ W_dec_s (M, S_l * d), split over its targets
     writes = {
-      s: (codes[s][1] @ self.W_dec[s].reshape(self.M, -1)).reshape(-1, self.reach(s), self.d)
+      s: (codes[s][1] @ self.W_dec[s].reshape(self.M, -1)).reshape(
+        -1, self.reach(s), self.d
+      )
       for s in range(L)
     }
     recon, target = {}, {}
@@ -135,7 +141,11 @@ class Moments:
   from centred x' to y' (transcoders.py Transcoder.fit, all layers at once)."""
 
   def __init__(self, L: int, d: int, dev: torch.device):
-    z = lambda *s: torch.zeros(*s, dtype=torch.float64 if dev.type != 'mps' else torch.float32, device=dev)
+    z = lambda *s: torch.zeros(
+      *s,
+      dtype=torch.float64 if dev.type != 'mps' else torch.float32,
+      device=dev,
+    )
     self.n = 0
     self.sxx = z(L)
     self.syy = z(L)
@@ -169,7 +179,9 @@ class Moments:
       G = self.xx[l] / n / sx**2 - torch.outer(mx_, mx_)
       C = self.xy[l] / n / (sx * sy) - torch.outer(mx_, my_)
       lam = 1e-2 * torch.trace(G) / G.shape[0]
-      W = torch.linalg.solve(G + lam * torch.eye(G.shape[0], dtype=G.dtype, device=G.device), C)
+      W = torch.linalg.solve(
+        G + lam * torch.eye(G.shape[0], dtype=G.dtype, device=G.device), C
+      )
       m.sx[l], m.sy[l] = sx, sy
       m.b_pre[l] = mx_.float()
       m.b_dec[l] = my_.float()
@@ -187,7 +199,9 @@ def seed_dictionary(m: CLT, seed: list[Batch]) -> None:
   if not seed:
     return
   dev = m.sx.device
-  batch = {k: torch.cat([b[k] for b in seed])[-m.M :].to(dev).float() for k in seed[0]}
+  batch = {
+    k: torch.cat([b[k] for b in seed])[-m.M :].to(dev).float() for k in seed[0]
+  }
   if batch[0, 'in'].shape[0] < m.M:
     log(f'seed set has {batch[0, "in"].shape[0]} < M tokens: random init')
     for s in range(m.L):
@@ -211,7 +225,10 @@ def load_plt(m: CLT, plt: Path) -> None:
   with torch.no_grad():
     for l in range(m.L):
       w = load_file(str(plt / f'L{l:02d}.safetensors'))
-      m.sx[l], m.sy[l] = float(w['sx'].reshape(-1)[0]), float(w['sy'].reshape(-1)[0])
+      m.sx[l], m.sy[l] = (
+        float(w['sx'].reshape(-1)[0]),
+        float(w['sy'].reshape(-1)[0]),
+      )
       m.b_pre[l] = w['b_pre'].float()
       m.W_skip[l] = w['W_skip'].float()
       m.b_dec[l] = w['b_dec'].float()
@@ -227,7 +244,11 @@ def from_plt(plt: Path, L: int | None = None) -> CLT:
   L = L or len(files)
   w0 = load_file(str(files[0]))
   d, M = w0['W_enc'].shape
-  k = json.loads((plt / 'L00.json').read_text())['k'] if (plt / 'L00.json').exists() else 64
+  k = (
+    json.loads((plt / 'L00.json').read_text())['k']
+    if (plt / 'L00.json').exists()
+    else 64
+  )
   m = CLT(L, d, M, k, 1)
   with torch.no_grad():
     for l in range(L):
@@ -263,7 +284,9 @@ def score(m: CLT, batches: Iterable[Batch], tokens: int) -> list[float]:
   return [round(float(v), 4) for v in sse / var]
 
 
-def loss_of(m: CLT, batch: Batch, dead: torch.Tensor | None, aux: float = 1 / 32):
+def loss_of(
+  m: CLT, batch: Batch, dead: torch.Tensor | None, aux: float = 1 / 32
+):
   """Σ_t SSE_t / var_t (each target layer's FVU), plus AuxK: the 2k strongest dead latents of
   each source try to explain what its own layer's reconstruction missed."""
   xc, codes, recon, target = m(batch)
@@ -291,7 +314,9 @@ def loss_of(m: CLT, batch: Batch, dead: torch.Tensor | None, aux: float = 1 / 32
   return total, torch.stack(fvu), fired
 
 
-def shuffled(batches: Iterable[Batch], capacity: int, size: int, seed: int = 0) -> Iterator[Batch]:
+def shuffled(
+  batches: Iterable[Batch], capacity: int, size: int, seed: int = 0
+) -> Iterator[Batch]:
   """Mix tokens across forward batches: hold up to `capacity` tokens, hand out `size` at a time
   drawn at random. Neighbouring tokens of one passage are correlated; a trainer fed one passage
   at a time sees a topic per step."""
@@ -314,14 +339,18 @@ def read_cache(path: Path, batch: int, passes: int = 1) -> Iterator[Batch]:
   meta = json.loads((path / 'meta.json').read_text())
   d, n = meta['d'], meta['tokens']
   mm = {
-    (l, p): np.memmap(path / f'L{l:02d}.{p}.bf16', np.uint16, 'r', shape=(n, d))
+    (l, p): np.memmap(
+      path / f'L{l:02d}.{p}.bf16', np.uint16, 'r', shape=(n, d)
+    )
     for l in meta['layers']
     for p in meta['parts']
   }
   for _ in range(passes):
     for a in range(0, n - batch + 1, batch):
       yield {
-        k: torch.from_numpy(np.array(v[a : a + batch]).view(np.int16)).view(torch.bfloat16)
+        k: torch.from_numpy(np.array(v[a : a + batch]).view(np.int16)).view(
+          torch.bfloat16
+        )
         for k, v in mm.items()
       }
 
@@ -335,12 +364,21 @@ def save(m: CLT, out: Path, info: dict) -> None:
   f32 = lambda t: t.detach().to('cpu', torch.float32).contiguous()
   for l in range(m.L):
     save_file(
-      dict(W_enc=bf(m.W_enc[l]), b_enc=f32(m.b_enc[l]), b_pre=f32(m.b_pre[l]), sx=f32(m.sx[l : l + 1])),
+      dict(
+        W_enc=bf(m.W_enc[l]),
+        b_enc=f32(m.b_enc[l]),
+        b_pre=f32(m.b_pre[l]),
+        sx=f32(m.sx[l : l + 1]),
+      ),
       str(out / 'enc' / f'L{l:02d}.safetensors'),
     )
-    save_file(dict(W_dec=bf(m.W_dec[l])), str(out / 'dec' / f'L{l:02d}.safetensors'))
     save_file(
-      dict(W_skip=bf(m.W_skip[l]), b_dec=f32(m.b_dec[l]), sy=f32(m.sy[l : l + 1])),
+      dict(W_dec=bf(m.W_dec[l])), str(out / 'dec' / f'L{l:02d}.safetensors')
+    )
+    save_file(
+      dict(
+        W_skip=bf(m.W_skip[l]), b_dec=f32(m.b_dec[l]), sy=f32(m.sy[l : l + 1])
+      ),
       str(out / 'skip' / f'L{l:02d}.safetensors'),
     )
   torch.save(m.state_dict(), out / 'state.pt')
@@ -384,7 +422,9 @@ def train(
       if moments.n >= fit_tokens:
         moments.solve(m)
         moments = None
-        log(f'fitted moments on {tokens} tokens; sx {m.sx.mean():.3g} sy {m.sy.mean():.3g}')
+        log(
+          f'fitted moments on {tokens} tokens; sx {m.sx.mean():.3g} sy {m.sy.mean():.3g}'
+        )
       continue
     t = step
     warm = min(1.0, (t + 1) / max(1.0, min(500, 0.05 * steps)))
@@ -424,19 +464,40 @@ def train(
 
 def main() -> None:
   ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
-  ap.add_argument('--cache', type=Path, required=True, help='an acts.py cache over all layers')
+  ap.add_argument(
+    '--cache',
+    type=Path,
+    required=True,
+    help='an acts.py cache over all layers',
+  )
   ap.add_argument('--out', type=Path, default=None)
   ap.add_argument('--M', type=int, default=4096)
   ap.add_argument('-k', type=int, default=32)
   ap.add_argument('--span', type=int, default=4)
   ap.add_argument('--steps', type=int, default=4000)
   ap.add_argument('--batch', type=int, default=4096)
-  ap.add_argument('--buffer', type=int, default=65536, help='tokens in the shuffle buffer')
+  ap.add_argument(
+    '--buffer', type=int, default=65536, help='tokens in the shuffle buffer'
+  )
   ap.add_argument('--passes', type=int, default=3)
   ap.add_argument('--lr', type=float, default=2e-4)
-  ap.add_argument('--init-plt', type=Path, default=None, help='take sx, sy, b_pre, W_skip, b_dec from it')
-  ap.add_argument('--engine', default=None, help='manifest engine; default from the cache meta')
-  ap.add_argument('--score', type=Path, default=None, help='only print per-layer FVU of this PLT set on --cache')
+  ap.add_argument(
+    '--init-plt',
+    type=Path,
+    default=None,
+    help='take sx, sy, b_pre, W_skip, b_dec from it',
+  )
+  ap.add_argument(
+    '--engine',
+    default=None,
+    help='manifest engine; default from the cache meta',
+  )
+  ap.add_argument(
+    '--score',
+    type=Path,
+    default=None,
+    help='only print per-layer FVU of this PLT set on --cache',
+  )
   ap.add_argument('--score-tokens', type=int, default=200_000)
   a = ap.parse_args()
 
@@ -445,9 +506,15 @@ def main() -> None:
   if a.score:
     m = from_plt(a.score, L).to(device())
     got = score(m, read_cache(a.cache, 1024), a.score_tokens)
-    print(json.dumps(dict(plt=str(a.score), engine=meta.get('engine', 'mlx-4bit'), fvu=got)))
+    print(
+      json.dumps(
+        dict(plt=str(a.score), engine=meta.get('engine', 'mlx-4bit'), fvu=got)
+      )
+    )
     return
-  assert meta['layers'] == list(range(L)), 'a CLT needs layers 0..L-1 contiguous'
+  assert meta['layers'] == list(range(L)), (
+    'a CLT needs layers 0..L-1 contiguous'
+  )
   out = a.out or Path('quartz/.quartz-cache/latent-clt') / (
     f'{meta["sidecar"][:8]}-w{a.M}-k{a.k}-s{a.span}'
   )
