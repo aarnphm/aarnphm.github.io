@@ -11,6 +11,8 @@ cd /Users/aarnphm/workspace/garden/content/hinterland/audiooutput
 just run
 ```
 
+`just install` adds a Finder alias at `/Applications/Audio Output.app` and registers the app for Raycast and Spotlight. The alias follows the bundle in this checkout across rebuilds.
+
 Choose an output beside an application or site. **Normal output** removes the override. **Pause** releases routes without deleting assignments. Disconnected devices fall back to normal playback and resume when reconnected. Grant System Audio Recording access for native-app routes.
 
 Each application and site has a 0–300% volume slider in 5% steps and a 100% reset. Volume is saved independently of the output selection; native applications can follow the system output with a volume override. 0% mutes, 200% doubles sample amplitude, and 300% triples it. Native output clamps peaks to full scale, so boosting loud material can distort. Pause restores normal playback.
@@ -47,11 +49,15 @@ Sites return to normal output when paused, when the bridge disconnects, or withi
 just check           # Swift build and plist validation
 just extension-check # JavaScript syntax
 just build           # release app and stable local signature
+just install         # build and add the Applications launcher
+just icons           # regenerate the SVG, PNG, ICNS and menu-bar artwork
 just probe           # real tap + render check through two installed BlackHole devices
 python3 scripts/verify-bridge.py
 ```
 
 The app is at `dist/Audio Output.app`. The build selects the sole available code-signing identity, or uses `AUDIOOUTPUT_SIGN_IDENTITY` when specified. A stable identity preserves the designated requirement across rebuilds. With multiple identities, select one explicitly. `AUDIOOUTPUT_SIGN_IDENTITY=-` opts into ad-hoc signing; each changed binary then needs renewed permissions. Local builds are not notarized.
+
+`Resources/logo.svg` is the transparent Garden headphone mascot; `app-icon.svg` adds the macOS icon background. The menu-bar artwork uses a monochrome template and shows pause bars when routing is paused. Regenerate artwork with the repository's pnpm dependencies installed.
 
 `AudioOutput --inventory` lists connected outputs and audio processes. `AudioOutput --probe PID OUTPUT_UID 5` temporarily routes one live process, reports rendered/nonzero frames, and verifies resource cleanup. Integration fixtures and results go to `docs/verification/audiooutput/artifacts/` at the repository root.
 
