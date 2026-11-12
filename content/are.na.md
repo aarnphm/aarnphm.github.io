@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-11-10 09:07:38 GMT-05:00
+modified: 2026-11-12 09:03:01 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -853,6 +853,16 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/kasratweets/status/2112637236340736042 -- Kasra on stepping away from self-help Substacks
+  - [meta]:
+    - date: 11/12/2026
+    - tags: [self-help, online reading]
+    - later: true
+- https://x.com/QiaochuYuan/status/2112613711601078349 -- Qiaochu Yuan shares a psychoanalytic reading of Elizabeth Holmes
+  - [meta]:
+    - date: 11/12/2026
+    - tags: [psychoanalysis, elizabeth holmes]
+    - later: true
 - https://x.com/0xadvit/status/2114210602570969163 -- Advit reacts to Qwen neuron steering
   - [meta]:
     - date: 11/10/2026
@@ -21808,6 +21818,11 @@ title: are.na
 
 ## finances
 
+- https://x.com/JesusFerna7026/status/2112519061800128883 -- Saving for the Machines: AI and capital accumulation
+  - [meta]:
+    - date: 11/12/2026
+    - tags: [capital accumulation, economics of ai]
+    - later: true
 - https://substack.com/home/post/p-220232175?selection=a783b057-708b-4062-bb16-15888967c973#:~:text=Enormous%20profits%20require%20paying%20no%20people%20for%20anything%2C%20just%20selling%20the%20products%2C%20seemingly%20to%20other%20makers%20of%20machines%2C%20who%20also%20seek%20enormous%20profits -- The Shrugflation Triangle: How AI, Oil, and Treasuries are Impacting the Economy
   - [meta]:
     - date: 11/09/2026
@@ -22793,6 +22808,36 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=LewVEF2B_pM -- Strandbeest Evolution 2017
+  - [meta]:
+    - date: 11/12/2026
+    - tags: [kinetic sculpture, wind power]
+    - later: true
+- https://www.youtube.com/watch?v=1e1eLe1ihT0 -- Collider by Les Horribles Cernettes
+  - [meta]:
+    - date: 11/12/2026
+    - tags: [music video, particle physics]
+    - later: true
+- https://www.youtube.com/watch?v=f0J_EeW42Lo -- What Robert Caro learned about power after studying it for 50 years
+  - [meta]:
+    - date: 11/12/2026
+    - tags: [political biography, research methods]
+    - later: true
+- https://www.youtube.com/watch?v=AyuPvUvaOBw -- maybe you don't need to book a flight
+  - [meta]:
+    - date: 11/12/2026
+    - tags: [local travel, outdoor adventure]
+    - later: true
+- https://www.youtube.com/watch?v=TMlHr_MAPWU -- Mima’s skincare routine
+  - [meta]:
+    - date: 11/12/2026
+    - tags: [skincare, personal routines]
+    - later: true
+- https://www.youtube.com/watch?v=euporvWd6C4 -- woman discusses men on the internet
+  - [meta]:
+    - date: 11/12/2026
+    - tags: [looksmaxxing, beauty standards]
+    - later: true
 - https://en.wikipedia.org/wiki/Into_the_Wild_(film) -- Into the Wild (film)
   - [meta]:
     - date: 11/10/2026
@@ -23543,6 +23588,11 @@ title: are.na
 
 ## tools
 
+- https://x.com/lvwerra/status/2112556991482610014 -- Agent Manager for coordinating coding agents on Hugging Face Spaces
+  - [meta]:
+    - date: 11/12/2026
+    - tags: [coding agents, agent orchestration]
+    - later: true
 - https://en.wikipedia.org/wiki/Nawmal -- Nawmal
   - [meta]:
     - date: 11/10/2026
