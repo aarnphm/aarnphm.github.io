@@ -1,0 +1,118 @@
+filters:
+  and:
+    - file.hasTag("vllm")
+    - file.ext == "md"
+    - or:
+        - file.inFolder("thoughts/papers")
+        - file.inFolder("hinterland/papers/maps/prs")
+formulas:
+  type: if(file.hasTag("vllm-pr"), "pr", "paper")
+  notes: note.cited_by.map(value.toString().split("#")[0].split("|")[0].split("/").slice(-2).join("/")).unique().join(" · ")
+properties:
+  note.cited_by:
+    displayName: cited by
+  file.tags:
+    displayName: tags
+  formula.notes:
+    displayName: notes
+views:
+  - type: table
+    name: papers
+    filters:
+      and:
+        - file.inFolder("thoughts/papers")
+    groupBy:
+      property: topic
+      direction: ASC
+    order:
+      - title
+      - author
+      - arxiv
+      - cited_by
+      - pdf
+    sort:
+      - property: arxiv
+        direction: ASC
+    columnSize:
+      note.title: 401
+      note.author: 205
+      note.arxiv: 130
+      note.cited_by: 420
+  - type: cards
+    name: gallery
+    filters:
+      and:
+        - file.inFolder("thoughts/papers")
+    groupBy:
+      property: topic
+      direction: ASC
+    order:
+      - title
+      - author
+      - arxiv
+      - topic
+    sort:
+      - property: arxiv
+        direction: ASC
+    cardSize: 300
+  - type: table
+    name: by topic
+    groupBy:
+      property: topic
+      direction: ASC
+    order:
+      - title
+      - formula.type
+      - formula.notes
+      - cited_by
+    sort:
+      - property: formula.type
+        direction: ASC
+      - property: title
+        direction: ASC
+    columnSize:
+      note.title: 420
+      formula.type: 80
+      formula.notes: 260
+  - type: table
+    name: by note
+    groupBy:
+      property: formula.notes
+      direction: ASC
+    order:
+      - title
+      - formula.type
+      - topic
+      - cited_by
+    sort:
+      - property: formula.type
+        direction: ASC
+      - property: title
+        direction: ASC
+    columnSize:
+      note.title: 420
+      formula.type: 80
+  - type: table
+    name: PRs
+    filters:
+      and:
+        - file.hasTag("vllm-pr")
+    groupBy:
+      property: topic
+      direction: ASC
+    order:
+      - number
+      - title
+      - state
+      - merged
+      - cited_by
+      - source
+    sort:
+      - property: number
+        direction: ASC
+    columnSize:
+      note.number: 80
+      note.title: 420
+      note.state: 80
+      note.merged: 110
+      note.cited_by: 320
