@@ -11,6 +11,8 @@ Download and verify the supplied Instagram post, then archive it in the current 
 
 A bare Instagram post or reel URL means download its media using this local workflow. Start without asking what to do with the link. An explicit request to discuss, summarize, or inspect the post takes precedence over this default.
 
+Book and place intake, including bare links in an established intake chat, uses acquisition only. Follow `harness/library-intake/README.md` or the `garden-add-place` skill in the Garden checkout. Keep captures and provenance under `docs/verification/<task>/artifacts/`; skip the Garden archive step, attribution updates, and capture embeds in notes. Book covers still belong in `content/library/posters/`. A separate explicit archive request follows the archive workflow below.
+
 - Accept `/p/`, `/reel/`, and `/reels/` links, including sharing query parameters. Use `~/Downloads/instagram-<shortcode>/` as the processing folder and record the canonical post URL without sharing parameters.
 - Save all carousel items in order. For videos, include the available audio in the MP4 and export separate M4A and MP3 files. Preserve original image bytes.
 - Use `scripts/process-media.py`, then complete the Garden archive workflow below. Return links to the final Garden files with sizes, dimensions, duration where applicable, and any unavailable audio.
