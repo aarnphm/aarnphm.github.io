@@ -7,7 +7,7 @@ flashcards:
   default: true
 id: word
 layout: technical
-modified: 2026-11-09 10:13:14 GMT-05:00
+modified: 2026-11-14 09:54:50 GMT-05:00
 tags:
   - evergreen
 title: lists
@@ -390,3 +390,8 @@ title: lists
 - Sitzfleisch
 - Feierabend
 - obscurantism
+- lugubrious
+- rapturous
+- contemptuous
+- vicaity
+- buttress
