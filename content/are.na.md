@@ -5461,6 +5461,905 @@ title: are.na
 
 ## places
 
+- https://www.google.com/maps?cid=5465583344063692624 -- Toum Mayfair
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [51.5133137, -0.1419977]
+    - address: 18a Maddox Street, London W1S 1PL, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=8104948195608948830 -- Kismet Borough Market
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [51.5054783, -0.08989219999999999]
+    - address: 8 Bedale Street, London SE1 9AL, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=13116415333809689326 -- Sessions Arts Club
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [51.5226427, -0.1060103]
+    - address: 24 Clerkenwell Green, London EC1R 0NA, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=8605481131035212650 -- Crispin Spitalfields
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [51.5183098, -0.0760406]
+    - address: White’s Row, London E1 7NF, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=9546964277304626785 -- Project 44 Shoreditch
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop, bar]
+    - coord: [51.5260399, -0.0810892]
+    - address: 44 Rivington Street, London EC2A 3QP, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=7330322076876945572 -- Redchurch Townhouse
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [hotel]
+    - coord: [51.524151, -0.07443899999999999]
+    - address: 25–27 Whitby Street, London E1 6JU, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=3514113171774969310 -- Nina Marylebone
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [51.5171482, -0.1515263]
+    - address: 18 Thayer Street, London W1U 3JY, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=5990004441403614789 -- Hawksmoor Martini Bar St Pancras
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bar]
+    - coord: [51.5296393, -0.1260918]
+    - address: St Pancras London, Euston Road, London NW1 2AR, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=16771760064322610541 -- Tatar Bunar Shoreditch
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [51.5268939, -0.08015309999999999]
+    - address: 152 Curtain Road, London EC2A 3AT, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=15781307181754000481 -- Sir Devonshire Square
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [hotel]
+    - coord: [51.51641069999999, -0.0778552]
+    - address: 5 Devonshire Square, London EC2M 4YE, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=1879245097555194260 -- Café 1001 Brick Lane
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop, bar]
+    - coord: [51.5209341, -0.0719882]
+    - address: 91 Brick Lane, London E1 6QL, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=11394571745074556113 -- Brutto Farringdon
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [51.5198142, -0.102394]
+    - address: 35–37 Greenhill Rents, London EC1M 6BN, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=9759060330689362089 -- Dan’s Dalston
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bar]
+    - coord: [51.5451914, -0.0763589]
+    - address: 2–4 Tottenham Road, London N1 4BZ, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=2475987911548006616 -- Lagana Shoreditch
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [51.5252276, -0.0823184]
+    - address: 19 Willow Street, London EC2A 3HU, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=6413044158276329641 -- Abuelo Marylebone
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop]
+    - coord: [51.5171108, -0.1435053]
+    - address: 7–11 Cavendish Place, London W1G 0QD, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=10600745809345511899 -- Carmela’s Pizzeria Islington
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [51.5401429, -0.1027873]
+    - address: 149A Upper Street, London N1 1RA, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=1445846711456998484 -- Söderberg The Meadows
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bakery, coffee shop]
+    - coord: [55.94358889999999, -3.1918361]
+    - address: 27 Simpson Loan, Edinburgh EH3 9GG, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=9873491510138249808 -- Söderberg Morningside
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bakery, coffee shop]
+    - coord: [55.92770429999999, -3.2095036]
+    - address: 310 Morningside Road, Edinburgh EH10 4QQ, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=11342268795940054176 -- Söderberg Stockbridge
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bakery, coffee shop]
+    - coord: [55.9582314, -3.2090518]
+    - address: 3 Deanhaugh St, Edinburgh EH4 1LU, United Kingdom
+    - later: true
+
+- https://www.openstreetmap.org/node/2335634468 -- Söderberg Quartermile Bakery Shop
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bakery, coffee shop]
+    - coord: [55.9437031, -3.1924053]
+    - address: 33 Simpson Loan, Edinburgh EH3 9GG, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=12698465574194431675 -- Söderberg Broughton Street
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bakery, coffee shop]
+    - coord: [55.9575501, -3.1883962]
+    - address: 45 Broughton St, Edinburgh EH1 3JU, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=2615078818675237013 -- Söderberg Pavilion
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bakery, coffee shop]
+    - coord: [55.9439643, -3.1938768]
+    - address: 1 Lister Sq, Edinburgh EH3 9GL, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=14578422336031702892 -- Söderberg West End
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bakery, coffee shop]
+    - coord: [55.9510375, -3.2098247]
+    - address: 31a Queensferry St, Edinburgh EH2 4QS, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=8072964476255417571 -- Knoops Edinburgh New Town
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop]
+    - coord: [55.9522659, -3.203672]
+    - address: 106 George St, Edinburgh EH2 3HT, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=15913120939362356431 -- Knoops Edinburgh Old Town
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop]
+    - coord: [55.9486321, -3.1933861]
+    - address: 11-15 Victoria St, Edinburgh EH1 2HE, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=9389720346333370962 -- Cairngorm Coffee West End
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop]
+    - coord: [55.9512015, -3.2110444]
+    - address: 1 Melville Pl, Edinburgh EH3 7PR, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=2637132008616362922 -- Cairngorm Coffee South Side
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop]
+    - coord: [55.9396717, -3.2043871]
+    - address: 49 Barclay Pl, Edinburgh EH10 4HW, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=3331370254158188095 -- The Milkman 7 Cockburn Street
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop]
+    - coord: [55.9506877, -3.1909208]
+    - address: 7 Cockburn St, Edinburgh EH1 1BP, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=15118379116364263230 -- The Milkman 52 Cockburn Street
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop]
+    - coord: [55.9504116, -3.1885376]
+    - address: 52 Cockburn St, Edinburgh EH1 1PB, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=17644846766673943420 -- Rocksalt Café Leith
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop]
+    - coord: [55.97487659999999, -3.1673541]
+    - address: 46 Constitution St, Leith, Edinburgh EH6 6RS, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=11965481792205085693 -- Rocksalt Café Jeffrey Street
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop]
+    - coord: [55.95093499999999, -3.184114]
+    - address: 12-14 Jeffrey St, Edinburgh EH1 1DT, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=16868402635900102686 -- Rocksalt Café Merchiston
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop]
+    - coord: [55.93581349999999, -3.210333]
+    - address: 1 Merchiston Pl, Edinburgh EH10 4NP, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=1717147457582806025 -- Curiouser & Curiouser Broughton Street
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [shop]
+    - coord: [55.958606, -3.18986]
+    - address: 93 Broughton St, Edinburgh EH1 3RZ, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=17678332236464863895 -- Curiouser & Curiouser Bruntsfield
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [shop]
+    - coord: [55.9371555, -3.2072139]
+    - address: 106 Bruntsfield Pl, Edinburgh EH10 4ES, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=10572691095556452293 -- Waterstones Edinburgh West End
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bookstore]
+    - coord: [55.9507848, -3.2047522]
+    - address: 128 Princes St., Edinburgh EH2 4AD, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=17629446972866505038 -- Waterstones Edinburgh Cameron Toll
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bookstore]
+    - coord: [55.9273778, -3.164334]
+    - address: Cameron Toll Shopping Centre, 6 Lady Road, Edinburgh EH16 5PB, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=17539287599200172532 -- Waterstones Edinburgh Fort Kinnaird
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bookstore]
+    - coord: [55.9340267, -3.1041117]
+    - address: 31B Newcraighall Rd, Edinburgh EH15 3RD, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=13697116072172094057 -- Waterstones Edinburgh Gyle
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bookstore]
+    - coord: [55.9387117, -3.3131636]
+    - address: Gyle Shopping Centre, Edinburgh EH12 9JY, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=10983175634298761299 -- Casa Laveni
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [hotel]
+    - coord: [45.467246, 9.1861635]
+    - address: Via dei Bossi, 5, 20121 Milano MI, Italy
+    - later: true
+  - A base for exploring central Milan.
+
+- https://www.google.com/maps?cid=2341079721160933295 -- Marchesi 1824 Santa Maria alla Porta
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bakery, coffee shop]
+    - coord: [45.4655917, 9.1806772]
+    - address: Via Santa Maria alla Porta, 11/a, 20123 Milano MI, Italy
+    - later: true
+  - Stop for coffee and a pastry.
+
+- https://www.google.com/maps?cid=6037823531583582260 -- Villa Necchi Campiglio
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [museum]
+    - coord: [45.4683715, 9.201793499999999]
+    - address: Via Mozart, 14, 20122 Milano MI, Italy
+    - later: true
+  - Prioritise the house tour.
+
+- https://www.google.com/maps?cid=4461719690872413869 -- Dimoregallery San Vittore al Teatro
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [art gallery]
+    - coord: [45.4650725, 9.1824423]
+    - address: Via S. Vittore Al Teatro, 1/3, 20123 Milano MI, Italy
+    - later: true
+  - The gallery moved to Via San Vittore al Teatro in April 2026.
+
+- https://www.google.com/maps?cid=16373198739810112245 -- Vincenzo De Cotiis Gallery
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [art gallery]
+    - coord: [45.4698701, 9.1906501]
+    - address: Via Privata Fratelli Gabba, 1a, 20121 Milano MI, Italy
+    - later: true
+  - Visits are by appointment.
+
+- https://www.google.com/maps?cid=4795855511704575676 -- Casa Museo Boschi Di Stefano
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [museum, art gallery]
+    - coord: [45.4789013, 9.211463799999999]
+    - address: Via Giorgio Jan, 15, 20129 Milano MI, Italy
+    - later: true
+  - Explore the apartment collection, including works by Lucio Fontana.
+
+- https://www.google.com/maps?cid=1532867229801060255 -- Fondazione Prada Milano
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [museum, art gallery]
+    - coord: [45.44435559999999, 9.2052072]
+    - address: L.go Isarco, 2, 20139 Milano MI, Italy
+    - later: true
+  - Allow a couple of hours to explore.
+
+- https://www.google.com/maps?cid=1837730608790956679 -- Antica Trattoria della Pesa
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [45.4817604, 9.1840235]
+    - address: Viale Pasubio, 10, 20154 Milano MI, Italy
+    - later: true
+  - A dinner stop for Milanese cooking.
+
+- https://www.google.com/maps?cid=8035631314609604084 -- The Marshmallow Lady
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [shop]
+    - coord: [55.9623459, -3.196237]
+    - address: 14 Rodney St, Edinburgh EH7 4EA, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=334323560635741319 -- Preacher's Patisserie
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bakery]
+    - coord: [55.9462571, -3.2013604]
+    - address: 24-26 Lady Lawson St, Edinburgh EH3 9DS, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=16740106641585824848 -- Sloe Lane Bakery
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bakery]
+    - coord: [55.968766, -3.1736202]
+    - address: 106 Leith Walk, Edinburgh EH6 5DT, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=5531720433983707057 -- Peregrine Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bakery]
+    - coord: [55.9441582, -3.181147]
+    - address: 207 Pleasance, Edinburgh EH8 9RU, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=15825322403691524082 -- Lannan Bakery
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bakery]
+    - coord: [55.9597946, -3.2067364]
+    - address: 29-35 Hamilton Pl, Edinburgh EH3 5BA, United Kingdom
+    - later: true
+  - Order ahead for pick-up.
+
+- https://www.google.com/maps?cid=8844054657941122568 -- Meh. Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop]
+    - coord: [55.9514659, -3.2117233]
+    - address: 2 Drumsheugh Pl, Edinburgh EH3 7PT, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=8539614604227008667 -- Cappuccino Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop]
+    - coord: [55.9511919, -3.1848541]
+    - address: 25 Jeffrey St, Edinburgh EH1 1DH, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=14995211837570530799 -- Room & Rumours Coffee
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop]
+    - coord: [55.95141049999999, -3.1852007]
+    - address: Arch 13, 25 East Market Street, Edinburgh EH8 8FS, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=2227018744195978325 -- Uplands Roast
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop]
+    - coord: [55.9425143, -3.1900303]
+    - address: George Square Lane, Edinburgh EH8 9LD, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=3104562764715722173 -- Kate's Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop]
+    - coord: [55.9372324, -3.1807696]
+    - address: 116 Causewayside, Edinburgh EH9 1PU, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=10523229449021435389 -- Singapore Coffee House
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop]
+    - coord: [55.9624422, -3.1976218]
+    - address: 5 Canonmills, Edinburgh EH3 5HA, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=7090040034919870534 -- Pie in the Sky Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [shop]
+    - coord: [55.9506859, -3.1893225]
+    - address: 47 Cockburn St, Edinburgh EH1 1BS, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=17924259040498244617 -- Eden Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [shop]
+    - coord: [55.9506907, -3.1896732]
+    - address: 37 Cockburn St, Edinburgh EH1 1BP, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=18406754362360659644 -- MYSA Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [shop]
+    - coord: [55.9506969, -3.1898631]
+    - address: 31 Cockburn St, Edinburgh EH1, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=698664251293274647 -- Tron Kirk Market
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [market]
+    - coord: [55.9500329, -3.1877519]
+    - address: 122 High St, Edinburgh EH1 1SG, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=6376270800495975513 -- Isle of Skye Candle Company Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [shop]
+    - coord: [55.9482882, -3.1947272]
+    - address: 93 W Bow, Edinburgh EH1 2JP, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=14679084332569047863 -- The Red Door Gallery
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [art gallery, shop]
+    - coord: [55.9484949, -3.1945707]
+    - address: 42 Victoria St, Edinburgh EH1 2JW, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=2952265587815706075 -- Royal Mile Silver
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [shop]
+    - coord: [55.95093749999999, -3.1845293]
+    - address: 11 Jeffrey St, Edinburgh EH1 1DR, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=17085450634059838164 -- Baa Baa Sheep Shop
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [shop]
+    - coord: [55.9463357, -3.1911982]
+    - address: 7 Forrest Rd, Edinburgh EH1 2QH, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=8042403217446419876 -- Dick's Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [shop]
+    - coord: [55.9572316, -3.2057838]
+    - address: 3 N W Circus Pl, Edinburgh EH3 6ST, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=4007724905207112098 -- treen Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [shop]
+    - coord: [55.95796799999999, -3.206901]
+    - address: 2-4 St Stephen Pl, Edinburgh EH3 5AJ, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=323697655479562391 -- Ragamuffin Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [shop]
+    - coord: [55.950588, -3.183917]
+    - address: 278 Canongate, Edinburgh EH8 8AA, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=17758925056844443785 -- Epitome Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [shop]
+    - coord: [55.9575488, -3.1990937]
+    - address: 35 Dundas St, Edinburgh EH3 6QQ, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=1927932193158249761 -- TBCo Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [shop]
+    - coord: [55.973671, -3.1765732]
+    - address: 170B Great Jct St, Leith, Edinburgh EH6 5LJ, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=4847698521767125290 -- The Gently Mad Book Shop
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bookstore]
+    - coord: [55.96388779999999, -3.2020844]
+    - address: 2 Summer Pl, Edinburgh EH3 5NR, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=5574449848698430304 -- House of MinaLima Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bookstore, art gallery]
+    - coord: [55.950488, -3.189024]
+    - address: 42-44 Cockburn St, Edinburgh EH1 1PB, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=2393324949889174536 -- Topping & Company Booksellers Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bookstore]
+    - coord: [55.9577085, -3.1842625]
+    - address: 2 Blenheim Pl, Edinburgh EH7 5JH, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=12693524302604863410 -- Armchair Books
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bookstore]
+    - coord: [55.946324, -3.200031]
+    - address: 72-74 West Port, Edinburgh EH1 2LE, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=12358747185456917131 -- Golden Hare Books
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bookstore]
+    - coord: [55.9579189, -3.2063217]
+    - address: 68 St Stephen St, Edinburgh EH3 5AQ, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=8888371797248612689 -- Dirty Dick's Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bar]
+    - coord: [55.95149989999999, -3.2049386]
+    - address: 159 Rose St, Edinburgh EH2 4LS, United Kingdom
+    - later: true
+  - Try the fish and chips.
+
+- https://www.google.com/maps?cid=18017570805387147439 -- The Albanach
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bar]
+    - coord: [55.95023029999999, -3.1884714]
+    - address: 197 High St, Edinburgh EH1 1PE, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=1785447317681425331 -- Department of Magic
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bar]
+    - coord: [55.949372, -3.187936]
+    - address: 9 Blair St, Edinburgh EH1 1QR, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=13025917565775643706 -- Whirlybird Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [55.9485833, -3.1943472]
+    - address: 36-38 Victoria St, Edinburgh EH1 2JW, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=6776744500552872568 -- Tatties Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [55.9578614, -3.1855382]
+    - address: 5A Union St, Edinburgh EH1 3LT, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=9311045433251712252 -- Bariuma Ramen Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [55.95071129999999, -3.1895601]
+    - address: 41 Cockburn St, Edinburgh EH1 1BS, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=7426957343911531522 -- MUMS Great Comfort Food
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [55.9460389, -3.1908806]
+    - address: 4A Forrest Rd, Edinburgh EH1 2QN, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=50632986633958228 -- Makars Mash Bar Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [55.9499436, -3.1930825]
+    - address: 9-12 Bank St, Edinburgh EH1 2LN, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=673516727182173068 -- Pomelo Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [55.9379849, -3.1856579]
+    - address: 27 Sciennes Rd, Edinburgh EH9 1NX, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=16700476054733089348 -- Little Capo
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [55.95617, -3.20255]
+    - address: 18 Howe St, Edinburgh EH3 6TG, United Kingdom
+    - later: true
+  - For solo dining, book a seat at the bar.
+
+- https://www.google.com/maps?cid=12807116292195762213 -- The Vennel Viewpoint
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [architecture]
+    - coord: [55.946443, -3.197256]
+    - address: The Vennel, Edinburgh EH1 2HU, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=7450226718289166337 -- Ross Fountain
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [architecture, park]
+    - coord: [55.9500754, -3.2030618]
+    - address: Princes St., Edinburgh EH1 2EU, United Kingdom
+    - later: true
+
+- https://deanvillage.org/ -- Dean Village
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [destination]
+    - coord: [55.9524, -3.2181]
+    - address: Dean Path, Edinburgh, Scotland, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=3595043015906314883 -- Old College Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [architecture]
+    - coord: [55.9474302, -3.1872571]
+    - address: South Bridge, Edinburgh EH8 9YL, United Kingdom
+    - later: true
+
+- https://greyfriarskirk.com/visit/kirkyard/ -- Greyfriars Kirkyard
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [architecture]
+    - coord: [55.9468, -3.191666]
+    - address: Candlemaker Row, Edinburgh EH1 2QQ, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=9041591883893928563 -- Victoria Street Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [destination]
+    - coord: [55.9487342, -3.1931981]
+    - address: Victoria Street, Edinburgh, Scotland, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=3303816593117531315 -- The News Steps
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [architecture]
+    - coord: [55.9504374, -3.1919835]
+    - address: The News Steps, Edinburgh, Scotland, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=2416821580808277232 -- Arthur's Seat
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [park]
+    - coord: [55.9440825, -3.1618324]
+    - address: Edinburgh EH15 3PY, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=3162451449492144006 -- Scottish National Portrait Gallery
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [museum, art gallery]
+    - coord: [55.9554998, -3.1935213]
+    - address: 1 Queen St, Edinburgh EH2 1JD, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=9857296582318142915 -- National Museum of Scotland
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [museum]
+    - coord: [55.9469995, -3.1905666]
+    - address: Chambers St, Edinburgh EH1 1JF, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=2858612425985882582 -- Palace of Holyroodhouse
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [museum, architecture]
+    - coord: [55.9527138, -3.1722724]
+    - address: Canongate, Edinburgh EH8 8DX, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=5087412727581510232 -- Edinburgh Castle
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [museum, architecture]
+    - coord: [55.9485947, -3.1999135]
+    - address: Castlehill, Edinburgh EH1 2NG, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=17290890716660613492 -- The Royal Yacht Britannia
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [museum]
+    - coord: [55.9821554, -3.1772521]
+    - address: Ocean Dr, Leith, Edinburgh EH6 6JJ, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=12232038376625013381 -- The Scotsman Picturehouse
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [theatre]
+    - coord: [55.9511558, -3.1885035]
+    - address: 20 North Bridge, Edinburgh EH1 1TR, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=1009652670105360225 -- Alpine Coaster Hillend
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [destination]
+    - coord: [55.8878883, -3.2090009]
+    - address: Midlothian Snowsports Centre, Biggar Rd, Hillend, Edinburgh EH10 7DU, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=8153989602170455712 -- Swanston Farm
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [destination, restaurant]
+    - coord: [55.893624, -3.2172629]
+    - address: 111 Swanston Rd, Edinburgh EH10 7DS, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=11888867742839471077 -- Stills Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [art gallery]
+    - coord: [55.950679, -3.190253]
+    - address: 23 Cockburn St, Edinburgh EH1 1BP, United Kingdom
+    - later: true
+
+- https://www.awong.co.uk/ -- A. Wong Pimlico
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [51.4929859, -0.1405401]
+    - address: 70 Wilton Road, Pimlico, London SW1V 1DE, United Kingdom
+    - later: true
+  - Try the dim sum lunch and the mahjong-tile dessert.
+
+- https://www.thehartw1.com/ -- The Hart Marylebone
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bar, restaurant]
+    - coord: [51.5184177, -0.1547919]
+    - address: 56 Blandford Street, Marylebone, London W1U 7JA, United Kingdom
+    - later: true
+  - Try the mince roll.
+
+- https://leswine.co.uk/ -- Le Swine East Sheen
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [51.4652164, -0.2622431]
+    - address: 170 Upper Richmond Road West, East Sheen, London SW14 8AW, United Kingdom
+    - later: true
+  - Go for the bacon sandwich.
+
+- https://www.imperialchinalondon.com/ -- Imperial China Leicester Square
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [51.5117384, -0.1299295]
+    - address: White Bear Yard, 25a Lisle Street, London WC2H 7BA, United Kingdom
+    - later: true
+  - A no-frills option for dim sum with family.
+
+- https://www.equalpartslondon.com/ -- Equal Parts Hackney Road
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bar]
+    - coord: [51.53114859999999, -0.0694854]
+    - address: 245 Hackney Road, London E2 8NA, United Kingdom
+    - later: true
+  - Go for cocktails and vinyl.
+
+- https://blanchettesoho.co.uk/ -- Blanchette Soho
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [51.5146838, -0.1360685]
+    - address: 9 D’Arblay Street, Soho, London W1F 8DR, United Kingdom
+    - later: true
+  - A solo-dining option. Sit at the bar with olives and saucisse sèche.
+
+- https://www.sushisumi.com/notting-hill/ -- SUMI Notting Hill
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [51.514804, -0.1963739]
+    - address: 157 Westbourne Grove, Notting Hill, London W11 2RS, United Kingdom
+    - later: true
+  - A relaxed option for date night.
+
+- https://dumplingshack.co.uk/ -- Dumpling Shack Spitalfields
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [51.5197916, -0.0751714]
+    - address: The Kitchens, Old Spitalfields Market, 16 Horner Square, London E1 6EW, United Kingdom
+    - later: true
+  - Go for the soup dumplings.
+
 - https://www.fourhorsemenbk.com/ -- The Four Horsemen
   - [meta]:
     - date: 11/14/2026
