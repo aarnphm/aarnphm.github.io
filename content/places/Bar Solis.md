@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Vesterbro corner bar serving drinks and southern European sharing plates.'
 id: 'Bar Solis'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DeHJKzan8S2/'
 tags:
   - 'places'
 title: 'Bar Solis'

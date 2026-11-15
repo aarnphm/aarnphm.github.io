@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Vietnamese restaurant on Boulton Avenue serving pho and steamed rice rolls.'
 id: 'Que Ling Vietnamese Cuisine'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/reel/DcZuYT6hkC9/'
 tags:
   - 'places'
 title: 'Que Ling Vietnamese Cuisine'

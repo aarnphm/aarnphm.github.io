@@ -9,7 +9,6 @@ date: '2026-10-29'
 description: sourdough bakery and cafe on Ossington Avenue serving bread, pastries, sandwiches, and coffee
 id: Dear Grain Ossington
 modified: 2026-10-29
-source: https://www.instagram.com/reel/DfDXzo3BDEg/
 tags:
   - places
 title: Dear Grain Ossington

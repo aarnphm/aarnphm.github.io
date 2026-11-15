@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Cocktail bar in a historic townhouse beside the canal on Nybrogade.'
 id: 'Ruby Copenhagen'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DeHJKzan8S2/'
 tags:
   - 'places'
 title: 'Ruby Copenhagen'

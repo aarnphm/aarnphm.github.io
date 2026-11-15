@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'specialty coffee bar inside the Burton boutique in Griffintown'
 id: 'Escape Lab à Café'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/DfDjo7boVwH/'
 tags:
   - 'places'
 title: 'Escape Lab à Café'

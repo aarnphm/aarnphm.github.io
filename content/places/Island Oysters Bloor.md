@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Oyster and seafood restaurant and bar on Bloor Street West.'
 id: 'Island Oysters Bloor'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DeIMQ4jFNoF/'
 tags:
   - 'places'
 title: 'Island Oysters Bloor'

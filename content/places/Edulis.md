@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'Seasonal tasting-menu restaurant on Niagara Street.'
 id: 'Edulis'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/DdaGREXJ5Pb/'
 tags:
   - 'places'
 title: 'Edulis'

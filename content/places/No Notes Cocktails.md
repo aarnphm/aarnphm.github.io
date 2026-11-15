@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'cocktail bar at Field Trip Cafe on Westmoreland Avenue'
 id: 'No Notes Cocktails'
 modified: 2026-10-30
-source: https://www.instagram.com/reel/DfDq5exJTTN/
 tags:
   - places
 title: 'No Notes Cocktails'

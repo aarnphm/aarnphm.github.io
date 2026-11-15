@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Lakeside lodge on Cache Lake in Algonquin Park, serving four-course dinners with a water taxi for dining guests.'
 id: 'Bartlett Lodge'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/reel/DdPM3R8CG2n/'
 tags:
   - 'places'
 title: 'Bartlett Lodge'

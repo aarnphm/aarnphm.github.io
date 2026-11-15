@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Vesterbro cocktail bar serving seasonal drinks in a basement with mid-century Danish interiors.'
 id: 'Duck and Cover'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DeHJKzan8S2/'
 tags:
   - 'places'
 title: 'Duck and Cover'

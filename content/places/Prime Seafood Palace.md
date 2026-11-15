@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Steak and seafood restaurant on Queen Street West.'
 id: 'Prime Seafood Palace'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DezjVfhnzJY/'
 tags:
   - 'places'
 title: 'Prime Seafood Palace'

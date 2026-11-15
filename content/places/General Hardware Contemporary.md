@@ -9,7 +9,6 @@ date: '2026-11-02'
 description: 'Contemporary art gallery on Queen Street West in Parkdale.'
 id: 'General Hardware Contemporary'
 modified: '2026-11-02'
-source: 'https://www.instagram.com/p/DfNZFAegXFC/'
 tags:
   - 'places'
 title: 'General Hardware Contemporary'

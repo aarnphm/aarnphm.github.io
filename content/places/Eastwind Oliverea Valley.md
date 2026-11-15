@@ -10,7 +10,6 @@ description: 'Catskills hotel with cabins and the Dandelion restaurant in Oliver
 id: 'Eastwind Oliverea Valley'
 later: true
 modified: '2026-11-11'
-source: 'https://www.instagram.com/p/Dfk-PGSFcyB/'
 tags:
   - 'places'
 title: 'Eastwind Oliverea Valley'
@@ -19,9 +18,3 @@ type:
   - 'restaurant'
 url: 'https://www.eastwindhotels.com/oliverea-valley'
 ---
-
-Saved from [Reika’s upstate New York favourites](https://www.instagram.com/p/Dfk-PGSFcyB/).
-
-![[thoughts/images/GiirZXhlsydAXDlD2yEh35KZFv89qJQGdiXF8zbyq2g.jpg|A-frame cabin at Eastwind Oliverea Valley]]
-
-Photo from @nycfoodhurtmywallet’s carousel (slide 11 of 13).

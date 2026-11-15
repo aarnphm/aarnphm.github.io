@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Contemporary art and photography gallery in the Distillery District.'
 id: 'Corkin Gallery'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DezjVfhnzJY/'
 tags:
   - 'places'
 title: 'Corkin Gallery'

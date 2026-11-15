@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'Persian restaurant serving home-style stews on College Street.'
 id: 'Pomegranate'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/DfGE9jAqXu6/'
 tags:
   - 'places'
 title: 'Pomegranate'
@@ -18,4 +17,4 @@ type:
 url: 'https://pomegranatetoronto.com/anar/'
 ---
 
-Recommendation from [Angie's Toronto food tour](https://www.instagram.com/reel/DfGE9jAqXu6/): Ghormeh sabzi.
+Recommended: Ghormeh sabzi.

@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'breakfast sandwich and coffee counter on Dundas Street West'
 id: "Dad's Breakfast & Coffee"
 modified: 2026-10-30
-source: https://www.instagram.com/reel/DfGYfWsRxzh/
 tags:
   - places
 title: "Dad's Breakfast & Coffee"

@@ -9,7 +9,6 @@ date: '2026-11-05'
 description: 'Coffee bar and roastery in a red-brick building in Nordhavn’s former port district.'
 id: 'La Cabra Nordhavn'
 modified: '2026-11-05'
-source: 'https://www.instagram.com/reel/DfXQsREIuoY/'
 tags:
   - 'places'
 title: 'La Cabra Nordhavn'

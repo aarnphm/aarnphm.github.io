@@ -17,7 +17,3 @@ type:
   - diner
 url: https://maps.app.goo.gl/PjD3dY3vfpr2v7st5
 ---
-
-[Nat Doumkos’s Toronto eats post](https://www.instagram.com/p/DfiwUD_HATy/), slide 10.
-
-![[thoughts/images/qyD8xLIPLVqm5y-DCVsdz91FCtChTjfNws2fnkn7okI.jpg|A menu and place settings at Susie's Rise & Dine]]

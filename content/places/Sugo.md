@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'Italian-American restaurant on Bloor Street West'
 id: 'Sugo'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/Dd7kqfJpljI/'
 tags:
   - 'places'
 title: 'Sugo'

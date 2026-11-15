@@ -9,7 +9,6 @@ date: '2026-11-02'
 description: 'Burdock’s Kensington Market tavern serving steakhouse dishes and beer brewed next door.'
 id: 'Kensington Tavern'
 modified: '2026-11-02'
-source: 'https://www.instagram.com/p/DfNZFAegXFC/'
 tags:
   - 'places'
 title: 'Kensington Tavern'

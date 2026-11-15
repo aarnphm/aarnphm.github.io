@@ -9,7 +9,6 @@ date: '2026-11-05'
 description: 'Bakery and eatery on Refshaleøen using seasonal produce from local growers.'
 id: 'Lille Bakery'
 modified: '2026-11-05'
-source: 'https://www.instagram.com/reel/DfXQsREIuoY/'
 tags:
   - 'places'
 title: 'Lille Bakery'

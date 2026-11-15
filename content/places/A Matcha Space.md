@@ -9,7 +9,6 @@ date: '2026-11-05'
 description: 'Matcha café on Store Kongensgade serving matcha drinks, coffee and pastries.'
 id: 'A Matcha Space'
 modified: '2026-11-05'
-source: 'https://www.instagram.com/reel/DfXQsREIuoY/'
 tags:
   - 'places'
 title: 'A Matcha Space'

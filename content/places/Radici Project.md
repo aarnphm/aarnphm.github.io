@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'Italian-Japanese restaurant with seasonal tasting menus and Canadian ingredients'
 id: 'Radici Project'
 modified: 2026-10-30
-source: https://www.instagram.com/reel/DfDq5exJTTN/
 tags:
   - places
 title: 'Radici Project'

@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'Korean restaurant and brewery serving house-made makgeolli on Dundas Street West.'
 id: 'Gyopo Brewery'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/Dc1vJkCp-Je/'
 tags:
   - 'places'
 title: 'Gyopo Brewery'
@@ -19,4 +18,4 @@ type:
 url: 'https://www.gyopobrewery.com/'
 ---
 
-Recommendation from [the reel](https://www.instagram.com/reel/Dc1vJkCp-Je/): Counter seating and makgeolli.
+Recommended: Counter seating and makgeolli.

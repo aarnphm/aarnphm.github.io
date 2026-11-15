@@ -9,7 +9,6 @@ date: '2026-11-08'
 description: 'Nightclub on Spring Street with DJs and a bar.'
 id: "Paul's Casablanca"
 modified: '2026-11-08'
-source: 'https://www.instagram.com/p/DfPpNHKlqQj/'
 tags:
   - 'places'
 title: "Paul's Casablanca"
@@ -18,7 +17,3 @@ type:
   - 'bar'
 url: 'https://www.paulscasablanca.com/'
 ---
-
-[Shrtlst.’s West Village itinerary](https://www.instagram.com/p/DfPpNHKlqQj/), slide 5.
-
-![[thoughts/images/C1Ziibiod1YVSgJYA01OrYjZkqMb65bgBU6s46jPdeg.jpg|Shrtlst. West Village itinerary, which lists Paul's Casablanca]]

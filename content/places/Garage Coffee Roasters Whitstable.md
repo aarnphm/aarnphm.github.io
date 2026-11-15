@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Whitstable branch of Garage Coffee Roasters on Oxford Street.'
 id: 'Garage Coffee Roasters Whitstable'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/reel/DfMaijrpbIZ/'
 tags:
   - 'places'
 title: 'Garage Coffee Roasters Whitstable'

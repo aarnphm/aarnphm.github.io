@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Canalside wine shop and bar with outdoor seating and a short food menu.'
 id: 'Ved Stranden 10'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DeHJKzan8S2/'
 tags:
   - 'places'
 title: 'Ved Stranden 10'

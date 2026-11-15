@@ -8,8 +8,7 @@ coordinates:
 date: '2026-11-08'
 description: 'French brasserie on Spring Street in SoHo.'
 id: 'Balthazar'
-modified: '2026-11-08'
-source: 'https://www.instagram.com/p/DfPpNHKlqQj/'
+modified: '2026-11-14'
 tags:
   - 'places'
 title: 'Balthazar'
@@ -18,6 +17,4 @@ type:
 url: 'https://balthazarny.com/'
 ---
 
-[Shrtlst.’s SoHo itinerary](https://www.instagram.com/p/DfPpNHKlqQj/), slide 7.
-
-![[thoughts/images/xTKSIckpyLGRKcX0diqKXOde7U7byB7jBVCSP8Nn58Y.jpg|Shrtlst. SoHo itinerary, which lists Balthazar]]
+Steak frites and wine.

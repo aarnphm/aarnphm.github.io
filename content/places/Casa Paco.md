@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'Mediterranean restaurant in Little Italy serving tasting menus and Sunday paella'
 id: 'Casa Paco'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/De-bxAeNwZA/'
 tags:
   - 'places'
 title: 'Casa Paco'

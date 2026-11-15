@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Polish diner on Hastings Avenue in Leslieville.'
 id: 'Hastings Snack Bar'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DfGFOhKGoEJ/'
 tags:
   - 'places'
 title: 'Hastings Snack Bar'

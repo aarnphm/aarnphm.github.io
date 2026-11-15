@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Portuguese restaurant on Caledonia Road serving tapas, grilled meats and seafood.'
 id: 'Mercado Restaurant'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DfIzlB_lF0Z/'
 tags:
   - 'places'
 title: 'Mercado Restaurant'

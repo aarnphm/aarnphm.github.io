@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'After-hours house and techno nightclub on Gerrard Street East.'
 id: 'Vertigo Toronto'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/DfGE9jAqXu6/'
 tags:
   - 'places'
 title: 'Vertigo Toronto'
@@ -18,4 +17,4 @@ type:
 url: 'https://www.instagram.com/vertigotoronto/'
 ---
 
-Recommendation from [Angie's Toronto food tour](https://www.instagram.com/reel/DfGE9jAqXu6/): More dancing; blue Gatorade and water.
+Recommended: More dancing; blue Gatorade and water.

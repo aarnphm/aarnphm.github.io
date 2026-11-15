@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Portuguese restaurant on Bentworth Avenue serving grilled meats and seafood.'
 id: 'Casa Portuguesa'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DfIzlB_lF0Z/'
 tags:
   - 'places'
 title: 'Casa Portuguesa'

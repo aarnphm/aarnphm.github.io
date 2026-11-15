@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'whole-animal butcher shop and restaurant in St. Catharines'
 id: 'Fat Rabbit St. Catharines'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/Dd7kqfJpljI/'
 tags:
   - 'places'
 title: 'Fat Rabbit St. Catharines'

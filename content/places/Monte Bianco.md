@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Italian restaurant serving pizza and pasta on Bloor Street West.'
 id: 'Monte Bianco'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DeIMQ4jFNoF/'
 tags:
   - 'places'
 title: 'Monte Bianco'

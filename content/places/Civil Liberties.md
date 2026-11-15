@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'menu-free cocktail bar where bartenders make drinks to individual tastes'
 id: 'Civil Liberties'
 modified: 2026-10-30
-source: https://www.instagram.com/reel/DfDq5exJTTN/
 tags:
   - places
 title: 'Civil Liberties'

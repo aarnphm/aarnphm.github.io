@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Mexican taqueria serving street tacos on Bloor Street West.'
 id: '1910 La Mexicana Bloor'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DeIMQ4jFNoF/'
 tags:
   - 'places'
 title: '1910 La Mexicana Bloor'

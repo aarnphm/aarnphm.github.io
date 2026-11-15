@@ -9,7 +9,6 @@ date: '2026-11-02'
 description: 'Contemporary art gallery on St Helens Avenue in Toronto.'
 id: 'Clint Roenisch Gallery'
 modified: '2026-11-02'
-source: 'https://www.instagram.com/p/DfNZFAegXFC/'
 tags:
   - 'places'
 title: 'Clint Roenisch Gallery'

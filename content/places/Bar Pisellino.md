@@ -9,7 +9,6 @@ date: '2026-11-08'
 description: 'Italian aperitivo bar at Grove Street and Seventh Avenue South.'
 id: 'Bar Pisellino'
 modified: '2026-11-08'
-source: 'https://www.instagram.com/p/DfPpNHKlqQj/'
 tags:
   - 'places'
 title: 'Bar Pisellino'
@@ -17,7 +16,3 @@ type:
   - 'bar'
 url: 'https://barpisellino.com/'
 ---
-
-[Shrtlst.’s West Village itinerary](https://www.instagram.com/p/DfPpNHKlqQj/), slide 5.
-
-![[thoughts/images/C1Ziibiod1YVSgJYA01OrYjZkqMb65bgBU6s46jPdeg.jpg|Shrtlst. West Village itinerary, which lists Bar Pisellino]]

@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'Montréal steakhouse at its current Square-Victoria location'
 id: 'Moishes'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/DdpjBtqJlMt/'
 tags:
   - 'places'
 title: 'Moishes'

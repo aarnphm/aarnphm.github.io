@@ -9,7 +9,6 @@ date: '2026-11-02'
 description: 'Arts and community hub on Shaw Street with galleries, studios and public programming.'
 id: 'Youngplace'
 modified: '2026-11-02'
-source: 'https://www.instagram.com/p/DfNZFAegXFC/'
 tags:
   - 'places'
 title: 'Youngplace'

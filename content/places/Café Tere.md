@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Cafe serving coffee, matcha, smoothies and snacks on Rue Prince-Arthur Est in Montréal.'
 id: 'Café Tere'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/reel/DfKdMmDR8gW/'
 tags:
   - 'places'
 title: 'Café Tere'

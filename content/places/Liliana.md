@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'Italian restaurant on Queen Street West with Asian influences'
 id: 'Liliana'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/De-bxAeNwZA/'
 tags:
   - 'places'
 title: 'Liliana'

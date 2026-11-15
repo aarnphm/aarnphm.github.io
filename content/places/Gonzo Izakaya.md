@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Japanese izakaya on College Street serving yakitori and small plates.'
 id: 'Gonzo Izakaya'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/reel/DcZuYT6hkC9/'
 tags:
   - 'places'
 title: 'Gonzo Izakaya'

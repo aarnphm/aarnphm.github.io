@@ -9,7 +9,6 @@ date: '2026-11-02'
 description: 'Korean-Italian restaurant and cocktail bar on Ossington Avenue.'
 id: 'No Vacancy'
 modified: '2026-11-02'
-source: 'https://www.instagram.com/p/DfNZFAegXFC/'
 tags:
   - 'places'
 title: 'No Vacancy'

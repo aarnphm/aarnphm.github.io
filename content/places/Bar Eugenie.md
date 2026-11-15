@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Neighbourhood restaurant on Harbord Street serving seasonal plates.'
 id: 'Bar Eugenie'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DezjVfhnzJY/'
 tags:
   - 'places'
 title: 'Bar Eugenie'

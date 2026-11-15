@@ -9,7 +9,6 @@ date: '2026-11-02'
 description: 'Opera and ballet venue at Queen Street West and University Avenue.'
 id: 'Four Seasons Centre for the Performing Arts'
 modified: '2026-11-02'
-source: 'https://www.instagram.com/p/DfNZFAegXFC/'
 tags:
   - 'places'
 title: 'Four Seasons Centre for the Performing Arts'

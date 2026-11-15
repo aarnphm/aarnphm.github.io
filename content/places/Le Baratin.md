@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'French bistro on Dundas Street West.'
 id: 'Le Baratin'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DfGFOhKGoEJ/'
 tags:
   - 'places'
 title: 'Le Baratin'

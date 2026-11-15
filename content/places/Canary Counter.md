@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'Wine bottle shop and wine bar on Harbord Street.'
 id: 'Canary Counter'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/DdaGREXJ5Pb/'
 tags:
   - 'places'
 title: 'Canary Counter'

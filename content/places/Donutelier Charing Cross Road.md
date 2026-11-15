@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Doughnut and pastry shop on Charing Cross Road near Covent Garden.'
 id: 'Donutelier Charing Cross Road'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/reel/DfMaijrpbIZ/'
 tags:
   - 'places'
 title: 'Donutelier Charing Cross Road'

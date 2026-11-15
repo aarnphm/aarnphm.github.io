@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'Japanese sandwich counter in McCormick Park serving sandos, coffee, and matcha'
 id: Imanishi Sando Bar
 modified: 2026-10-30
-source: https://www.instagram.com/reel/Dc9qKlyJoqt/
 tags:
   - places
 title: Imanishi Sando Bar

@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'Cafe by day and cocktail lounge by night in the Junction.'
 id: "Doc's Green Door Lounge"
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/DdaGREXJ5Pb/'
 tags:
   - 'places'
 title: "Doc's Green Door Lounge"

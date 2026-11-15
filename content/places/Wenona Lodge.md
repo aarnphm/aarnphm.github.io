@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'neighbourhood bar and live-event venue on Bloor Street West'
 id: 'Wenona Lodge'
 modified: 2026-10-30
-source: https://www.instagram.com/reel/DfDq5exJTTN/
 tags:
   - places
 title: 'Wenona Lodge'

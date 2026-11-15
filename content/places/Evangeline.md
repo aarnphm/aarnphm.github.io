@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Rooftop cocktail bar at Ace Hotel Toronto.'
 id: 'Evangeline'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DezjVfhnzJY/'
 tags:
   - 'places'
 title: 'Evangeline'

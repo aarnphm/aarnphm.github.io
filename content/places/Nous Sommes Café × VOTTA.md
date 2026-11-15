@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'downtown Montréal café sharing a space with VOTTA'
 id: 'Nous Sommes Café × VOTTA'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/DfDjo7boVwH/'
 tags:
   - 'places'
 title: 'Nous Sommes Café × VOTTA'

@@ -9,7 +9,6 @@ date: '2026-11-05'
 description: 'Komuna’s café inside the Silent Club design showroom, serving specialty coffee sourced from Mexico.'
 id: 'Komuna Coffee Silent Club'
 modified: '2026-11-05'
-source: 'https://www.instagram.com/reel/DfXQsREIuoY/'
 tags:
   - 'places'
 title: 'Komuna Coffee Silent Club'

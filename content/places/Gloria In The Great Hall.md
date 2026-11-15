@@ -8,7 +8,6 @@ coordinates:
 date: '2026-07-30'
 id: Gloria In The Great Hall
 rating: 5
-source: 'https://www.instagram.com/p/DdHY1guMgR2/'
 tags:
   - places
 title: Gloria In The Great Hall

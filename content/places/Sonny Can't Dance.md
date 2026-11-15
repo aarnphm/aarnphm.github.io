@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'King Street West steakhouse with a dessert cart.'
 id: "Sonny Can't Dance"
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DfGFOhKGoEJ/'
 tags:
   - 'places'
 title: "Sonny Can't Dance"

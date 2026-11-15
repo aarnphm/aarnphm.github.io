@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'burger restaurant on Danforth Road in Scarborough'
 id: "Mama's Boys Burgers"
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/DdpjBtqJlMt/'
 tags:
   - 'places'
 title: "Mama's Boys Burgers"

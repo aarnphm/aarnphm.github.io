@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'Greek seafood restaurant on avenue du Parc in Mile End'
 id: 'Estiatorio Milos Montréal'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/DdpjBtqJlMt/'
 tags:
   - 'places'
 title: 'Estiatorio Milos Montréal'

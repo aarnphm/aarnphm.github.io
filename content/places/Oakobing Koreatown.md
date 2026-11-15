@@ -9,7 +9,6 @@ date: '2026-11-08'
 description: 'Korean dessert café in Koreatown serving bingsu shaved ice.'
 id: 'Oakobing Koreatown'
 modified: '2026-11-08'
-source: 'https://www.instagram.com/reel/DfecCAtJSBS/'
 tags:
   - 'places'
 title: 'Oakobing Koreatown'
@@ -18,8 +17,4 @@ type:
 url: 'https://www.google.com/maps?cid=17518144273148941094'
 ---
 
-Awkwafina recommends Oakobing in Koreatown for dessert.
-
-Interview still from [TOPJAW’s reel](https://www.instagram.com/reel/DfecCAtJSBS/), at 00:59.
-
-![[thoughts/images/ZpiBo6gsnxXkpfWRw7fz7zKBmjj3XTJL4lMf6htHqzY.jpg|Awkwafina discussing Oakobing Koreatown in TOPJAW’s interview]]
+Recommended for dessert.

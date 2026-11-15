@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'coffee bar and bicycle shop on Gladstone Avenue'
 id: 'Fix Coffee + Bikes Gladstone'
 modified: 2026-10-30
-source: https://www.instagram.com/reel/DfGYfWsRxzh/
 tags:
   - places
 title: 'Fix Coffee + Bikes Gladstone'

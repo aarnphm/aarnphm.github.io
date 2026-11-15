@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Custard ice cream and treats at the Lansdowne Avenue shop.'
 id: 'Ruru Baked Lansdowne'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DeIMQ4jFNoF/'
 tags:
   - 'places'
 title: 'Ruru Baked Lansdowne'

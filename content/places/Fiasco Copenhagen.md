@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Natural wine bar on Borgergade with Italian snacks and a pool table.'
 id: 'Fiasco Copenhagen'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DeHJKzan8S2/'
 tags:
   - 'places'
 title: 'Fiasco Copenhagen'

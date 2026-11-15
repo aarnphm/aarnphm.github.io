@@ -9,7 +9,6 @@ date: '2026-11-02'
 description: 'Dufferin Street branch of Bau-Xi Gallery, showing contemporary painting and photography.'
 id: 'Bau-Xi Gallery Dufferin'
 modified: '2026-11-02'
-source: 'https://www.instagram.com/p/DfNZFAegXFC/'
 tags:
   - 'places'
 title: 'Bau-Xi Gallery Dufferin'

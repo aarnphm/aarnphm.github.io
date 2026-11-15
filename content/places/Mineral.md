@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'contemporary Filipino restaurant on Yonge Street led by chef Daniel Cancino'
 id: 'Mineral'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/De-bxAeNwZA/'
 tags:
   - 'places'
 title: 'Mineral'

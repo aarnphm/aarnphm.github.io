@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Cocktail bar on the mezzanine of Waterworks Food Hall.'
 id: 'Civil Works'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DfGFOhKGoEJ/'
 tags:
   - 'places'
 title: 'Civil Works'

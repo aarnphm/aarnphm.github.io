@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Cocktail bar in Frederiksberg with vinyl records and a custom sound system.'
 id: 'Bird Frederiksberg'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DeHJKzan8S2/'
 tags:
   - 'places'
 title: 'Bird Frederiksberg'

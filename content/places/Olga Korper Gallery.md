@@ -9,7 +9,6 @@ date: '2026-11-02'
 description: 'Contemporary art gallery on Morrow Avenue in Toronto.'
 id: 'Olga Korper Gallery'
 modified: '2026-11-02'
-source: 'https://www.instagram.com/p/DfNZFAegXFC/'
 tags:
   - 'places'
 title: 'Olga Korper Gallery'

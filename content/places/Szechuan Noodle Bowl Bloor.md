@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Sichuan restaurant serving noodles and stir-fries at 1030 Bloor Street West.'
 id: 'Szechuan Noodle Bowl Bloor'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DeIMQ4jFNoF/'
 tags:
   - 'places'
 title: 'Szechuan Noodle Bowl Bloor'

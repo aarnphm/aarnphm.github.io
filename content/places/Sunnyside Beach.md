@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'Lake Ontario beach beside Sunnyside Park and the waterfront boardwalk'
 id: 'Sunnyside Beach'
 modified: 2026-10-30
-source: https://www.instagram.com/reel/DfGYfWsRxzh/
 tags:
   - places
 title: 'Sunnyside Beach'

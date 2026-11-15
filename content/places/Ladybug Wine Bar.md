@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Wine bar serving small plates on King Street East.'
 id: 'Ladybug Wine Bar'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DfDUc1yoNEc/'
 tags:
   - 'places'
 title: 'Ladybug Wine Bar'

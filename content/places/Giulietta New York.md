@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Italian restaurant serving house-made pasta at the MetLife Building in Midtown Manhattan.'
 id: 'Giulietta New York'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/reel/Decofi1Mk_B/'
 tags:
   - 'places'
 title: 'Giulietta New York'

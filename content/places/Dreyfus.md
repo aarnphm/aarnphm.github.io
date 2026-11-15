@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'restaurant on Harbord Street in Toronto'
 id: 'Dreyfus'
 modified: '2026-11-08'
-source: 'https://www.instagram.com/reel/De-bxAeNwZA/'
 tags:
   - 'places'
 title: 'Dreyfus'
@@ -19,7 +18,3 @@ url: 'https://maps.app.goo.gl/mqrBFyHBigcYVTzj9'
 ---
 
 [Official website](https://dreyfustoronto.com/).
-
-Photo from [Dreyfus’s website](https://dreyfustoronto.com/assets/images/dreyfus-bg.webp).
-
-![[thoughts/images/UXDrD3YPYKkHiWji_yuqCX-Dk4nZRHKkWX9DeFkz9rQ.webp|Martinis being poured into a tower of glasses at Dreyfus]]

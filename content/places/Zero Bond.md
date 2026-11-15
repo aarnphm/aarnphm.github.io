@@ -9,7 +9,6 @@ date: '2026-11-08'
 description: 'Private members’ club on Bond Street.'
 id: 'Zero Bond'
 modified: '2026-11-08'
-source: 'https://www.instagram.com/p/DfPpNHKlqQj/'
 tags:
   - 'places'
 title: 'Zero Bond'
@@ -20,7 +19,3 @@ url: 'https://zerobondny.com/'
 ---
 
 Zero Bond is a private members’ club. [Membership information](https://zerobondny.com/application/)
-
-[Shrtlst.’s SoHo itinerary](https://www.instagram.com/p/DfPpNHKlqQj/), slide 7.
-
-![[thoughts/images/xTKSIckpyLGRKcX0diqKXOde7U7byB7jBVCSP8Nn58Y.jpg|Shrtlst. SoHo itinerary, which lists Zero Bond]]

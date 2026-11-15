@@ -9,7 +9,6 @@ date: '2026-11-02'
 description: 'Cocktail bar on College Street in Toronto.'
 id: 'Slice of Life'
 modified: '2026-11-02'
-source: 'https://www.instagram.com/p/DfNZFAegXFC/'
 tags:
   - 'places'
 title: 'Slice of Life'

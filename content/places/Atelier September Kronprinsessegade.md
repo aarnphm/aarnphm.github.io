@@ -9,7 +9,6 @@ date: '2026-11-05'
 description: 'Vegetarian café in Nyboder serving coffee, breakfast and seasonal daytime dishes.'
 id: 'Atelier September Kronprinsessegade'
 modified: '2026-11-05'
-source: 'https://www.instagram.com/reel/DfXQsREIuoY/'
 tags:
   - 'places'
 title: 'Atelier September Kronprinsessegade'

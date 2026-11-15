@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Korean fusion restaurant and bar at 1241 Bloor Street West.'
 id: 'Seoul Shakers'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DeIMQ4jFNoF/'
 tags:
   - 'places'
 title: 'Seoul Shakers'

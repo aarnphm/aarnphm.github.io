@@ -9,7 +9,6 @@ date: '2026-11-05'
 description: 'Breakfast and brunch restaurant in Saint-Henri serving latkes, smoked salmon and cottage-cheese pancakes.'
 id: 'Arthurs Nosh Bar Saint-Henri'
 modified: '2026-11-05'
-source: 'https://www.instagram.com/reel/DfIa3Essz-_/'
 tags:
   - 'places'
 title: 'Arthurs Nosh Bar Saint-Henri'

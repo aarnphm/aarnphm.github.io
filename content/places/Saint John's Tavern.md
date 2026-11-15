@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'British-inspired tavern and oyster house at John and Adelaide.'
 id: "Saint John's Tavern"
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DfIzlB_lF0Z/'
 tags:
   - 'places'
 title: "Saint John's Tavern"

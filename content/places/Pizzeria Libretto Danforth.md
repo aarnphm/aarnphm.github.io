@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Danforth location of Pizzeria Libretto serving Neapolitan pizza.'
 id: 'Pizzeria Libretto Danforth'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/De9nxxGlQvi/'
 tags:
   - 'places'
 title: 'Pizzeria Libretto Danforth'

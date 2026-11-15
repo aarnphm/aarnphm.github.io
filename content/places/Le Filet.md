@@ -9,7 +9,6 @@ date: '2026-11-05'
 description: 'Seafood restaurant on the Plateau combining Japanese, French and Italian influences.'
 id: 'Le Filet'
 modified: '2026-11-05'
-source: 'https://www.instagram.com/reel/DfIa3Essz-_/'
 tags:
   - 'places'
 title: 'Le Filet'

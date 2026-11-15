@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'Dundas West café and bar serving bánh mì and Vietnamese coffee'
 id: 'No Idea'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/Dd7kqfJpljI/'
 tags:
   - 'places'
 title: 'No Idea'

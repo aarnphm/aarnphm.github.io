@@ -9,7 +9,6 @@ date: '2026-11-08'
 description: 'Piano and cocktail bar at The Carlyle with murals by Ludwig Bemelmans.'
 id: 'Bemelmans Bar'
 modified: '2026-11-08'
-source: 'https://www.instagram.com/p/DfPpNHKlqQj/'
 tags:
   - 'places'
 title: 'Bemelmans Bar'
@@ -17,7 +16,3 @@ type:
   - 'bar'
 url: 'https://www.rosewoodhotels.com/en/the-carlyle-new-york/dining/bemelmans-bar'
 ---
-
-[Shrtlst.’s Upper East Side itinerary](https://www.instagram.com/p/DfPpNHKlqQj/), slide 9.
-
-![[thoughts/images/C95Hrx34OuVuogY2zMhy1ykyyBXBP-pxu-ypOMb2oT8.jpg|Shrtlst. Upper East Side itinerary, which lists Bemelmans Bar]]

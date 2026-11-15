@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'Japanese rockabilly bar serving beer, sake and whisky on Dundas Street West.'
 id: 'Black Dice Cafe'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/DdaGREXJ5Pb/'
 tags:
   - 'places'
 title: 'Black Dice Cafe'

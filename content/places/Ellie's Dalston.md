@@ -9,7 +9,6 @@ date: '2026-11-02'
 description: 'Neighbourhood cocktail bar on Kingsland Road in Dalston.'
 id: "Ellie's Dalston"
 modified: '2026-11-02'
-source: 'https://www.instagram.com/reel/Dd3UzWQsPpC/'
 tags:
   - 'places'
 title: "Ellie's Dalston"

@@ -10,10 +10,8 @@ description: 'Italian restaurant and Bellini bar set among the pines near Pampel
 id: 'Gigi Ramatuelle'
 later: true
 modified: '2026-11-11'
-source: 'https://www.instagram.com/reel/DcELev6PF2E/'
 source_rating: 7
 source_rating_scale: 10
-source_rating_by: 'spiritual.materialist'
 tags:
   - 'places'
 title: 'Gigi Ramatuelle'
@@ -23,10 +21,6 @@ type:
 url: 'https://gigi-restaurant.com/saint-tropez/'
 ---
 
-Creator rating: **7/10**, from [@spiritual.materialist’s reel](https://www.instagram.com/reel/DcELev6PF2E/).
+Imported rating: **7/10**.
 
-An older, affluent crowd with polished style and expensive handbags. This is the creator’s satirical impression of the clientele.
-
-![[thoughts/images/xsShBOuDhTq30sCbNDVDVGRT_PNmlyHXhvJB-MvQq80.jpg|Gigi Ramatuelle shown in the reel at 35 seconds]]
-
-Frame from @spiritual.materialist’s reel. [[thoughts/images/instagram/UQuldARk_z0FqP6pOTl3lYaB3qGPEjzwiM0GJqjNSEc.mp4|Archived reel]].
+Imported impression (satirical): An older, affluent crowd with polished style and expensive handbags.

@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'Neighbourhood tavern with Polish food and live music on Roncesvalles Avenue.'
 id: 'Inter Steer Tavern'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/DdaGREXJ5Pb/'
 tags:
   - 'places'
 title: 'Inter Steer Tavern'

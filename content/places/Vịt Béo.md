@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Vietnamese food bar serving noodles, rice bowls and bánh mì on Bloor Street West.'
 id: 'Vịt Béo'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DeIMQ4jFNoF/'
 tags:
   - 'places'
 title: 'Vịt Béo'

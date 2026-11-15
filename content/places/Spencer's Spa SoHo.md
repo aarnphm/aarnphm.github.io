@@ -9,7 +9,6 @@ date: '2026-11-08'
 description: 'SoHo spa offering massages and facials on Broadway.'
 id: "Spencer's Spa SoHo"
 modified: '2026-11-08'
-source: 'https://www.instagram.com/p/DfPpNHKlqQj/'
 tags:
   - 'places'
 title: "Spencer's Spa SoHo"
@@ -17,7 +16,3 @@ type:
   - 'spa'
 url: 'https://www.spencers.spa/soho'
 ---
-
-[Shrtlst.’s SoHo itinerary](https://www.instagram.com/p/DfPpNHKlqQj/), slide 7.
-
-![[thoughts/images/xTKSIckpyLGRKcX0diqKXOde7U7byB7jBVCSP8Nn58Y.jpg|Shrtlst. SoHo itinerary, which lists Spencer's Spa SoHo]]

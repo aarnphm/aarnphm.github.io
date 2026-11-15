@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'café inside the Empire boutique on rue Berri in downtown Montréal'
 id: 'Maison BaultBerri'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/DfDjo7boVwH/'
 tags:
   - 'places'
 title: 'Maison BaultBerri'

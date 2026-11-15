@@ -9,7 +9,6 @@ date: '2026-11-05'
 description: 'Little Burgundy restaurant serving market-driven French cuisine and seafood.'
 id: 'Liverpool House'
 modified: '2026-11-05'
-source: 'https://www.instagram.com/reel/DfIa3Essz-_/'
 tags:
   - 'places'
 title: 'Liverpool House'

@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'vinyl listening bar in Old Montréal serving highballs and cocktails beneath the Arcadia hotel'
 id: Sample Listening Bar
 modified: 2026-10-30
-source: https://www.instagram.com/reel/Dd2TtS6OV4o/
 tags:
   - places
 title: Sample Listening Bar

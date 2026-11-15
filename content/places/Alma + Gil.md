@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Brunch restaurant on Dufferin Street drawing on Hong Kong and Mexican flavours.'
 id: 'Alma + Gil'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DfGFOhKGoEJ/'
 tags:
   - 'places'
 title: 'Alma + Gil'

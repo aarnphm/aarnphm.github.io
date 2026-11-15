@@ -9,7 +9,6 @@ date: '2026-11-02'
 description: 'Restaurant and wine bar on Augusta Avenue in Kensington Market.'
 id: 'Grey Gardens'
 modified: '2026-11-02'
-source: 'https://www.instagram.com/p/DfNZFAegXFC/'
 tags:
   - 'places'
 title: 'Grey Gardens'

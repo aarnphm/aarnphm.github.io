@@ -9,7 +9,6 @@ date: '2026-11-05'
 description: 'Yakitori omakase restaurant in Yorkville, serving heritage chicken grilled over binchotan charcoal at a twelve-seat counter.'
 id: 'Yakitori Momiji'
 modified: '2026-11-05'
-source: 'https://www.instagram.com/reel/De2_huFMXS-/'
 tags:
   - 'places'
 title: 'Yakitori Momiji'

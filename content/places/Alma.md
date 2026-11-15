@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Modern Chinese restaurant in Bloordale.'
 id: 'Alma'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DeIMQ4jFNoF/'
 tags:
   - 'places'
 title: 'Alma'

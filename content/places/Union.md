@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'French-inspired neighbourhood bistro on Ossington Avenue'
 id: 'Union'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/DeecXR8mFf7/'
 tags:
   - 'places'
 title: 'Union'

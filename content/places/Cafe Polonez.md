@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Polish restaurant on Roncesvalles Avenue serving traditional homestyle dishes.'
 id: 'Cafe Polonez'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DfIzlB_lF0Z/'
 tags:
   - 'places'
 title: 'Cafe Polonez'

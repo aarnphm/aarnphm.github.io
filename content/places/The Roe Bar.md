@@ -9,7 +9,6 @@ date: '2026-11-05'
 description: 'Café inside the Louise Roe Gallery serving coffee, matcha and pastries.'
 id: 'The Roe Bar'
 modified: '2026-11-05'
-source: 'https://www.instagram.com/reel/DfXQsREIuoY/'
 tags:
   - 'places'
 title: 'The Roe Bar'

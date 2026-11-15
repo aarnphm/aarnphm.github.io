@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'bakery serving cakes, cookies, pastries, and ice cream on Bloor Street West'
 id: 'Bakerbots Baking'
 modified: 2026-10-30
-source: https://www.instagram.com/reel/DfDq5exJTTN/
 tags:
   - places
 title: 'Bakerbots Baking'

@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Museum of footwear and its cultural history on Bloor Street West.'
 id: 'Bata Shoe Museum'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DfD11iIjhjS/'
 tags:
   - 'places'
 title: 'Bata Shoe Museum'
@@ -18,4 +17,4 @@ type:
 url: 'https://batashoemuseum.ca/'
 ---
 
-Admission checked on 2026-11-01: General admission is free on Sundays. Advance tickets are recommended, and admission includes the galleries and special exhibitions. [Official admission details](https://batashoemuseum.ca/category/visit/).
+Admission checked on 2026-11-01: General admission is free on Sundays. Advance tickets are recommended, and admission includes the galleries and special exhibitions.

@@ -9,7 +9,6 @@ date: '2026-11-10'
 description: 'Dundas West café and market serving coffee and specialty drinks.'
 id: 'Mola Cafe Market'
 modified: '2026-11-10'
-source: 'https://www.instagram.com/p/DfiwUD_HATy/'
 tags:
   - 'places'
 title: 'Mola Cafe Market'
@@ -17,7 +16,3 @@ type:
   - 'coffee shop'
 url: 'https://www.instagram.com/molacafe.to/'
 ---
-
-[Nat Doumkos’s Toronto eats post](https://www.instagram.com/p/DfiwUD_HATy/), slide 5.
-
-![[thoughts/images/APz8RQEt1sqGJ8QOv0Tu6A1jYUAq_deOV3woPVS7Z1g.jpg|Two iced coffees outside Mola Cafe Market]]

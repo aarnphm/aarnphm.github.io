@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Pizza shop on Dovercourt Road near Bloor Street West.'
 id: "Mac's Pizza Dovercourt"
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/De9nxxGlQvi/'
 tags:
   - 'places'
 title: "Mac's Pizza Dovercourt"

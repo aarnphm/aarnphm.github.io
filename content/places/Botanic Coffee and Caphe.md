@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Queen Street West cafe serving coffee, matcha and pastries in a space with books and plants.'
 id: 'Botanic Coffee and Caphe'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DeuVzOlIC6l/'
 tags:
   - 'places'
 title: 'Botanic Coffee and Caphe'

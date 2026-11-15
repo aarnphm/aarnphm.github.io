@@ -9,7 +9,6 @@ date: '2026-11-08'
 description: 'Italian restaurant and coffee bar at 1000 Madison Avenue.'
 id: 'Sant Ambroeus Madison Avenue'
 modified: '2026-11-08'
-source: 'https://www.instagram.com/p/DfPpNHKlqQj/'
 tags:
   - 'places'
 title: 'Sant Ambroeus Madison Avenue'
@@ -18,7 +17,3 @@ type:
   - 'restaurant'
 url: 'https://www.santambroeus.com/pages/location-madison-avenue'
 ---
-
-[Shrtlst.’s Upper East Side itinerary](https://www.instagram.com/p/DfPpNHKlqQj/), slide 9.
-
-![[thoughts/images/C95Hrx34OuVuogY2zMhy1ykyyBXBP-pxu-ypOMb2oT8.jpg|Shrtlst. Upper East Side itinerary, which lists Sant Ambroeus Madison Avenue]]

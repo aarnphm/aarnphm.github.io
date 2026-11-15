@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'lakeside neighbourhood in east Toronto with beaches, a boardwalk and shops along Queen Street East'
 id: 'The Beaches'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/DdpjBtqJlMt/'
 tags:
   - 'places'
 title: 'The Beaches'

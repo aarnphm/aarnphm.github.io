@@ -9,7 +9,6 @@ date: '2026-11-05'
 description: 'Café serving Tim Wendelboe coffee, breakfast, lunch and pastries in a pine-lined space designed with FRAMA.'
 id: 'Cabin Copenhagen'
 modified: '2026-11-05'
-source: 'https://www.instagram.com/reel/DfXQsREIuoY/'
 tags:
   - 'places'
 title: 'Cabin Copenhagen'

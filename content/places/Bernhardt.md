@@ -10,7 +10,6 @@ description: little portugal wine bar with small plates and good taste
 id: Bernhardt's
 modified: '2026-11-01'
 rating: 5
-source: 'https://www.instagram.com/reel/DchKUk8Byux/'
 tags:
   - places
 title: Bernhardt's

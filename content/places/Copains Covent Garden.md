@@ -9,7 +9,6 @@ date: '2026-11-02'
 description: 'French bakery on Neal Street in Covent Garden.'
 id: 'Copains Covent Garden'
 modified: '2026-11-02'
-source: 'https://www.instagram.com/reel/Dd3UzWQsPpC/'
 tags:
   - 'places'
 title: 'Copains Covent Garden'

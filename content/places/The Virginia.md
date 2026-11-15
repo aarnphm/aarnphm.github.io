@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'Cocktail bar on Queen Street West in Parkdale.'
 id: 'The Virginia'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/DdaGREXJ5Pb/'
 tags:
   - 'places'
 title: 'The Virginia'

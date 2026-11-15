@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Dupont Street restaurant serving seasonal dishes in a diner-style space.'
 id: "Dotty's"
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DfGFOhKGoEJ/'
 tags:
   - 'places'
 title: "Dotty's"

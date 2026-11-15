@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Cocktail bar and restaurant on Queen Street East.'
 id: 'The Comrade'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DfDUc1yoNEc/'
 tags:
   - 'places'
 title: 'The Comrade'
