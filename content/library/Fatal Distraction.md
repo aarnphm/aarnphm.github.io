@@ -22,6 +22,5 @@ tags:
 status: to read
 posters: '[[library/posters/fatal-distraction.jpg]]'
 external: https://www.pulitzer.org/winners/gene-weingarten-0
+details: Published in The Washington Post on March 8, 2009; awarded the 2010 Pulitzer Prize for Feature Writing. The poster reproduces the first page of the article reprint.
 ---
-
-Published in The Washington Post on March 8, 2009; awarded the 2010 Pulitzer Prize for Feature Writing. The poster reproduces the first page of the article reprint.

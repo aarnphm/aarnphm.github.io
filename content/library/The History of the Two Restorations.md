@@ -17,8 +17,8 @@ status: to read
 subcategory: history
 title: The History of the Two Restorations
 year: 1844
+details: |-
+  Vaulabelle's multivolume _Histoire des deux Restaurations_ began publication in 1844. The English title here identifies the French work; it does not designate an English translation.
+
+  The cover is Hachette BnF's 2017 facsimile of volume 1 of the 1860 edition, ISBN 9782019678005. The reading entry covers the work as a whole.
 ---
-
-Vaulabelle's multivolume _Histoire des deux Restaurations_ began publication in 1844. The English title here identifies the French work; it does not designate an English translation.
-
-The cover is Hachette BnF's 2017 facsimile of volume 1 of the 1860 edition, ISBN 9782019678005. The reading entry covers the work as a whole. [Edition details](https://www.hachettebnf.fr/livre/histoire-des-deux-restaurations-jusqua-lavenement-de-louis-philippe-tome-1-9782019678005/).

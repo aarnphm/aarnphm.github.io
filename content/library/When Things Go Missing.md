@@ -23,6 +23,5 @@ tags:
 status: to read
 posters: '[[library/posters/when-things-go-missing.jpg]]'
 external: https://www.newyorker.com/magazine/2017/02/13/when-things-go-missing
+details: Published online on February 5, 2017, and in The New Yorker’s February 13 and 20 issue under the title “Losing Streak.”
 ---
-
-Published online on February 5, 2017, and in The New Yorker’s February 13 and 20 issue under the title “Losing Streak.”

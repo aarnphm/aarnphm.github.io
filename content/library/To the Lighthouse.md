@@ -22,6 +22,5 @@ tags:
 status: to read
 posters: '[[library/posters/lighthouse.jpg]]'
 external: https://penguinrandomhouselibrary.com/book/?isbn=9780143137573
+details: 'The poster shows the Penguin Vitae edition. Original publication: 1927.'
 ---
-
-The poster shows the Penguin Vitae edition. Original publication: 1927.

@@ -14,6 +14,5 @@ seealso:
   - '[[arena/machine-learning/entry-v1-efb8904b2c94da23c5bdf81b598d54aee406e44894434e8833f6bd5b26b1f128|Arena]]'
 status: to read
 title: The Matrix Cookbook
+details: linked version dated November 15, 2012.
 ---
-
-linked version dated November 15, 2012.

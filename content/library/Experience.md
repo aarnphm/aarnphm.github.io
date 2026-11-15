@@ -23,6 +23,5 @@ tags:
 status: to read
 posters: '[[library/posters/experience.jpg]]'
 external: https://emersoncentral.com/texts/essays-second-series/experience/
+details: 'First published in Essays: Second Series (1844). The poster shows an 1886 standalone edition.'
 ---
-
-First published in Essays: Second Series (1844). The poster shows an 1886 standalone edition.

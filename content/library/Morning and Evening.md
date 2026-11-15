@@ -24,6 +24,5 @@ tags:
   - literature
 external: https://fitzcarraldoeditions.com/books/morning-and-evening/
 description: A novella following the birth and death of Johannes, a Norwegian fisherman, through memory, ordinary encounters, and the search for meaning.
+details: Originally published as Morgon og kveld in 2000. The featured Fitzcarraldo edition uses Damion Searls’s English translation.
 ---
-
-Originally published as Morgon og kveld in 2000. The featured Fitzcarraldo edition uses Damion Searls’s English translation.

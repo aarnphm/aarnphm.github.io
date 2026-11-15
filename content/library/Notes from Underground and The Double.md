@@ -22,6 +22,5 @@ tags:
 status: to read
 posters: '[[library/posters/notes-from-underground-and-the-double.jpg]]'
 external: https://www.penguinrandomhouse.com/books/837917/notes-from-underground-and-the-double-by-fyodor-dostoyevsky-translated-with-an-introduction-by-jesse-coulson/
+details: The year refers to this Penguin combined edition. The Double was first published in 1846 and Notes from Underground in 1864.
 ---
-
-The year refers to this Penguin combined edition. The Double was first published in 1846 and Notes from Underground in 1864.

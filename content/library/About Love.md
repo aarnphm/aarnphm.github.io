@@ -22,6 +22,5 @@ tags:
 status: to read
 posters: '[[library/posters/about-love.jpg]]'
 external: https://www.penguin.co.uk/books/454976/about-love-by-chekhov-anton/9780241619766
+details: The year refers to the Penguin Little Clothbound Classics selection, first published in the UK in 2023.
 ---
-
-The year refers to the Penguin Little Clothbound Classics selection, first published in the UK in 2023.

@@ -12,6 +12,5 @@ seealso:
   - '[[arena/resources/entry-v1-9a5522c182412bcd195a0b461ee3d941f3d3bf7082c0f49363ac3022bbf1ee41|Arena]]'
 status: to read
 title: The Cambridge Dictionary of Philosophy
+details: Robert Audi is the editor.
 ---
-
-Robert Audi is the editor.

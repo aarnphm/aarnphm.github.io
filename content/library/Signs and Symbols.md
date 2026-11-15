@@ -23,6 +23,5 @@ tags:
 status: to read
 posters: '[[library/posters/signs-and-symbols.jpg]]'
 external: https://www.newyorker.com/magazine/1948/05/15/symbols-and-signs
+details: First published as “Symbols and Signs” in The New Yorker on May 15, 1948. The poster is the cover of The Stories of Vladimir Nabokov, a collected edition.
 ---
-
-First published as “Symbols and Signs” in The New Yorker on May 15, 1948. The poster is the cover of The Stories of Vladimir Nabokov, a collected edition.

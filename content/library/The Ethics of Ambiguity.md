@@ -24,8 +24,7 @@ tags:
   - philosophy
 description: Beauvoir develops an existentialist ethics in which accepting human ambiguity and willing one’s own freedom entails responsibility for the freedom of others.
 external: https://openlibrary.org/books/OL20017277M/The_ethics_of_ambiguity
+reference_links:
+  - https://en.wikipedia.org/wiki/The_Ethics_of_Ambiguity
+details: Originally published in French in 1947. The English translation is by Bernard Frechtman.
 ---
-
-Originally published in French in 1947. The English translation is by Bernard Frechtman.
-
-Sources: [English edition](https://openlibrary.org/books/OL20017277M/The_ethics_of_ambiguity); [publication history](https://en.wikipedia.org/wiki/The_Ethics_of_Ambiguity).

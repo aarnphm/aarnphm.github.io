@@ -24,6 +24,5 @@ tags:
 status: to read
 posters: '[[library/posters/the-copenhagen-trilogy-childhood-youth-dependency.jpg]]'
 external: https://academic.macmillan.com/academictrade/9781250829788/thecopenhagentrilogy/
+details: The year refers to the English omnibus edition from Farrar, Straus and Giroux. Childhood and Youth appeared in Danish in 1967; Dependency followed in 1971.
 ---
-
-The year refers to the English omnibus edition from Farrar, Straus and Giroux. Childhood and Youth appeared in Danish in 1967; Dependency followed in 1971.

@@ -14,8 +14,7 @@ posters: '[[library/posters/metaphysics.jpg]]'
 status: finished
 subcategory: metaphysics
 title: Metaphysics
+details: The cover identifies the Penguin Classics edition translated by Hugh Lawson-Tancred, ISBN 9780140446197. The edition read has not been specified.
 ---
 
 Finished on October 10, 2024.
-
-The cover identifies the Penguin Classics edition translated by Hugh Lawson-Tancred, ISBN 9780140446197. The edition read has not been specified. [Edition details](https://www.penguinrandomhouse.com/books/260885/the-metaphysics-by-aristotle/).

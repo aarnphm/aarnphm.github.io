@@ -20,5 +20,3 @@ tags:
 title: The AI Anarchies Book
 year: 2024
 ---
-
-see also: https://www.creativeapplications.net/books/the-ai-anarchies-book

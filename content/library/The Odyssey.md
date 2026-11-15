@@ -23,8 +23,5 @@ status: to read
 tags:
   - literature
 posters: '[[library/posters/the-odyssey.jpg|the-odyssey.jpg]]'
+details: The year is an approximate catalogue date (c. 700 BCE), not a known publication year. The poem is traditionally dated to the eighth or seventh century BCE. This cover represents E. V. Rieu’s translation, revised by D. C. H. Rieu.
 ---
-
-Related journey narrative: [[library/Heart of Darkness]].
-
-The year is an approximate catalogue date (c. 700 BCE), not a known publication year. The poem is traditionally dated to the eighth or seventh century BCE. This cover represents E. V. Rieu’s translation, revised by D. C. H. Rieu.

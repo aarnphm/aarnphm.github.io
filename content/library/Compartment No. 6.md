@@ -22,6 +22,5 @@ tags:
 status: to read
 posters: '[[library/posters/compartment-no-6.jpg]]'
 external: https://books-events.graywolfpress.org/books/compartment-no-6
+details: The French title is Compartiment n° 6. This entry uses the English title and Graywolf cover.
 ---
-
-The French title is Compartiment n° 6. This entry uses the English title and Graywolf cover.

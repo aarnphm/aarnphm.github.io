@@ -22,6 +22,5 @@ tags:
 status: to read
 posters: '[[library/posters/misery.jpg]]'
 external: https://www.ibiblio.org/eldritch/ac/misery.htm
+details: Short story, originally titled Тоска (Toska). The poster is the cover of the Standard Ebooks collection, translated by Constance Garnett.
 ---
-
-Short story, originally titled Тоска (Toska). The poster is the cover of the Standard Ebooks collection, translated by Constance Garnett.

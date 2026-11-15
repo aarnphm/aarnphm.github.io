@@ -22,6 +22,5 @@ tags:
 status: to read
 posters: '[[library/posters/falling-man.jpg]]'
 external: https://www.esquire.com/news-politics/a48031/the-falling-man-tom-junod/
+details: Article first published in Esquire, September 2003.
 ---
-
-Article first published in Esquire, September 2003.

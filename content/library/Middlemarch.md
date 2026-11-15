@@ -23,6 +23,5 @@ category:
 tags:
   - literature
 posters: '[[library/posters/middlemarch.jpg|middlemarch.jpg]]'
+details: First published in eight parts, 1871–1872.
 ---
-
-First published in eight parts, 1871–1872.

@@ -24,6 +24,5 @@ tags:
   - essays
 external: https://www.versobooks.com/products/2374-a-philosophy-of-walking
 description: Essays on walking, solitude, and freedom through the lives and ideas of Nietzsche, Rousseau, Thoreau, and other writers and thinkers.
+details: Originally published in French in 2009; the English edition is translated by John Howe.
 ---
-
-Originally published in French in 2009; the English edition is translated by John Howe.

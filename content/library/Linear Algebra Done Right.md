@@ -12,6 +12,5 @@ seealso:
   - '[[arena/resources/entry-v1-593c221aad1606f4f504dc9c05b0cd56244d8a34f7caeb021801dfd13de13479|Arena]]'
 status: to read
 title: Linear Algebra Done Right
+details: Arena links to the open-access fourth edition.
 ---
-
-Arena links to the open-access fourth edition.

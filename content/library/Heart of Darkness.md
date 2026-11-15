@@ -22,6 +22,5 @@ status: to read
 tags:
   - literature
 posters: '[[library/posters/heart-of-darkness.jpg|heart-of-darkness.jpg]]'
+details: First serialized in 1899, then published in book form in 1902.
 ---
-
-First serialized in 1899, then published in book form in 1902.

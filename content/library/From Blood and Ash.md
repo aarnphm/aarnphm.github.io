@@ -22,6 +22,5 @@ category:
 tags:
   - literature
 posters: '[[library/posters/from-blood-and-ash.jpg|from-blood-and-ash.jpg]]'
+details: Book 1 of the Blood and Ash series. First published in 2020.
 ---
-
-Book 1 of the Blood and Ash series. First published in 2020.

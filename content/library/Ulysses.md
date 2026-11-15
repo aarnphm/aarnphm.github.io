@@ -22,6 +22,5 @@ tags:
 status: to read
 posters: '[[library/posters/ulysses.jpg]]'
 external: https://www.penguinrandomhouse.com/books/88933/ulysses-by-james-joyce-introduction-by-craig-raine/
+details: The poster shows the Everyman’s Library edition, with an introduction by Craig Raine.
 ---
-
-The poster shows the Everyman’s Library edition, with an introduction by Craig Raine.

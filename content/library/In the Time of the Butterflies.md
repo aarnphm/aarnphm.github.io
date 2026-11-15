@@ -22,6 +22,5 @@ category:
 tags:
   - literature
 posters: '[[library/posters/in-the-time-of-the-butterflies.jpg|in-the-time-of-the-butterflies.jpg]]'
+details: First published in 1994.
 ---
-
-First published in 1994.

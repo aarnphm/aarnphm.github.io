@@ -22,6 +22,5 @@ tags:
 status: to read
 posters: '[[library/posters/on-transience.jpg]]'
 external: https://www.freudedition.net/en/werke/transience/druckschrift
+details: Written in 1915 and published in 1916 as Vergänglichkeit. The poster reproduces the first page of an English text.
 ---
-
-Written in 1915 and published in 1916 as Vergänglichkeit. The poster reproduces the first page of an English text.

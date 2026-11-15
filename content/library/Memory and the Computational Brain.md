@@ -15,6 +15,5 @@ seealso:
 status: to read
 title: Memory and the Computational Brain
 year: 2009
+details: Arena links to an excerpt containing chapters 1–9.
 ---
-
-Arena links to an excerpt containing chapters 1–9.

@@ -22,6 +22,5 @@ tags:
 status: to read
 posters: '[[library/posters/simple-passion.jpg]]'
 external: https://www.penguinrandomhouse.com/books/642902/simple-passion-by-annie-ernaux-translated-from-the-french-by-tanya-leslie/
+details: The French edition bears a 1991 copyright; the publication year here follows its 1992 release.
 ---
-
-The French edition bears a 1991 copyright; the publication year here follows its 1992 release.

@@ -25,6 +25,5 @@ subcategory:
   - consciousness
 description: Two novels about the Norwegian painter Lars Hertervig, tracing artistic doubt, desire, mental illness, and the lives surrounding him.
 external: https://fitzcarraldoeditions.com/books/melancholy-i-ii/
+details: The two Norwegian volumes appeared in 1995 and 1996. This entry collects both in the 2023 Fitzcarraldo English edition. The year field records the first volume’s original publication.
 ---
-
-The two Norwegian volumes appeared in 1995 and 1996. This entry collects both in the 2023 Fitzcarraldo English edition. The year field records the first volume’s original publication.

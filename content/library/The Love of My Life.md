@@ -22,6 +22,5 @@ tags:
 status: to read
 posters: '[[library/posters/love-of-my-life.jpg]]'
 external: https://www.thesunmagazine.org/articles/25205-the-love-of-my-life
+details: Essay first published in The Sun, September 2002. The poster is the first page of the library-hosted reprint.
 ---
-
-Essay first published in The Sun, September 2002. The poster is the first page of the library-hosted reprint.
