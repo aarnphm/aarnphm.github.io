@@ -19,6 +19,5 @@ tags:
 title: La Terra Trema
 year: 1948
 runtime: 165
+external: https://en.wikipedia.org/wiki/La_Terra_Trema
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](https://en.wikipedia.org/wiki/La_Terra_Trema).

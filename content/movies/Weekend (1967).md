@@ -21,6 +21,5 @@ tags:
 title: Weekend (1967)
 year: 1967
 runtime: 105
+external: https://en.wikipedia.org/wiki/Weekend_(1967_film)
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](<https://en.wikipedia.org/wiki/Weekend_(1967_film)>).

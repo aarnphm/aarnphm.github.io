@@ -10,8 +10,7 @@ posters: '[[movies/posters/amelie.jpg]]'
 status: to watch
 title: 'Amélie'
 year: 2001
+external: https://en.wikipedia.org/wiki/Am%C3%A9lie
+reference_links:
+  - https://fr.wikipedia.org/wiki/Le_Fabuleux_Destin_d%27Am%C3%A9lie_Poulain
 ---
-
-From [Cinephile Club’s autumn film list](https://www.instagram.com/reel/DfHp1jVCX_8/). [Film details](https://en.wikipedia.org/wiki/Am%C3%A9lie).
-
-[Fiche du film en français](https://fr.wikipedia.org/wiki/Le_Fabuleux_Destin_d%27Am%C3%A9lie_Poulain).

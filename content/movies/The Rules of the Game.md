@@ -17,6 +17,5 @@ tags:
 title: The Rules of the Game
 year: 1939
 runtime: 110
+external: https://en.wikipedia.org/wiki/The_Rules_of_the_Game
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](https://en.wikipedia.org/wiki/The_Rules_of_the_Game).

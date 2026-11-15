@@ -19,6 +19,5 @@ tags:
 title: Le Boucher
 year: 1970
 runtime: 93
+external: https://en.wikipedia.org/wiki/Le_Boucher
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](https://en.wikipedia.org/wiki/Le_Boucher).

@@ -17,6 +17,5 @@ tags:
 title: The 400 Blows
 year: 1959
 runtime: 99
+external: https://en.wikipedia.org/wiki/The_400_Blows
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](https://en.wikipedia.org/wiki/The_400_Blows).

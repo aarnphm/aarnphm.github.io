@@ -11,5 +11,3 @@ tags:
 title: 'The Conformist'
 year: 1970
 ---
-
-Recommended by Robert Yeoman in [ShotDeck’s ASC recommendations](https://www.instagram.com/reel/Db8PFLVp_XX/) at 28s.

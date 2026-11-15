@@ -20,6 +20,5 @@ tags:
 title: L'Avventura
 year: 1960
 runtime: 143
+external: https://en.wikipedia.org/wiki/L%27Avventura
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](https://en.wikipedia.org/wiki/L%27Avventura).

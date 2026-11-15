@@ -17,6 +17,5 @@ tags:
 title: Ikiru
 year: 1952
 runtime: 143
+external: https://en.wikipedia.org/wiki/Ikiru
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](https://en.wikipedia.org/wiki/Ikiru).

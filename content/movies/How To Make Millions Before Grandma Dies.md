@@ -18,5 +18,3 @@ title: How to Make Millions Before Grandma Dies
 watched: '2025-09-18'
 year: 2024
 ---
-
-Included in [Bingelog’s films about grief and loss](https://www.instagram.com/p/DfZlpl8Dwfh/).

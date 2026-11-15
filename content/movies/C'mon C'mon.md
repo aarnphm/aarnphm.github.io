@@ -8,6 +8,5 @@ posters: '[[movies/posters/cmon-cmon.jpg]]'
 status: to watch
 title: "C'mon C'mon"
 year: 2021
+external: https://en.wikipedia.org/wiki/C'mon_C'mon_(film)
 ---
-
-From [Cinephile Club’s autumn film list](https://www.instagram.com/reel/DfHp1jVCX_8/). [Film details](<https://en.wikipedia.org/wiki/C'mon_C'mon_(film)>).

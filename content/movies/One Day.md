@@ -10,6 +10,5 @@ tags:
   - grief
 title: 'One Day'
 year: 2011
+external: https://en.wikipedia.org/wiki/One_Day_(2011_film)
 ---
-
-From [Bingelog’s films about grief and loss](https://www.instagram.com/p/DfZlpl8Dwfh/). [Film details](<https://en.wikipedia.org/wiki/One_Day_(2011_film)>).

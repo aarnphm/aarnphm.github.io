@@ -17,6 +17,5 @@ tags:
 title: Breathless
 year: 1960
 runtime: 90
+external: https://en.wikipedia.org/wiki/Breathless_(1960_film)
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](<https://en.wikipedia.org/wiki/Breathless_(1960_film)>).

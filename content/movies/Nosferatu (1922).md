@@ -16,8 +16,6 @@ tags:
   - horror
 title: Nosferatu (1922)
 year: 1922
+external: https://en.wikipedia.org/wiki/Nosferatu
+details: runtime varies with the restoration and silent-film projection speed.
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](https://en.wikipedia.org/wiki/Nosferatu).
-
-runtime varies with the restoration and silent-film projection speed.

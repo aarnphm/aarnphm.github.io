@@ -19,6 +19,5 @@ tags:
 title: 'Aguirre, the Wrath of God'
 year: 1972
 runtime: 94
+external: https://en.wikipedia.org/wiki/Aguirre,_the_Wrath_of_God
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](https://en.wikipedia.org/wiki/Aguirre,_the_Wrath_of_God).

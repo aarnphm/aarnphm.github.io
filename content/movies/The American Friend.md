@@ -21,6 +21,5 @@ tags:
 title: The American Friend
 year: 1977
 runtime: 127
+external: https://en.wikipedia.org/wiki/The_American_Friend
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](https://en.wikipedia.org/wiki/The_American_Friend).

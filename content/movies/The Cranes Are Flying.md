@@ -11,5 +11,3 @@ tags:
 title: 'The Cranes Are Flying'
 year: 1957
 ---
-
-Recommended by Adam Newport-Berra in [ShotDeck’s ASC recommendations](https://www.instagram.com/reel/Db8PFLVp_XX/) at 12.5s.

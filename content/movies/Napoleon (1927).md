@@ -16,8 +16,6 @@ tags:
   - history
 title: Napoleon (1927)
 year: 1927
+external: https://en.wikipedia.org/wiki/Napoléon_(1927_film)
+details: multiple cuts and restorations exist, with substantially different runtimes.
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](<https://en.wikipedia.org/wiki/Napoléon_(1927_film)>).
-
-multiple cuts and restorations exist, with substantially different runtimes.

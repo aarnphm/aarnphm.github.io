@@ -17,6 +17,5 @@ tags:
 title: Tokyo Story
 year: 1953
 runtime: 136
+external: https://en.wikipedia.org/wiki/Tokyo_Story
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](https://en.wikipedia.org/wiki/Tokyo_Story).

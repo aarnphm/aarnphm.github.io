@@ -19,6 +19,6 @@ title: Breakfast at Tiffany's
 year: 1961
 rating: 9.2
 watched: 2026-09-16
+external: https://catalog.afi.com/Film/22674-BREAKFAST-ATTIFFANYS
+details: based on Truman Capote's 1958 novella of the same name.
 ---
-
-based on Truman Capote's 1958 novella of the same name. [film credits](https://catalog.afi.com/Film/22674-BREAKFAST-ATTIFFANYS).

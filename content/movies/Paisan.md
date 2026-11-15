@@ -17,6 +17,5 @@ tags:
 title: Paisan
 year: 1946
 runtime: 126
+external: https://en.wikipedia.org/wiki/Paisan
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](https://en.wikipedia.org/wiki/Paisan).

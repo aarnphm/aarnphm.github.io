@@ -17,6 +17,6 @@ tags:
   - o/life
 title: It's a Wonderful Life
 year: 1946
+external: https://www.loc.gov/item/90711698/
+details: directed by Frank Capra, based on Philip Van Doren Stern's short story The Greatest Gift.
 ---
-
-directed by Frank Capra, based on Philip Van Doren Stern's short story [The Greatest Gift](https://www.loc.gov/item/90711698/).

@@ -19,6 +19,5 @@ tags:
 title: Rocco and His Brothers
 year: 1960
 runtime: 177
+external: https://en.wikipedia.org/wiki/Rocco_and_His_Brothers
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](https://en.wikipedia.org/wiki/Rocco_and_His_Brothers).

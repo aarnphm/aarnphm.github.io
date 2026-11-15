@@ -10,6 +10,5 @@ tags:
   - grief
 title: 'When Marnie Was There'
 year: 2014
+external: https://en.wikipedia.org/wiki/When_Marnie_Was_There_(film)
 ---
-
-From [Bingelog’s films about grief and loss](https://www.instagram.com/p/DfZlpl8Dwfh/). [Film details](<https://en.wikipedia.org/wiki/When_Marnie_Was_There_(film)>).

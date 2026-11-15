@@ -17,6 +17,5 @@ tags:
 title: Seven Samurai
 year: 1954
 runtime: 207
+external: https://en.wikipedia.org/wiki/Seven_Samurai
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](https://en.wikipedia.org/wiki/Seven_Samurai).

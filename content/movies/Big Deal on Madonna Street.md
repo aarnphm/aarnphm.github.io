@@ -17,6 +17,5 @@ tags:
 title: Big Deal on Madonna Street
 year: 1958
 runtime: 107
+external: https://en.wikipedia.org/wiki/Big_Deal_on_Madonna_Street
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](https://en.wikipedia.org/wiki/Big_Deal_on_Madonna_Street).

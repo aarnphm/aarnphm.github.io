@@ -10,6 +10,5 @@ tags:
   - grief
 title: 'Coco'
 year: 2017
+external: https://en.wikipedia.org/wiki/Coco_(2017_film)
 ---
-
-From [Bingelog’s films about grief and loss](https://www.instagram.com/p/DfZlpl8Dwfh/). [Film details](<https://en.wikipedia.org/wiki/Coco_(2017_film)>).

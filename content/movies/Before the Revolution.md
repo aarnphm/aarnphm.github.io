@@ -17,6 +17,5 @@ tags:
 title: Before the Revolution
 year: 1964
 runtime: 112
+external: https://en.wikipedia.org/wiki/Before_the_Revolution
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](https://en.wikipedia.org/wiki/Before_the_Revolution).

@@ -10,6 +10,5 @@ tags:
   - grief
 title: 'Charlie St. Cloud'
 year: 2010
+external: https://en.wikipedia.org/wiki/Charlie_St._Cloud
 ---
-
-From [Bingelog’s films about grief and loss](https://www.instagram.com/p/DfZlpl8Dwfh/). [Film details](https://en.wikipedia.org/wiki/Charlie_St._Cloud).

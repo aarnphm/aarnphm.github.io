@@ -8,6 +8,5 @@ posters: '[[movies/posters/yi-yi.jpg]]'
 status: to watch
 title: 'Yi Yi'
 year: 2000
+external: https://en.wikipedia.org/wiki/Yi_Yi
 ---
-
-From [Cinephile Club’s autumn film list](https://www.instagram.com/reel/DfHp1jVCX_8/). [Film details](https://en.wikipedia.org/wiki/Yi_Yi).

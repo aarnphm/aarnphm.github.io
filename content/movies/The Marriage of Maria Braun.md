@@ -20,6 +20,5 @@ tags:
 title: The Marriage of Maria Braun
 year: 1979
 runtime: 120
+external: https://en.wikipedia.org/wiki/The_Marriage_of_Maria_Braun
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](https://en.wikipedia.org/wiki/The_Marriage_of_Maria_Braun).

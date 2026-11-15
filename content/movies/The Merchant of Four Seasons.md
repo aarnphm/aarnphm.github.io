@@ -17,6 +17,5 @@ tags:
 title: The Merchant of Four Seasons
 year: 1972
 runtime: 88
+external: https://en.wikipedia.org/wiki/The_Merchant_of_Four_Seasons
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](https://en.wikipedia.org/wiki/The_Merchant_of_Four_Seasons).

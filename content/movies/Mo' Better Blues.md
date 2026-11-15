@@ -11,5 +11,3 @@ tags:
 title: "Mo' Better Blues"
 year: 1990
 ---
-
-Recommended by Tommy Maddox-Upshaw in [ShotDeck’s ASC recommendations](https://www.instagram.com/reel/Db8PFLVp_XX/) at 60s.

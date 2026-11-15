@@ -19,5 +19,3 @@ tags:
 title: Moonrise Kingdom
 year: 2012
 ---
-
-Included in [Cinephile Club’s autumn film list](https://www.instagram.com/reel/DfHp1jVCX_8/).
