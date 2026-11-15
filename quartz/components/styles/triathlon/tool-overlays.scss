@@ -170,7 +170,8 @@
 .tri-tools-tabs,
 .tri-calendar-source-controls,
 .tri-ana-chapters,
-.tri-on-modes {
+.tri-on-modes,
+.tri-hp-dims {
   --tri-header-tab-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
 
   display: inline-flex;
@@ -189,7 +190,8 @@
 .tri-tools-tab,
 .tri-calendar-source-tab,
 .tri-ana-chapter-tab,
-.tri-on-mode {
+.tri-on-mode,
+.tri-hp-dim {
   appearance: none;
   box-sizing: border-box;
   flex: 0 0 auto;
@@ -228,7 +230,8 @@
   .tri-tools-tab[aria-selected='false']:hover,
   .tri-calendar-source-tab[aria-pressed='false']:hover,
   .tri-ana-chapter-tab[aria-selected='false']:hover,
-  .tri-on-mode[aria-pressed='false']:hover {
+  .tri-on-mode[aria-pressed='false']:hover,
+  .tri-hp-dim[aria-pressed='false']:hover {
     color: var(--dark);
   }
 }
@@ -237,7 +240,8 @@
 .tri-tools-tab[aria-selected='true'],
 .tri-calendar-source-tab[aria-pressed='true'],
 .tri-ana-chapter-tab[aria-selected='true'],
-.tri-on-mode[aria-pressed='true'] {
+.tri-on-mode[aria-pressed='true'],
+.tri-hp-dim[aria-pressed='true'] {
   color: var(--dark);
   background: color-mix(in srgb, var(--tri-accent) 18%, var(--tri-header-tab-surface));
 }
@@ -247,7 +251,8 @@
   .tri-tools-tabs,
   .tri-calendar-source-controls,
   .tri-ana-chapters,
-  .tri-on-modes {
+  .tri-on-modes,
+  .tri-hp-dims {
     height: 1.65rem;
   }
 }

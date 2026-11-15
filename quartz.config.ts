@@ -186,6 +186,7 @@ const config: QuartzConfig = {
         Plugin.LazyScripts({
           scripts: [
             { name: 'triathlon', entry: 'components/triathlon/runtime/mount.ts' },
+            { name: 'high-park-terrain', entry: 'components/triathlon/fun/terrain-gl.ts' },
             { name: 'pdf-reader', entry: 'components/pdf-reader/app.tsx' },
             {
               name: 'course-workspace',

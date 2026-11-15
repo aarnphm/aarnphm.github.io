@@ -1,12 +1,12 @@
 import type { ComponentChild } from 'preact'
 import type { TriathlonRenderData } from '../../triathlon/render-data'
+import type { LapSport } from './high-park-laps'
 import {
   buildHighParkLoops,
   type HighParkLoops,
   type HighParkSport,
   type HighParkVisit,
 } from '../../../util/high-park-loops'
-import { LapView } from './high-park-laps'
 
 const clock = (seconds: number): string => {
   const rounded = Math.round(seconds)
@@ -26,6 +26,10 @@ const Unit = ({ metric, imperial }: { metric: string; imperial: string }) => (
   </span>
 )
 const MI_M = 1609.344
+// Heightfield for the 3D relief, baked by docs/verification/high-park-3d/bake.py.
+const TERRAIN_HREF = '/static/high-park/terrain.json'
+// The park's relief is ~35 m across a kilometre; the loop itself climbs ~10 m.
+const RELIEF_X = 5
 // Laps slower than this are stops, not efforts; they sit on the chart's floor.
 const SLOW_CAP_S = 270
 
@@ -80,50 +84,67 @@ const LoopMap = ({ loops, data }: { loops: HighParkLoops; data: HighParkSport })
   const pct = (value: number, origin: number, span: number) =>
     `${r1(((value - origin) / span) * 100)}%`
   return (
-    <figure class="tri-hp-map">
+    <figure class="tri-hp-map" data-terrain={TERRAIN_HREF} data-exaggeration={RELIEF_X}>
       <div class="tri-hp-plate">
-        <svg
-          viewBox={`${frame.x} ${frame.y} ${frame.width} ${frame.height}`}
-          role="img"
-          aria-label={`The High Park main-road circuit drawn from the fastest lap of ${rides.length} rides.`}
-        >
-          <g class="tri-hp-traces">
-            {rides.map(ride => (
-              <path key={ride.id} d={ride.trace} />
-            ))}
-          </g>
-          {best && <path class="tri-hp-trace-best" d={best.trace} />}
-          {start && (
-            <rect
-              class="tri-hp-start"
-              x={Number(start[1]) - 7}
-              y={Number(start[2]) - 7}
-              width="14"
-              height="14"
-            />
-          )}
-        </svg>
-        {start && (
-          <span
-            class="tri-hp-start-label"
-            style={`left:${pct(Number(start[1]), frame.x, frame.width)};top:${pct(Number(start[2]), frame.y, frame.height)}`}
+        <div class="tri-hp-flat" style={`aspect-ratio:${frame.width}/${frame.height}`}>
+          <svg
+            viewBox={`${frame.x} ${frame.y} ${frame.width} ${frame.height}`}
+            role="img"
+            aria-label={`The High Park main-road circuit drawn from the fastest lap of ${rides.length} rides.`}
           >
-            start
-          </span>
-        )}
+            <g class="tri-hp-traces">
+              {rides.map(ride => (
+                <path key={ride.id} d={ride.trace} />
+              ))}
+            </g>
+            {best && <path class="tri-hp-trace-best" d={best.trace} />}
+            {start && (
+              <rect
+                class="tri-hp-start"
+                x={Number(start[1]) - 7}
+                y={Number(start[2]) - 7}
+                width="14"
+                height="14"
+              />
+            )}
+          </svg>
+          {start && (
+            <span
+              class="tri-hp-start-label"
+              style={`left:${pct(Number(start[1]), frame.x, frame.width)};top:${pct(Number(start[2]), frame.y, frame.height)}`}
+            >
+              start
+            </span>
+          )}
+        </div>
+        {/* The client shows the tabs once the relief has loaded (fun/high-park-terrain.ts). */}
+        <div class="tri-hp-dims" role="group" aria-label="map view" style="display:none">
+          <button class="tri-hp-dim" type="button" data-dim="3d" aria-pressed="true">
+            3d
+          </button>
+          <button class="tri-hp-dim" type="button" data-dim="2d" aria-pressed="false">
+            2d
+          </button>
+        </div>
       </div>
-      <div class="tri-hp-legend">
-        <span class="tri-hp-scale">
-          <Unit metric="200 m" imperial="0.1 mi" />
-          <span
-            class="tri-hp-scale-bar"
-            data-metric-w={pct(200, 0, frame.width)}
-            data-imperial-w={pct(MI_M / 10, 0, frame.width)}
-            style={`width:${pct(MI_M / 10, 0, frame.width)}`}
-          />
-        </span>
-        <span class="tri-hp-north" aria-label="north is up">
-          N ↑
+      {/* As wide as the flat map, which the plate fits by height, so the scale bar holds. */}
+      <div
+        class="tri-hp-legend"
+        style={`--hp-flat:${r1((frame.width / frame.height) * 1000) / 1000}`}
+      >
+        <span class="tri-hp-2d">
+          <span class="tri-hp-scale">
+            <Unit metric="200 m" imperial="0.1 mi" />
+            <span
+              class="tri-hp-scale-bar"
+              data-metric-w={pct(200, 0, frame.width)}
+              data-imperial-w={pct(MI_M / 10, 0, frame.width)}
+              style={`width:${pct(MI_M / 10, 0, frame.width)}`}
+            />
+          </span>
+          <span class="tri-hp-north" aria-label="north is up">
+            N ↑
+          </span>
         </span>
       </div>
     </figure>
@@ -277,15 +298,16 @@ const Tally = ({ data }: { data: HighParkSport }) => {
   )
 }
 
-// `hover` marks the log whose laps the page's hover data describes (the ride log).
+// Each ride's drop-down is an empty slot: the client renders it on first open from the sport's
+// lap data (`LapData`).
 const RideLog = ({
   title,
   data,
-  hover = false,
+  sport,
 }: {
   title: string
   data: HighParkSport
-  hover?: boolean
+  sport: LapSport
 }) => {
   const scale = lapScale(data.activities.flatMap(ride => ride.lapsS))
   return (
@@ -310,7 +332,7 @@ const RideLog = ({
                 <span class="tri-hp-best">{clock(ride.fastestS)}</span>
                 <span class="tri-hp-toggle" aria-hidden="true" />
               </summary>
-              {hover ? <div class="tri-hp-lapslot" data-ride={index} /> : <LapView ride={ride} />}
+              <div class="tri-hp-lapslot" data-ride={index} data-sport={sport} />
             </details>
           </li>
         ))}
@@ -320,8 +342,9 @@ const RideLog = ({
 }
 
 // Escape `<` so a ride name cannot close the script element.
-const hoverJson = (data: HighParkSport): string =>
+const hoverJson = (data: HighParkSport, sport: LapSport): string =>
   JSON.stringify({
+    sport,
     rides: data.activities.map(ride => [
       ride.date,
       ride.name,
@@ -346,8 +369,17 @@ const hoverJson = (data: HighParkSport): string =>
       ride.altitude,
       ride.href,
     ]),
-    points: lapClockGeometry(data)?.points ?? [],
+    // Only the cycling laps have a lap clock to hover.
+    points: sport === 'bike' ? (lapClockGeometry(data)?.points ?? []) : [],
   }).replace(/</g, '\\u003c')
+
+const LapData = ({ data, sport }: { data: HighParkSport; sport: LapSport }) => (
+  <script
+    type="application/json"
+    class="tri-hp-data"
+    dangerouslySetInnerHTML={{ __html: hoverJson(data, sport) }}
+  />
+)
 
 export const HighParkPanel = ({
   renderData,
@@ -375,12 +407,8 @@ export const HighParkPanel = ({
               <LapClock data={bike} />
             </div>
           </div>
-          <RideLog title="ride" data={bike} hover />
-          <script
-            type="application/json"
-            class="tri-hp-data"
-            dangerouslySetInnerHTML={{ __html: hoverJson(bike) }}
-          />
+          <RideLog title="ride" data={bike} sport="bike" />
+          <LapData data={bike} sport="bike" />
         </>
       ) : (
         <p class="tri-hp-empty">
@@ -391,7 +419,10 @@ export const HighParkPanel = ({
         </p>
       )}
       {run.activities.length > 0 ? (
-        <RideLog title="run" data={run} />
+        <>
+          <RideLog title="run" data={run} sport="run" />
+          <LapData data={run} sport="run" />
+        </>
       ) : (
         <p class="tri-hp-empty">
           <span>running</span> no full loop on foot yet.

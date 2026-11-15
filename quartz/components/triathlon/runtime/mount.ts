@@ -15,6 +15,7 @@ import { setupAnalytics } from '../analytics/controller'
 import { setupCalendars } from '../calendar/controller'
 import { setupCalendarPanel } from '../calendar/panel'
 import { setupHighParkHover } from '../fun/high-park'
+import { setupHighParkTerrain } from '../fun/high-park-terrain'
 import { setupMap } from '../maps/controller'
 import { setupAxisLabels } from '../shell/axis-labels'
 import { setupCommandPalette } from '../shell/command-palette'
@@ -93,6 +94,9 @@ export const mountTriathlon = (signal: AbortSignal): MountedTriathlon => {
         imperial: () => context.presentation.distance === 'imperial',
         toggle: () => toggleTriUnit(context.preferences),
       }),
+    )
+    addCleanup(
+      setupHighParkTerrain(root, () => context.presentation.distance === 'imperial', signal),
     )
     const hashDate = /^#(\d{4}-\d{2}-\d{2})$/.exec(window.location.hash)?.[1]
     if (hashDate)
