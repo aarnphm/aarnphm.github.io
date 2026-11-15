@@ -99,7 +99,12 @@ export function mountTrailHolidays(scene: HTMLElement, signal: AbortSignal, chan
           ? christmasTree(cells)
           : cobweb(
               cells,
-              treeCells(tree.querySelector('.trail-tree-motion > .trail-tree-trunk')),
+              // An evergreen's trunk is in bands above its foot.
+              [
+                ...tree.querySelectorAll(
+                  '.trail-tree-motion > .trail-tree-trunk, .trail-tree-stem > .trail-tree-trunk',
+                ),
+              ].flatMap(treeCells),
               index % 2 ? -1 : 1,
             )
       if (!markup) continue

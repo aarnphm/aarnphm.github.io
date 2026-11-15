@@ -1,3 +1,5 @@
+import { leafClumps } from '../scenery/leaf-clumps'
+
 export type Tone = 'light' | 'crown' | 'dark' | 'gold'
 export type Cell = { x: number; y: number; tone: Tone | 'trunk' | 'trunk-lit' }
 
@@ -21,8 +23,8 @@ export function* repoussoirMarkupSteps(
   trunkRadius: number,
   work: number,
 ): Generator<void, RepoussoirShape, undefined> {
-  // Markup in the trail tree's grammar: limbs that stay through the winter, the canopy in 3 × 3
-  // wind clusters over a shaded copy, snow along every exposed top.
+  // Markup in the trail tree's grammar: limbs that stay through the winter, the canopy in leaf
+  // clumps over a shaded copy, snow along every exposed top.
   const paths: Record<'trunk' | 'trunk-lit', string[]> = { trunk: [], 'trunk-lit': [] }
   const woodySnow: string[] = []
   const foliage = { left: Infinity, right: -Infinity, top: Infinity, bottom: -Infinity }
@@ -44,14 +46,16 @@ export function* repoussoirMarkupSteps(
   type Cluster = { marks: Record<Tone, string[]>; snow: string[]; flip: string[]; sprout: string[] }
   const clusters = new Map<number, Cluster>()
   const hollow: string[] = []
-  const binWidth = Math.max(pixel, (foliage.right - foliage.left) / 3)
-  const binHeight = Math.max(pixel, (foliage.bottom - foliage.top) / 3)
-  for (const { x, y, tone } of cells.values()) {
+  const leafy = [...cells.values()].filter(
+    ({ tone }) => tone !== 'trunk' && tone !== 'trunk-lit',
+  ) as { x: number; y: number; tone: Tone }[]
+  yield
+  const plan = leafClumps(leafy, pixel, false)
+  yield
+  for (let index = 0; index < leafy.length; index++) {
     if (++work % 128 === 0) yield
-    if (tone === 'trunk' || tone === 'trunk-lit') continue
-    const column = Math.min(2, Math.floor((x - foliage.left) / binWidth))
-    const row = Math.min(2, Math.floor((y - foliage.top) / binHeight))
-    const key = row * 3 + column
+    const { x, y, tone } = leafy[index]
+    const key = plan.owner[index]
     let cluster = clusters.get(key)
     if (!cluster) {
       cluster = {
@@ -75,11 +79,10 @@ export function* repoussoirMarkupSteps(
   const canopy = [...clusters.entries()]
     .sort(([a], [b]) => a - b)
     .map(([key, cluster]) => {
-      const centreX = foliage.left + ((key % 3) + 0.5) * binWidth
-      const centreY = foliage.top + (Math.floor(key / 3) + 0.5) * binHeight
+      const { x: centreX, y: centreY, loose } = plan.clumps[key]
       const lift = Math.max(0.15, Math.min(1, -centreY / extent)) ** 1.5
       return (
-        `<g class="trail-tree-leaves" data-leaf-x="${centreX.toFixed(1)}" data-leaf-y="${centreY.toFixed(1)}" data-leaf-lift="${lift.toFixed(2)}" data-leaf-cell="${pixel}">` +
+        `<g class="trail-tree-leaves" data-leaf-x="${centreX.toFixed(1)}" data-leaf-y="${centreY.toFixed(1)}" data-leaf-lift="${lift.toFixed(2)}" data-leaf-loose="${loose.toFixed(2)}" data-leaf-cell="${pixel}">` +
         (['light', 'crown', 'dark', 'gold'] as const)
           .filter(tone => cluster.marks[tone].length)
           .map(tone => `<path class="trail-tree-${tone}" d="${cluster.marks[tone].join('')}"/>`)
@@ -102,7 +105,7 @@ export function* repoussoirMarkupSteps(
     `<path class="trail-tree-trunk" d="${paths.trunk.join('')}"/>` +
     `<path class="trail-tree-trunk-lit" d="${paths['trunk-lit'].join('')}"/>` +
     `<path class="trail-tree-snow" d="${woodySnow.join('')}"/>` +
-    `<g class="trail-tree-canopy"><path class="trail-tree-hollow" d="${hollow.join('')}"/>${canopy}</g>` +
+    `<g class="trail-tree-canopy" data-leaf-span="${Math.max(0, foliage.right - foliage.left).toFixed(0)}"><path class="trail-tree-hollow" d="${hollow.join('')}"/>${canopy}</g>` +
     '</g>'
   return { markup, trunkRadius, extent, foliage }
 }
