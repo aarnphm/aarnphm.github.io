@@ -14,6 +14,7 @@ export interface TriathlonChainCycle {
 
 export interface TriathlonChainMaintenance {
   id: string
+  bikeId?: string
   distanceMiles: number | null
   lubricant: string | null
   since: string
@@ -34,6 +35,7 @@ export interface TriathlonMaintenanceRange {
 
 export interface TriathlonComponentMaintenance {
   id?: string
+  bikeId?: string
   component: string
   type: string
   distanceMiles: number | null
@@ -43,6 +45,7 @@ export interface TriathlonComponentMaintenance {
 
 export interface TriathlonServiceMaintenance {
   bike: string
+  bikeId?: string
   date: string
   distanceMiles: number | null
   place: string
@@ -50,6 +53,7 @@ export interface TriathlonServiceMaintenance {
 }
 
 export interface TriathlonWheelMaintenance {
+  bikeId?: string
   position: TriathlonMaintenancePosition
   part: TriathlonMaintenancePart
   type: string
@@ -106,6 +110,7 @@ const parseChain = (id: string, value: unknown): TriathlonChainMaintenance | nul
     return null
   }
   const chain: TriathlonChainMaintenance = { id, distanceMiles, lubricant, since, waxed }
+  if (typeof value.bikeId === 'string') chain.bikeId = value.bikeId
   if (typeof value.chainring === 'string') chain.chainring = value.chainring
   if (typeof value.ospw === 'string') chain.ospw = value.ospw
   const wax = nullableString(value, 'wax')
@@ -264,6 +269,7 @@ const parseComponentEntry = (
   if (!metadata) return null
   return {
     ...(typeof record.id === 'string' ? { id: record.id } : {}),
+    ...(typeof record.bikeId === 'string' ? { bikeId: record.bikeId } : {}),
     component,
     type,
     distanceMiles,
@@ -302,7 +308,14 @@ const parseServiceEntry = (bike: string, value: unknown): TriathlonServiceMainte
     (value.type !== undefined && type === undefined)
   )
     return null
-  return { bike, date, distanceMiles, place, type: type ?? null }
+  return {
+    ...(typeof value.bikeId === 'string' ? { bikeId: value.bikeId } : {}),
+    bike,
+    date,
+    distanceMiles,
+    place,
+    type: type ?? null,
+  }
 }
 
 const parseServices = (value: unknown): TriathlonServiceMaintenance[] => {
@@ -332,6 +345,7 @@ const parseWheelEntry = (
   const metadata = parseRangeMetadata(record, ranges)
   if (!metadata || metadata.reason === undefined) return null
   return {
+    ...(typeof record.bikeId === 'string' ? { bikeId: record.bikeId } : {}),
     position,
     part,
     type,

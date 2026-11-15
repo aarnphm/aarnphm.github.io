@@ -64,7 +64,9 @@ maintenance:
     '4':
       chainring: carbonti
       cycles:
-        - end: '2026-11-12'
+        - start: '2026-11-12'
+          end: null
+          distance: 0.00
           reasoning: waxed with cyclowax
       distance: 1774.35
       lubricant: UFO Wax Drip-On
@@ -82,7 +84,9 @@ maintenance:
     '5':
       chainring: carbonti
       cycles:
-        - end: '2026-11-12'
+        - start: '2026-11-12'
+          end: null
+          distance: 22.39
           reasoning: waxed with cyclowax
       distance: 22.39
       lubricant: null

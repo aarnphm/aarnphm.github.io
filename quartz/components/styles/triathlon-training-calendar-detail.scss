@@ -380,6 +380,16 @@
   line-height: 1.5;
 }
 
+// Each row draws the rule above it and the last one closes the day. The header has no rule, so a
+// row scrolling under it never shows a second line beside a fixed one.
+.tri-training-day-sessions > :is(.tri-training-session, .tri-training-empty) {
+  border-block-start: 1px solid var(--calendar-line);
+
+  &:last-child {
+    border-block-end: 1px solid var(--calendar-line);
+  }
+}
+
 .tri-training-empty {
   margin: 0;
   padding: 0.65rem;

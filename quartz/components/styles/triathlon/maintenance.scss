@@ -1,6 +1,6 @@
 .tri-maintenance-heading {
   color: var(--dark);
-  font-size: var(--text-meta);
+  font-size: var(--tri-gear-label-size);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -14,7 +14,7 @@
 
 .tri-maintenance-group-label {
   color: var(--darkgray);
-  font-size: var(--text-meta);
+  font-size: var(--tri-gear-label-size);
   line-height: 1.45;
   text-transform: uppercase;
 }
@@ -46,8 +46,7 @@
   grid-template-columns: 4.5rem minmax(0, 1fr);
   gap: 0.55rem;
   align-items: baseline;
-  font-size: var(--text-meta);
-  line-height: 1.4;
+  line-height: 1.45;
 }
 
 .tri-maintenance-entry-label {
@@ -67,7 +66,6 @@
   flex-wrap: wrap;
   gap: 0.08rem 0.45rem;
   color: var(--darkgray);
-  font-size: var(--text-meta);
   line-height: 1.45;
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
@@ -89,7 +87,7 @@
   border: 1px solid var(--gray);
   color: var(--darkgray);
   font-family: var(--codeFont);
-  font-size: var(--text-meta);
+  font-size: inherit;
   text-transform: uppercase;
 }
 

@@ -74,6 +74,9 @@
 }
 
 .tri-gear {
+  --tri-gear-text-size: 0.66rem;
+  --tri-gear-label-size: 0.58rem;
+
   position: absolute;
   bottom: calc(100% + 0.6rem);
   left: 0;
@@ -112,6 +115,8 @@
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
+  font-size: var(--tri-gear-text-size);
+  line-height: 1.45;
   padding-bottom: 0.9rem;
   border-bottom: 1px solid color-mix(in srgb, var(--gray) 28%, transparent);
 }

@@ -40,6 +40,17 @@ test('authored chain history reaches the maintenance surface with working links 
   assert.ok(elements(backup.children).some(node => node.properties.dataMi === '1774.35'))
   assert.match(toText(backup), /2026-08-26 → 2026-11-11/)
   assert.ok(elements(active.children).some(node => node.properties.dataMi === '22.39'))
+  for (const { chain, miles } of [
+    { chain: backup, miles: '0' },
+    { chain: active, miles: '22.39' },
+  ]) {
+    const cycles = elements(chain.children).find(
+      node => node.properties.ariaLabel === 'chain cycles',
+    )
+    assert.ok(cycles)
+    assert.match(toText(cycles), /2026-11-12 → current/)
+    assert.ok(elements(cycles.children).some(node => node.properties.dataMi === miles))
+  }
   const links = chains
     .flatMap(node => elements(node.children))
     .filter(node => node.tagName === 'a' && String(node.properties.href).startsWith('#'))

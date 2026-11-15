@@ -77,82 +77,100 @@ layout: triathlon
 maintenance:
   OSPW:
     - - type: Ultegra R8100 Pulley Wheel
-      - distance: 1335.00
+      - bikeId: b18037537
+      - distance: 1292.67
       - id: ultegra
       - range:
           - end: '2026-08-10'
             start: '2026-05-16'
       - reason: upgrades to CeramicSpeed OSPW
     - - type: CeramicSpeed OSPW RS 5 Spoke
+      - bikeId: b18037537
       - id: ceramicspeed
-      - distance: 2215.13
+      - distance: 2287.63
       - range:
           - end: null
             start: '2026-08-10'
   bottom bracket:
     - - type: FSA, T47 BBright for 24mm spindle
-      - distance: 3101.78
+      - bikeId: b18037537
+      - distance: 3055.47
       - range:
           - end: '2026-10-08'
             start: '2026-05-16'
       - reason: upgrades to CeramicSpeed
     - - type: CeramicSpeed T47 BBright for Shimano
-      - distance: 486.31
+      - bikeId: b18037537
+      - distance: 562.8
       - range:
           - end: null
             start: '2026-10-08'
       - reason: null
   brake pads:
     - - type: Shimano Brake Pads
-      - distance: 1731.28
+      - bikeId: b18037537
+      - distance: 1684.96
       - range:
           - end: '2026-08-22'
             start: '2026-05-16'
       - reason: upgrades to BRAKCO Graphene
     - - type: BRAKCO Airpads Graphene Venting Disc Brake Pads
-      - distance: 1796.73
+      - bikeId: b18037537
+      - distance: 1873.22
       - range:
           - end: null
             start: '2026-08-26'
       - reason: null
   chain:
     '1':
+      bikeId: b18037537
       chainring: ultegra
       cycles:
-        - end: '2026-07-16'
+        - distance: 710.81
+          end: '2026-07-16'
           reasoning: upgrade to new chain for race
-      distance: 751.81
+          start: '2026-05-16'
+      distance: 710.81
       lubricant: Muc-Off Dry Lube
       ospw: ultegra
       since: '2026-05-16'
       wax: null
       waxed: false
     '2':
+      bikeId: b18037537
       chainring: ultegra
       cycles:
-        - end: '2026-08-10'
+        - distance: 616.74
+          end: '2026-08-10'
           reasoning: upgrade to waxed drip-on
-      distance: 619.84
+          start: '2026-07-16'
+      distance: 616.74
       lubricant: Muc-Off Dry Lube
       ospw: ultegra
       since: '2026-07-16'
       waxed: false
     '3':
+      bikeId: b18037537
       chainring: ultegra
       cycles:
-        - end: '2026-08-26'
+        - distance: 449.59
+          end: '2026-08-26'
           reasoning: upgrade to carbon-ti, need new chainring
-      distance: 453.57
+          start: '2026-08-10'
+      distance: 449.59
       lubricant: UFO Wax Drip-On
       ospw: ceramicspeed
       since: '2026-08-10'
       wax: null
       waxed: true
     '4':
+      bikeId: b18037537
       chainring: carbonti
       cycles:
-        - end: '2026-11-12'
+        - distance: 0
+          end: null
           reasoning: waxed with cyclowax
+          start: '2026-11-12'
       distance: 1774.35
       lubricant: UFO Wax Drip-On
       ospw: ceramicspeed
@@ -167,11 +185,14 @@ maintenance:
         url: https://www.cyclowax.com/en-ca/products/performance-wax-kit
       waxed: true
     '5':
+      bikeId: b18037537
       chainring: carbonti
       cycles:
-        - end: '2026-11-12'
+        - distance: 98.87
+          end: null
           reasoning: waxed with cyclowax
-      distance: 22.39
+          start: '2026-11-12'
+      distance: 98.87
       lubricant: null
       ospw: ceramicspeed
       range:
@@ -186,49 +207,56 @@ maintenance:
       waxed: true
   chainrings:
     - - type: Ultegra FC-R8100 52-36T
+      - bikeId: b18037537
       - id: ultegra
-      - distance: 1731.28
+      - distance: 1684.96
       - range:
           - end: '2026-08-22'
             reason: upgrades to CarbonTi
             start: '2026-05-16'
     - - type: CarbonTi 54-40T
+      - bikeId: b18037537
       - id: carbonti
-      - distance: 1796.73
+      - distance: 1873.22
       - range:
           - end: null
             reason: null
             start: '2026-08-26'
   saddle:
     - - type: Prologo Nago R4 PAS Tirox Lightweight
-      - distance: 3101.78
+      - bikeId: b18037537
+      - distance: 3055.47
       - range:
           - end: '2026-10-08'
             start: '2026-05-16'
       - reason: upgrades to Selle Italia SLR 3D Elite L3 145mm
     - - type: Selle Italia SLR 3D Elite L3 145mm
-      - distance: 426.22
+      - bikeId: b18037537
+      - distance: 502.71
       - range:
           - end: null
             start: '2026-10-09'
       - reason: null
   service:
     soloist:
-      - date: '2026-08-21'
-        distance: 1731.28
+      - bikeId: b18037537
+        date: '2026-08-21'
+        distance: 1684.96
         place: Racer Sportif
     speedmax: null
   tires:
     front:
       tires:
         - - type: Vittoria Corsa N.EXT TLR G2.0 700x29c
-          - distance: 751.81
+          - bikeId: b18037537
+          - distance: 675.92
           - range:
               - end: '2026-07-16'
                 start: '2026-05-16'
           - reason: training to race tires
         - - type: Pirelli P Zero Race TLR RS 700x28c
-          - distance: null
+          - bikeId: b18037537
+          - distance: 701.69
           - range:
               - end: '2026-08-10'
                 reason: punctures
@@ -237,39 +265,45 @@ maintenance:
                 reason: big big punctures GG
                 start: '2026-09-07'
         - - type: Pirelli P Zero Race SL-R 700x28c
-          - distance: null
+          - bikeId: b18037537
+          - distance: 790.82
           - range:
-              - end: null
+              - end: '2026-09-06'
                 reason: null
                 start: '2026-08-12'
         - - type: Pirelli P Zero Race TLR SL-R 700x28c
-          - distance: null
+          - bikeId: b18037537
+          - distance: 791.19
           - range:
-              - end: '2026-10-06'
+              - end: '2026-10-04'
                 reason: null
                 start: '2026-09-11'
         - - type: Pirelli P Zero Race TLR RS 700x28c
-          - distance: null
+          - bikeId: b18037537
+          - distance: 151.82
           - range:
               - end: '2026-10-10'
                 reason: punctures!!
                 start: '2026-10-05'
         - - type: Pirelli P Zero Race TLR RS 700x28c
-          - distance: null
+          - bikeId: b18037537
+          - distance: 446.73
           - range:
               - end: null
                 reason: punctures!!
                 start: '2026-10-15'
       tube:
         - - type: Pirelli P Zero TPU
-          - distance: 619.84
+          - bikeId: b18037537
+          - distance: 616.74
           - range:
               - end: '2026-08-10'
                 repaired: false
                 start: '2026-07-16'
           - reason: punctures
         - - type: Pirelli P Zero TPU
-          - distance: 2193.00
+          - bikeId: b18037537
+          - distance: 2265.51
           - range:
               - end: null
                 reason: null
@@ -277,12 +311,14 @@ maintenance:
     rear:
       tires:
         - - type: Vittoria Corsa N.EXT TLR G2.0 700x29c
-          - distance: 751.81
+          - bikeId: b18037537
+          - distance: 675.92
           - start: '2026-05-16'
           - end: '2026-07-16'
           - reason: training to race tires
         - - type: Pirelli P Zero Race SL-R 700x28c
-          - distance: 1138.08
+          - bikeId: b18037537
+          - distance: 1131
           - range:
               - end: '2026-08-10'
                 reason: punctures and big ruptures, but fixed
@@ -291,33 +327,38 @@ maintenance:
                 reason: setup tubeless
                 start: '2026-08-18'
         - - type: Pirelli P Zero Race SL-R 700x28c
+          - bikeId: b18037537
           - distance: 258.65
           - range:
               - end: '2026-08-17'
                 reason: big punctures cut
                 start: '2026-08-12'
         - - type: Pirelli P Zero Race TLR RS 700x28c
-          - distance: 888.50
+          - bikeId: b18037537
+          - distance: 876.14
           - range:
               - end: '2026-10-05'
                 reason: upgrade to HUNT wheelset
                 start: '2026-09-07'
         - - type: Pirelli P Zero Race TLR RS 700x28c
-          - distance: 522.06
+          - bikeId: b18037537
+          - distance: 598.55
           - range:
               - end: null
                 reason: null
                 start: '2026-10-05'
       tube:
         - - type: Pirelli P Zero TPU
-          - distance: 878.49
+          - bikeId: b18037537
+          - distance: 875.4
           - range:
               - end: '2026-08-17'
                 reason: big punctures, but will be the backup now.
                 repaired: true
                 start: '2026-07-16'
         - - type: Pirelli P Zero TPU
-          - distance: 1937.76
+          - bikeId: b18037537
+          - distance: 2010.27
           - range:
               - end: '2026-09-03'
                 reason: slow punctures
@@ -327,18 +368,20 @@ maintenance:
                 start: '2026-09-04'
   wheelset:
     - - type: Reserve 40|44 Road
-      - distance: 3018.30
+      - bikeId: b18037537
+      - distance: 2971.99
       - range:
           - end: '2026-10-05'
             reason: rotates to HUNT 54_58 Aerodynamicist UD Carbon Spoke
             start: '2026-05-16'
     - - type: HUNT 54_58 Aerodynamicist UD Carbon Spoke
-      - distance: 522.06
+      - bikeId: b18037537
+      - distance: 598.55
       - range:
           - end: null
             start: '2026-10-05'
       - reason: null
-modified: 2026-11-12 15:07:34 GMT-05:00
+modified: 2026-11-14 23:35:23 GMT-05:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
@@ -1955,6 +1998,38 @@ location: Othership Adelaide
 htl: 7.8
 strava: 20888288131
 garmin: 24991707511
+```
+
+```tracking
+title: Lively Free Flow
+date: 2026-11-12
+time: 21:00
+duration: 70 mins
+activity: sauna
+temperature: 195F
+humidity: 11%
+cooldown: cold plunge
+lap-phases: hot sauna | break | cold plunge | break | hot sauna | break | cold plunge | break | hot sauna | break
+location: Othership Adelaide
+htl: 7.8
+strava: 20967510534
+garmin: 25061041631
+```
+
+```tracking
+title: Socials
+date: 2026-11-14
+time: 20:15
+duration: 75 mins
+activity: sauna
+temperature: 230F
+humidity: 11%
+cooldown: cold plunge
+lap-phases: hot sauna | break | cold plunge | break | hot sauna | break | cold plunge | break | hot sauna | break
+location: Othership Adelaide
+htl: 7.7
+strava: 20991754340
+garmin: 25082079317
 ```
 
 <!-- training plan start
