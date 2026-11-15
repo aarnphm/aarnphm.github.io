@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-11-12 09:03:01 GMT-05:00
+modified: 2026-11-14 10:00:09 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -4078,6 +4078,16 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://en.wikipedia.org/wiki/Jay_Cooke -- Jay Cooke
+  - [meta]:
+    - date: 11/13/2026
+    - tags: [banking history, civil war finance]
+    - later: true
+- https://en.wikipedia.org/wiki/James_C._Bennett -- James C. Bennett
+  - [meta]:
+    - date: 11/13/2026
+    - tags: [space entrepreneurship, anglosphere]
+    - later: true
 - https://en.wikipedia.org/wiki/Wilhelm_Reich -- Wilhelm Reich
   - [meta]:
     - date: 11/10/2026
@@ -5451,6 +5461,310 @@ title: are.na
 
 ## places
 
+- https://www.fourhorsemenbk.com/ -- The Four Horsemen
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [restaurant, bar]
+    - coord: [40.7130584, -73.9573216]
+    - address: 295 Grand St, Brooklyn, NY 11211, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfrsHY7FeGp/
+
+- https://www.pocketbookhudson.com/dining -- Ambos at Pocketbook Hudson
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [restaurant, bar]
+    - coord: [42.250705, -73.78158739999999]
+    - address: 549 Washington St, Hudson, NY 12534, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfrsHY7FeGp/
+
+- https://chezmatantebk.com/ -- Chez Ma Tante
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [restaurant]
+    - coord: [40.7269477, -73.9573774]
+    - address: 90 Calyer St, Brooklyn, NY 11222, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfrsHY7FeGp/
+
+- https://www.elevenmadisonpark.com/ -- Eleven Madison Park
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [restaurant]
+    - coord: [40.7416519, -73.98723529999999]
+    - address: 11 Madison Ave, New York, NY 10010, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfrsHY7FeGp/
+
+- https://www.peoplesny.com/ -- People's
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [bar, art gallery]
+    - coord: [40.7371023, -73.99790729999999]
+    - address: 113 W 13th St, New York, NY 10011, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfrsHY7FeGp/
+
+- https://www.theodeonrestaurant.com/ -- The Odeon
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [restaurant, bar]
+    - coord: [40.71697899999999, -74.007834]
+    - address: 145 W Broadway, New York, NY 10013, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfrsHY7FeGp/
+
+- https://www.seedlibrarynyc.com/ -- Seed Library NYC
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [bar]
+    - coord: [40.7447717, -73.98341359999999]
+    - address: 51 E 30th St, New York, NY 10016, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfrsHY7FeGp/
+
+- https://altbaubakery.com/ -- Altbau Bakery
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [bakery, coffee shop]
+    - coord: [40.717749, -73.9565509]
+    - address: 184 N 8th St, Brooklyn, NY 11211, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfrsHY7FeGp/
+
+- https://viacassiahudson.com/ -- Via Cassia Hudson
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [restaurant]
+    - coord: [42.2542641, -73.7926848]
+    - address: 214 Warren St, Hudson, NY 12534, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfrsHY7FeGp/
+
+- https://maps.google.com/?cid=248358157349903034 -- Sonny's Corner
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [bar]
+    - coord: [40.7297628, -73.95737149999999]
+    - address: 142 Franklin St, Brooklyn, NY 11222, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfrsHY7FeGp/
+
+- https://maps.google.com/?cid=12566489811653729144 -- Gigi's Greenpoint
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [restaurant, bar]
+    - coord: [40.7296258, -73.9573587]
+    - address: 138 Franklin St, Brooklyn, NY 11222, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfrsHY7FeGp/
+
+- https://estelanyc.com/ -- Estela
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [restaurant]
+    - coord: [40.72464129999999, -73.994739]
+    - address: 47 E Houston St 1st floor, New York, NY 10012, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfrsHY7FeGp/
+
+- https://maps.google.com/?cid=11424553985271574110 -- Bamonte's
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [restaurant]
+    - coord: [40.7166048, -73.95123889999999]
+    - address: 32 Withers St, Brooklyn, NY 11211, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfrsHY7FeGp/
+
+- https://www.capitainenyc.com/ -- Capitaine
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [restaurant, bar]
+    - coord: [40.7329643, -74.00766449999999]
+    - address: 684 Greenwich St, New York, NY 10014, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfrsHY7FeGp/
+
+- https://www.melthebakery.com/ -- Mel The Bakery Hudson
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [bakery]
+    - coord: [42.2526707, -73.79002849999999]
+    - address: 324 Warren St, Hudson, NY 12534, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfrsHY7FeGp/
+
+- https://maps.google.com/?cid=10945302152528205037 -- Balera
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [restaurant]
+    - coord: [40.7182797, -73.94464599999999]
+    - address: 442 Graham Ave, Brooklyn, NY 11211, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfrsHY7FeGp/
+
+- https://oddfellowsicecream.com/chelsea -- OddFellows Ice Cream Chelsea
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [deserts]
+    - coord: [40.7416658, -74.00138199999999]
+    - address: 141 8th Avenue, New York, NY 10011, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfsr_bIn-9h/
+
+- https://oddfellowsicecream.com/dumbo -- OddFellows Ice Cream DUMBO
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [deserts]
+    - coord: [40.703285, -73.99223929999999]
+    - address: 44 Water Street, Brooklyn, NY 11201, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfsr_bIn-9h/
+
+- https://oddfellowsicecream.com/bbp -- OddFellows Ice Cream Brooklyn Bridge Park
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [deserts]
+    - coord: [40.6945341, -74.0006015]
+    - address: 334 Furman Street, Brooklyn, NY 11201, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfsr_bIn-9h/
+
+- https://stayfor.co/ -- Stayfor Chelsea
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [workshops]
+    - coord: [40.7463258, -73.99363889999999]
+    - address: 297 7th Avenue, Floor 3, New York, NY 10001, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfsr_bIn-9h/
+
+- https://uncommonsnyc.com/ -- The Uncommons
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [coffee shop, bar]
+    - coord: [40.7294104, -73.9987065]
+    - address: 230 Thompson Street, New York, NY 10012, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfsr_bIn-9h/
+
+- https://rooftopcinemaclub.com/us/new-york/midtown -- Rooftop Cinema Club Midtown
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [theatre]
+    - coord: [40.751177, -73.9859209]
+    - address: 60 West 37th Street, 3rd Floor, New York, NY 10018, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfsr_bIn-9h/
+
+- https://feroxathletics.com/ninja-park/ -- Ferox Ninja Park Greenpoint
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [park]
+    - coord: [40.7281153, -73.9578051]
+    - address: 72 Noble Street, Brooklyn, NY 11222, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfsr_bIn-9h/
+
+- https://metrocinema.com/ -- Metro Private Cinema Chelsea
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [theatre, restaurant]
+    - coord: [40.7414267, -74.001693]
+    - address: 131 8th Avenue, New York, NY 10011, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfsr_bIn-9h/
+
+- https://nytrolleyco.com/ -- New York Trolley Company
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [destination]
+    - later: true
+    - source: https://www.instagram.com/p/Dfsr_bIn-9h/
+
+- https://www.happy-medium.co/locations/00000000-0000-0000-0000-000000000001 -- Happy Medium Two Bridges
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [coffee shop, workshops]
+    - coord: [40.7119003, -73.9945523]
+    - address: 49 Market Street, New York, NY 10002, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfsr_bIn-9h/
+
+- https://www.happy-medium.co/locations/00000000-0000-0000-0000-000000000002 -- Happy Medium Greenpoint
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [coffee shop, workshops]
+    - coord: [40.73333, -73.9580393]
+    - address: 224 Franklin Street, Brooklyn, NY 11222, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfsr_bIn-9h/
+
+- https://www.69atlantic.com/ -- 69 Atlantic
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [theatre]
+    - coord: [40.6914734, -73.9980412]
+    - address: 69 Atlantic Avenue, Brooklyn, NY 11201, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfsr_bIn-9h/
+
+- https://www.ciaociaodisco.com/ -- Ciao Ciao Disco
+  - [meta]:
+    - date: 11/13/2026
+    - tags: [bar]
+    - coord: [40.721049, -73.9581196]
+    - address: 97 North 10th Street, Brooklyn, NY 11249, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfnnyftDMjt/
+
+- https://www.jeans.nyc/ -- Jean's
+  - [meta]:
+    - date: 11/13/2026
+    - tags: [restaurant, bar]
+    - coord: [40.7285389, -73.99211649999999]
+    - address: 415 Lafayette Street, New York, NY 10003, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfnnyftDMjt/
+
+- https://www.gabriela.nyc/ -- Gabriela
+  - [meta]:
+    - date: 11/13/2026
+    - tags: [bar]
+    - coord: [40.721792, -73.9583887]
+    - address: 90 Wythe Avenue, Brooklyn, NY 11249, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfnnyftDMjt/
+
+- https://www.acmenyc.com/ -- ACME
+  - [meta]:
+    - date: 11/13/2026
+    - tags: [bar]
+    - coord: [40.72721809999999, -73.9940625]
+    - address: 9 Great Jones Street, New York, NY 10012, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfnnyftDMjt/
+
+- https://www.vonbar.com/home -- Von
+  - [meta]:
+    - date: 11/13/2026
+    - tags: [bar]
+    - coord: [40.7254775, -73.99261109999999]
+    - address: 3 Bleecker Street, New York, NY 10012, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfnnyftDMjt/
+
+- https://www.lebainnewyork.com/rooftop -- Le Bain
+  - [meta]:
+    - date: 11/13/2026
+    - tags: [bar]
+    - coord: [40.7410806, -74.00817309999999]
+    - address: 444 West 13th Street, New York, NY 10014, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfnnyftDMjt/
+
 - https://www.graciesny.com/ -- Gracie's Luncheonette
   - [meta]:
     - date: 11/11/2026
@@ -6395,6 +6709,7 @@ title: are.na
     - address: 80 Spring St, New York, NY 10012, United States
     - later: true
     - source: https://www.instagram.com/p/DfPpNHKlqQj/
+  - https://www.instagram.com/p/DfrsHY7FeGp/ -- @vibrantvaleria’s New York fall guide
 - https://www.oresh.com/ -- Or'esh
   - [meta]:
     - date: 11/08/2026
@@ -9463,6 +9778,26 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://nayafia.substack.com/p/im-back-sort-of -- 26: I'm back, sort of
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [public writing, creative practice]
+    - later: true
+- https://juliawillemyns.substack.com/p/notes-from-dorset -- Notes from Dorset
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [ultrarunning, jurassic coast]
+    - later: true
+- https://vishalblog.substack.com/p/netwar-with-jane-and-jeredino -- NETWAR! with jane and jeredino
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [personal essay, social status]
+    - later: true
+- https://louishiltonstories.substack.com/p/nothing-about-the-midwests-struggles -- The Midwest’s Struggles Were By Design.
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [detroit, corporate power]
+    - later: true
 - https://heelsoff.substack.com/p/goodbye-mckinsey -- Goodbye, McKinsey.
   - [meta]:
     - date: 11/10/2026
@@ -13407,6 +13742,11 @@ title: are.na
   - view: list
   - json: true
 
+- https://alphaxiv.org/pdf/2605.29713 -- The Little Book of Generative AI Foundations: An Intuitive Mathematical Primer
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [generative models, mathematical foundations]
+    - later: true
 - https://x.com/AlexRoseJo/status/2114202656994713690 -- CroissAttn: a zero-sum fix for the FlashAttention backward pass
   - [meta]:
     - date: 11/10/2026
@@ -22808,6 +23148,21 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=RDgw6ydB6lU -- An Introduction to Philosophy - Isaiah Berlin & Bryan Magee (1977)
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [history of philosophy, interview]
+    - later: true
+- https://www.youtube.com/watch?v=RYshA7ZcATo -- wearing uggs, making movies | oct in nyc
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [new york city, filmmaking]
+    - later: true
+- https://en.wikipedia.org/wiki/Ken_Burns_effect -- Ken Burns effect
+  - [meta]:
+    - date: 11/13/2026
+    - tags: [film editing, documentary technique]
+    - later: true
 - https://www.youtube.com/watch?v=LewVEF2B_pM -- Strandbeest Evolution 2017
   - [meta]:
     - date: 11/12/2026
@@ -26509,6 +26864,11 @@ title: are.na
 
 ## lecture
 
+- https://www.youtube.com/watch?v=AXlif6z9a2A&t=1022s -- Terence Tao: Reflections on the Foundations of Interpretability workshop
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [interpretability, workshop reflections]
+    - later: true
 - https://www.youtube.com/watch?v=0Ge3jKLDJaA -- Grant Sanderson: The collie and the pug (HackMIT keynote 2026)
   - [meta]:
     - date: 10/23/2026
@@ -26641,6 +27001,11 @@ title: are.na
   - view: list
   - json: true
 
+- https://github.com/Microsoft/ms-tpm-20-ref -- Official TPM 2.0 Reference Implementation
+  - [meta]:
+    - date: 11/13/2026
+    - tags: [trusted platform module, reference implementation]
+    - later: true
 - https://github.com/jackyzha0/eg-strider -- eg-strider: an Eg-walker-inspired collaborative text algorithm
   - [meta]:
     - date: 11/09/2026
@@ -28130,6 +28495,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://en.wikipedia.org/wiki/Reynolds_number -- Reynolds number
+  - [meta]:
+    - date: 11/13/2026
+    - tags: [fluid dynamics, turbulence]
+    - later: true
 - https://engineeringx.substack.com/p/the-principle-of-applied-laziness -- The Principle of Applied Laziness
   - [meta]:
     - date: 11/10/2026
@@ -31271,6 +31641,26 @@ title: are.na
   - view: list
   - json: true
 
+- https://alphaxiv.org/pdf/2611.14467.pdf -- A Theory of Policy Optimization in Post-Training: Coverage Collapse and Reference Resets
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [policy optimization, coverage collapse]
+    - later: true
+- https://alphaxiv.org/pdf/2605.29707 -- Domino: Decoupling Causal Modeling from Autoregressive Drafting in Speculative Decoding
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [speculative decoding, parallel drafting]
+    - later: true
+- https://alphaxiv.org/pdf/2507.11851 -- Your LLM Knows the Future: Uncovering Its Multi-Token Prediction Potential
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [multi-token prediction, inference acceleration]
+    - later: true
+- https://alphaxiv.org/pdf/2607.24653 -- Kimi K3: Open Frontier Intelligence
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [mixture of experts, long-context models]
+    - later: true
 - https://alphaxiv.org/abs/2603.03251 -- Speculative Speculative Decoding
   - [meta]:
     - date: 11/09/2026
