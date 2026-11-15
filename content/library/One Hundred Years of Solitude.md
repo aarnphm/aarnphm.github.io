@@ -24,7 +24,3 @@ tags:
   - literature
 posters: '[[library/posters/one-hundred-years-of-solitude.jpg|one-hundred-years-of-solitude.jpg]]'
 ---
-
-Source: [Dua Lipa’s literary i-Cons interview with i-D](https://www.instagram.com/reel/DfFSe6Wx7R5/), 00:48.
-
-Bibliography: [publisher’s book page](https://www.penguin.co.uk/books/482987/one-hundred-years-of-solitude-by-marquez-gabriel-garcia/9780241968581).

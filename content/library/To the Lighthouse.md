@@ -24,6 +24,4 @@ posters: '[[library/posters/lighthouse.jpg]]'
 external: https://penguinrandomhouselibrary.com/book/?isbn=9780143137573
 ---
 
-The poster shows the Penguin Vitae edition. [Original publication: 1927](https://renardpress.com/books/to-the-lighthouse/).
-
-Source: [too.long.didnt.readd’s classic reading recommendations](https://www.instagram.com/reel/DcOCCaphxPe/). Inspected through the local desktop on 2026-11-11.
+The poster shows the Penguin Vitae edition. Original publication: 1927.

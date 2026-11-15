@@ -24,6 +24,4 @@ posters: '[[library/posters/on-transience.jpg]]'
 external: https://www.freudedition.net/en/werke/transience/druckschrift
 ---
 
-Written in 1915 and published in 1916 as Vergänglichkeit. The poster reproduces the first page of an [English text](https://www.lutecium.org/ftp/Freud/pdf/1916_on_transience.pdf).
-
-Source: [olamolam8’s grief reading list](https://www.instagram.com/p/Dfh14_4Cl2f/), slide 3. Inspected through the local desktop on 2026-11-11.
+Written in 1915 and published in 1916 as Vergänglichkeit. The poster reproduces the first page of an English text.

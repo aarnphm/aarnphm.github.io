@@ -22,5 +22,3 @@ status: to read
 posters: '[[library/posters/a-spy-in-the-house-of-love.jpg]]'
 external: https://www.penguin.co.uk/books/55506/a-spy-in-the-house-of-love-by-nin-anais/9780141183718
 ---
-
-Source: [@linneaire’s reading reel](https://www.instagram.com/reel/DfkP84PxM-d/), from the book list extracted in the linked Codex chat on 2026-11-12. Covers are catalog editions and may differ from those shown in the reel.

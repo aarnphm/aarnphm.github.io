@@ -22,5 +22,3 @@ status: to read
 posters: '[[library/posters/eleven-minutes.jpg]]'
 external: https://www.bookbrowse.com/more_info/index.cfm?book_number=1378
 ---
-
-Source: [@linneaire’s reading reel](https://www.instagram.com/reel/DfkP84PxM-d/), from the book list extracted in the linked Codex chat on 2026-11-12. Covers are catalog editions and may differ from those shown in the reel.

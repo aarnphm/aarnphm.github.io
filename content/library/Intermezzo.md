@@ -22,5 +22,3 @@ status: to read
 posters: '[[library/posters/intermezzo.jpg]]'
 external: https://academic.macmillan.com/academictrade/9780374602635/intermezzo/
 ---
-
-Source: [@linneaire’s reading reel](https://www.instagram.com/reel/DfkP84PxM-d/), from the book list extracted in the linked Codex chat on 2026-11-12. Covers are catalog editions and may differ from those shown in the reel.

@@ -24,8 +24,4 @@ tags:
 posters: '[[library/posters/from-blood-and-ash.jpg|from-blood-and-ash.jpg]]'
 ---
 
-Source: [philgotbooks’s Harvard fiction recommendations](https://www.instagram.com/reel/Dd1fi5NB2ET/), 00:30.
-
-Book 1 of the Blood and Ash series. First published in 2020; see the [library ebook record](https://www.overdrive.com/media/5393157/from-blood-and-ash).
-
-Bibliography: [book reference](https://jenniferlarmentrout.com/books/from-blood-and-ash/).
+Book 1 of the Blood and Ash series. First published in 2020.

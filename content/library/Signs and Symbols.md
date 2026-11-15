@@ -25,6 +25,4 @@ posters: '[[library/posters/signs-and-symbols.jpg]]'
 external: https://www.newyorker.com/magazine/1948/05/15/symbols-and-signs
 ---
 
-First published as “Symbols and Signs” in The New Yorker on May 15, 1948. The poster is the cover of [The Stories of Vladimir Nabokov](https://www.penguinrandomhouse.com/books/119463/the-stories-of-vladimir-nabokov-by-vladimir-nabokov/9780307788092/), the collection pictured in the carousel.
-
-Source: [olamolam8’s grief reading list](https://www.instagram.com/p/Dfh14_4Cl2f/), slide 7. Inspected through the local desktop on 2026-11-11.
+First published as “Symbols and Signs” in The New Yorker on May 15, 1948. The poster is the cover of The Stories of Vladimir Nabokov, a collected edition.

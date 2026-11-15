@@ -23,7 +23,3 @@ tags:
 external: https://www.penguinrandomhouse.com/books/164558/the-killer-angels-by-michael-shaara/hardcover/
 description: A historical novel portraying the Battle of Gettysburg through the decisions, loyalties, and experiences of commanders on both sides.
 ---
-
-Source: [Lucia’s New York park reading reel](https://www.instagram.com/reel/DdkR7elpusn/), 00:22.
-
-Bibliography: [publisher](https://www.penguinrandomhouse.com/books/164558/the-killer-angels-by-michael-shaara/hardcover/).

@@ -17,5 +17,3 @@ tags:
 title: Kafka on the Shore
 year: 2002
 ---
-
-Source: [philgotbooks’s Harvard fiction recommendations](https://www.instagram.com/reel/Dd1fi5NB2ET/), 00:21.

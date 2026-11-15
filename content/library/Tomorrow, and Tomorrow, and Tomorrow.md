@@ -17,5 +17,3 @@ tags:
 title: Tomorrow, and Tomorrow, and Tomorrow
 year: 2022
 ---
-
-Source: [philgotbooks’s Harvard fiction recommendations](https://www.instagram.com/reel/Dd1fi5NB2ET/), 00:54.

@@ -22,5 +22,3 @@ status: to read
 posters: '[[library/posters/my-year-of-rest-and-relaxation.jpg]]'
 external: https://www.penguinrandomhouse.com/books/561517/my-year-of-rest-and-relaxation-by-ottessa-moshfegh/
 ---
-
-Source: [@linneaire’s reading reel](https://www.instagram.com/reel/DfkP84PxM-d/), from the book list extracted in the linked Codex chat on 2026-11-12. Covers are catalog editions and may differ from those shown in the reel.

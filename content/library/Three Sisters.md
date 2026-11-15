@@ -28,5 +28,3 @@ external: https://www.broadwayplaypublishing.com/the-plays/three-sisters/
 ---
 
 First published and performed in 1901. The poster shows the Broadway Play Publishing translation by Richard Nelson, Richard Pevear, and Larissa Volokhonsky.
-
-Source: [too.long.didnt.readd’s classic reading recommendations](https://www.instagram.com/reel/DcOCCaphxPe/). Inspected through the local desktop on 2026-11-11.

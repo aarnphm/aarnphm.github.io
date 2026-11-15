@@ -25,8 +25,6 @@ tags:
 posters: '[[library/posters/the-odyssey.jpg|the-odyssey.jpg]]'
 ---
 
-Source: [Dan Snow’s discussion with too.long.didnt.readd](https://www.instagram.com/reel/DdoJ1w4hp42/), 00:16–00:34. Discussed as a precursor to the journey narrative in [[library/Heart of Darkness]].
+Related journey narrative: [[library/Heart of Darkness]].
 
 The year is an approximate catalogue date (c. 700 BCE), not a known publication year. The poem is traditionally dated to the eighth or seventh century BCE. This cover represents E. V. Rieu’s translation, revised by D. C. H. Rieu.
-
-Bibliography: [publisher’s book page](https://www.penguin.co.uk/books/35467/the-odyssey-by-homer-trans--e-v-rieu-revised-by--dominic-rieu-intro-peter-jones/9780140449112).

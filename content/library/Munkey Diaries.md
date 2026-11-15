@@ -24,6 +24,4 @@ posters: '[[library/posters/munkey-diaries-journal-19571982.jpg]]'
 external: https://www.livredepoche.com/livre/munkey-diaries-9782253257820
 ---
 
-The French diary edition shown in the source was first published in 2018. Birkin selected, translated, and annotated her English diary entries for this edition.
-
-Source: [@linneaire’s reading reel](https://www.instagram.com/reel/DfkP84PxM-d/), from the book list extracted in the linked Codex chat on 2026-11-12. Covers are catalog editions and may differ from those shown in the reel.
+The French diary edition was first published in 2018. Birkin selected, translated, and annotated her English diary entries for this edition.

@@ -25,8 +25,4 @@ tags:
 posters: '[[library/posters/middlemarch.jpg|middlemarch.jpg]]'
 ---
 
-Source: [philgotbooks’s Harvard fiction recommendations](https://www.instagram.com/reel/Dd1fi5NB2ET/), 00:03.
-
 First published in eight parts, 1871–1872.
-
-Bibliography: [book reference](https://www.penguinrandomhouse.com/books/286388/middlemarch-by-george-eliot/9780141196893/).

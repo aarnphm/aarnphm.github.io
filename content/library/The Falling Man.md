@@ -24,6 +24,4 @@ posters: '[[library/posters/falling-man.jpg]]'
 external: https://www.esquire.com/news-politics/a48031/the-falling-man-tom-junod/
 ---
 
-Article first published in Esquire, September 2003. The poster uses Richard Drew’s photograph as published with the article.
-
-Source: [olamolam8’s grief reading list](https://www.instagram.com/p/Dfh14_4Cl2f/), slide 8. Inspected through the local desktop on 2026-11-11.
+Article first published in Esquire, September 2003.

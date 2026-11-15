@@ -24,8 +24,4 @@ tags:
 posters: '[[library/posters/in-the-time-of-the-butterflies.jpg|in-the-time-of-the-butterflies.jpg]]'
 ---
 
-Source: [philgotbooks’s Harvard fiction recommendations](https://www.instagram.com/reel/Dd1fi5NB2ET/), 00:45.
-
-First published in 1994; see the [National Endowment for the Arts reading guide](https://www.arts.gov/initiatives/nea-big-read/time-butterflies).
-
-Bibliography: [book reference](https://www.hachettebookgroup.com/titles/julia-alvarez/in-the-time-of-the-butterflies/9781565129764/).
+First published in 1994.

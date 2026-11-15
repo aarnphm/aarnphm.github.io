@@ -25,5 +25,3 @@ external: https://www.penguinrandomhouse.com/books/837917/notes-from-underground
 ---
 
 The year refers to this Penguin combined edition. The Double was first published in 1846 and Notes from Underground in 1864.
-
-Source: [@linneaire’s reading reel](https://www.instagram.com/reel/DfkP84PxM-d/), from the book list extracted in the linked Codex chat on 2026-11-12. Covers are catalog editions and may differ from those shown in the reel.

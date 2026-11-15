@@ -25,5 +25,3 @@ external: https://www.penguinrandomhouse.com/books/642902/simple-passion-by-anni
 ---
 
 The French edition bears a 1991 copyright; the publication year here follows its 1992 release.
-
-Source: [@linneaire’s reading reel](https://www.instagram.com/reel/DfkP84PxM-d/), from the book list extracted in the linked Codex chat on 2026-11-12. Covers are catalog editions and may differ from those shown in the reel.

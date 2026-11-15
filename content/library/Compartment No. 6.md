@@ -24,6 +24,4 @@ posters: '[[library/posters/compartment-no-6.jpg]]'
 external: https://books-events.graywolfpress.org/books/compartment-no-6
 ---
 
-The source extraction identifies the French cover as Compartiment n° 6. This entry uses the English title and Graywolf cover.
-
-Source: [@linneaire’s reading reel](https://www.instagram.com/reel/DfkP84PxM-d/), from the book list extracted in the linked Codex chat on 2026-11-12. Covers are catalog editions and may differ from those shown in the reel.
+The French title is Compartiment n° 6. This entry uses the English title and Graywolf cover.

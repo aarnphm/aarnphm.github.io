@@ -25,5 +25,3 @@ external: https://www.penguin.co.uk/books/454976/about-love-by-chekhov-anton/978
 ---
 
 The year refers to the Penguin Little Clothbound Classics selection, first published in the UK in 2023.
-
-Source: [@linneaire’s reading reel](https://www.instagram.com/reel/DfkP84PxM-d/), from the book list extracted in the linked Codex chat on 2026-11-12. Covers are catalog editions and may differ from those shown in the reel.

@@ -24,6 +24,4 @@ posters: '[[library/posters/love-of-my-life.jpg]]'
 external: https://www.thesunmagazine.org/articles/25205-the-love-of-my-life
 ---
 
-Essay first published in The Sun, September 2002. The poster is the first page of the [library-hosted reprint](https://library.stlawu.edu/system/files/2021-02/love_of_my_life_strayed.pdf).
-
-Source: [olamolam8’s grief reading list](https://www.instagram.com/p/Dfh14_4Cl2f/), slide 4. Inspected through the local desktop on 2026-11-11.
+Essay first published in The Sun, September 2002. The poster is the first page of the library-hosted reprint.

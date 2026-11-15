@@ -24,7 +24,3 @@ tags:
   - literature
 posters: '[[library/posters/the-son-of-man.jpg|the-son-of-man.jpg]]'
 ---
-
-Source: [Dua Lipa’s literary i-Cons interview with i-D](https://www.instagram.com/reel/DfFSe6Wx7R5/), 00:12.
-
-Bibliography: [publisher’s book page](https://groveatlantic.com/book/the-son-of-man/).

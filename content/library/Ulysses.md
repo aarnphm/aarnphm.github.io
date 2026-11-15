@@ -25,5 +25,3 @@ external: https://www.penguinrandomhouse.com/books/88933/ulysses-by-james-joyce-
 ---
 
 The poster shows the Everyman’s Library edition, with an introduction by Craig Raine.
-
-Source: [too.long.didnt.readd’s classic reading recommendations](https://www.instagram.com/reel/DcOCCaphxPe/). Inspected through the local desktop on 2026-11-11.

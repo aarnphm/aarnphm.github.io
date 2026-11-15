@@ -23,5 +23,3 @@ status: to read
 posters: '[[library/posters/the-years.jpg]]'
 external: https://www.penguinrandomhouse.com/books/556070/the-years-by-annie-ernaux/
 ---
-
-Source: [@linneaire’s reading reel](https://www.instagram.com/reel/DfkP84PxM-d/), from the book list extracted in the linked Codex chat on 2026-11-12. Covers are catalog editions and may differ from those shown in the reel.

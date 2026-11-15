@@ -23,5 +23,3 @@ status: to read
 posters: '[[library/posters/white-nights.jpg]]'
 external: https://www.penguinrandomhouse.com/books/550795/white-nights-by-fyodor-dostoyevsky-translated-by-ronald-meyer-cover-illustrated-by-coralie-bickford-smith/9780241619780/
 ---
-
-Source: [@linneaire’s reading reel](https://www.instagram.com/reel/DfkP84PxM-d/), from the book list extracted in the linked Codex chat on 2026-11-12. Covers are catalog editions and may differ from those shown in the reel.

@@ -24,8 +24,4 @@ tags:
 posters: '[[library/posters/heart-of-darkness.jpg|heart-of-darkness.jpg]]'
 ---
 
-Source: [Dan Snow’s recommendation, interviewed by too.long.didnt.readd](https://www.instagram.com/reel/DdoJ1w4hp42/), 00:04.
-
-First serialized in 1899, then published in book form in 1902. See the [bibliographic note in the public-domain edition](https://www.ibiblio.org/ebooks/Conrad/Heart_Darkness.pdf).
-
-Bibliography: [publisher’s book page](https://www.penguinrandomhouse.com/books/310601/heart-of-darkness-by-joseph-conrad/9780143106586/).
+First serialized in 1899, then published in book form in 1902.

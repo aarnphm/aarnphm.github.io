@@ -25,6 +25,4 @@ posters: '[[library/posters/experience.jpg]]'
 external: https://emersoncentral.com/texts/essays-second-series/experience/
 ---
 
-First published in Essays: Second Series (1844). The poster shows an [1886 standalone edition](https://openlibrary.org/books/OL23530348M/Experience).
-
-Source: [olamolam8’s grief reading list](https://www.instagram.com/p/Dfh14_4Cl2f/), slide 9. Inspected through the local desktop on 2026-11-11.
+First published in Essays: Second Series (1844). The poster shows an 1886 standalone edition.

@@ -27,5 +27,3 @@ external: https://academic.macmillan.com/academictrade/9781250829788/thecopenhag
 ---
 
 The year refers to the English omnibus edition from Farrar, Straus and Giroux. Childhood and Youth appeared in Danish in 1967; Dependency followed in 1971.
-
-Source: [@linneaire’s reading reel](https://www.instagram.com/reel/DfkP84PxM-d/), from the book list extracted in the linked Codex chat on 2026-11-12. Covers are catalog editions and may differ from those shown in the reel.
