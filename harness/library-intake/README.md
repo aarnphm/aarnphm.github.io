@@ -22,7 +22,7 @@ Use `id` equal to the filename stem and a faithful `title`. Required populated f
 
 Also include `language`, `translator`, `notebook`, `aliases`, `finished`, and `pdf` when meaningful. Unknown or inapplicable values stay null (aliases may be empty). Never invent a completion year, notebook, translation, PDF, or ISBN to fill a field. These are optional editorial fields in the Base, not requirements for membership. Add verified language when available. Existing status `current` is used in the library and must be preserved.
 
-`body` in input JSON becomes the note body and is removed from frontmatter. It is optional; use it for useful edition details, related books, or supplied reading notes. Omit source/credit paragraphs, social handles, slide numbers, timestamps, bibliography boilerplate, archived-reel links, and attribution fields such as `source` or `source_rating_by`. Keep verification sources in the artifact record. Retain book authors, translators, the `external` bibliographic URL, and verified covers in `content/library/posters/`. Preserve personal reading commentary and avoid writing opinions on Aaron's behalf.
+`body` in input JSON becomes the note body and is removed from frontmatter. Leave it empty unless Aaron supplies reading notes. Preserve existing personal annotations, quotations, and commentary. Put edition/publication facts in `details`, the primary bibliographic URL in `external`, and additional reference URLs in `reference_links`. Generated recommendations and related-reading suggestions do not belong in the body. Omit source/credit paragraphs, social handles, slide numbers, timestamps, bibliography boilerplate, archived-reel links, and attribution fields such as `source` or `source_rating_by`. Keep intake provenance in the artifact record. Retain book authors, translators, and verified covers in `content/library/posters/`.
 
 Example input shape (replace placeholders with verified data before rendering):
 
@@ -41,7 +41,7 @@ Example input shape (replace placeholders with verified data before rendering):
   "posters": "[[library/posters/book-title.jpg]]",
   "external": "https://publisher.example/book",
   "language": "en",
-  "body": "First published in two volumes; this entry uses the combined edition."
+  "details": "First published in two volumes; this entry uses the combined edition."
 }
 ```
 

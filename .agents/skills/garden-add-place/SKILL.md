@@ -13,7 +13,7 @@ A post or reel supplied for place intake, including a bare link in an establishe
 
 Keep screenshots, carousel images, reel stills, website photos, source URLs, and coordinate-verification receipts under `docs/verification/<task>/artifacts/`. Do not save intake captures under `content/thoughts/images/`, including its `instagram/` subtree, or embed them in place notes. A separate explicit media-archive request has its own scope.
 
-Write useful recommendations and visit details as plain notes. Omit creator credits, social handles, source/attribution paragraphs, slide numbers, timestamps, archived-reel links, and `source` or `source_rating_by` metadata. Keep research provenance in the verification artifacts. Preserve practical venue, booking, and visitor-information links. Imported ratings may use `source_rating` and `source_rating_scale`, labelled as imported and kept separate from Aaron's personal `rating`.
+Reserve the note body for Aaron's own visit notes and reviews; leave it empty for ordinary intake. Put practical visit facts in frontmatter `details`, a reference URL in `external`, and additional reference URLs in `reference_links`. Keep the primary venue or Maps URL in `url`. Omit generated recommendations, creator credits, social handles, source/attribution paragraphs, slide numbers, timestamps, archived-reel links, and `source` or `source_rating_by` metadata. Keep research provenance in the verification artifacts. Imported ratings may use `source_rating` and `source_rating_scale`, kept separate from Aaron's personal `rating`.
 
 ## Resolve the location
 
