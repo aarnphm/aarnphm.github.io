@@ -1,9 +1,9 @@
 # /// script
 # requires-python = ">=3.12"
 # dependencies = [
-#   "mlx>=0.32.3",
+#   "mlx==0.32.4",
 #   "mlx-vlm @ git+https://github.com/Blaizzy/mlx-vlm@fec3f50379bb2cb0760ef3c8a68ebce9585e4d97",
-#   "transformers>=5.14", "fastapi", "uvicorn",
+#   "transformers==5.20.2", "fastapi", "uvicorn",
 # ]
 # ///
 """Launch upstream MLX-VLM with pinned GLM-OCR weights and bounded batching."""

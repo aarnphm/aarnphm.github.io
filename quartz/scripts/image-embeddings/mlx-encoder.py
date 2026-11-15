@@ -3,7 +3,7 @@
 # dependencies = [
 #     "mlx>=0.32.3",
 #     "mlx-vlm==0.7.10",
-#     "transformers>=5.14",
+#     "transformers==5.20.2",
 #     "fastapi",
 #     "uvicorn",
 # ]
