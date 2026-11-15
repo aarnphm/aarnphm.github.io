@@ -16,5 +16,3 @@ type:
   - 'restaurant'
 url: 'https://figarobistrotla.com/'
 ---
-
-Recommended for solo dining.

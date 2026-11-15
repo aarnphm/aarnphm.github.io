@@ -18,5 +18,3 @@ type:
   - 'workshops'
 url: 'https://www.happy-medium.co/locations/00000000-0000-0000-0000-000000000002'
 ---
-
-Suggested for a birthday gathering around watercolours, collage, or clay.

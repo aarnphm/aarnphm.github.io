@@ -16,5 +16,3 @@ type:
   - 'restaurant'
 url: 'https://maps.app.goo.gl/yMFUW5CCehJEi1Cn6'
 ---
-
-Recommended: Beef shawarma.

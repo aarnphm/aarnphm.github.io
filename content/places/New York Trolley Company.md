@@ -12,6 +12,5 @@ title: 'New York Trolley Company'
 type:
   - 'destination'
 url: 'https://nytrolleyco.com/'
+details: Suggested for a DIY pizza crawl, with Scarr’s, L’Industrie, and John’s of Bleecker as possible stops. Arrange the route and pickup when booking. This entry has no fixed visitor address or map pin.
 ---
-
-Suggested for a DIY pizza crawl, with Scarr’s, L’Industrie, and John’s of Bleecker as possible stops. Arrange the route and pickup when booking. This entry has no fixed visitor address or map pin.

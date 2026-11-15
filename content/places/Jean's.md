@@ -18,5 +18,3 @@ type:
   - 'bar'
 url: 'https://www.jeans.nyc/'
 ---
-
-Downstairs club, house music and smoke machines.

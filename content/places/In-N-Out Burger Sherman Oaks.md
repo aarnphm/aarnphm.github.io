@@ -16,5 +16,3 @@ type:
   - 'restaurant'
 url: 'https://locations.in-n-out.com/85'
 ---
-
-Recommended branch.

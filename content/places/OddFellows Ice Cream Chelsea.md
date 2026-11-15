@@ -16,6 +16,5 @@ title: 'OddFellows Ice Cream Chelsea'
 type:
   - 'deserts'
 url: 'https://oddfellowsicecream.com/chelsea'
+details: Suggested for a private ice cream party with unlimited scoops. BYOB is offered at select locations; confirm it with this branch.
 ---
-
-Suggested for a private ice cream party with unlimited scoops. BYOB is offered at select locations; confirm it with this branch.

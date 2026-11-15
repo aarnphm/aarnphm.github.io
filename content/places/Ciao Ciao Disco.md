@@ -17,5 +17,3 @@ type:
   - 'bar'
 url: 'https://www.ciaociaodisco.com/'
 ---
-
-Illuminated dance floor, with house and disco music.

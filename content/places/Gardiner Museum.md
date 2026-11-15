@@ -15,6 +15,5 @@ title: 'Gardiner Museum'
 type:
   - 'museum'
 url: 'https://www.gardinermuseum.on.ca/'
+details: 'Admission checked on 2026-11-01: Admission is free on Wednesdays after 4 pm. Advance registration is not required.'
 ---
-
-Admission checked on 2026-11-01: Admission is free on Wednesdays after 4 pm. Advance registration is not required.

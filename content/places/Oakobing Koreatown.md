@@ -16,5 +16,3 @@ type:
   - 'deserts'
 url: 'https://www.google.com/maps?cid=17518144273148941094'
 ---
-
-Recommended for dessert.

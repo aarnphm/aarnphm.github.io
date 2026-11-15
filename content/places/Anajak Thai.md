@@ -16,5 +16,3 @@ type:
   - 'restaurant'
 url: 'https://www.anajakthai.com/'
 ---
-
-Recommended for dinner in Los Angeles.

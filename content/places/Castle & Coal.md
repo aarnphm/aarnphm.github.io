@@ -17,5 +17,3 @@ type:
   - 'coffee shop'
 url: 'https://castleandcoal.ca/contact'
 ---
-
-Recommended: Mocha.

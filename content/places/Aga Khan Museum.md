@@ -15,6 +15,5 @@ title: 'Aga Khan Museum'
 type:
   - 'museum'
 url: 'https://agakhanmuseum.org/'
+details: 'Admission checked on 2026-11-01: Gallery admission is free on Wednesdays, 4–8 pm. Free tickets are available in person at Guest Services.'
 ---
-
-Admission checked on 2026-11-01: Gallery admission is free on Wednesdays, 4–8 pm. Free tickets are available in person at Guest Services.

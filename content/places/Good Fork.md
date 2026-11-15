@@ -16,5 +16,3 @@ type:
   - 'restaurant'
 url: 'https://goodfork.ca/'
 ---
-
-Recommended: Spanish hash.

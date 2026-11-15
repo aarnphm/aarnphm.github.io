@@ -15,6 +15,5 @@ title: 'Spadina Museum'
 type:
   - 'museum'
 url: 'https://www.toronto.ca/explore-enjoy/history-art-culture/museums/spadina-museum/'
+details: 'Admission checked on 2026-11-01: General admission is free. Entry to the historic house is by guided tour; some events carry a separate charge.'
 ---
-
-Admission checked on 2026-11-01: General admission is free. Entry to the historic house is by guided tour; some events carry a separate charge.

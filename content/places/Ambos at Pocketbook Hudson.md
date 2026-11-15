@@ -18,5 +18,3 @@ type:
   - 'bar'
 url: 'https://www.pocketbookhudson.com/dining'
 ---
-
-Cocktails and a lounge at Pocketbook Hudson.

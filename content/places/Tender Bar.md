@@ -15,6 +15,6 @@ title: 'Tender Bar'
 type:
   - 'bar'
 url: 'https://tenderbar.nyc/'
+external: https://www.joo-ok.com/reservation
+details: Tender Bar shares the 16th floor with Joo Ok.
 ---
-
-Tender Bar shares the 16th floor with [Joo Ok](https://www.joo-ok.com/reservation).

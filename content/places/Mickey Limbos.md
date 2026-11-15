@@ -17,5 +17,3 @@ type:
   - 'restaurant'
 url: 'https://mickeylimbos.com/'
 ---
-
-Recommended: Pool, photo booth and sharing plates.

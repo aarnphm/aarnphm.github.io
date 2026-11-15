@@ -16,6 +16,5 @@ type:
   - 'museum'
   - 'art gallery'
 url: 'https://ago.ca/'
+details: 'Admission checked on 2026-11-01: Free admission on the first Wednesday of each month, 6–9 pm. Book tickets online in advance.'
 ---
-
-Admission checked on 2026-11-01: Free admission on the first Wednesday of each month, 6–9 pm. Book tickets online in advance.

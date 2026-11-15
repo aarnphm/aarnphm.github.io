@@ -15,6 +15,6 @@ title: "Hugh's Room Live"
 type:
   - 'live music'
 url: 'https://hughsroomlive.com/'
+external: https://soundstreams.ca/events/td-encounters-violins-unbound-2/
+details: Venue for the Violins Unbound concert. Soundstreams event page, checked November 2, 2026.
 ---
-
-Venue for the Violins Unbound concert. [Soundstreams event page](https://soundstreams.ca/events/td-encounters-violins-unbound-2/), checked November 2, 2026.

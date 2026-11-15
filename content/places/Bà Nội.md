@@ -17,5 +17,3 @@ type:
   - 'coffee shop'
 url: 'https://ba-noi.myshopify.com/'
 ---
-
-Recommended: Butter tart.

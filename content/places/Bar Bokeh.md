@@ -17,5 +17,3 @@ type:
   - 'restaurant'
 url: 'https://barbokeh.com/'
 ---
-
-Recommended: Cocktails, shrimp toast, calamari and beef tartare.

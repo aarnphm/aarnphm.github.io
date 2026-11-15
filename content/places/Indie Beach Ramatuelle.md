@@ -20,7 +20,3 @@ type:
   - 'bar'
 url: 'https://www.indiegroup.fr/en/indiebeach/'
 ---
-
-Imported rating: **7/10**.
-
-Imported impression (satirical): A pleasant, down-to-earth crowd.

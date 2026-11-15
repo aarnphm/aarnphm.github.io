@@ -16,5 +16,3 @@ type:
   - 'nightclub'
 url: 'https://codatoronto.com/'
 ---
-
-Recommended: Dancing.

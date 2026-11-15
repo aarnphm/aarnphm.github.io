@@ -20,7 +20,3 @@ type:
   - 'bar'
 url: 'https://yeeels.com/en/services/verdebeach'
 ---
-
-Imported rating: **5.5/10**.
-
-Imported impression (satirical): A forgettable, boring crowd.

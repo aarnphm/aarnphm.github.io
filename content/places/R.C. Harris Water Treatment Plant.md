@@ -15,6 +15,6 @@ title: 'R.C. Harris Water Treatment Plant'
 type:
   - 'architecture'
 url: 'https://www.toronto.ca/services-payments/water-environment/tap-water-in-toronto/fast-facts-about-the-citys-water-treatment-plants/'
+external: https://doorsopenontario.on.ca/toronto/r-c-harris-water-treatment-plant
+details: Interior tours are offered through Doors Open Toronto. Check the event listing for future visiting dates.
 ---
-
-Interior tours are offered through [Doors Open Toronto](https://doorsopenontario.on.ca/toronto/r-c-harris-water-treatment-plant). Check the event listing for future visiting dates.

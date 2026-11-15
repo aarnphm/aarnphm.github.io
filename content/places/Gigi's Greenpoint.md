@@ -18,5 +18,3 @@ type:
   - 'bar'
 url: 'https://maps.google.com/?cid=12566489811653729144'
 ---
-
-Wine and food.

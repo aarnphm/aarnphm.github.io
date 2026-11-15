@@ -17,5 +17,3 @@ type:
   - 'restaurant'
 url: 'https://maps.google.com/?cid=11424553985271574110'
 ---
-
-Pasta, drinks, and dessert.

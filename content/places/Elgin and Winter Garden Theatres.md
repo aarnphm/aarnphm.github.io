@@ -16,6 +16,5 @@ type:
   - 'theatre'
   - 'architecture'
 url: 'https://www.canadianstage.com/plan-your-visit/venues-directions/winter-garden'
+details: Check performance and visiting information before planning an interior visit.
 ---
-
-Check [performance and visiting information](https://www.canadianstage.com/plan-your-visit/venues-directions/winter-garden) before planning an interior visit.

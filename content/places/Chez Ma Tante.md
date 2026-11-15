@@ -17,5 +17,3 @@ type:
   - 'restaurant'
 url: 'https://chezmatantebk.com/'
 ---
-
-Pancakes with butter and syrup.

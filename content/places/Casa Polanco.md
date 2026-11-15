@@ -17,5 +17,3 @@ type:
   - 'hotel'
 url: 'https://www.casapolanco.com/'
 ---
-
-Recommended as an underrated hotel.

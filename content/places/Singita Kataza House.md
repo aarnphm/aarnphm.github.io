@@ -17,5 +17,3 @@ type:
   - 'hotel'
 url: 'https://singita.com/lodge/singita-kataza-house/'
 ---
-
-Recommended for a stay.

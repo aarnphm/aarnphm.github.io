@@ -18,5 +18,3 @@ type:
   - 'bar'
 url: 'https://www.fourhorsemenbk.com/'
 ---
-
-Wine and dinner.

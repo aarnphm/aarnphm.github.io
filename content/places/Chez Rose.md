@@ -16,5 +16,3 @@ type:
   - 'restaurant'
 url: 'https://www.chezroselondon.com/'
 ---
-
-Crab rösti, oysters, prawns, roast chicken with morels, and chocolate soufflé.

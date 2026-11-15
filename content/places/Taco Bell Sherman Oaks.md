@@ -16,5 +16,3 @@ type:
   - 'restaurant'
 url: 'https://locations.tacobell.com/ca/sherman-oaks/14115-ventura-blvd.html'
 ---
-
-Recommended branch.

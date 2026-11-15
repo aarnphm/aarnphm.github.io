@@ -20,7 +20,3 @@ type:
   - 'bar'
 url: 'https://shellona.com/en/home-st-tropez/'
 ---
-
-Imported rating: **5/10**.
-
-Imported impression (satirical): A wealthy crowd preoccupied with status and approval.

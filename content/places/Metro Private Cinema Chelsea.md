@@ -18,5 +18,3 @@ type:
   - 'restaurant'
 url: 'https://metrocinema.com/'
 ---
-
-Suggested for a birthday: rent a private movie suite and have dinner during the screening.

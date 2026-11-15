@@ -18,5 +18,3 @@ type:
   - 'bar'
 url: 'https://www.theodeonrestaurant.com/'
 ---
-
-Steak frites and dessert.

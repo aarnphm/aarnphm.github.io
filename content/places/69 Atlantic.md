@@ -17,5 +17,3 @@ type:
   - 'theatre'
 url: 'https://www.69atlantic.com/'
 ---
-
-Recommended: a close-up magic show for a birthday outing.

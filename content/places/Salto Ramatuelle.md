@@ -20,7 +20,3 @@ type:
   - 'bar'
 url: 'https://www.google.com/maps?cid=1047354685528464138'
 ---
-
-Imported rating: **10/10**.
-
-Imported impression (satirical): A favourite, with an affluent, unpretentious crowd.

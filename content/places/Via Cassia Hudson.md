@@ -17,5 +17,3 @@ type:
   - 'restaurant'
 url: 'https://viacassiahudson.com/'
 ---
-
-Food and cocktails.

@@ -16,8 +16,6 @@ type:
   - 'bar'
   - 'theatre'
 url: 'https://magiccastle.com/'
+external: https://magiccastle.com/contact/
+details: Guest access requires an invitation or accompaniment by a member. The club enforces a dress code.
 ---
-
-Recommended for the bar.
-
-[Guest access](https://magiccastle.com/contact/) requires an invitation or accompaniment by a member. The club enforces a dress code.

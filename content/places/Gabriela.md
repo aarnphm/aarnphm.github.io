@@ -17,5 +17,3 @@ type:
   - 'bar'
 url: 'https://www.gabriela.nyc/'
 ---
-
-Red lighting, fog and upstairs booths. Thursdays are recommended.

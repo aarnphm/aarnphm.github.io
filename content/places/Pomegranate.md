@@ -16,5 +16,3 @@ type:
   - 'restaurant'
 url: 'https://pomegranatetoronto.com/anar/'
 ---
-
-Recommended: Ghormeh sabzi.

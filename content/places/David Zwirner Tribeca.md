@@ -15,6 +15,5 @@ title: 'David Zwirner Tribeca'
 type:
   - 'art gallery'
 url: 'https://www.davidzwirner.com/galleries/new-york/tribeca'
+details: In 2026, 52 Walker became a program that operates across locations, and David Zwirner continues to run the Tribeca gallery.
 ---
-
-In 2026, 52 Walker became a program that operates across locations, and David Zwirner continues to run the Tribeca gallery.

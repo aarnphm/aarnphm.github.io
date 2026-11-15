@@ -15,6 +15,5 @@ title: 'Neue Galerie New York'
 type:
   - 'museum'
 url: 'https://www.neuegalerie.org/visit'
+details: The museum lists November 12, 2026 as the gallery reopening date.
 ---
-
-The museum lists November 12, 2026 as the gallery reopening date. [Visitor information](https://www.neuegalerie.org/visit)

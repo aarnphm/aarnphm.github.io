@@ -17,5 +17,3 @@ type:
   - 'hotel'
 url: 'https://www.oetkerhotels.com/hotels/eden-rock-st-barths/'
 ---
-
-Among SmartFlyer’s three most-booked hotels in 2025.

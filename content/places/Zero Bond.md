@@ -16,6 +16,6 @@ type:
   - 'bar'
   - 'nightclub'
 url: 'https://zerobondny.com/'
+external: https://zerobondny.com/application/
+details: Zero Bond is a private members’ club.
 ---
-
-Zero Bond is a private members’ club. [Membership information](https://zerobondny.com/application/)

@@ -16,5 +16,3 @@ type:
   - 'restaurant'
 url: 'https://www.noburestaurants.com/malibu/'
 ---
-
-Recommended for fine dining.

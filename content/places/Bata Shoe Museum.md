@@ -15,6 +15,5 @@ title: 'Bata Shoe Museum'
 type:
   - 'museum'
 url: 'https://batashoemuseum.ca/'
+details: 'Admission checked on 2026-11-01: General admission is free on Sundays. Advance tickets are recommended, and admission includes the galleries and special exhibitions.'
 ---
-
-Admission checked on 2026-11-01: General admission is free on Sundays. Advance tickets are recommended, and admission includes the galleries and special exhibitions.

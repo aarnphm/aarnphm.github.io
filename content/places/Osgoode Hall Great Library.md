@@ -15,6 +15,6 @@ title: 'Osgoode Hall Great Library'
 type:
   - 'architecture'
 url: 'https://lso.ca/about-lso/osgoode-hall-and-ontario-legal-heritage/osgoode-hall'
+external: https://www.ontariocourts.ca/coa/about-the-court/visiting-osgoode-hall/
+details: Check visiting and tour information before going.
 ---
-
-Check [visiting and tour information](https://www.ontariocourts.ca/coa/about-the-court/visiting-osgoode-hall/) before going.

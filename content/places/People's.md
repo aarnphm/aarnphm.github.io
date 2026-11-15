@@ -17,6 +17,5 @@ type:
   - 'bar'
   - 'art gallery'
 url: 'https://www.peoplesny.com/'
+details: Cocktails and art-filled interiors. Visits are by reservation.
 ---
-
-Cocktails and art-filled interiors. Visits are by reservation.

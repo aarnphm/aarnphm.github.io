@@ -15,6 +15,6 @@ title: 'Dundas Lions Memorial Community Centre'
 type:
   - 'communal'
 url: 'https://www.google.com/maps?cid=169909478436136171'
+external: https://www.hamiltonpotters.ca/sale-1
+details: Saved for the Hamilton Potters’ Guild Fall Sale and Empty Bowls. Organizer’s sale page, checked November 2, 2026.
 ---
-
-Saved for the Hamilton Potters’ Guild Fall Sale and Empty Bowls. [Organizer’s sale page](https://www.hamiltonpotters.ca/sale-1), checked November 2, 2026.

@@ -15,6 +15,5 @@ title: 'The Beaches'
 type:
   - 'places'
 url: 'https://www.destinationtoronto.com/neighbourhoods/eastside/the-beaches/'
+details: Map pin marks the neighbourhood, rather than a specific venue.
 ---
-
-Map pin marks the neighbourhood, rather than a specific venue.

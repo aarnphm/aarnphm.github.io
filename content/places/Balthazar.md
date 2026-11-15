@@ -16,5 +16,3 @@ type:
   - 'restaurant'
 url: 'https://balthazarny.com/'
 ---
-
-Steak frites and wine.

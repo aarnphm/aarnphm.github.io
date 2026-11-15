@@ -20,7 +20,3 @@ type:
   - 'bar'
 url: 'https://bagatelle.com/venues/st-tropez/'
 ---
-
-Imported rating: **6/10**.
-
-Imported impression (satirical): Loud, American-style partying, tacky and very fun.

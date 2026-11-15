@@ -17,5 +17,3 @@ type:
   - 'bar'
 url: 'https://mussoandfrank.com/'
 ---
-
-Recommended for fine dining.

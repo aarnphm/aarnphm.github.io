@@ -17,5 +17,3 @@ type:
   - 'restaurant'
 url: 'https://maps.google.com/?cid=10945302152528205037'
 ---
-
-Pizza and dessert.

@@ -17,5 +17,3 @@ type:
   - 'restaurant'
 url: 'https://theelmwoodbar.com/'
 ---
-
-Recommended: Buffalo wings.

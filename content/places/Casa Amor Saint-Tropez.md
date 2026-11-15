@@ -20,7 +20,3 @@ type:
   - 'bar'
 url: 'https://casaamor.fr/'
 ---
-
-Imported rating: **9/10**.
-
-Imported impression (satirical): Fun and classy, with a balanced crowd.

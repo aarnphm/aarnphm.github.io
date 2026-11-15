@@ -17,5 +17,3 @@ type:
   - 'bar'
 url: 'https://www.lebainnewyork.com/rooftop'
 ---
-
-House and disco music, rooftop and indoor plunge pool.

@@ -17,5 +17,3 @@ type:
   - 'bar'
 url: 'https://www.vonbar.com/home'
 ---
-
-Start with drinks upstairs before heading to the basement dance floor.

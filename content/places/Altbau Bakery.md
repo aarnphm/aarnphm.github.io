@@ -18,5 +18,3 @@ type:
   - 'coffee shop'
 url: 'https://altbaubakery.com/'
 ---
-
-Pastries and a bakery counter.

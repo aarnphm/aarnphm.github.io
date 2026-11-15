@@ -17,5 +17,3 @@ type:
   - 'bar'
 url: 'https://maps.google.com/?cid=248358157349903034'
 ---
-
-Drinks and window seating.

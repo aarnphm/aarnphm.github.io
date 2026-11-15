@@ -17,5 +17,3 @@ type:
   - 'bar'
 url: 'https://www.acmenyc.com/'
 ---
-
-Basement dance floor, disco ball and late-night DJ sets.

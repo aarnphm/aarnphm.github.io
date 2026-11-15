@@ -18,5 +18,3 @@ type:
   - 'bar'
 url: 'https://uncommonsnyc.com/'
 ---
-
-Suggested for a birthday: book tables to play board games with friends.

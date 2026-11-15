@@ -17,5 +17,3 @@ type:
   - 'hotel'
 url: 'https://www.royalmansour.com/en/marrakech/'
 ---
-
-Recommended for its local craftsmanship, private riads and discreet butler service.

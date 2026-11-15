@@ -15,6 +15,5 @@ title: 'Jacob the Angel Sydney'
 type:
   - 'coffee shop'
 url: 'https://25hours-hotels.com/sydney/the-olympia/restaurants-bars/jacob-the-angel/'
+details: 'Café address: 5 Oxford Street. Hotel address: 1 Oxford Street.'
 ---
-
-Café address: 5 Oxford Street. Hotel address: 1 Oxford Street.

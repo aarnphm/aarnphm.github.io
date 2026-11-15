@@ -20,7 +20,3 @@ type:
   - 'bar'
 url: 'https://loulou-ramatuelle.com/'
 ---
-
-Imported rating: **8/10**.
-
-Imported impression (satirical): A singles scene, especially recommended to men looking to meet women.

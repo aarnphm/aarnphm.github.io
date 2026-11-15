@@ -16,6 +16,5 @@ type:
   - 'market'
   - 'restaurant'
 url: 'https://tinymarketco.com/'
+details: In late October 2026, the shop was reported to be planning a late-fall reopening at this address.
 ---
-
-In late October 2026, the shop was reported to be planning a late-fall reopening at this address.

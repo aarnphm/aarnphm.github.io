@@ -17,5 +17,3 @@ type:
   - 'hotel'
 url: 'https://www.fourseasons.com/paris/'
 ---
-
-Among SmartFlyer’s three most-booked hotels in 2025.

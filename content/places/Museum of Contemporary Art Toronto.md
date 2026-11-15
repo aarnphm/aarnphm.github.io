@@ -16,6 +16,5 @@ type:
   - 'museum'
   - 'art gallery'
 url: 'https://moca.ca/'
+details: 'Admission checked on 2026-11-01: Free Friday Nights take place on the Friday of the first full weekend of each month. Check the programme page for the current event and ticket details.'
 ---
-
-Admission checked on 2026-11-01: Free Friday Nights take place on the Friday of the first full weekend of each month. Check the programme page for the current event and ticket details.

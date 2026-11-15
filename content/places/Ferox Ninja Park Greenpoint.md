@@ -17,5 +17,3 @@ type:
   - 'park'
 url: 'https://feroxathletics.com/ninja-park/'
 ---
-
-Obstacle courses, trampolines, ziplines, and adult nights. Suggested for a birthday outing.

@@ -17,5 +17,3 @@ type:
   - 'bar'
 url: 'https://www.seedlibrarynyc.com/'
 ---
-
-Cocktails and lounge seating.

@@ -16,5 +16,3 @@ type:
   - 'nightclub'
 url: 'https://www.instagram.com/vertigotoronto/'
 ---
-
-Recommended: More dancing; blue Gatorade and water.

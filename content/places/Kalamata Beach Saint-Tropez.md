@@ -20,7 +20,3 @@ type:
   - 'bar'
 url: 'https://www.kalamatabeach.com/en'
 ---
-
-Imported rating: **4.5/10**.
-
-Imported impression (satirical): A young or childish crowd.

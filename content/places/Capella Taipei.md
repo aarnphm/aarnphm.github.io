@@ -17,5 +17,3 @@ type:
   - 'hotel'
 url: 'https://capellahotels.com/en/capella-taipei'
 ---
-
-Recommended for its suites.

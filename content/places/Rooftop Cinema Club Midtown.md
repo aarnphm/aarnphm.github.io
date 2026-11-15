@@ -17,5 +17,3 @@ type:
   - 'theatre'
 url: 'https://rooftopcinemaclub.com/us/new-york/midtown'
 ---
-
-Suggested for a birthday: an outdoor movie with skyline views and headphones for the film audio.

@@ -17,5 +17,3 @@ type:
   - 'bakery'
 url: 'https://www.melthebakery.com/'
 ---
-
-Pastries.

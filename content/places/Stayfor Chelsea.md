@@ -17,5 +17,3 @@ type:
   - 'workshops'
 url: 'https://stayfor.co/'
 ---
-
-Suggested for a birthday: a private Pilates or yoga class, with matcha or coffee afterwards.

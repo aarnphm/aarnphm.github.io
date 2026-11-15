@@ -15,6 +15,5 @@ title: 'Dreyfus'
 type:
   - 'restaurant'
 url: 'https://maps.app.goo.gl/mqrBFyHBigcYVTzj9'
+external: https://dreyfustoronto.com/
 ---
-
-[Official website](https://dreyfustoronto.com/).

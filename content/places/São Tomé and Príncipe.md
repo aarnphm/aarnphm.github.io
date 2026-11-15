@@ -13,8 +13,5 @@ title: 'São Tomé and Príncipe'
 type:
   - 'destination'
 url: 'https://turismo.gov.st/en'
+details: Saved as a country-level destination, without a specific site to pin.
 ---
-
-Recommended as an overlooked travel destination.
-
-Saved as a country-level destination, without a specific site to pin.

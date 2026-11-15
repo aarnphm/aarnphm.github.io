@@ -16,6 +16,5 @@ title: 'OddFellows Ice Cream DUMBO'
 type:
   - 'deserts'
 url: 'https://oddfellowsicecream.com/dumbo'
+details: Suggested for an ice cream birthday party. Confirm private-party arrangements with this branch.
 ---
-
-Suggested for an ice cream birthday party. Confirm private-party arrangements with this branch.

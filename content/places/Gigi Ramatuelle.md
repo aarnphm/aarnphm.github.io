@@ -20,7 +20,3 @@ type:
   - 'bar'
 url: 'https://gigi-restaurant.com/saint-tropez/'
 ---
-
-Imported rating: **7/10**.
-
-Imported impression (satirical): An older, affluent crowd with polished style and expensive handbags.

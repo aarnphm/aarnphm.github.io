@@ -17,5 +17,3 @@ type:
   - 'bar'
 url: 'https://www.gyopobrewery.com/'
 ---
-
-Recommended: Counter seating and makgeolli.

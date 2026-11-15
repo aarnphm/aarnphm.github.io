@@ -20,7 +20,3 @@ type:
   - 'bar'
 url: 'https://www.club55.fr/'
 ---
-
-Imported rating: **8.5/10**.
-
-Imported impression (satirical): Relaxed clientele who tolerate being overcharged.
