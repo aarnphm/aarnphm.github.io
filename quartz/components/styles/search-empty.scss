@@ -22,4 +22,15 @@
       cursor: default;
     }
   }
+  .search-table-foot > td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 0;
+    border-right: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    color: var(--darkgray);
+    font-family: var(--codeFont);
+    font-size: var(--text-meta);
+    cursor: default;
+  }
 }

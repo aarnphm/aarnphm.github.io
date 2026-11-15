@@ -63,6 +63,7 @@ export function mountPathResults(
   let firstRow: HTMLTableRowElement | null = null
   let firstLink: HTMLAnchorElement | null = null
   const leaf = leafOf(query.path)
+  table.append(pathHint(rows))
   const pages = mountResultPages(container, rows, (page, signal) => {
     const nodes = page.map(row => pathRow(row, query, leaf, navigate, signal, onFocus))
     body.append(...nodes)
@@ -73,6 +74,20 @@ export function mountPathResults(
   })
   container.scrollTop = 0
   return { pages, firstRow, firstLink }
+}
+
+/** One line under the rows says what the keys do, so no row carries helper text. */
+function pathHint(rows: readonly PathRow[]) {
+  const foot = document.createElement('tfoot')
+  const row = foot.insertRow()
+  row.className = 'search-table-foot'
+  const cell = row.insertCell()
+  cell.colSpan = 2
+  const literal = rows.find(candidate => candidate.literal)
+  cell.textContent = literal
+    ? `enter opens · tab completes · /${literal.entry.path} opens as a url`
+    : 'enter opens · tab completes'
+  return foot
 }
 
 function pathRow(
@@ -105,13 +120,7 @@ function pathRow(
   route.className = 'suggestion-route'
   appendHighlightedText(route, leaf, `/${entry.path}`)
   title.append(route)
-  const name = literal ? 'open this url' : entry.title
-  if (name && name !== entry.path) {
-    const label = document.createElement('span')
-    label.className = 'suggestion-route-title'
-    label.textContent = name
-    title.append(label)
-  }
+  if (!literal && entry.title && entry.title !== entry.path) content.title = entry.title
   content.append(title)
 
   const aux = document.createElement('div')

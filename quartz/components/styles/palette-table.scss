@@ -64,12 +64,6 @@
       font-family: var(--codeFont);
       font-size: var(--text-meta);
     }
-    .suggestion-route-title {
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      color: var(--gray);
-    }
     .suggestion-aux {
       display: flex;
       justify-content: space-between;
