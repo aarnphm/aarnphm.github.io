@@ -147,6 +147,7 @@ pdfTitles:
   unit-distance-cot.pdf: Rewritten Chain of Thought for the Solution to the Unit Distance Problem
   visions-of-excess-selected-writings-1927-1939-by-georges-bataille.pdf: 'Visions of Excess: Selected Writings, 1927–1939'
   weisberg_vob.pdf: Varieties of Bayesianism
+  'THE+ULTIMATE+GG.pdf': 'The Ultimate Gift Guide for the Baddies in Your Life'
   what makes a life significant by william james.pdf: What Makes a Life Significant?
 tags:
   - pattern
