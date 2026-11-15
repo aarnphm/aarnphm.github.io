@@ -5,26 +5,9 @@ import { imageSearchRow, searchableImage } from '../image-search-controls'
 import { fitSearchPath } from '../search-path'
 import { mountResultPages } from '../search-result-pages'
 import { searchResultsTable, searchStatusTable } from '../search-results-table'
-import { clearPreview, displayPreview, resolveUrl } from './preview'
+import { clearPreview, displayPreview, markPreviewKind, resolveUrl } from './preview'
 import { shared, type SearchSession, type SimilarityResult } from './state'
 import { hideSearch } from './visibility'
-
-function fileExtension(fileName: string): string | null {
-  const name = fileName.split('/').at(-1) ?? fileName
-  const index = name.lastIndexOf('.')
-  if (index <= 0 || index === name.length - 1) {
-    return null
-  }
-
-  return name.slice(index).toLowerCase()
-}
-
-function isDirectContentFile(fileName: string): boolean {
-  const ext = fileExtension(fileName)
-  return (
-    ext !== null && ext !== '.canvas' && ext !== '.base' && ext !== '.bases' && ext !== '.ipynb'
-  )
-}
 
 export function fitResultPaths(s: SearchSession) {
   for (const label of s.results.querySelectorAll<HTMLElement>('.search-result-path')) {
@@ -112,17 +95,7 @@ const resultToHTML = (
     itemTile.dataset.codeUnit = item.codeMatch.unit.id
     s.codeMatches.set(itemTile, item.codeMatch)
   }
-  const fileData = s.data?.[slug]
-  const resolvedFileName = (fileData?.fileName || fileName || slug || '').toLowerCase()
-  const extension = fileExtension(resolvedFileName)
-  const isCanvas = extension === '.canvas'
-  const isBases = extension === '.base' || extension === '.bases'
-  const isDirectFile = isDirectContentFile(resolvedFileName)
-  if (isCanvas) itemTile.dataset.canvas = 'true'
-  if (isBases) itemTile.dataset.bases = 'true'
-  if (isDirectFile) itemTile.dataset.directFile = 'true'
-
-  if (isProtected) itemTile.dataset.protected = 'true'
+  markPreviewKind(s, itemTile, slug, fileName, isProtected)
   itemTile.innerHTML = `<hgroup><h3>${titleContent}${isProtected ? ' <span aria-label="protected content">🔒</span>' : ''}</h3></hgroup>`
 
   if (item.codeMatch) {

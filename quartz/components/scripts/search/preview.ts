@@ -70,6 +70,39 @@ function highlightHTML(searchTerm: string, el: HTMLElement) {
   return html.body
 }
 
+function fileExtension(fileName: string): string | null {
+  const name = fileName.split('/').at(-1) ?? fileName
+  const index = name.lastIndexOf('.')
+  if (index <= 0 || index === name.length - 1) {
+    return null
+  }
+
+  return name.slice(index).toLowerCase()
+}
+
+function isDirectContentFile(fileName: string): boolean {
+  const ext = fileExtension(fileName)
+  return (
+    ext !== null && ext !== '.canvas' && ext !== '.base' && ext !== '.bases' && ext !== '.ipynb'
+  )
+}
+
+/** Flags displayPreview reads to pick the base, canvas, file or redacted preview. */
+export function markPreviewKind(
+  s: SearchSession,
+  el: HTMLElement,
+  slug: string,
+  fileName?: string,
+  isProtected = s.data?.[slug]?.protected === true,
+) {
+  const resolvedFileName = (s.data?.[slug]?.fileName || fileName || slug || '').toLowerCase()
+  const extension = fileExtension(resolvedFileName)
+  if (extension === '.canvas') el.dataset.canvas = 'true'
+  if (extension === '.base' || extension === '.bases') el.dataset.bases = 'true'
+  if (isDirectContentFile(resolvedFileName)) el.dataset.directFile = 'true'
+  if (isProtected) el.dataset.protected = 'true'
+}
+
 export function clearPreview(s: SearchSession) {
   s.previewRequest?.abort()
   s.previewRequest = undefined
@@ -144,6 +177,8 @@ export async function displayPreview(s: SearchSession, el: HTMLElement | null) {
   const codeMatch = s.codeMatches.get(el)
   const slug = el.dataset.codeOwner ?? el.id
   if (!slug || !isFullSlug(slug)) return
+  // Path-mode rows come from the shared path table, so they learn their preview kind here.
+  if (el.dataset.path !== undefined) markPreviewKind(s, el, slug)
   const previewKey = codeMatch
     ? `${slug}:${codeMatch.unit.id}:${codeMatch.ranges[codeMatch.selectedRange]?.start.offset}`
     : el.dataset.pdfPage
