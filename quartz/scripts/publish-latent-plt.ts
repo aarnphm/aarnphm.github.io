@@ -24,7 +24,7 @@ const FAMILIES = {
     links: { trainer: 'transcoders.py', attribution: 'attribute.py', labeller: 'plt_label.py' },
   },
   'latent-clt': {
-    sources: ['clt.py', 'gemma_torch.py'],
+    sources: ['clt.py', 'clt_model.py', 'clt_fit.py', 'clt_io.py', 'gemma_torch.py'],
     links: { trainer: 'clt.py', engine: 'gemma_torch.py' },
   },
 } as const

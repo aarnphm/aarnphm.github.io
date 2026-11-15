@@ -29,7 +29,13 @@ HERE = Path(__file__).resolve().parent
 FAMILY = 'latent-clt'
 MODEL = 'mlx-community/gemma-4-e4b-it-4bit'
 REVISION = '475b9088d29754a3379866cf5aeb6b41acd313c2'
-SOURCES = ('clt.py', 'gemma_torch.py')
+SOURCES = (
+  'clt.py',
+  'clt_model.py',
+  'clt_fit.py',
+  'clt_io.py',
+  'gemma_torch.py',
+)
 
 
 def sha256(path: Path) -> str:
