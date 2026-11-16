@@ -15,6 +15,7 @@ import time
 from inputs import Inventory, JsonFiles, extraction_spec, mapping, number, text
 from logs import Logs
 from models import Models
+from scope import page_numbers
 
 
 def iso(timestamp: float) -> str:
@@ -86,8 +87,7 @@ class Observer:
       return None
     try:
       started = (
-        datetime
-        .strptime(result.stdout.strip(), '%a %b %d %H:%M:%S %Y')
+        datetime.strptime(result.stdout.strip(), '%a %b %d %H:%M:%S %Y')
         .replace(tzinfo=timezone.utc)
         .timestamp()
       )
@@ -189,12 +189,11 @@ class Observer:
     current = None
     batch_pages = []
     for source in self.inventory.sources:
+      requested = set(page_numbers(source.sha256, source.total))
       observation = self.inventory.pages(source, self.cache, spec)
       cached = observation.numbers
       remaining_work.update(
-        (source.sha256, page)
-        for page in range(1, source.total + 1)
-        if page not in cached
+        (source.sha256, page) for page in requested if page not in cached
       )
       if observation.key:
         extracted.setdefault(observation.key, set()).update(
@@ -208,7 +207,7 @@ class Observer:
         else []
       )
       indexed_count = (
-        len({n for n in indexed if type(n) is int and 1 <= n <= source.total})
+        len({n for n in indexed if type(n) is int and n in requested})
         if isinstance(indexed, list)
         else 0
       )
@@ -219,15 +218,13 @@ class Observer:
         else []
       )
       served_pages += (
-        len({
-          n for n in local_pages if type(n) is int and 1 <= n <= source.total
-        })
+        len({n for n in local_pages if type(n) is int and n in requested})
         if isinstance(local_pages, list)
         else 0
       )
       status = (
         'complete'
-        if indexed_count == source.total and not observation.partial
+        if indexed_count == len(requested) and not observation.partial
         else 'ready'
         if len(cached) > indexed_count
         else 'partial'
@@ -238,10 +235,12 @@ class Observer:
         pending = [
           page
           for page in active_log.planned.get(source.slug, [])
-          if page not in cached
+          if page in requested and page not in cached
         ]
         active = []
         for page in active_log.planned.get(source.slug, []):
+          if page not in requested:
+            continue
           identity = (str(source.path.resolve()), page)
           failure = active_log.failures.get(identity)
           admitted = (
@@ -281,10 +280,10 @@ class Observer:
         Document(
           source.slug,
           title,
-          source.total,
+          len(requested),
           len(cached),
           indexed_count,
-          source.total - len(cached),
+          len(requested) - len(cached),
           observation.invalid,
           max(cached) if cached else None,
           iso(observation.updated_at)
