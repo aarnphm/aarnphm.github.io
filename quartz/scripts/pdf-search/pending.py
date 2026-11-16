@@ -13,7 +13,7 @@ import portalocker
 import pymupdf
 
 from build import PdfSource
-from scope import queued_pdfs
+from scope import page_numbers, queued_pdfs
 from cache import canonical
 
 
@@ -40,7 +40,7 @@ def published_pages(manifest: Path, slug: str, sha: str, total: int) -> bool:
     json.loads(manifest.read_text()).get('documents', {}).get(slug, {})
   )
   return document.get('sourceSha256') == sha and set(
-    range(1, total + 1)
+    page_numbers(sha, total)
   ).issubset(document.get('pages', []))
 
 

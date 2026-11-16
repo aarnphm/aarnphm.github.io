@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pymupdf
 
-from scope import queued_pdfs
+from scope import page_numbers, queued_pdfs
 from cache import PageCache
 from client import OcrClient
 from extract import recipe
@@ -92,9 +92,10 @@ def main() -> None:
         count = (
           min(len(pdf), args.first_pages) if args.first_pages else len(pdf)
         )
-      pending = [
-        number for number in range(1, count + 1) if cache.read(number) is None
-      ][:remaining]
+      requested = page_numbers(source_sha, count)
+      pending = [number for number in requested if cache.read(number) is None][
+        :remaining
+      ]
       if not pending:
         committed = sorted(
           int(path.stem)
@@ -110,7 +111,7 @@ def main() -> None:
       print(json.dumps({'slug': slug, 'newPages': pending}), flush=True)
       requests.append((
         source.source,
-        ','.join(map(str, pending or range(1, count + 1))),
+        ','.join(map(str, pending or requested)),
       ))
       remaining -= len(pending)
     completed = extract_documents(

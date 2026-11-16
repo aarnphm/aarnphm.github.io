@@ -12,6 +12,19 @@ if TYPE_CHECKING:
   from build import PdfSource
 
 
+def page_numbers(source_sha256: str, count: int) -> list[int]:
+  # aarnphm approved omitting Thinking with Type page 119 on 2026-11-16.
+  # Bind the exception to the edition's bytes, not its filename or page label.
+  # docs/verification/pdf-recipe-refresh-2026-11-15/README.md
+  excluded = (
+    {119}
+    if source_sha256
+    == '728e6d0ca3809d504f12f3302ef5303238a7324cf2824b303d64781d597dba7d'
+    else set()
+  )
+  return [number for number in range(1, count + 1) if number not in excluded]
+
+
 def collection_metadata(content: Path) -> dict:
   config = content / 'embeddings/index.md'
   match = re.match(
