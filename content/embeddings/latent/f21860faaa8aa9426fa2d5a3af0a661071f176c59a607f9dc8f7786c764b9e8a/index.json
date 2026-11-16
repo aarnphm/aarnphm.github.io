@@ -1,0 +1,207 @@
+{
+ "version": 1,
+ "hash": "f21860faaa8aa9426fa2d5a3af0a661071f176c59a607f9dc8f7786c764b9e8a",
+ "built": "2026-11-16T13:08:29+00:00",
+ "model": "google/embeddinggemma-2",
+ "dims": 768,
+ "k": 16,
+ "block": 64,
+ "part": 48,
+ "axes": 8,
+ "rows": 68206,
+ "docs": 3974,
+ "datedDocs": 3974,
+ "kinds": [
+  "note",
+  "pdf",
+  "image",
+  "base"
+ ],
+ "axesPage": "embeddings/index.md",
+ "axesSpec": [
+  {
+   "a": {
+    "paths": [],
+    "tags": [
+     "love",
+     "philosophy"
+    ]
+   },
+   "b": {
+    "paths": [],
+    "tags": [
+     "llm",
+     "ml"
+    ]
+   },
+   "name": "philosophy \u2194 ml"
+  }
+ ],
+ "counts": {
+  "base": 1306,
+  "note": 9445,
+  "image": 759,
+  "pdf": 56696
+ },
+ "copies": {
+  "rows": 1887,
+  "stores": {
+   "note": 1281,
+   "pdf": 606
+  },
+  "docs": 156,
+  "cos": 0.95,
+  "jaccard": 0.8
+ },
+ "stores": [
+  {
+   "id": "embeddings/bases/antilibrary",
+   "kind": "base",
+   "path": "/embeddings/bases/antilibrary/manifest.json",
+   "generation": null,
+   "rows": 340,
+   "rowOffset": 0,
+   "model": "google/embeddinggemma-2",
+   "dims": 768,
+   "included": true,
+   "reason": null,
+   "coverage": null
+  },
+  {
+   "id": "embeddings/bases/cinematheque",
+   "kind": "base",
+   "path": "/embeddings/bases/cinematheque/manifest.json",
+   "generation": null,
+   "rows": 328,
+   "rowOffset": 340,
+   "model": "google/embeddinggemma-2",
+   "dims": 768,
+   "included": true,
+   "reason": null,
+   "coverage": null
+  },
+  {
+   "id": "embeddings/bases/ideas",
+   "kind": "base",
+   "path": "/embeddings/bases/ideas/manifest.json",
+   "generation": null,
+   "rows": 17,
+   "rowOffset": 668,
+   "model": "google/embeddinggemma-2",
+   "dims": 768,
+   "included": true,
+   "reason": null,
+   "coverage": null
+  },
+  {
+   "id": "embeddings/bases/places-to-go",
+   "kind": "base",
+   "path": "/embeddings/bases/places-to-go/manifest.json",
+   "generation": null,
+   "rows": 621,
+   "rowOffset": 685,
+   "model": "google/embeddinggemma-2",
+   "dims": 768,
+   "included": true,
+   "reason": null,
+   "coverage": null
+  },
+  {
+   "id": "embeddings/images",
+   "kind": "image",
+   "path": "/embeddings/images/manifest.json",
+   "generation": "4c1c005698fbbde8791fe6347e982298def0a9d9f84b211c9ef2a00cb38d8e1d",
+   "rows": 759,
+   "rowOffset": 1306,
+   "model": "google/embeddinggemma-2",
+   "dims": 768,
+   "included": true,
+   "reason": null,
+   "coverage": null
+  },
+  {
+   "id": "embeddings",
+   "kind": "note",
+   "path": "/embeddings/manifest.json",
+   "generation": "f8befb24c68bf59c8bfb0a66425a1f52f60d416c532aa39b2efc5f20626571e4",
+   "rows": 9445,
+   "rowOffset": 2065,
+   "model": "google/embeddinggemma-2",
+   "dims": 768,
+   "included": true,
+   "reason": null,
+   "coverage": null
+  },
+  {
+   "id": "embeddings/pdf",
+   "kind": "pdf",
+   "path": "/embeddings/pdf/manifest.json",
+   "generation": "39614cf06e7e574bc39b31aeeb0460a616046809d247722f0f6fd6ac0e02d9eb",
+   "rows": 56696,
+   "rowOffset": 11510,
+   "model": "google/embeddinggemma-2",
+   "dims": 768,
+   "included": true,
+   "reason": null,
+   "coverage": {
+    "eligibleDocuments": 663,
+    "fullyTranscribedPages": 31098,
+    "indexedDocuments": 266,
+    "indexedPages": 31130,
+    "partialPages": 32
+   }
+  }
+ ],
+ "features": [
+  {
+   "name": "text",
+   "kinds": [
+    "note",
+    "pdf"
+   ],
+   "features": 2048,
+   "k": 8,
+   "prefixes": [
+    128,
+    512,
+    2048
+   ],
+   "rows": 64177,
+   "fvu": 0.361
+  },
+  {
+   "name": "image",
+   "kinds": [
+    "image"
+   ],
+   "features": 128,
+   "k": 4,
+   "prefixes": [
+    16,
+    48,
+    128
+   ],
+   "rows": 759,
+   "fvu": 0.5438
+  },
+  {
+   "name": "base",
+   "kinds": [
+    "base"
+   ],
+   "features": 128,
+   "k": 4,
+   "prefixes": [
+    16,
+    48,
+    128
+   ],
+   "rows": 1383,
+   "fvu": 0.5185
+  }
+ ],
+ "tags": {
+  "probes": 37,
+  "predicted": 392
+ }
+}
