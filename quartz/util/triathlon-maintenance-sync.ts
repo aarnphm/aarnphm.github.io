@@ -6,7 +6,7 @@ import type { RawStravaActivity } from '../plugins/stores/strava'
 import { readStravaCacheFile, stravaCachePath } from './strava-cache-file'
 import { calculateDistances } from './triathlon-maintenance-sync/calculate'
 import { maintenanceDocument } from './triathlon-maintenance-sync/document'
-import { distanceRecords } from './triathlon-maintenance-sync/records'
+import { bikeId, distanceRecords } from './triathlon-maintenance-sync/records'
 import { isRecord } from './type-guards'
 
 export function reconcileMaintenanceDistances(
@@ -16,10 +16,12 @@ export function reconcileMaintenanceDistances(
   const document = maintenanceDocument(source)
   if (!document) return { source, entries: [] }
   const records = distanceRecords(document.maintenance)
-  const entries = calculateDistances(records, activities)
+  const configuredDefault = document.maintenance.defaultVirtualRideBikeId
+  const defaultVirtualRideBikeId = configuredDefault == null ? undefined : bikeId(configuredDefault)
+  const entries = calculateDistances(records, activities, defaultVirtualRideBikeId)
   for (const [index, record] of records.entries())
     document.setDistance(record.target, entries[index].distanceMiles)
-  return { source: document.finish(), entries }
+  return { source: document.finish(), entries, defaultVirtualRideBikeId }
 }
 
 async function acquireLock(path: string) {
@@ -61,8 +63,9 @@ export async function syncMaintenanceDistances(notePath = 'content/triathlon.md'
     }
     const report = {
       cacheSyncedAt: new Date(cache.lastSync).toISOString(),
+      defaultVirtualRideBikeId: result.defaultVirtualRideBikeId ?? null,
       method:
-        'Ride matched by record bikeId; unassigned rides excluded; inclusive local dates; union of recorded usage ranges; cycles inherit chain bikeId and intersect chain usage; new tire or cycle owns shared changeover dates; numeric miles to two decimals',
+        'Ride and VirtualRide matched by record bikeId; unassigned virtual rides use defaultVirtualRideBikeId when configured, explicit Strava gearId wins; other unassigned rides excluded; virtual distance counts for chains, wax cycles, OSPW, bottom brackets, chainrings, saddles and service mileage on the Cog setup; tires, tubes, wheelsets and brakes use Ride only; inclusive local dates; union of recorded usage ranges; cycles inherit chain bikeId and intersect chain usage; new tire or cycle owns shared changeover dates; numeric miles to two decimals; reported virtual distance is a usage estimate',
       entries: result.entries,
     }
     await fs.writeFile(

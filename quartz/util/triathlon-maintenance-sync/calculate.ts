@@ -13,18 +13,34 @@ export interface MaintenanceDistanceResult {
   meters: number
   miles: number
   activityIds: number[]
+  virtualMiles: number
+  virtualActivityIds: number[]
+  defaultBikeActivityIds: number[]
 }
 
 export function calculateDistances(
   records: DistanceRecord[],
   activities: Record<string, RawStravaActivity>,
+  defaultVirtualRideBikeId?: string,
 ): MaintenanceDistanceResult[] {
   if (!isRecord(activities)) throw new Error('Strava cache has no activity mapping')
   const trackedBikes = new Set(records.map(record => record.bikeId))
-  const rides = new Map<number, { id: number; bikeId: string; date: string; meters: number }>()
+  const rides = new Map<
+    number,
+    {
+      id: number
+      bikeId: string
+      date: string
+      meters: number
+      virtual: boolean
+      defaultBike: boolean
+    }
+  >()
   for (const activity of Object.values(activities)) {
     if (!isRecord(activity)) throw new Error('Invalid Strava activity in maintenance cache')
-    if (activity.sportType !== 'Ride' || !activity.gearId || !trackedBikes.has(activity.gearId))
+    const virtual = activity.sportType === 'VirtualRide'
+    const bikeId = activity.gearId || (virtual ? defaultVirtualRideBikeId : undefined)
+    if ((activity.sportType !== 'Ride' && !virtual) || !bikeId || !trackedBikes.has(bikeId))
       continue
     if (
       typeof activity.startDateLocal !== 'string' ||
@@ -36,25 +52,33 @@ export function calculateDistances(
       throw new Error('Invalid Strava Ride date, distance or ID')
     rides.set(activity.id, {
       id: activity.id,
-      bikeId: activity.gearId,
+      bikeId,
       date: localDate(activity.startDateLocal.slice(0, 10)),
       meters: activity.distance,
+      virtual,
+      defaultBike: !activity.gearId,
     })
   }
   const matches = (date: string, range: UsageRange) =>
     date >= range.start && date <= (range.end ?? lastDate)
-  const total = (bikeId: string, ranges: UsageRange[], excluded = new Set<string>()) => {
+  const total = (record: DistanceRecord, ranges: UsageRange[], excluded = new Set<string>()) => {
     const selected = [...rides.values()].filter(
       ride =>
-        ride.bikeId === bikeId &&
+        ride.bikeId === record.bikeId &&
+        (!ride.virtual || record.includeVirtual) &&
         !excluded.has(ride.date) &&
         ranges.some(range => matches(ride.date, range)),
     )
     const meters = Math.round(selected.reduce((sum, ride) => sum + ride.meters, 0) * 10) / 10
+    const virtual = selected.filter(ride => ride.virtual)
+    const virtualMeters = Math.round(virtual.reduce((sum, ride) => sum + ride.meters, 0) * 10) / 10
     return {
       meters,
       miles: Number((meters / 1609.344).toFixed(2)),
       activityIds: selected.map(ride => ride.id),
+      virtualMiles: Number((virtualMeters / 1609.344).toFixed(2)),
+      virtualActivityIds: virtual.map(ride => ride.id),
+      defaultBikeActivityIds: selected.filter(ride => ride.defaultBike).map(ride => ride.id),
     }
   }
   return records.map((record, index) => {
@@ -67,7 +91,7 @@ export function calculateDistances(
         for (const period of record.ranges)
           for (const otherPeriod of other.ranges) {
             const overlap = intersection(period, otherPeriod)
-            if (!overlap || !total(record.bikeId, [overlap]).activityIds.length) continue
+            if (!overlap || !total(record, [overlap]).activityIds.length) continue
             const start = record.replacementDate ?? period.start
             const otherStart = other.replacementDate ?? otherPeriod.start
             if (overlap.start !== overlap.end || (record.replacementWins && start === otherStart))
@@ -75,7 +99,7 @@ export function calculateDistances(
             else if (record.replacementWins && otherStart > start) excluded.add(overlap.start)
           }
       }
-    const calculated = total(record.bikeId, record.ranges, excluded)
+    const calculated = total(record, record.ranges, excluded)
     const reason = conflicts.size ? `overlapping usage: ${[...conflicts].join('; ')}` : null
     return {
       label: record.label,

@@ -72,6 +72,7 @@ events:
     overall: 02:57:19
     run: 00:53:15
     swim: 00:41:08
+external: https://www.strava.com/athletes/aarnphm
 id: triathlon
 layout: triathlon
 maintenance:
@@ -87,21 +88,21 @@ maintenance:
     - - type: CeramicSpeed OSPW RS 5 Spoke
       - bikeId: b18037537
       - id: ceramicspeed
-      - distance: 2287.63
+      - distance: 2513.82
       - range:
           - end: null
             start: '2026-08-10'
   bottom bracket:
     - - type: FSA, T47 BBright for 24mm spindle
       - bikeId: b18037537
-      - distance: 3055.47
+      - distance: 3096.93
       - range:
           - end: '2026-10-08'
             start: '2026-05-16'
       - reason: upgrades to CeramicSpeed
     - - type: CeramicSpeed T47 BBright for Shimano
       - bikeId: b18037537
-      - distance: 562.80
+      - distance: 747.53
       - range:
           - end: null
             start: '2026-10-08'
@@ -167,11 +168,11 @@ maintenance:
       bikeId: b18037537
       chainring: carbonti
       cycles:
-        - distance: 0.00
+        - distance: 0
           end: null
           reasoning: waxed with cyclowax
           start: '2026-11-12'
-      distance: 1774.35
+      distance: 1978.36
       lubricant: UFO Wax Drip-On
       ospw: ceramicspeed
       range:
@@ -188,11 +189,11 @@ maintenance:
       bikeId: b18037537
       chainring: carbonti
       cycles:
-        - distance: 98.87
+        - distance: 121.05
           end: null
           reasoning: waxed with cyclowax
           start: '2026-11-12'
-      distance: 98.87
+      distance: 121.05
       lubricant: null
       ospw: ceramicspeed
       range:
@@ -217,22 +218,23 @@ maintenance:
     - - type: CarbonTi 54-40T
       - bikeId: b18037537
       - id: carbonti
-      - distance: 1873.22
+      - distance: 2099.41
       - range:
           - end: null
             reason: null
             start: '2026-08-26'
+  defaultVirtualRideBikeId: b18037537
   saddle:
     - - type: Prologo Nago R4 PAS Tirox Lightweight
       - bikeId: b18037537
-      - distance: 3055.47
+      - distance: 3096.93
       - range:
           - end: '2026-10-08'
             start: '2026-05-16'
       - reason: upgrades to Selle Italia SLR 3D Elite L3 145mm
     - - type: Selle Italia SLR 3D Elite L3 145mm
       - bikeId: b18037537
-      - distance: 502.71
+      - distance: 687.43
       - range:
           - end: null
             start: '2026-10-09'
@@ -318,7 +320,7 @@ maintenance:
           - reason: training to race tires
         - - type: Pirelli P Zero Race SL-R 700x28c
           - bikeId: b18037537
-          - distance: 1131.00
+          - distance: 1131
           - range:
               - end: '2026-08-10'
                 reason: punctures and big ruptures, but fixed
@@ -350,7 +352,7 @@ maintenance:
       tube:
         - - type: Pirelli P Zero TPU
           - bikeId: b18037537
-          - distance: 875.40
+          - distance: 875.4
           - range:
               - end: '2026-08-17'
                 reason: big punctures, but will be the backup now.
@@ -381,7 +383,7 @@ maintenance:
           - end: null
             start: '2026-10-05'
       - reason: null
-modified: 2026-11-14 23:35:23 GMT-05:00
+modified: 2026-11-16 09:25:40 GMT-05:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
@@ -2030,6 +2032,22 @@ location: Othership Adelaide
 htl: 7.7
 strava: 20991754340
 garmin: 25082079317
+```
+
+```tracking
+title: Lively Free Flow
+date: 2026-11-15
+time: 14:30
+duration: 75 mins
+activity: sauna
+temperature: 230F
+humidity: 11%
+cooldown: cold plunge
+lap-phases: hot sauna | break | cold plunge | break | hot sauna | break | cold plunge | break | hot sauna | break
+location: Othership Adelaide
+htl: 7.7
+strava: 21002391054
+garmin: 25091483008
 ```
 
 <!-- training plan start

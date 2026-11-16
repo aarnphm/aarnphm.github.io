@@ -8,6 +8,7 @@ export interface UsageRange {
 export interface DistanceRecord {
   label: string
   bikeId: string
+  includeVirtual: boolean
   target: UnknownRecord
   ranges: UsageRange[]
   group?: string
@@ -17,10 +18,10 @@ export interface DistanceRecord {
 
 export const lastDate = '9999-12-31'
 
-function bikeId(value: UnknownRecord): string {
-  if (typeof value.bikeId !== 'string' || !/^b\d+$/.test(value.bikeId))
+export function bikeId(value: unknown): string {
+  if (typeof value !== 'string' || !/^b\d+$/.test(value))
     throw new Error('Maintenance record requires a Strava bikeId (b followed by digits)')
-  return value.bikeId
+  return value
 }
 
 export function localDate(value: unknown): string {
@@ -71,7 +72,9 @@ function components(section: string, values: unknown, replacementWins = false): 
     const target = fields.find(field => Object.hasOwn(field, 'distance')) ?? fields[0]
     return {
       label: `${section}.${index + 1} ${String(value.type ?? '')}`.trimEnd(),
-      bikeId: bikeId(value),
+      bikeId: bikeId(value.bikeId),
+      // The Cog setup uses the drivetrain and saddle; wheels and brakes stay stationary.
+      includeVirtual: ['OSPW', 'bottom bracket', 'chainrings', 'saddle'].includes(section),
       target,
       ranges: ranges(value),
       group: section,
@@ -85,7 +88,7 @@ function chains(values: unknown): DistanceRecord[] {
   const result: DistanceRecord[] = []
   for (const [id, chain] of Object.entries(values)) {
     if (!isRecord(chain)) throw new Error(`Invalid maintenance chain ${id}`)
-    const chainBikeId = bikeId(chain)
+    const chainBikeId = bikeId(chain.bikeId)
     const since = localDate(chain.since)
     const cycles: UnknownRecord[] = []
     if (chain.cycles !== undefined) {
@@ -112,6 +115,7 @@ function chains(values: unknown): DistanceRecord[] {
     result.push({
       label: `chain.${id}`,
       bikeId: chainBikeId,
+      includeVirtual: true,
       target: chain,
       ranges: usage,
       group: 'chain',
@@ -120,6 +124,7 @@ function chains(values: unknown): DistanceRecord[] {
       result.push({
         label: `chain.${id}.cycle.${index + 1}`,
         bikeId: chainBikeId,
+        includeVirtual: true,
         target: cycle,
         ranges: usage.flatMap(period => {
           const overlap = intersection(period, intervals[index])
@@ -155,7 +160,7 @@ export function distanceRecords(maintenance: UnknownRecord): DistanceRecord[] {
       if (!Array.isArray(services) || !services.every(isRecord))
         throw new Error(`Invalid maintenance services for ${bike}`)
       for (const service of services) {
-        const serviceBikeId = bikeId(service)
+        const serviceBikeId = bikeId(service.bikeId)
         const firstUsage = records
           .filter(record => record.bikeId === serviceBikeId)
           .flatMap(record => record.ranges.map(period => period.start))
@@ -166,6 +171,7 @@ export function distanceRecords(maintenance: UnknownRecord): DistanceRecord[] {
         records.push({
           label: `service.${bike}.${end}`,
           bikeId: serviceBikeId,
+          includeVirtual: true,
           target: service,
           ranges: [{ start: firstUsage, end }],
         })

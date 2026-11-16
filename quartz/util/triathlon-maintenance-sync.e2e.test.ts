@@ -167,17 +167,23 @@ test('sync refresh recalculates every maintenance category and preserves chain r
       ride(22, '2026-11-12', 100, 'Ride', null),
       { ...ride(23, '2026-11-12', 100), gearId: undefined },
       ride(24, '2026-11-12', 100, 'Ride', 'b999'),
+      ride(25, '2026-11-11', 50, 'VirtualRide', 'b18595115'),
+      ride(26, '2026-11-12', 60, 'VirtualRide', 'b18595115'),
+      ride(27, '2026-11-12', 100, 'VirtualRide', null),
+      { ...ride(28, '2026-11-12', 100, 'VirtualRide'), gearId: undefined },
+      ride(29, '2026-11-12', 100, 'VirtualRide', 'b999'),
     ]
     await saveRides(rides)
     const first = await refresh()
     const initial = normalized(first)
     assert.deepEqual(
       initial.components.map(component => component.distanceMiles),
-      componentNames.flatMap(() => [2, 1]),
+      [102, 1, 102, 1, 2, 1, 102, 1, 102, 1, 2, 1],
     )
     assert.equal(initial.chains.find(chain => chain.id === '4')?.distanceMiles, 1)
     assert.equal(initial.chains.find(chain => chain.id === '4')?.cycles?.[0].distanceMiles, 0)
-    assert.equal(initial.chains.find(chain => chain.id === '5')?.cycles?.[0].distanceMiles, 2)
+    assert.equal(initial.chains.find(chain => chain.id === '5')?.distanceMiles, 102)
+    assert.equal(initial.chains.find(chain => chain.id === '5')?.cycles?.[0].distanceMiles, 102)
     assert.equal(initial.wheels.find(wheel => wheel.type === 'old front')?.distanceMiles, 1)
     assert.equal(initial.wheels.find(wheel => wheel.type === 'new front')?.distanceMiles, 2)
     assert.equal(initial.wheels.find(wheel => wheel.type === 'old rear')?.distanceMiles, 1)
@@ -194,6 +200,24 @@ test('sync refresh recalculates every maintenance category and preserves chain r
     assert.ok(first.startsWith("---\ntitle: 'maintenance fixture' # preserve this comment\n"))
     assert.equal(await refresh(), first, 'repeated sync must be idempotent')
     snapshots.push({ stage: 'initial', maintenance: initial })
+
+    const virtualOverlapSource = first
+      .replace("end: '2026-11-12'", "end: '2026-11-14'")
+      .replace(
+        "          - range: [{ start: '2026-11-12', end: null }]",
+        "          - range: [{ start: '2026-11-13', end: null }]",
+      )
+    await writeFile(notePath, virtualOverlapSource)
+    await saveRides([ride(1, '2026-11-12', 2), ride(2, '2026-11-13', 3, 'VirtualRide')])
+    const virtualOverlap = normalized(await refresh())
+    assert.equal(virtualOverlap.wheels.find(wheel => wheel.type === 'old front')?.distanceMiles, 2)
+    assert.equal(virtualOverlap.wheels.find(wheel => wheel.type === 'new front')?.distanceMiles, 0)
+    assert.equal(virtualOverlap.chains.find(chain => chain.id === '5')?.distanceMiles, 5)
+    snapshots.push({
+      stage: 'virtual-only tire overlap stays unambiguous',
+      maintenance: virtualOverlap,
+    })
+    await saveRides(rides)
 
     const multiBikeSource = first
       .replace(
@@ -240,26 +264,67 @@ test('sync refresh recalculates every maintenance category and preserves chain r
       multiBike.components.find(component => component.type === 'current wheelset')?.distanceMiles,
       2,
     )
-    assert.equal(multiBike.chains.find(chain => chain.id === '6')?.distanceMiles, 70)
-    assert.equal(multiBike.chains.find(chain => chain.id === '6')?.cycles?.[0].distanceMiles, 70)
-    assert.equal(multiBike.chains.find(chain => chain.id === '5')?.cycles?.[0].distanceMiles, 2)
+    assert.equal(multiBike.chains.find(chain => chain.id === '6')?.distanceMiles, 180)
+    assert.equal(multiBike.chains.find(chain => chain.id === '6')?.cycles?.[0].distanceMiles, 180)
+    assert.equal(multiBike.chains.find(chain => chain.id === '5')?.cycles?.[0].distanceMiles, 102)
     assert.equal(multiBike.chains.find(chain => chain.id === '4')?.cycles?.[0].distanceMiles, 0)
     assert.equal(
       multiBike.wheels.find(wheel => wheel.type === 'Speedmax front tire')?.distanceMiles,
       70,
     )
     assert.equal(multiBike.wheels.find(wheel => wheel.type === 'new front')?.distanceMiles, 2)
-    assert.equal(multiBike.services.find(service => service.bike === 'speedmax')?.distanceMiles, 30)
+    assert.equal(multiBike.services.find(service => service.bike === 'speedmax')?.distanceMiles, 80)
     assert.equal(multiBike.services.find(service => service.bike === 'soloist')?.distanceMiles, 1)
     snapshots.push({ stage: 'separate Soloist and Speedmax histories', maintenance: multiBike })
 
+    const defaultSource = multiBikeSource.replace(
+      'maintenance:\n',
+      'maintenance:\n  defaultVirtualRideBikeId: b18037537\n',
+    )
+    await writeFile(notePath, defaultSource)
+    const defaulted = normalized(await refresh())
+    assert.equal(defaulted.chains.find(chain => chain.id === '5')?.distanceMiles, 302)
+    assert.equal(defaulted.chains.find(chain => chain.id === '5')?.cycles?.[0].distanceMiles, 302)
+    assert.equal(defaulted.chains.find(chain => chain.id === '6')?.distanceMiles, 180)
+    assert.equal(defaulted.wheels.find(wheel => wheel.type === 'new front')?.distanceMiles, 2)
+    assert.equal(
+      defaulted.components.find(component => component.type === 'current brake pads')
+        ?.distanceMiles,
+      2,
+    )
+    snapshots.push({
+      stage: 'unassigned virtual rides default to Soloist; explicit bikes win',
+      maintenance: defaulted,
+    })
+
+    await saveRides(
+      rides.map(activity => (activity.id === 27 ? { ...activity, gearId: 'b18595115' } : activity)),
+    )
+    const explicit = normalized(await refresh())
+    assert.equal(explicit.chains.find(chain => chain.id === '5')?.distanceMiles, 202)
+    assert.equal(explicit.chains.find(chain => chain.id === '6')?.distanceMiles, 280)
+    snapshots.push({
+      stage: 'later Strava assignment replaces the virtual default',
+      maintenance: explicit,
+    })
+
+    const invalidDefault = defaultSource.replace(
+      'defaultVirtualRideBikeId: b18037537',
+      'defaultVirtualRideBikeId: Soloist',
+    )
+    await writeFile(notePath, invalidDefault)
+    await assert.rejects(refresh(), /bikeId/i)
+    assert.equal(await readFile(notePath, 'utf8'), invalidDefault)
+    await writeFile(notePath, multiBikeSource)
+
     await saveRides([
-      ...rides.filter(activity => activity.id !== 2),
+      ...rides.filter(activity => activity.id !== 2 && activity.id !== 10),
       ride(2, '2026-11-12', 2, 'Ride', 'b18595115'),
+      ride(10, '2026-11-12', 100, 'VirtualRide', 'b18595115'),
     ])
     const reassigned = normalized(await refresh())
     assert.equal(reassigned.chains.find(chain => chain.id === '5')?.cycles?.[0].distanceMiles, 0)
-    assert.equal(reassigned.chains.find(chain => chain.id === '6')?.cycles?.[0].distanceMiles, 72)
+    assert.equal(reassigned.chains.find(chain => chain.id === '6')?.cycles?.[0].distanceMiles, 282)
     snapshots.push({ stage: 'ride reassigned to another bike', maintenance: reassigned })
     const unscoped = first.replace('      - bikeId: b18037537\n', '')
     await writeFile(notePath, unscoped)
@@ -273,12 +338,13 @@ test('sync refresh recalculates every maintenance category and preserves chain r
 
     await saveRides([...rides, ride(3, '2026-11-13', 3)])
     const added = normalized(await refresh())
-    assert.ok(
+    assert.deepEqual(
       added.components
         .filter(component => component.type.startsWith('current'))
-        .every(component => component.distanceMiles === 5),
+        .map(component => component.distanceMiles),
+      [105, 105, 5, 105, 105, 5],
     )
-    assert.equal(added.chains.find(chain => chain.id === '5')?.cycles?.[0].distanceMiles, 5)
+    assert.equal(added.chains.find(chain => chain.id === '5')?.cycles?.[0].distanceMiles, 105)
     assert.equal(added.chains.find(chain => chain.id === '4')?.cycles?.[0].distanceMiles, 0)
     snapshots.push({ stage: 'new ride', maintenance: added })
 
@@ -305,7 +371,7 @@ test('sync refresh recalculates every maintenance category and preserves chain r
           "      range: [{ start: '2026-11-12', end: '2026-11-13' }]",
         ),
     )
-    await saveRides([rides[0], ride(2, '2026-11-12', 4), ride(4, '2026-11-14', 5)])
+    await saveRides([rides[0], ride(2, '2026-11-12', 4), ride(4, '2026-11-14', 5, 'VirtualRide')])
     const rotated = normalized(await refresh())
     assert.equal(rotated.chains.find(chain => chain.id === '4')?.distanceMiles, 6)
     assert.equal(rotated.chains.find(chain => chain.id === '4')?.cycles?.[0].distanceMiles, 5)
