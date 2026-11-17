@@ -12,13 +12,13 @@ test('the homepage summary reads its default raw cache without initializing anal
   const cacheDirectory = join(directory, 'quartz', '.quartz-cache')
   const syncedAt = Date.parse('2026-10-22T12:00:00Z')
   const cache: StravaRawCache = {
-    athleteId: 7,
+    athleteId: '7',
     auth: { refreshToken: '', obtainedAt: 0 },
     lastSync: syncedAt,
     lastActivityStart: 0,
     activities: {
       '1': {
-        id: 1,
+        id: '1',
         name: 'Evening run',
         sportType: 'Run',
         distance: 5000,
@@ -56,11 +56,11 @@ test('the homepage summary reads its default raw cache without initializing anal
     const result: unknown = JSON.parse(stdout)
     assert.deepEqual(result, {
       summary: {
-        athleteId: 7,
+        athleteId: '7',
         syncedAt,
         activities: [
           {
-            id: 1,
+            id: '1',
             kind: 'run',
             electric: false,
             name: 'Evening run',

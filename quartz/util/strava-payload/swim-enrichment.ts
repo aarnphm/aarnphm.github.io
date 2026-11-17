@@ -7,6 +7,7 @@ import type {
   SwimActivityInterval,
 } from '../../plugins/stores/strava'
 import { matchAppleSwims, matchAppleSwimTelemetry } from '../apple-swim-match'
+import { compareStravaIds } from '../strava-id'
 import { swimPaceSeconds, swimStrokeRate } from '../swim-metrics'
 import { buildSwimPowerEstimate, openWaterPowerIntervals } from '../swim-power'
 
@@ -329,5 +330,5 @@ export function enrichSwimMetrics(
       strokeRateSpm: detail.strokeRateSpm,
     })
   }
-  payload.swimTrend.sort((a, b) => a.start.localeCompare(b.start) || a.id - b.id)
+  payload.swimTrend.sort((a, b) => a.start.localeCompare(b.start) || compareStravaIds(a.id, b.id))
 }

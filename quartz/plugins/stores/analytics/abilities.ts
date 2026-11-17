@@ -1,6 +1,7 @@
 import type { BodyBlock } from './body-and-labs'
 import type { PowerCurveBlock } from './power-to-weight'
 import { WORLD_TOUR_POWER_REFERENCE } from '../../../util/cycling-ability-reference'
+import { compareStravaIds } from '../../../util/strava-id'
 import { SWIM_PACE_MAX_S_PER_100M, SWIM_PACE_MIN_S_PER_100M } from '../../../util/swim-metrics'
 import { round, SPORT_ORDER, type Sport, type StravaRawCache } from '../strava'
 import {
@@ -58,8 +59,8 @@ interface AbilityScope {
   body: BodyBlock
   thresholds: Map<Sport, ThresholdEstimate>
   today: string
-  swimMetrics: ReadonlyMap<number, SwimActivityMetrics>
-  runningDynamics: ReadonlyMap<number, RunningDynamicsMetrics>
+  swimMetrics: ReadonlyMap<string, SwimActivityMetrics>
+  runningDynamics: ReadonlyMap<string, RunningDynamicsMetrics>
   powerCurve: PowerCurveBlock
   ftp: number | null
 }
@@ -114,7 +115,7 @@ export function buildAbilities(scope: AbilityScope): AbilitiesBlock {
       ? Math.round(norm01(mean(hrv14), 20, 120) * 100)
       : null
 
-  const distOf = (id: number): number[] => cache.streams?.[String(id)]?.distance ?? []
+  const distOf = (id: string): number[] => cache.streams?.[String(id)]?.distance ?? []
   const peakRunSpeedOf = (x: Act): number | null => {
     const d = distOf(x.a.id)
     if (!oneHz(d.length, x.a.movingTime)) return null
@@ -327,7 +328,7 @@ export function buildAbilities(scope: AbilityScope): AbilitiesBlock {
         fourth: sport === 'swim' ? swimMetrics.get(x.a.id)?.paceSPer100m : null,
         fifth: sport === 'swim' ? swimMetrics.get(x.a.id)?.strokeRateSpm : cadValOf(sport, x.a),
       }))
-      .sort((p, q) => p.start.localeCompare(q.start) || p.id - q.id)
+      .sort((p, q) => p.start.localeCompare(q.start) || compareStravaIds(p.id, q.id))
     const sprintScoreOf = (v: number): number | null =>
       sport === 'swim' ? swimSpeedScoreOf(v) : Math.round(norm01(v, ...RUN_SPRINT_MS) * 100)
     const rdyArr = daily.map(d => d.readiness)

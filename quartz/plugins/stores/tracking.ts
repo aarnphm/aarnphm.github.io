@@ -1,3 +1,4 @@
+import { stravaId } from '../../util/strava-id'
 export interface TrackEntry {
   date: string
   weightLbs: number | null
@@ -15,7 +16,7 @@ export interface RaceEvent {
 
 export interface ManualFuelingEntry {
   date: string
-  activityId: number
+  activityId: string
   caloriesConsumed: number
 }
 
@@ -36,7 +37,7 @@ export interface StrengthExercise {
 
 export interface ManualStrengthEntry {
   date: string
-  activityId: number
+  activityId: string
   volumeKg: number | null
   totalSets: number | null
   totalReps: number | null
@@ -55,17 +56,17 @@ export interface ActivityMove {
 
 export interface ManualMovesEntry {
   date: string
-  activityId: number
+  activityId: string
   moves: ActivityMove[]
 }
 
 export interface TrainingExclusion {
   date: string
-  activityId: number
+  activityId: string
 }
 
 export interface ActivityTrackingEntry {
-  activityId: number
+  activityId: string
   garminActivityId: number | null
   wahooFitPath?: string
   power?: 'wahoo' | 'strava' | 'garmin'
@@ -88,8 +89,8 @@ const parseSaunaLocation = (value: string | undefined): SaunaLocation | null => 
 }
 
 export interface ManualSaunaEntry {
-  id: number
-  stravaActivityId: number | null
+  id: string
+  stravaActivityId: string | null
   garminActivityId: number | null
   title: string | null
   location?: SaunaLocation | null
@@ -212,8 +213,8 @@ const parseSaunaTemperatureC = (value: string): number | null => {
   return Math.round(celsius * 1_000) / 1_000
 }
 
-export const manualSaunaActivityId = (date: string, time: string): number =>
-  MANUAL_ACTIVITY_ID_OFFSET + Number(`${date.replaceAll('-', '')}${time.replace(':', '')}`)
+export const manualSaunaActivityId = (date: string, time: string): string =>
+  String(MANUAL_ACTIVITY_ID_OFFSET + Number(`${date.replaceAll('-', '')}${time.replace(':', '')}`))
 
 const parseOptionalActivityId = (value: string | undefined): number | null | undefined => {
   if (value == null || value === '') return null
@@ -222,9 +223,12 @@ const parseOptionalActivityId = (value: string | undefined): number | null | und
   return Number.isSafeInteger(activityId) && activityId > 0 ? activityId : undefined
 }
 
+const parseOptionalStravaId = (value: string | undefined): string | null | undefined =>
+  value == null || value === '' ? null : (stravaId(value) ?? undefined)
+
 const parseManualSauna = (body: Readonly<Record<string, string>>): ManualSaunaEntry | null => {
   if (body.activity?.toLowerCase() !== 'sauna') return null
-  const stravaActivityId = parseOptionalActivityId(body.strava)
+  const stravaActivityId = parseOptionalStravaId(body.strava)
   const garminActivityId = parseOptionalActivityId(body.garmin)
   const title = body.title?.trim() || null
   const date = body.date?.slice(0, 10)
@@ -308,7 +312,7 @@ export function parseTrackingBlock(
     else if (k === 'move') moveValues.push(v)
     else if (k) body[k] = v
   }
-  const linkedActivityId = parseOptionalActivityId(body.activity)
+  const linkedActivityId = parseOptionalStravaId(body.activity)
   const garminActivityId = parseOptionalActivityId(body.garmin)
   const wahooFitPath = body.wahoo == null ? null : parseWahooFitLink(body.wahoo)
   const computer = body.computer || undefined
@@ -361,13 +365,10 @@ export function parseTrackingBlock(
   const windDir = wind?.[3] ? wind[3].toUpperCase() : null
   const { race, event } = parseTrackingMeta(meta)
   const day = { date: date.slice(0, 10), weightLbs, weightKg, windKph, windDir, race, event }
-  const activityId = Number(body.activity)
+  const activityId = stravaId(body.activity)
   const caloriesConsumed = Number(body.fueling)
   const fueling =
-    Number.isSafeInteger(activityId) &&
-    activityId > 0 &&
-    Number.isFinite(caloriesConsumed) &&
-    caloriesConsumed >= 0
+    activityId !== null && Number.isFinite(caloriesConsumed) && caloriesConsumed >= 0
       ? { date: day.date, activityId, caloriesConsumed }
       : null
   const sauna = parseManualSauna(body)
@@ -384,7 +385,7 @@ export function parseTrackingBlock(
     (Number.isSafeInteger(totalReps) && totalReps >= 0) ||
     exercises.length > 0
   const strength =
-    hasStrengthData && Number.isSafeInteger(strengthActivityId) && strengthActivityId > 0
+    hasStrengthData && strengthActivityId !== null
       ? {
           date: day.date,
           activityId: strengthActivityId,
@@ -398,14 +399,12 @@ export function parseTrackingBlock(
     .map(parseActivityMove)
     .filter((move): move is ActivityMove => move != null)
   const moves =
-    parsedMoves.length > 0 && Number.isSafeInteger(activityId) && activityId > 0
+    parsedMoves.length > 0 && activityId !== null
       ? { date: day.date, activityId, moves: parsedMoves }
       : null
   const skipTraining = ['true', '1', 'yes'].includes(body.skiptraining?.toLowerCase() ?? '')
   const trainingExclusion =
-    skipTraining && Number.isSafeInteger(activityId) && activityId > 0
-      ? { date: day.date, activityId }
-      : null
+    skipTraining && activityId !== null ? { date: day.date, activityId } : null
   return { day, activity, fueling, strength, moves, sauna, trainingExclusion }
 }
 

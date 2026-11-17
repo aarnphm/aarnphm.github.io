@@ -5,6 +5,7 @@ import {
 } from '../../../../plugins/stores/strava'
 import { emptyWahooMetrics } from '../../../../plugins/stores/wahoo'
 import { STAMINA_LEDGER_OFFSET_METHOD } from '../../../../util/stamina-ledger'
+import { stravaId } from '../../../../util/strava-id'
 import { isRecord } from '../../../../util/type-guards'
 import {
   isCyclingIntensityTrace,
@@ -119,7 +120,8 @@ const isRouteTrace = (value: unknown): boolean =>
 export const isActivityDetail = (value: unknown): value is StravaActivityDetail => {
   if (
     !isRecord(value) ||
-    typeof value.id !== 'number' ||
+    typeof value.id !== 'string' ||
+    stravaId(value.id) === null ||
     !/^\d{4}-\d{2}-\d{2}$/.test(typeof value.date === 'string' ? value.date : '') ||
     !isActivityKind(value.sport) ||
     !(value.commute === undefined || typeof value.commute === 'boolean') ||

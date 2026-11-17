@@ -1,5 +1,6 @@
 import type { ActivityKind, GarminVerification, RawStravaActivity } from '../plugins/stores/strava'
 import type { WahooActivitySource } from '../plugins/stores/wahoo'
+import { stravaId } from './strava-id'
 import {
   isTrainingPeaksCalendarDay,
   type TrainingPeaksCalendar,
@@ -69,7 +70,7 @@ function positive(value: number | null | undefined): value is number {
 }
 
 function candidate(activity: TrainingPeaksLinkActivity): Candidate | null {
-  if (!Number.isSafeInteger(activity.id) || activity.id <= 0) return null
+  if (stravaId(activity.id) === null) return null
   const local = localStart(activity.startDateLocal)
   if (!local) return null
   const recordings: Recording[] = [
@@ -163,7 +164,7 @@ export function linkTrainingPeaksCalendarActivities(
   calendar: TrainingPeaksCalendar,
   activities: readonly TrainingPeaksLinkActivity[],
 ): TrainingPeaksCalendar {
-  const activityCounts = new Map<number, number>()
+  const activityCounts = new Map<string, number>()
   for (const activity of activities)
     activityCounts.set(activity.id, (activityCounts.get(activity.id) ?? 0) + 1)
   const byDate = new Map<string, Candidate[]>()
@@ -177,7 +178,7 @@ export function linkTrainingPeaksCalendarActivities(
   }
 
   const proposals = new Map<string, Proposal>()
-  const contenders = new Map<number, number>()
+  const contenders = new Map<string, number>()
   for (const workout of calendar.workouts) {
     if (workout.status !== 'completed') continue
     const referenced = sourceIds(workout.description)

@@ -7,7 +7,7 @@ import { MAX_ACCEL_MPS2, MAX_SPEED_WINDOW_S, round } from './stream-primitives'
 export interface PowerCurvePoint {
   s: number
   w: number
-  activityId?: number
+  activityId?: string
   activityDate?: string
 }
 
@@ -350,7 +350,7 @@ export function powerBestEfforts(
 }
 
 export interface PowerCurveSource {
-  activityId: number
+  activityId: string
   activityDate: string
   curve: PowerCurvePoint[]
 }

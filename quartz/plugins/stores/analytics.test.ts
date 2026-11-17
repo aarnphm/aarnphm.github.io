@@ -54,7 +54,7 @@ function activity(
   extra: Partial<RawStravaActivity> = {},
 ): RawStravaActivity {
   return {
-    id,
+    id: String(id),
     name: `${sportType} ${id}`,
     sportType,
     distance,
@@ -106,7 +106,7 @@ function fixtures(): {
   const runDay = iso(22)
   const swimDay = iso(24)
   const cache: StravaRawCache = {
-    athleteId: 123,
+    athleteId: '123',
     auth: { refreshToken: 'super-secret-token', obtainedAt: 0 },
     lastSync: Date.parse('2026-06-11T10:00:00Z'),
     lastActivityStart: 0,
@@ -155,7 +155,7 @@ function fixtures(): {
     uvCalibration: null,
     activities: {
       '1': {
-        activityId: 1,
+        activityId: '1',
         date: bikeDay,
         start: `${bikeDay}T12:00:00.000Z`,
         end: `${bikeDay}T12:26:00.000Z`,
@@ -211,7 +211,7 @@ function powerActivityCache(specs: readonly PowerActivitySpec[], today: string):
       maxWatts: 900,
     })
   return {
-    athleteId: 123,
+    athleteId: '123',
     auth: { refreshToken: 'power-to-weight-test', obtainedAt: 0 },
     lastSync: Date.parse(`${today}T12:00:00Z`),
     lastActivityStart: 0,
@@ -251,7 +251,7 @@ function powerDetail(
   })
   return {
     ...generated,
-    id,
+    id: String(id),
     date,
     start: `${date}T12:00:00Z`,
     sport: options.sport ?? 'bike',
@@ -434,16 +434,16 @@ test('activity summaries preserve virtual overrides and explicit treadmill evide
 
   assert.deepEqual(
     analytics.activities.filter(activity => activity.virtual).map(activity => activity.id),
-    [1, 2, 7],
+    ['1', '2', '7'],
   )
   assert.deepEqual(
     analytics.activities.filter(activity => activity.treadmill).map(activity => activity.id),
-    [3, 4],
+    ['3', '4'],
   )
   const withoutDetails = buildAnalytics(cache)
   assert.deepEqual(
     withoutDetails.activities.filter(activity => activity.virtual).map(activity => activity.id),
-    [1, 2],
+    ['1', '2'],
   )
 })
 
@@ -689,8 +689,8 @@ test('carries build-time power curves and ranks exact durations at the latest me
 
 test('emits separate power-curve FTP estimates without changing the configured FTP', () => {
   const { cache } = fixtures()
-  const recent = { s: 1200, w: 243, activityId: 101, activityDate: iso(15) }
-  const yearly = { s: 1200, w: 300, activityId: 102, activityDate: iso(10) }
+  const recent = { s: 1200, w: 243, activityId: '101', activityDate: iso(15) }
+  const yearly = { s: 1200, w: 300, activityId: '102', activityDate: iso(10) }
   const { powerCurve } = buildAnalytics(cache, {
     powerCurve: {
       sixWeeks: [recent],
@@ -816,7 +816,7 @@ test('power-to-weight rejects estimated power and non-bike details', () => {
     since: date,
   }).powerCurve.powerToWeight
 
-  assert.equal(trend.points[0].efforts[5]?.activityId, 21)
+  assert.equal(trend.points[0].efforts[5]?.activityId, '21')
   assert.equal(trend.points[0].efforts[5]?.watts, 400)
 })
 
@@ -915,9 +915,9 @@ test('power-to-weight selects same-day and per-duration winners independently', 
   }).powerCurve.powerToWeight
   const efforts = trend.points[0].efforts
 
-  assert.equal(efforts[5]?.activityId, 51)
-  assert.equal(efforts[60]?.activityId, 52)
-  assert.equal(efforts[300]?.activityId, 52)
+  assert.equal(efforts[5]?.activityId, '51')
+  assert.equal(efforts[60]?.activityId, '52')
+  assert.equal(efforts[300]?.activityId, '52')
   assert.equal(efforts[1200], null)
 })
 
@@ -932,7 +932,7 @@ test('power-to-weight carries winners for 42 days and expires them on day 43', (
 
   assert.equal(trend.points.length, 43)
   assert.equal(trend.points[41].date, iso(41))
-  assert.equal(trend.points[41].efforts[5]?.activityId, 61)
+  assert.equal(trend.points[41].efforts[5]?.activityId, '61')
   assert.equal(trend.points[42].date, day43)
   assert.equal(trend.points[42].efforts[5], null)
 })
@@ -950,7 +950,7 @@ test('volume improvement actions include CTL units', () => {
 test('heat block combines WeatherKit and Strava exposure, excludes swims, and decays after three days', () => {
   const streamCache: Record<string, StravaStreams> = {}
   const cache: StravaRawCache = {
-    athleteId: 123,
+    athleteId: '123',
     auth: { refreshToken: 'heat-test-token', obtainedAt: 0 },
     lastSync: Date.parse(`${iso(30)}T18:00:00Z`),
     lastActivityStart: 0,
@@ -973,7 +973,7 @@ test('heat block combines WeatherKit and Strava exposure, excludes swims, and de
     cache.activities[String(id)] = activity(id, offset % 2 ? 'Run' : 'Ride', date, 3600, 10000)
     streamCache[String(id)] = streams(10, 3)
     weather.activities[String(id)] = {
-      activityId: id,
+      activityId: String(id),
       date,
       start: `${date}T12:00:00.000Z`,
       end: `${date}T13:01:00.000Z`,
@@ -999,7 +999,7 @@ test('heat block combines WeatherKit and Strava exposure, excludes swims, and de
   cache.activities['129'] = activity(129, 'Ride', coolDate, 3600, 10000, { averageTemp: 35 })
   streamCache['129'] = streams(10, 3)
   weather.activities['129'] = {
-    activityId: 129,
+    activityId: '129',
     date: coolDate,
     start: `${coolDate}T12:00:00.000Z`,
     end: `${coolDate}T13:01:00.000Z`,
@@ -1033,9 +1033,9 @@ test('heat block combines WeatherKit and Strava exposure, excludes swims, and de
   assert.deepEqual(heat.sourceCounts, { core: 0, weatherkit: 15, strava: 1, 'manual-sauna': 0 })
   assert.equal(heat.activities.length, 16)
   assert.deepEqual(
-    heat.activities.find(activity => activity.id === 114),
+    heat.activities.find(activity => activity.id === '114'),
     {
-      id: 114,
+      id: '114',
       date: fallbackDate,
       startedAt: `${fallbackDate}T12:00:00Z`,
       sport: 'run',
@@ -1050,10 +1050,10 @@ test('heat block combines WeatherKit and Strava exposure, excludes swims, and de
       dose: 1,
     },
   )
-  assert.equal(heat.activities.find(activity => activity.id === 129)?.temperatureC, 20)
-  assert.equal(heat.activities.find(activity => activity.id === 129)?.hotMinutes, 0)
+  assert.equal(heat.activities.find(activity => activity.id === '129')?.temperatureC, 20)
+  assert.equal(heat.activities.find(activity => activity.id === '129')?.hotMinutes, 0)
   assert.equal(
-    heat.activities.some(activity => activity.id === 130),
+    heat.activities.some(activity => activity.id === '130'),
     false,
   )
   assert.equal(heat.series.find(day => day.date === fallbackDate)?.source, 'strava')
@@ -1065,7 +1065,7 @@ test('heat block uses CORE heat strain before WeatherKit ambient temperature', (
   const date = iso(20)
   const rideActivity = activity(201, 'Ride', date, 3600, 20_000)
   const cache: StravaRawCache = {
-    athleteId: 123,
+    athleteId: '123',
     auth: { refreshToken: 'core-heat-test-token', obtainedAt: 0 },
     lastSync: Date.parse(`${date}T18:00:00Z`),
     lastActivityStart: 0,
@@ -1080,7 +1080,7 @@ test('heat block uses CORE heat strain before WeatherKit ambient temperature', (
     uvCalibration: null,
     activities: {
       201: {
-        activityId: 201,
+        activityId: '201',
         date,
         start: `${date}T12:00:00.000Z`,
         end: `${date}T13:01:00.000Z`,
@@ -1138,7 +1138,7 @@ test('heat block uses CORE heat strain before WeatherKit ambient temperature', (
   assert.equal(heat.latestTemperatureC, 37.15)
   assert.equal(heat.heatMinutes14d, 30)
   assert.deepEqual(heat.activities[0], {
-    id: 201,
+    id: '201',
     date,
     startedAt: `${date}T12:00:00Z`,
     sport: 'bike',
@@ -1155,7 +1155,7 @@ test('heat block uses CORE heat strain before WeatherKit ambient temperature', (
   assert.equal(heat.series[0].source, 'core')
   assert.equal(heat.series[0].heatStrainIndex, 2.5)
   assert.deepEqual(analytics.distributions.activities[0], {
-    id: 201,
+    id: '201',
     date,
     startedAt: `${date}T12:00:00Z`,
     sport: 'bike',
@@ -1181,7 +1181,7 @@ test('heat block includes indoor CORE app and FIT recordings without GPS', () =>
   const date = iso(20)
   const rideActivity = activity(201, 'VirtualRide', date, 3600, 20_000, { averageTemp: 40 })
   const cache: StravaRawCache = {
-    athleteId: 123,
+    athleteId: '123',
     auth: { refreshToken: 'core-app-test-token', obtainedAt: 0 },
     lastSync: Date.parse(`${date}T18:00:00Z`),
     lastActivityStart: 0,
@@ -1261,7 +1261,7 @@ test('run heat prefers zero-valued Garmin FIT strain and fills missing skin from
   const date = iso(20)
   const runActivity = activity(201, 'Run', date, 3600, 10_000)
   const cache: StravaRawCache = {
-    athleteId: 123,
+    athleteId: '123',
     auth: { refreshToken: 'core-run-test-token', obtainedAt: 0 },
     lastSync: Date.parse(`${date}T18:00:00Z`),
     lastActivityStart: 0,
@@ -1331,7 +1331,7 @@ test('activity telemetry resolves sparse CORE app and FIT metrics independently'
   const date = iso(20)
   const rideActivity = activity(201, 'Ride', date, 3600, 20_000)
   const cache: StravaRawCache = {
-    athleteId: 123,
+    athleteId: '123',
     auth: { refreshToken: 'core-sparse-test-token', obtainedAt: 0 },
     lastSync: Date.parse(`${date}T18:00:00Z`),
     lastActivityStart: 0,
@@ -1755,7 +1755,7 @@ test('analytics and feed retain matched provider summaries and canonical cadence
   for (const { id, sport } of matches) {
     const activity = cache.activities[id]
     garmin.activities[id] = {
-      id,
+      id: String(id),
       sport,
       name: activity.name,
       startDate: activity.startDate,
@@ -1785,9 +1785,12 @@ test('analytics and feed retain matched provider summaries and canonical cadence
     since: '2026-05-12',
   })
   assert.equal(payload.details['2'].avgCadence, 86)
-  assert.equal(analytics.activities.find(activity => activity.id === 1)?.cadence, 86)
-  assert.equal(analytics.activities.find(activity => activity.id === 2)?.cadence, 86)
-  assert.equal(analytics.distributions.activities.find(activity => activity.id === 2)?.cadence, 172)
+  assert.equal(analytics.activities.find(activity => activity.id === '1')?.cadence, 86)
+  assert.equal(analytics.activities.find(activity => activity.id === '2')?.cadence, 86)
+  assert.equal(
+    analytics.distributions.activities.find(activity => activity.id === '2')?.cadence,
+    172,
+  )
   const run = analytics.engine.abilities.sports.find(sport => sport.sport === 'run')
   assert.equal(run?.axes.find(axis => axis.key === 'cadence')?.rawValue, 172)
   assert.equal(analytics.engine.cardio.efSeries.find(point => point.sport === 'bike')?.ef, 1.71)
@@ -1798,7 +1801,7 @@ test('analytics and feed retain matched provider summaries and canonical cadence
     .trim()
     .split('\n')
     .map(line => JSON.parse(line))
-  const bike = rows.find(row => isRecord(row) && row.kind === 'activity' && row.id === 1)
+  const bike = rows.find(row => isRecord(row) && row.kind === 'activity' && row.id === '1')
   assert.ok(isRecord(bike))
   assert.equal(bike.avgWatts, 250)
   assert.equal(bike.weightedWatts, 260)
@@ -1816,14 +1819,14 @@ test('analytics and feed retain matched provider summaries and canonical cadence
   cache.activities['1'].deviceWatts = false
   const zeroPayload = buildPayload(cache, null, garmin, '2026-05-12')
   const zeroAnalytics = buildAnalytics(cache, { activityDetails: zeroPayload.details })
-  assert.equal(zeroAnalytics.activities.find(activity => activity.id === 1)?.cadence, 0)
+  assert.equal(zeroAnalytics.activities.find(activity => activity.id === '1')?.cadence, 0)
   const zeroRows: unknown[] = buildDataFeed(cache, zeroAnalytics, {
     activityDetails: zeroPayload.details,
   })
     .trim()
     .split('\n')
     .map(line => JSON.parse(line))
-  const zeroBike = zeroRows.find(row => isRecord(row) && row.kind === 'activity' && row.id === 1)
+  const zeroBike = zeroRows.find(row => isRecord(row) && row.kind === 'activity' && row.id === '1')
   assert.ok(isRecord(zeroBike))
   assert.equal(zeroBike.avgWatts, 0)
   assert.equal(zeroBike.weightedWatts, 0)
@@ -1907,7 +1910,7 @@ test('pedaling evidence aggregates ride medians after per-side coverage checks',
     standingTimeS: null,
   })
   const bike = (id: string, date: string): GarminCache['activities'][string] => ({
-    id,
+    id: String(id),
     name: `Ride ${id}`,
     sport: 'bike',
     startDate: `${date}T12:00:00Z`,
@@ -2544,11 +2547,11 @@ test('suffer score flows into daily effort, activity summaries, and weekly total
   assert.equal(a.daily.find(d => d.date === iso(22))?.effort, 41)
   assert.equal(a.daily.find(d => d.date === iso(23))?.effort, 16)
   assert.equal(a.daily.find(d => d.date === iso(24))?.effort, 0)
-  assert.equal(a.activities.find(x => x.id === 1)?.effort, 96)
-  assert.equal(a.activities.find(x => x.id === 2)?.effort, 41)
-  assert.equal(a.activities.find(x => x.id === 3)?.effort, null)
-  assert.equal(a.activities.find(x => x.id === 4)?.effort, 8)
-  assert.equal(a.activities.find(x => x.id === 5)?.effort, 16)
+  assert.equal(a.activities.find(x => x.id === '1')?.effort, 96)
+  assert.equal(a.activities.find(x => x.id === '2')?.effort, 41)
+  assert.equal(a.activities.find(x => x.id === '3')?.effort, null)
+  assert.equal(a.activities.find(x => x.id === '4')?.effort, 8)
+  assert.equal(a.activities.find(x => x.id === '5')?.effort, 16)
   assert.equal(
     a.weekly.reduce((s, w) => s + w.effort, 0),
     161,
@@ -2600,9 +2603,9 @@ test('strength and yoga heart-rate load contributes to daily and weekly TSS', ()
 
   const analytics = buildAnalytics(cache, { oura, weights, activityDetails, since: '2026-05-12' })
 
-  assert.equal(analytics.activities.find(item => item.id === 4)?.load, 9.6)
-  assert.equal(analytics.activities.find(item => item.id === 5)?.load, 3.4)
-  assert.equal(analytics.activities.find(item => item.id === 6)?.load, 0)
+  assert.equal(analytics.activities.find(item => item.id === '4')?.load, 9.6)
+  assert.equal(analytics.activities.find(item => item.id === '5')?.load, 3.4)
+  assert.equal(analytics.activities.find(item => item.id === '6')?.load, 0)
   assert.equal(analytics.daily.find(day => day.date === strengthDay)?.load, 9.6)
   assert.equal(analytics.daily.find(day => day.date === yogaDay)?.load, 3.4)
   assert.equal(analytics.daily.find(day => day.date === missingHeartRateDay)?.load, 0)
@@ -2936,8 +2939,8 @@ test('swim radar uses separate same-day activity pace and stroke rate samples', 
   assert.equal(strokeRate?.score, 67)
   assert.equal(swim?.history.at(-1)?.climb, 76)
   assert.equal(swim?.history.at(-1)?.cadence, 67)
-  assert.deepEqual(a.activities.find(row => row.id === 3)?.strokes, firstStrokes)
-  assert.deepEqual(a.activities.find(row => row.id === 4)?.strokes, secondStrokes)
+  assert.deepEqual(a.activities.find(row => row.id === '3')?.strokes, firstStrokes)
+  assert.deepEqual(a.activities.find(row => row.id === '4')?.strokes, secondStrokes)
 })
 
 test('swim radar rejects invalid Apple metrics and falls back to Strava activity pace', () => {
@@ -2982,7 +2985,7 @@ test('data feed emits meta, ordered kinds, fixed fields, and explicit nulls', ()
     oura,
     weather,
     weights,
-    trainingExclusions: [{ date: iso(20), activityId: 1 }],
+    trainingExclusions: [{ date: iso(20), activityId: '1' }],
     zones: cache.zones,
   })
   assert.ok(feed.endsWith('\n'))
@@ -3029,13 +3032,13 @@ test('data feed emits meta, ordered kinds, fixed fields, and explicit nulls', ()
   assert.ok('swimKm' in week)
   assert.ok('bikeHours' in week)
   assert.ok('runHours' in week)
-  const ride = rows.find(r => r.kind === 'activity' && r.id === 1)
+  const ride = rows.find(r => r.kind === 'activity' && r.id === '1')
   assert.equal(ride?.windKph, 18)
   assert.equal(ride?.windDir, 'W')
   assert.equal(ride?.windGustKph, 29)
   assert.equal(ride?.ambientTemperatureC, 22)
   assert.equal(ride?.skipTraining, true)
-  const run = rows.find(r => r.kind === 'activity' && r.id === 2)
+  const run = rows.find(r => r.kind === 'activity' && r.id === '2')
   assert.equal(run?.skipTraining, false)
 })
 
@@ -3072,8 +3075,8 @@ test('data feed prefers Garmin run heart rate over Strava heart rate', () => {
     .trimEnd()
     .split('\n')
     .map(l => JSON.parse(l))
-  const runRow = rows.find(row => row.kind === 'activity' && row.id === 2)
-  const bikeRow = rows.find(row => row.kind === 'activity' && row.id === 1)
+  const runRow = rows.find(row => row.kind === 'activity' && row.id === '2')
+  const bikeRow = rows.find(row => row.kind === 'activity' && row.id === '1')
   assert.equal(runRow?.avgHr, 141)
   assert.equal(runRow?.maxHr, 169)
   assert.equal(bikeRow?.avgHr, 152)
@@ -3143,7 +3146,7 @@ test('manual sauna sessions appear in analytics and the data feed without enteri
     payload,
     [
       {
-        id: 8_202_606_061_830,
+        id: '8202606061830',
         stravaActivityId: null,
         garminActivityId: null,
         title: 'Untangle',
@@ -3166,7 +3169,7 @@ test('manual sauna sessions appear in analytics and the data feed without enteri
   })
   const summary = analytics.activities.find(activity => activity.sport === 'sauna')
   assert.deepEqual(summary, {
-    id: 8_202_606_061_830,
+    id: '8202606061830',
     date,
     sport: 'sauna',
     name: 'Untangle',
@@ -3205,7 +3208,7 @@ test('attached sauna activity replaces its raw Strava classification in analytic
   const date = iso(25)
   cache.activities['4'] = activity(4, 'Workout', date, 4_500, 0, { name: 'Sauna', sufferScore: 30 })
   weather.activities['4'] = {
-    activityId: 4,
+    activityId: '4',
     date,
     start: `${date}T22:30:00Z`,
     end: `${date}T23:45:00Z`,
@@ -3226,8 +3229,8 @@ test('attached sauna activity replaces its raw Strava classification in analytic
     payload,
     [
       {
-        id: 8_202_606_061_830,
-        stravaActivityId: 4,
+        id: '8202606061830',
+        stravaActivityId: '4',
         garminActivityId: null,
         title: 'Untangle',
         date,
@@ -3249,7 +3252,7 @@ test('attached sauna activity replaces its raw Strava classification in analytic
     activityDetails: payload.details,
     since: '2026-05-12',
   })
-  const matching = analytics.activities.filter(candidate => candidate.id === 4)
+  const matching = analytics.activities.filter(candidate => candidate.id === '4')
 
   assert.deepEqual(
     matching.map(candidate => candidate.sport),
@@ -3272,12 +3275,12 @@ test('attached sauna activity replaces its raw Strava classification in analytic
     .trimEnd()
     .split('\n')
     .map(line => JSON.parse(line))
-  assert.equal(rows.filter(row => row.kind === 'activity' && row.id === 4).length, 1)
-  assert.equal(rows.find(row => row.kind === 'activity' && row.id === 4)?.sport, 'sauna')
-  assert.equal(rows.find(row => row.kind === 'activity' && row.id === 4)?.ambientTemperatureC, 27)
-  assert.equal(rows.find(row => row.kind === 'activity' && row.id === 4)?.windKph, 10)
-  assert.equal(rows.find(row => row.kind === 'activity' && row.id === 4)?.windDir, 'NNW')
-  assert.equal(rows.find(row => row.kind === 'activity' && row.id === 4)?.windGustKph, 16)
+  assert.equal(rows.filter(row => row.kind === 'activity' && row.id === '4').length, 1)
+  assert.equal(rows.find(row => row.kind === 'activity' && row.id === '4')?.sport, 'sauna')
+  assert.equal(rows.find(row => row.kind === 'activity' && row.id === '4')?.ambientTemperatureC, 27)
+  assert.equal(rows.find(row => row.kind === 'activity' && row.id === '4')?.windKph, 10)
+  assert.equal(rows.find(row => row.kind === 'activity' && row.id === '4')?.windDir, 'NNW')
+  assert.equal(rows.find(row => row.kind === 'activity' && row.id === '4')?.windGustKph, 16)
   assert.equal(rows.find(row => row.kind === 'day' && row.date === date)?.sessions, 1)
 })
 
@@ -3349,7 +3352,7 @@ test('data feed emits selected scalar environment evidence without private analy
     .map(line => JSON.parse(line))
   const activityRow = rows.find(
     (row): row is Record<string, unknown> =>
-      isRecord(row) && row.kind === 'activity' && row.id === 1,
+      isRecord(row) && row.kind === 'activity' && row.id === '1',
   )
   assert.ok(activityRow)
   assert.equal(activityRow.deviceTemperatureC, 37)
@@ -3408,7 +3411,7 @@ test('historical effort mechanics and eCP use exact windows and only past anchor
   first.criticalPowerAnchors = [180, 420, 720].map((durationS, i) => ({
     durationS,
     meanPowerWatts: 240 + 10_000 / durationS,
-    activityId: 11,
+    activityId: '11',
     activityDate: firstDate,
     startElapsedS: i * 1000,
     endElapsedS: i * 1000 + durationS,
@@ -3416,7 +3419,7 @@ test('historical effort mechanics and eCP use exact windows and only past anchor
   }))
   later.criticalPowerAnchors = first.criticalPowerAnchors.map(anchor => ({
     ...anchor,
-    activityId: 12,
+    activityId: '12',
     activityDate: lastDate,
     meanPowerWatts: anchor.meanPowerWatts + 50,
   }))

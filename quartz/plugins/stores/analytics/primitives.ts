@@ -32,7 +32,7 @@ export interface MethodConstants {
 }
 
 export interface AnalyticsMeta {
-  athleteId: number
+  athleteId: string | null
   today: string
   windowFrom: string
   windowTo: string

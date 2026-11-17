@@ -103,17 +103,17 @@ test('curve history keeps activity links and excludes out-of-window or missing d
   assert.ok(estimate)
   const block = buildSwimPowerCurveBlock(
     [
-      { id: 1, date: '2026-09-29', swimPower: estimate },
-      { id: 2, date: '2026-01-02', swimPower: estimate },
-      { id: 3, date: '2025-12-31', swimPower: estimate },
-      { id: 4, date: '2026-09-30', swimPower: null },
-      { id: 5, date: '2026-10-03', swimPower: estimate },
+      { id: '1', date: '2026-09-29', swimPower: estimate },
+      { id: '2', date: '2026-01-02', swimPower: estimate },
+      { id: '3', date: '2025-12-31', swimPower: estimate },
+      { id: '4', date: '2026-09-30', swimPower: null },
+      { id: '5', date: '2026-10-03', swimPower: estimate },
     ],
     '2026-10-02',
   )
-  assert.equal(block.sixWeeks[0]?.activityId, 1)
+  assert.equal(block.sixWeeks[0]?.activityId, '1')
   assert.equal(block.sixWeeks[0]?.inputSource, 'apple')
-  assert.equal(block.year[0]?.activityId, 1)
+  assert.equal(block.year[0]?.activityId, '1')
   assert.equal(block.activityCount, 2)
   assert.equal(block.referencePaceSPer100m, 150)
 })

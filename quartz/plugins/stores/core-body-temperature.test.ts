@@ -26,7 +26,7 @@ const sample = (
 })
 
 const activity: RawStravaActivity = {
-  id: 1,
+  id: '1',
   name: 'Run',
   sportType: 'Run',
   distance: 10_000,

@@ -20,7 +20,7 @@ test('parses authored computer text with or without a provider attachment', () =
         `activity: 20220077128${attachment}\ncomputer:   Wahoo ELEMNT BOLT 3  `,
       )?.activity,
       {
-        activityId: 20220077128,
+        activityId: '20220077128',
         garminActivityId: attachment ? 24401552199 : null,
         computer: 'Wahoo ELEMNT BOLT 3',
         virtual: false,
@@ -67,7 +67,7 @@ test('parses a virtual Garmin attachment without a tracking date', () => {
     parseTrackingBlock(null, 'activity: 20037941355\ngarmin: 24239315396\nvirtual: true'),
     {
       day: null,
-      activity: { activityId: 20037941355, garminActivityId: 24239315396, virtual: true },
+      activity: { activityId: '20037941355', garminActivityId: 24239315396, virtual: true },
       fueling: null,
       strength: null,
       moves: null,
@@ -77,7 +77,7 @@ test('parses a virtual Garmin attachment without a tracking date', () => {
   )
   assert.deepEqual(
     parseTrackingBlock(null, 'activity: 20037941355\ngarmin: 24239315396')?.activity,
-    { activityId: 20037941355, garminActivityId: 24239315396, virtual: false },
+    { activityId: '20037941355', garminActivityId: 24239315396, virtual: false },
   )
   assert.equal(
     parseTrackingBlock(null, 'activity: 20037941355\nvirtual: false')?.activity?.virtual,
@@ -93,7 +93,7 @@ test('parses a virtual Garmin attachment without a tracking date', () => {
 })
 
 test('rejects malformed virtual activity links without inventing a day', () => {
-  for (const activity of ['0', '-1', '20037941355.5', '1e3', '9007199254740992', ''])
+  for (const activity of ['0', '-1', '20037941355.5', '1e3', '01', ''])
     assert.equal(
       parseTrackingBlock(null, `activity: ${activity}\ngarmin: 24239315396\nvirtual: true`),
       null,
@@ -123,7 +123,7 @@ test('parses manual fueling against a Strava activity ID', () => {
         race: false,
         event: null,
       },
-      fueling: { date: '2026-07-19', activityId: 19382727312, caloriesConsumed: 140 },
+      fueling: { date: '2026-07-19', activityId: '19382727312', caloriesConsumed: 140 },
       activity: null,
       strength: null,
       moves: null,
@@ -137,7 +137,7 @@ test('accepts explicit zero fueling and rejects missing IDs or negative values',
   assert.equal(parseTrackingBlock(null, 'date: 2026-07-19\nfueling: 140')?.fueling, null)
   assert.deepEqual(
     parseTrackingBlock(null, 'date: 2026-07-19\nactivity: 19382727312\nfueling: 0')?.fueling,
-    { date: '2026-07-19', activityId: 19382727312, caloriesConsumed: 0 },
+    { date: '2026-07-19', activityId: '19382727312', caloriesConsumed: 0 },
   )
   assert.equal(
     parseTrackingBlock(null, 'date: 2026-07-19\nactivity: 19382727312\nfueling: -1')?.fueling,
@@ -151,7 +151,7 @@ test('parses skipTraining against a Strava activity ID', () => {
       null,
       ['date: 2026-07-26', 'activity: 19476629599', 'skipTraining: true'].join('\n'),
     )?.trainingExclusion,
-    { date: '2026-07-26', activityId: 19476629599 },
+    { date: '2026-07-26', activityId: '19476629599' },
   )
   assert.equal(
     parseTrackingBlock(null, 'date: 2026-07-26\nskipTraining: true')?.trainingExclusion,
@@ -181,7 +181,7 @@ test('parses repeated strength exercises with aggregate and individual sets', ()
 
   assert.deepEqual(parsed?.strength, {
     date: '2026-08-06',
-    activityId: 19633452010,
+    activityId: '19633452010',
     volumeKg: 816.512,
     totalSets: 15,
     totalReps: 90,
@@ -232,7 +232,7 @@ test('parses repeated activity moves with exact per-side repetitions', () => {
 
   assert.deepEqual(parsed?.moves, {
     date: '2026-09-08',
-    activityId: 20093785889,
+    activityId: '20093785889',
     moves: [
       { name: 'Roll Eagle', sets: [{ repetitions: 4, perSide: true }] },
       { name: 'Roll Center', sets: [{ repetitions: 4, perSide: false }] },
@@ -269,7 +269,7 @@ test('parses a manual sauna session without treating its activity kind as a Stra
   )
 
   assert.deepEqual(parsed?.sauna, {
-    id: 8_202_608_231_830,
+    id: '8202608231830',
     stravaActivityId: null,
     garminActivityId: null,
     title: 'Untangle',
@@ -303,7 +303,7 @@ test('parses explicit sauna lap phases and rejects invalid phase labels', () => 
     [...body, 'lap-phases: Hot Sauna | Cold Plunge | hot sauna | break'].join('\n'),
   )
   assert.deepEqual(parsed?.sauna?.lapPhases, ['hot sauna', 'cold plunge', 'hot sauna', 'break'])
-  assert.equal(parsed?.sauna?.stravaActivityId, 20221226052)
+  assert.equal(parsed?.sauna?.stravaActivityId, '20221226052')
   assert.equal(parseTrackingBlock(null, body.join('\n'))?.sauna?.lapPhases, undefined)
   for (const phases of ['', 'hot sauna | swimming', 'hot sauna || break']) {
     assert.equal(
@@ -358,7 +358,7 @@ test('allows an omitted heat load and rejects incomplete sauna metadata', () => 
       ].join('\n'),
     )?.sauna,
     {
-      id: 8_202_608_201_530,
+      id: '8202608201530',
       stravaActivityId: null,
       garminActivityId: null,
       title: null,
@@ -404,7 +404,7 @@ test('parses sauna provider attachments and rejects invalid activity IDs', () =>
     null,
     [...body, 'strava: 20012367069', 'garmin: 24229638323'].join('\n'),
   )?.sauna
-  assert.equal(parsed?.stravaActivityId, 20_012_367_069)
+  assert.equal(parsed?.stravaActivityId, '20012367069')
   assert.equal(parsed?.garminActivityId, 24_229_638_323)
   assert.equal(parseTrackingBlock(null, [...body, 'strava: 20012367069.5'].join('\n'))?.sauna, null)
   assert.equal(parseTrackingBlock(null, [...body, 'garmin: 24229638323.5'].join('\n'))?.sauna, null)
@@ -427,7 +427,7 @@ test('parses sauna exercises against linked and standalone activity IDs', () => 
     'exercise: Single-Leg Glute Bridge to Abductor | 40s | 40s | 40s | 40s',
     'exercise: Invalid | unknown',
   ]
-  for (const stravaActivityId of [null, 20094989479]) {
+  for (const stravaActivityId of [null, '20094989479']) {
     const parsed = parseTrackingBlock(
       null,
       [...body, ...(stravaActivityId == null ? [] : [`strava: ${stravaActivityId}`])].join('\n'),

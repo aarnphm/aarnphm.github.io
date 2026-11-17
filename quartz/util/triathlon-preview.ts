@@ -1,6 +1,7 @@
 import type { ActivitySummary, DailyPoint } from '../plugins/stores/analytics'
 import type { ActivityKind, StravaActivityDetail } from '../plugins/stores/strava'
 import type { FullSlug } from './path'
+import { stravaId } from './strava-id'
 import { decodeActivityComparisonAnchor } from './triathlon-comparison'
 import {
   triathlonActivityAnchor,
@@ -35,7 +36,7 @@ const TRACE_MIN_EXTENT_M = 150
 const CALC_SHARE = /^calculator-\d+-[ap]-[im](?:-\d+){5}$/
 
 export interface TriathlonPreviewActivity {
-  id: number
+  id: string
   sport: ActivityKind
   name: string
   distanceKm: number
@@ -295,7 +296,7 @@ const positive = (value: number | null | undefined): number | null =>
 export function buildTriathlonPreview(input: {
   date: string
   details: readonly StravaActivityDetail[]
-  activities: ReadonlyMap<number, Pick<ActivitySummary, 'load'>>
+  activities: ReadonlyMap<string, Pick<ActivitySummary, 'load'>>
   daily: Pick<DailyPoint, 'load' | 'ctl' | 'atl' | 'tsb'> | null
   event: string | null
 }): TriathlonPreview {
@@ -343,7 +344,8 @@ const finiteOrNull = (value: unknown): value is number | null =>
 function isPreviewActivity(value: unknown): value is TriathlonPreviewActivity {
   return (
     isRecord(value) &&
-    typeof value.id === 'number' &&
+    typeof value.id === 'string' &&
+    stravaId(value.id) === value.id &&
     PREVIEW_KINDS.includes(value.sport as ActivityKind) &&
     typeof value.name === 'string' &&
     typeof value.distanceKm === 'number' &&

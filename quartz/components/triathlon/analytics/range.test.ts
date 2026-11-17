@@ -10,7 +10,7 @@ const fixture = (today = '2026-09-22', days = 90, inputs: AnalyticsInputs = {}) 
   const dates = Array.from({ length: days }, (_, index) => shiftIsoDay(today, index - days + 1))
   const lastSync = Date.parse(`${today}T20:00:00Z`)
   const cache: StravaRawCache = {
-    athleteId: 123,
+    athleteId: '123',
     auth: { refreshToken: 'fixture', obtainedAt: 0 },
     lastSync,
     lastActivityStart: lastSync,
@@ -18,7 +18,7 @@ const fixture = (today = '2026-09-22', days = 90, inputs: AnalyticsInputs = {}) 
       dates.map((date, index) => [
         String(index + 1),
         {
-          id: index + 1,
+          id: String(index + 1),
           name: `Run ${date}`,
           sportType: 'Run',
           distance: 5000,

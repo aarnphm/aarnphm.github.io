@@ -5,7 +5,7 @@ import { triText } from './triathlon-i18n'
 
 export const myWindsockLogoLink = <N>(
   f: Pick<TriNodeFactory<N>, 'el' | 'add'>,
-  activityId: number,
+  activityId: string,
   cls: string,
 ): N => {
   const link = f.el('a', cls, undefined, {

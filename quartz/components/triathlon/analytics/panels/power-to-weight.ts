@@ -3,12 +3,10 @@ import type {
   PowerToWeightDurationS,
   PowerToWeightEffort,
   PowerToWeightReference,
-  PowerToWeightTrendPoint,
 } from '../../../../plugins/stores/analytics'
-import type { PowerCurvePoint } from '../../../../plugins/stores/strava'
 import type { TriathlonContext } from '../../runtime/context'
 import { POWER_TO_WEIGHT_DURATIONS } from '../../../../plugins/stores/analytics'
-import { axisFrame, axisNumber, niceStep, type AxisXTick } from '../../../../util/triathlon-card'
+import { axisFrame, axisNumber } from '../../../../util/triathlon-card'
 import { syncPowerCurveActivityLink } from '../../activity/power-links'
 import { createDomFactory, el, setText, svg } from '../../runtime/dom'
 import { rafEvent, rectOf } from '../scrub-primitives'
@@ -20,137 +18,21 @@ import {
   markGlossDefinition,
   monthTicks,
 } from '../shared'
+import {
+  axisScale,
+  deconflictPowerToWeightMonthTicks,
+  durationFrom,
+  effortAt,
+  effortPowerPoint,
+  H,
+  powerToWeightDurationLabel,
+  restorePowerToWeightDurations,
+  seriesPath,
+  W,
+} from './power-to-weight/model'
+import { buildReferenceTable } from './power-to-weight/reference'
 
-const W = 100
-const H = 34
 const SELECTION_KEY = 'tri-power-weight-durations'
-
-export const restorePowerToWeightDurations = (
-  stored: unknown,
-  available: ReadonlySet<PowerToWeightDurationS>,
-): Set<PowerToWeightDurationS> => {
-  const selected = new Set(
-    POWER_TO_WEIGHT_DURATIONS.filter(
-      durationS => available.has(durationS) && Array.isArray(stored) && stored.includes(durationS),
-    ),
-  )
-  return selected.size > 0 ? selected : new Set(available)
-}
-
-export const powerToWeightDurationLabel = (durationS: PowerToWeightDurationS): string =>
-  durationS < 60 ? `${durationS}s` : `${durationS / 60}m`
-
-export const deconflictPowerToWeightMonthTicks = (ticks: AxisXTick[]): AxisXTick[] => {
-  if (ticks.length < 2 || ticks[1].pct - ticks[0].pct >= 5) return ticks
-  return ticks
-    .slice(1)
-    .map((tick, index) => (index === 0 ? { ...tick, cls: 'tri-cax-xt--first' } : tick))
-}
-
-const effortAt = (
-  point: PowerToWeightTrendPoint,
-  durationS: PowerToWeightDurationS,
-): PowerToWeightEffort | null => point.efforts[durationS]
-
-const effortPowerPoint = (effort: PowerToWeightEffort | null): PowerCurvePoint | null =>
-  effort == null
-    ? null
-    : {
-        s: effort.durationS,
-        w: effort.watts,
-        activityId: effort.activityId,
-        activityDate: effort.activityDate,
-      }
-
-const durationFrom = (value: string | undefined): PowerToWeightDurationS | null =>
-  POWER_TO_WEIGHT_DURATIONS.find(durationS => String(durationS) === value) ?? null
-
-const seriesPath = (
-  points: readonly PowerToWeightTrendPoint[],
-  durationS: PowerToWeightDurationS,
-  y: (value: number) => number,
-): string => {
-  let drawing = false
-  const commands: string[] = []
-  for (let index = 0; index < points.length; index++) {
-    const effort = effortAt(points[index], durationS)
-    if (effort == null) {
-      drawing = false
-      continue
-    }
-    const x = points.length === 1 ? W / 2 : (index / (points.length - 1)) * W
-    commands.push(`${drawing ? 'L' : 'M'} ${x.toFixed(2)} ${y(effort.wattsPerKg).toFixed(2)}`)
-    drawing = true
-  }
-  return commands.join(' ')
-}
-
-const observedMax = (
-  points: readonly PowerToWeightTrendPoint[],
-  active: ReadonlySet<PowerToWeightDurationS>,
-  references: readonly PowerToWeightReference[],
-): number => {
-  let maximum = 1
-  for (const point of points)
-    for (const durationS of active) {
-      const effort = effortAt(point, durationS)
-      if (effort != null) maximum = Math.max(maximum, effort.wattsPerKg)
-    }
-  for (const reference of references)
-    if (active.has(reference.durationS)) maximum = Math.max(maximum, reference.average)
-  return maximum
-}
-
-const axisScale = (
-  points: readonly PowerToWeightTrendPoint[],
-  active: ReadonlySet<PowerToWeightDurationS>,
-  references: readonly PowerToWeightReference[],
-): { domainMax: number; step: number; values: number[] } => {
-  const maximum = observedMax(points, active, references)
-  const step = niceStep(maximum, 4)
-  const domainMax = Math.ceil(maximum / step) * step
-  const values = Array.from(
-    { length: Math.round(domainMax / step) + 1 },
-    (_, index) => index * step,
-  )
-  return { domainMax, step, values }
-}
-
-const buildReferenceTable = (data: Analytics, context: TriathlonContext): HTMLElement | null => {
-  const trend = data.powerCurve.powerToWeight
-  if (trend.references.length === 0 || trend.ageGroup == null) return null
-  const wrap = el('div', 'tri-power-weight-reference')
-  const table = el('table', 'tri-power-weight-reference-table')
-  const caption = el('caption')
-  caption.append(
-    el('span', undefined, `circa Zwift (${trend.ageGroup.replace('–', '-')}) — `),
-    el('a', undefined, 'video', { href: trend.source.url, rel: 'noreferrer' }),
-  )
-  const head = el('thead')
-  const header = el('tr')
-  for (const label of [
-    context.formatter.text('duration'),
-    'P10',
-    context.formatter.text('average'),
-    'P90',
-  ])
-    header.appendChild(el('th', undefined, label, { scope: 'col' }))
-  head.appendChild(header)
-  const body = el('tbody')
-  for (const reference of trend.references) {
-    const row = el('tr')
-    row.append(
-      el('th', undefined, powerToWeightDurationLabel(reference.durationS), { scope: 'row' }),
-      el('td', undefined, reference.p10.toFixed(2)),
-      el('td', undefined, reference.average.toFixed(2)),
-      el('td', undefined, reference.p90.toFixed(2)),
-    )
-    body.appendChild(row)
-  }
-  table.append(caption, head, body)
-  wrap.appendChild(table)
-  return wrap
-}
 
 interface PowerToWeightView {
   element: HTMLElement
@@ -165,7 +47,7 @@ export const buildPowerToWeightTrend = (
   const block = el('section', 'tri-power-weight')
   const head = el('div', 'tri-power-weight-head')
   const heading = el('div', 'tri-power-weight-heading')
-  const sourceRideIds = new Set<number>()
+  const sourceRideIds = new Set<string>()
   for (const point of trend.points)
     for (const durationS of POWER_TO_WEIGHT_DURATIONS) {
       const effort = effortAt(point, durationS)
@@ -536,3 +418,8 @@ export const buildPowerToWeightTrend = (
     },
   }
 }
+export {
+  deconflictPowerToWeightMonthTicks,
+  powerToWeightDurationLabel,
+  restorePowerToWeightDurations,
+} from './power-to-weight/model'

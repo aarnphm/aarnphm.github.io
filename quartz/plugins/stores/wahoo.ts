@@ -165,7 +165,7 @@ export interface WahooTitleStravaCache {
 }
 
 export interface WahooTitleUpdate {
-  stravaId: number
+  stravaId: string
   wahooId: string
   wahooWorkoutId: number
   from: string

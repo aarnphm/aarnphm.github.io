@@ -15,6 +15,7 @@ import type {
   TrainingPeaksCalendarCoverage,
   TrainingPeaksCalendar,
 } from './trainingpeaks-calendar-types'
+import { stravaId } from './strava-id'
 import { isRecord } from './type-guards'
 
 export type {
@@ -83,9 +84,8 @@ function sport(value: unknown): value is TrainingPeaksCalendarSport {
 function activityLink(value: unknown): value is TrainingPeaksCalendarActivityLink {
   return (
     isRecord(value) &&
-    typeof value.id === 'number' &&
-    Number.isSafeInteger(value.id) &&
-    value.id > 0 &&
+    typeof value.id === 'string' &&
+    stravaId(value.id) !== null &&
     isTrainingPeaksCalendarDay(value.date) &&
     typeof value.title === 'string' &&
     (value.match === 'source-id' || value.match === 'recording') &&
@@ -334,6 +334,19 @@ export function emptyTrainingPeaksCalendar(): TrainingPeaksCalendar {
 }
 
 export function parseTrainingPeaksCalendar(value: unknown): TrainingPeaksCalendar | null {
+  // Convert safe legacy links before validating the canonical public calendar contract.
+  if (isRecord(value) && Array.isArray(value.workouts))
+    value = {
+      ...value,
+      workouts: value.workouts.map(item =>
+        isRecord(item) && isRecord(item.activity)
+          ? {
+              ...item,
+              activity: { ...item.activity, id: stravaId(item.activity.id) ?? item.activity.id },
+            }
+          : item,
+      ),
+    }
   if (
     !isRecord(value) ||
     value.version !== 1 ||

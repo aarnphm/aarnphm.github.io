@@ -25,7 +25,7 @@ const mapActivity = (id: number, sportType: string, mapRoute: StravaMapPoint[][]
   const start = '2026-09-04T12:00:00Z'
   const payload = buildPayload(
     {
-      athleteId: 1,
+      athleteId: '1',
       auth: { refreshToken: '', obtainedAt: 0 },
       lastSync: Date.parse(start),
       lastActivityStart: Date.parse(start) / 1000,
@@ -66,7 +66,7 @@ test('Strava virtual ride tags exclude courses from overview bounds, visits, and
       { lat: 45.063, lng: 6.037, d: 1 },
     ],
   ])
-  const virtualLocal = { ...outdoor, id: 3, virtual: true, avgWatts: 900 }
+  const virtualLocal = { ...outdoor, id: '3', virtual: true, avgWatts: 900 }
   const overview = (details: Record<string, typeof outdoor>) =>
     buildOverview(DEFAULT_TRIATHLON_PRESENTATION, { details, health: {} }, new Set(['bike']))
 

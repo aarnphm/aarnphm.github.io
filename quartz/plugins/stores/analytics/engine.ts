@@ -106,9 +106,9 @@ export function buildEngine(
   today: string,
   garminVo2: GarminVo2Point[],
   appleVo2: { date: string; v: number }[],
-  heartRateById: Map<number, ActivityHeartRate>,
-  swimMetrics: ReadonlyMap<number, SwimActivityMetrics>,
-  runningDynamics: ReadonlyMap<number, RunningDynamicsMetrics>,
+  heartRateById: Map<string, ActivityHeartRate>,
+  swimMetrics: ReadonlyMap<string, SwimActivityMetrics>,
+  runningDynamics: ReadonlyMap<string, RunningDynamicsMetrics>,
   vo2Lab: Vo2LabRecord | null,
   ftpOverride: number | null,
   garmin: GarminCache | null | undefined,
@@ -123,7 +123,7 @@ export function buildEngine(
   const kgAt = new Map<string, number>()
   for (const d of daily) if (d.weightKg != null) kgAt.set(d.date, d.weightKg)
   const bikes = acts.filter(x => x.sport === 'bike')
-  const wattsOf = (id: number): number[] => cache.streams?.[String(id)]?.watts ?? []
+  const wattsOf = (id: string): number[] => cache.streams?.[String(id)]?.watts ?? []
 
   let p20: number | null = null
   let p20Day: string | null = null
@@ -368,7 +368,7 @@ export function buildEngine(
 }
 
 export function emptyAnalytics(
-  athleteId: number,
+  athleteId: string | null,
   today: string,
   garmin?: GarminCache | null,
 ): Analytics {

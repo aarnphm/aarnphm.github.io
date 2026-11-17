@@ -13,7 +13,7 @@ import { buildPayload, type RawStravaActivity, type StravaRawCache } from './str
 
 function strava(overrides: Partial<RawStravaActivity> = {}): RawStravaActivity {
   return {
-    id: 101,
+    id: '101',
     name: 'Morning ride',
     sportType: 'Ride',
     distance: 48_200,
@@ -252,7 +252,7 @@ test('backfills Strava detail streams from a matched Garmin activity', () => {
   const ride = strava({ averageHeartrate: undefined, maxHeartrate: undefined })
   const stravaCache: StravaRawCache = {
     version: 1,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse(ride.startDate) / 1000),
@@ -317,7 +317,7 @@ test('prefers Garmin heart rate for matched runs without using loose match for c
   })
   const stravaCache: StravaRawCache = {
     version: 1,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-01T13:00:00Z'),
     lastActivityStart: Math.floor(Date.parse(run.startDate) / 1000),
@@ -374,7 +374,7 @@ test('prefers Garmin heart rate for matched runs without using loose match for c
 
 test('matches strength to a sport-null Garmin entry and backfills calories', () => {
   const lift = strava({
-    id: 202,
+    id: '202',
     name: 'Legs & Core Strength',
     sportType: 'WeightTraining',
     distance: 0,
@@ -411,7 +411,7 @@ test('matches strength to a sport-null Garmin entry and backfills calories', () 
 
   const stravaCache: StravaRawCache = {
     version: 1,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-11T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse(lift.startDate) / 1000),

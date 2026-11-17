@@ -19,7 +19,7 @@ export interface MyWindsockRoute {
   source: 'provider-native'
   transport: 'browser-runtime'
   provider: 'mywindsock'
-  activityId: number
+  activityId: string
   capturedAt: string
   referenceWatts: number | null
   samples: MyWindsockRouteSample[]
@@ -409,7 +409,7 @@ export function projectMyWindsockRoute(record: MyWindsockArchive): MyWindsockRou
     source: 'provider-native',
     transport: 'browser-runtime',
     provider: 'mywindsock',
-    activityId: Number(record.activity.stravaId),
+    activityId: record.activity.stravaId,
     capturedAt: capture.capturedAt,
     referenceWatts: cost?.noWeather?.[0] ?? null,
     samples,

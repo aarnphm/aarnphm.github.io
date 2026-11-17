@@ -387,7 +387,7 @@ export function buildActions(
   return { weakest, actions }
 }
 
-export function emptyMeta(athleteId: number, today: string): AnalyticsMeta {
+export function emptyMeta(athleteId: string | null, today: string): AnalyticsMeta {
   return {
     athleteId,
     today,

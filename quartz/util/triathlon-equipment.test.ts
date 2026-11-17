@@ -4,7 +4,7 @@ import type { RawStravaActivity, StravaRawCache } from '../plugins/stores/strava
 import { buildTriathlonEquipment, formatEquipmentDistance } from './triathlon-equipment'
 
 const activity = (id: number, gearId: string | null, date: string): RawStravaActivity => ({
-  id,
+  id: String(id),
   gearId,
   name: 'Recorded activity',
   sportType: 'Ride',

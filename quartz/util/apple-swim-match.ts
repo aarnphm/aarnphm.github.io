@@ -1,7 +1,8 @@
 import type { AppleSwim } from '../plugins/stores/apple'
+import { compareStravaIds } from './strava-id'
 
 export interface SwimActivityCandidate {
-  id: number
+  id: string
   date: string
   start: string
   distanceM: number
@@ -22,7 +23,7 @@ const parsedTime = (value: string | null): number | null => {
 export function matchAppleSwims(
   swims: Iterable<AppleSwim>,
   activities: Iterable<SwimActivityCandidate>,
-): Map<number, AppleSwim> {
+): Map<string, AppleSwim> {
   const candidates = [...activities].filter(
     activity =>
       /^\d{4}-\d{2}-\d{2}$/.test(activity.date) &&
@@ -34,8 +35,8 @@ export function matchAppleSwims(
   const ordered = available
     .filter(swim => swim.start != null || !sessionDates.has(swim.date))
     .sort((a, b) => (a.start ?? a.date).localeCompare(b.start ?? b.date))
-  const used = new Set<number>()
-  const matches = new Map<number, AppleSwim>()
+  const used = new Set<string>()
+  const matches = new Map<string, AppleSwim>()
 
   for (const swim of ordered) {
     const sameDay = candidates.filter(
@@ -79,7 +80,7 @@ export function matchAppleSwims(
 export function matchAppleSwimTelemetry(
   swims: Iterable<AppleSwim>,
   activities: Iterable<SwimActivityCandidate>,
-): Map<number, AppleSwim> {
+): Map<string, AppleSwim> {
   const available = [...swims].filter(
     swim =>
       parsedTime(swim.start) != null &&
@@ -90,9 +91,11 @@ export function matchAppleSwimTelemetry(
   )
   const orderedActivities = [...activities]
     .filter(activity => parsedTime(activity.start) != null)
-    .sort((left, right) => left.start.localeCompare(right.start) || left.id - right.id)
+    .sort(
+      (left, right) => left.start.localeCompare(right.start) || compareStravaIds(left.id, right.id),
+    )
   const used = new Set<AppleSwim>()
-  const matches = new Map<number, AppleSwim>()
+  const matches = new Map<string, AppleSwim>()
 
   for (const activity of orderedActivities) {
     const activityTime = parsedTime(activity.start)

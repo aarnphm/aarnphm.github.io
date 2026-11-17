@@ -14,12 +14,12 @@ interface ActivitySummaryScope {
   inputs: AnalyticsInputs
   acts: Act[]
   sinceDay: string | null
-  saunaActivityIds: ReadonlySet<number>
+  saunaActivityIds: ReadonlySet<string>
   saunaDetails: StravaActivityDetail[]
-  supplementalLoadById: ReadonlyMap<number, number>
-  loadById: ReadonlyMap<number, number>
-  paceIntensityFactorById: ReadonlyMap<number, number>
-  swimMetrics: ReadonlyMap<number, SwimActivityMetrics>
+  supplementalLoadById: ReadonlyMap<string, number>
+  loadById: ReadonlyMap<string, number>
+  paceIntensityFactorById: ReadonlyMap<string, number>
+  swimMetrics: ReadonlyMap<string, SwimActivityMetrics>
 }
 
 export function buildActivitySummaries(scope: ActivitySummaryScope): ActivitySummary[] {

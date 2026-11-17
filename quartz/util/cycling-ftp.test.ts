@@ -3,7 +3,7 @@ import test from 'node:test'
 import { estimateFtpFromPowerCurve } from './cycling-ftp'
 
 test('estimates FTP from the observed 20-minute effort and retains its source ride', () => {
-  const anchor = { s: 1200, w: 243, activityId: 20188550065, activityDate: '2026-09-15' }
+  const anchor = { s: 1200, w: 243, activityId: '20188550065', activityDate: '2026-09-15' }
   assert.deepEqual(estimateFtpFromPowerCurve([{ s: 300, w: 400 }, anchor]), {
     watts: 231,
     method: '95%-20-minute-power',

@@ -1,80 +1,29 @@
+import type { WeatherActivity, WeatherRouteHour } from '../plugins/stores/weather'
 import type {
-  WeatherActivity,
-  WeatherAttribution,
-  WeatherRouteHour,
-} from '../plugins/stores/weather'
+  ActivityEnvironmentInput,
+  ActivityEnvironmentResult,
+  EnvironmentChartSample,
+  GardenEnvironmentCoverage,
+  GardenEnvironmentEstimate,
+  GardenEnvironmentSample,
+  GardenEstimateProvenance,
+  GardenUvDoseClocks,
+} from './activity-environment/model'
+import type { WindInterval } from './activity-environment/wind'
 import {
-  parseSurfaceCurrentEstimate,
-  type PublicSurfaceCurrentEstimate,
-  type SurfaceCurrentSample,
-} from './surface-current'
-
-export interface GardenEstimateProvenance {
-  source: 'garden-estimate'
-  formulaId: string
-  formulaVersion: 1
-  inputVersion: 'weatherkit-route-hour-v1+strava-stream-v1'
-  normalizationVersion: 1
-  computedAt: number
-  inputAsOf: number
-  temporalSamplingModel: 'weatherkit-hourly-piecewise-constant'
-  spatialSamplingModel: 'route-coordinate-nearest-hour-overlap-midpoint'
-}
-
-export interface GardenEnvironmentCoverage {
-  weatherPct: number
-  uvPct: number
-  temperaturePct: number
-  cloudPct: number
-  daylightPct: number
-  windPct?: number
-}
-
-export interface GardenEnvironmentSummary {
-  averageUvIndex: number | null
-  peakUvIndex: number | null
-  uviHours: number | null
-  ambientSed: number | null
-  averageAmbientTemperatureC: number | null
-  averageCloudCoverPct: number | null
-  averageWindSpeedKph?: number | null
-  daylightCoveragePct: number
-  weatherCoveragePct: number
-  coveredDurationS: number
-  elapsedDurationS: number
-}
-
-export interface GardenUvDoseClocks {
-  elapsedSed: number | null
-  movingTelemetrySed: number | null
-}
-
-export interface GardenEnvironmentSample {
-  elapsedS: number
-  distanceKm: number
-  uvIndex: number | null
-  cumulativeSed: number | null
-  cumulativeMovingTelemetrySed: number | null
-  ambientTemperatureC: number | null
-  cloudCoverPct: number | null
-  windSpeedKph?: number | null
-  headwindKph: number | null
-  crosswindKph: number | null
-  apparentAirSpeedKph: number | null
-  yawDeg: number | null
-}
-
-export interface EnvironmentChartSample extends Partial<
-  Omit<GardenEnvironmentSample, 'elapsedS' | 'distanceKm'>
-> {
-  elapsedS: number
-  surfaceCurrentSpeedMps?: number | null
-  surfaceCurrentDirectionDeg?: number | null
-  providerHeadwindKph?: number | null
-  providerCrosswindKph?: number | null
-  weatherCostW?: number | null
-  movingAirPenaltyKm?: number | null
-}
+  conditionAt,
+  percentage,
+  round,
+  routeLength,
+  validWindSpeedKph,
+} from './activity-environment/model'
+import {
+  cumulativeSedAt,
+  movingTelemetryDose,
+  sampleIndices,
+} from './activity-environment/sampling'
+import { summarizeWind, windIntervals } from './activity-environment/wind'
+import { parseSurfaceCurrentEstimate, type SurfaceCurrentSample } from './surface-current'
 
 export const surfaceCurrentChartSamples = (
   samples: readonly SurfaceCurrentSample[],
@@ -85,97 +34,11 @@ export const surfaceCurrentChartSamples = (
     surfaceCurrentDirectionDeg: sample.directionDeg,
   }))
 
-export interface GardenEnvironmentEstimate extends GardenEstimateProvenance {
-  formulaId: 'garden-environment-v1'
-  summary: GardenEnvironmentSummary
-  doseClocks: GardenUvDoseClocks
-  coverage: GardenEnvironmentCoverage
-  samples: GardenEnvironmentSample[]
-  attribution: WeatherAttribution | null
-  surfaceCurrent?: PublicSurfaceCurrentEstimate
-}
-
-export interface GardenApparentWindSummary {
-  headwindSharePct: number
-  headwindTimeS: number
-  tailwindTimeS: number
-  longestHeadwindS: number
-  // Signed route means cancel on loops (a closed route integrates uniform wind to zero),
-  // so the summary keeps the headwind mean over headwind time and the crosswind magnitude.
-  averageHeadwindWhileIntoKph: number
-  averageCrosswindMagnitudeKph: number
-  maximumHeadwindKph: number
-  maximumCrosswindKph: number
-  averageGroundSpeedKph: number
-  averageApparentAirSpeedKph: number
-  apparentAirRatio: number
-  averageYawDeg: number
-  coveragePct: number
-}
-
-export interface GardenApparentWindEstimate extends GardenEstimateProvenance {
-  formulaId: 'garden-apparent-wind-v3'
-  summary: GardenApparentWindSummary
-  coverage: { windPct: number }
-}
-
-export interface GardenUvScore extends GardenEstimateProvenance {
-  formulaId: 'garden-uv-score-v1'
-  score: number
-  severity: 'negligible' | 'low' | 'moderate' | 'high' | 'serious' | 'extreme'
-  doseClock: 'elapsed' | 'moving-telemetry'
-  doseSed: number
-  coefficientSed: number
-  calibrationVersion: 1
-}
-
-export interface ActivityEnvironmentInput {
-  activityId: number
-  elapsedTimeS: number
-  movingTimeS: number
-  timeS: readonly number[]
-  distanceM: readonly number[]
-  latlng: readonly [number, number][]
-  // GPS swims are open water: lower speeds and a smooth water surface below the swimmer.
-  openWater: boolean
-  weather: WeatherActivity
-  attribution: WeatherAttribution | null
-  computedAt: number
-}
-
-export interface ActivityEnvironmentResult {
-  environment: GardenEnvironmentEstimate | null
-  apparentWind: GardenApparentWindEstimate | null
-}
-
 interface MetricAggregate {
   coveredS: number
   weightedTotal: number
   peak: number | null
 }
-
-interface WindInterval {
-  startS: number
-  endS: number
-  durationS: number
-  groundSpeedKph: number
-  headwindKph: number
-  crosswindKph: number
-  apparentAirSpeedKph: number
-  yawDeg: number
-}
-
-const round = (value: number, digits = 2): number => {
-  const factor = 10 ** digits
-  const rounded = Math.round(value * factor) / factor
-  return Object.is(rounded, -0) ? 0 : rounded
-}
-
-const percentage = (coveredS: number, durationS: number): number =>
-  durationS > 0 ? round(Math.min(1, Math.max(0, coveredS / durationS)) * 100, 1) : 0
-
-const validWindSpeedKph = (value: number | null | undefined): number | null =>
-  value != null && Number.isFinite(value) && value >= 0 && value <= 1_000 ? value : null
 
 const validRouteHours = (weather: WeatherActivity, durationS: number): WeatherRouteHour[] =>
   (weather.routeHours ?? [])
@@ -210,338 +73,6 @@ const metricAggregate = (
     peak = Math.max(peak ?? metric, metric)
   }
   return { coveredS, weightedTotal, peak }
-}
-
-const conditionAt = (
-  hours: readonly WeatherRouteHour[],
-  elapsedS: number,
-): WeatherRouteHour | null =>
-  hours.find(
-    (hour, index) =>
-      elapsedS >= hour.elapsedStartS &&
-      (elapsedS < hour.elapsedEndS ||
-        (index === hours.length - 1 && elapsedS <= hour.elapsedEndS + 1)),
-  ) ?? null
-
-const cumulativeSedAt = (hours: readonly WeatherRouteHour[], elapsedS: number): number => {
-  let joules = 0
-  for (const hour of hours) {
-    if (hour.uvIndex == null || elapsedS <= hour.elapsedStartS) continue
-    const endS = Math.min(elapsedS, hour.elapsedEndS)
-    if (endS > hour.elapsedStartS) joules += hour.uvIndex * (endS - hour.elapsedStartS)
-  }
-  return round(joules / 4_000, 3)
-}
-
-// WeatherKit reports wind at the 10 m anemometer height. A neutral log profile gives
-// ln(z / z0) / ln(10 / z0). Riders and runners: drag near z = 1 m, suburban z0 = 0.4 m, 0.285;
-// myWindsock applies a fixed 0.2866, so source wind speed remains the main difference.
-// Swimmers: head and recovering arm near z = 0.2 m over open water, z0 = 0.0002 m, 0.638.
-const LAND_WIND_FACTOR = Math.log(1 / 0.4) / Math.log(10 / 0.4)
-const WATER_WIND_FACTOR = Math.log(0.2 / 0.0002) / Math.log(10 / 0.0002)
-
-// Excludes stops, where the course bearing is undefined. 1 m/s keeps running and walking pace;
-// open-water swims move at 0.5-0.6 m/s, so they use a lower floor.
-const MINIMUM_GROUND_SPEED_MPS = 1
-const MINIMUM_SWIM_SPEED_MPS = 0.3
-// Headwind sections follow the 60 s centred mean of the along-track component, and continue
-// across stops up to the bridge. This reproduces myWindsock's longest headwind within 4% on
-// four of six captured activities; strict one-second runs were 2-3x shorter.
-const HEADWIND_SMOOTHING_S = 60
-const HEADWIND_BRIDGE_S = 120
-
-const radians = (degrees: number): number => (degrees * Math.PI) / 180
-
-const degrees = (radiansValue: number): number => (radiansValue * 180) / Math.PI
-
-const haversineMeters = (left: [number, number], right: [number, number]): number => {
-  const earthRadiusM = 6_371_000
-  const deltaLatitude = radians(right[0] - left[0])
-  const deltaLongitude = radians(right[1] - left[1])
-  const latitudeA = radians(left[0])
-  const latitudeB = radians(right[0])
-  const a =
-    Math.sin(deltaLatitude / 2) ** 2 +
-    Math.cos(latitudeA) * Math.cos(latitudeB) * Math.sin(deltaLongitude / 2) ** 2
-  return earthRadiusM * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-}
-
-const bearingDegrees = (left: [number, number], right: [number, number]): number => {
-  const latitudeA = radians(left[0])
-  const latitudeB = radians(right[0])
-  const deltaLongitude = radians(right[1] - left[1])
-  const y = Math.sin(deltaLongitude) * Math.cos(latitudeB)
-  const x =
-    Math.cos(latitudeA) * Math.sin(latitudeB) -
-    Math.sin(latitudeA) * Math.cos(latitudeB) * Math.cos(deltaLongitude)
-  return (degrees(Math.atan2(y, x)) + 360) % 360
-}
-
-const routeLength = (input: ActivityEnvironmentInput): number =>
-  Math.min(input.timeS.length, input.distanceM.length, input.latlng.length)
-
-const windIntervals = (
-  input: ActivityEnvironmentInput,
-  hours: readonly WeatherRouteHour[],
-): { intervals: (WindInterval | null)[]; validDurationS: number } => {
-  const length = routeLength(input)
-  const intervals: (WindInterval | null)[] = Array.from({ length }, () => null)
-  let validDurationS = 0
-  const minimumSpeedMps = input.openWater ? MINIMUM_SWIM_SPEED_MPS : MINIMUM_GROUND_SPEED_MPS
-  const windFactor = input.openWater ? WATER_WIND_FACTOR : LAND_WIND_FACTOR
-  for (let index = 1; index < length; index += 1) {
-    const startS = input.timeS[index - 1]
-    const endS = input.timeS[index]
-    const durationS = endS - startS
-    const distanceDeltaM = input.distanceM[index] - input.distanceM[index - 1]
-    if (
-      !Number.isFinite(startS) ||
-      !Number.isFinite(endS) ||
-      !Number.isFinite(distanceDeltaM) ||
-      durationS <= 0 ||
-      durationS > 30 ||
-      distanceDeltaM <= 0
-    )
-      continue
-    const groundSpeedMps = distanceDeltaM / durationS
-    if (groundSpeedMps < minimumSpeedMps) continue
-    const gpsDistanceM = haversineMeters(input.latlng[index - 1], input.latlng[index])
-    if (gpsDistanceM > Math.max(250, distanceDeltaM * 3 + 50)) continue
-    const weather = conditionAt(hours, startS + durationS / 2)
-    const windSpeedKph = validWindSpeedKph(weather?.windSpeedKph)
-    if (windSpeedKph == null || weather?.windDirectionDeg == null) continue
-    const windSpeedMps = (windSpeedKph / 3.6) * windFactor
-    const courseBearing = bearingDegrees(input.latlng[index - 1], input.latlng[index])
-    const relativeBearing = radians(weather.windDirectionDeg - courseBearing)
-    const headwindMps = windSpeedMps * Math.cos(relativeBearing)
-    const crosswindMps = windSpeedMps * Math.sin(relativeBearing)
-    const apparentMps = Math.hypot(groundSpeedMps + headwindMps, crosswindMps)
-    const yawDeg = degrees(Math.atan2(crosswindMps, groundSpeedMps + headwindMps))
-    intervals[index] = {
-      startS,
-      endS,
-      durationS,
-      groundSpeedKph: groundSpeedMps * 3.6,
-      headwindKph: headwindMps * 3.6,
-      crosswindKph: crosswindMps * 3.6,
-      apparentAirSpeedKph: apparentMps * 3.6,
-      yawDeg,
-    }
-    validDurationS += durationS
-  }
-  return { intervals, validDurationS }
-}
-
-interface MovingTelemetryDose {
-  totalSed: number | null
-  cumulativeSed: (number | null)[]
-}
-
-const uvSecondsForInterval = (
-  hours: readonly WeatherRouteHour[],
-  startS: number,
-  endS: number,
-): number | null => {
-  let coveredUntilS = startS
-  let weightedUvSeconds = 0
-  for (const hour of hours) {
-    if (hour.elapsedEndS <= coveredUntilS || hour.elapsedStartS >= endS) continue
-    if (hour.elapsedStartS - coveredUntilS > 1 || hour.uvIndex == null) return null
-    const overlapStartS = Math.max(coveredUntilS, startS, hour.elapsedStartS)
-    const overlapEndS = Math.min(endS, hour.elapsedEndS)
-    if (overlapEndS <= overlapStartS) continue
-    weightedUvSeconds += hour.uvIndex * (overlapEndS - overlapStartS)
-    coveredUntilS = overlapEndS
-    if (endS - coveredUntilS <= 1) break
-  }
-  return endS - coveredUntilS <= 1 ? weightedUvSeconds : null
-}
-
-const movingTelemetryDose = (
-  input: ActivityEnvironmentInput,
-  hours: readonly WeatherRouteHour[],
-): MovingTelemetryDose => {
-  const length = routeLength(input)
-  const cumulativeUvSeconds = Array.from({ length }, () => 0)
-  let observedMovingS = 0
-  let weightedUvSeconds = 0
-  for (let index = 1; index < length; index += 1) {
-    const startS = input.timeS[index - 1]
-    const endS = input.timeS[index]
-    const durationS = endS - startS
-    const distanceDeltaM = input.distanceM[index] - input.distanceM[index - 1]
-    if (
-      !Number.isFinite(startS) ||
-      !Number.isFinite(endS) ||
-      !Number.isFinite(distanceDeltaM) ||
-      durationS <= 0 ||
-      distanceDeltaM <= 0
-    ) {
-      cumulativeUvSeconds[index] = weightedUvSeconds
-      continue
-    }
-    const intervalUvSeconds = uvSecondsForInterval(hours, startS, endS)
-    if (intervalUvSeconds == null)
-      return { totalSed: null, cumulativeSed: Array.from({ length }, () => null) }
-    observedMovingS += durationS
-    weightedUvSeconds += intervalUvSeconds
-    cumulativeUvSeconds[index] = weightedUvSeconds
-  }
-  if (observedMovingS <= 0 || input.movingTimeS <= 0)
-    return { totalSed: null, cumulativeSed: Array.from({ length }, () => null) }
-  const normalization = input.movingTimeS / observedMovingS / 4_000
-  return {
-    totalSed: round(weightedUvSeconds * normalization, 3),
-    cumulativeSed: cumulativeUvSeconds.map(value => round(value * normalization, 3)),
-  }
-}
-
-const nearestRouteIndex = (timeS: readonly number[], length: number, targetS: number): number => {
-  let closest = 0
-  let closestDistance = Number.POSITIVE_INFINITY
-  for (let index = 0; index < length; index += 1) {
-    const distance = Math.abs(timeS[index] - targetS)
-    if (distance >= closestDistance) continue
-    closest = index
-    closestDistance = distance
-  }
-  return closest
-}
-
-const sampleIndices = (
-  input: ActivityEnvironmentInput,
-  hours: readonly WeatherRouteHour[],
-  wind: readonly (WindInterval | null)[],
-  maximum: number,
-): number[] => {
-  const length = routeLength(input)
-  if (length === 0) return []
-  const required = new Set([0, length - 1])
-  for (const [hourIndex, hour] of hours.entries()) {
-    required.add(nearestRouteIndex(input.timeS, length, hour.elapsedStartS))
-    required.add(nearestRouteIndex(input.timeS, length, hour.elapsedEndS))
-    const next = hours[hourIndex + 1]
-    if (next && next.elapsedStartS - hour.elapsedEndS > 1)
-      required.add(
-        nearestRouteIndex(
-          input.timeS,
-          length,
-          hour.elapsedEndS + (next.elapsedStartS - hour.elapsedEndS) / 2,
-        ),
-      )
-  }
-  for (let index = 1; index < wind.length; index += 1) {
-    if ((wind[index - 1] == null) === (wind[index] == null)) continue
-    required.add(index - 1)
-    required.add(index)
-  }
-  const essential = [...required].sort((left, right) => left - right)
-  if (essential.length >= maximum) {
-    const selected = new Set([essential[0], essential.at(-1) ?? essential[0]])
-    for (let slot = 1; slot < maximum - 1; slot += 1)
-      selected.add(essential[Math.round((slot / (maximum - 1)) * (essential.length - 1))])
-    return [...selected].sort((left, right) => left - right)
-  }
-  const budget = Math.max(0, maximum - required.size)
-  const stride = budget > 0 ? Math.max(1, Math.ceil(length / budget)) : length
-  for (let index = 0; index < length; index += stride) required.add(index)
-  return [...required].sort((left, right) => left - right)
-}
-
-const longestHeadwindSection = (valid: readonly WindInterval[]): number => {
-  let longestS = 0
-  let sectionStartS: number | null = null
-  let previousEndS: number | null = null
-  let low = 0
-  let high = 0
-  let weightedHeadwind = 0
-  let weightS = 0
-  for (const interval of valid) {
-    const middleS = (interval.startS + interval.endS) / 2
-    while (
-      high < valid.length &&
-      (valid[high].startS + valid[high].endS) / 2 <= middleS + HEADWIND_SMOOTHING_S / 2
-    ) {
-      weightedHeadwind += valid[high].headwindKph * valid[high].durationS
-      weightS += valid[high].durationS
-      high += 1
-    }
-    while ((valid[low].startS + valid[low].endS) / 2 < middleS - HEADWIND_SMOOTHING_S / 2) {
-      weightedHeadwind -= valid[low].headwindKph * valid[low].durationS
-      weightS -= valid[low].durationS
-      low += 1
-    }
-    if (weightedHeadwind / weightS > 0) {
-      if (
-        sectionStartS == null ||
-        previousEndS == null ||
-        interval.startS - previousEndS > HEADWIND_BRIDGE_S
-      )
-        sectionStartS = interval.startS
-      longestS = Math.max(longestS, interval.endS - sectionStartS)
-    } else sectionStartS = null
-    previousEndS = interval.endS
-  }
-  return longestS
-}
-
-const summarizeWind = (
-  input: ActivityEnvironmentInput,
-  intervals: readonly (WindInterval | null)[],
-  validDurationS: number,
-  provenance: GardenEstimateProvenance,
-): GardenApparentWindEstimate | null => {
-  if (validDurationS <= 0) return null
-  let headwindTimeS = 0
-  let tailwindTimeS = 0
-  let headwindIntoTotal = 0
-  let crosswindMagnitudeTotal = 0
-  let groundSpeedTotal = 0
-  let apparentSpeedTotal = 0
-  let yawTotal = 0
-  let maximumHeadwindKph = 0
-  let maximumCrosswindKph = 0
-  const valid = intervals.filter((interval): interval is WindInterval => interval != null)
-  for (const interval of valid) {
-    if (interval.headwindKph > 0) {
-      headwindTimeS += interval.durationS
-      headwindIntoTotal += interval.headwindKph * interval.durationS
-    } else if (interval.headwindKph < 0) tailwindTimeS += interval.durationS
-    crosswindMagnitudeTotal += Math.abs(interval.crosswindKph) * interval.durationS
-    groundSpeedTotal += interval.groundSpeedKph * interval.durationS
-    apparentSpeedTotal += interval.apparentAirSpeedKph * interval.durationS
-    yawTotal += interval.yawDeg * interval.durationS
-    maximumHeadwindKph = Math.max(maximumHeadwindKph, interval.headwindKph)
-    maximumCrosswindKph = Math.max(maximumCrosswindKph, Math.abs(interval.crosswindKph))
-  }
-  const longestHeadwindS = longestHeadwindSection(valid)
-  const averageGroundSpeedKph = groundSpeedTotal / validDurationS
-  const averageApparentAirSpeedKph = apparentSpeedTotal / validDurationS
-  const coveragePct = percentage(validDurationS, input.movingTimeS)
-  return {
-    ...provenance,
-    formulaId: 'garden-apparent-wind-v3',
-    summary: {
-      headwindSharePct: round((headwindTimeS / validDurationS) * 100, 1),
-      headwindTimeS: round(headwindTimeS, 1),
-      tailwindTimeS: round(tailwindTimeS, 1),
-      longestHeadwindS: round(longestHeadwindS, 1),
-      averageHeadwindWhileIntoKph:
-        headwindTimeS > 0 ? round(headwindIntoTotal / headwindTimeS, 1) : 0,
-      averageCrosswindMagnitudeKph: round(crosswindMagnitudeTotal / validDurationS, 1),
-      maximumHeadwindKph: round(maximumHeadwindKph, 1),
-      maximumCrosswindKph: round(maximumCrosswindKph, 1),
-      averageGroundSpeedKph: round(averageGroundSpeedKph, 1),
-      averageApparentAirSpeedKph: round(averageApparentAirSpeedKph, 1),
-      apparentAirRatio:
-        averageGroundSpeedKph > 0
-          ? round(averageApparentAirSpeedKph / averageGroundSpeedKph, 3)
-          : 0,
-      averageYawDeg: round(yawTotal / validDurationS, 1),
-      coveragePct,
-    },
-    coverage: { windPct: coveragePct },
-  }
 }
 
 export function buildActivityEnvironment(
@@ -676,3 +207,17 @@ export function buildActivityEnvironment(
   }
   return { environment, apparentWind }
 }
+export type {
+  ActivityEnvironmentInput,
+  ActivityEnvironmentResult,
+  EnvironmentChartSample,
+  GardenApparentWindEstimate,
+  GardenApparentWindSummary,
+  GardenEnvironmentCoverage,
+  GardenEnvironmentEstimate,
+  GardenEnvironmentSample,
+  GardenEnvironmentSummary,
+  GardenEstimateProvenance,
+  GardenUvDoseClocks,
+  GardenUvScore,
+} from './activity-environment/model'

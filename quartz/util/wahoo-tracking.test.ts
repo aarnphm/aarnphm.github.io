@@ -82,13 +82,13 @@ function fit(power = 200, sport: 'cycling' | 'running' = 'cycling'): Uint8Array 
 function sources() {
   const time = Array.from({ length: 11 }, (_, i) => i)
   const strava: StravaRawCache = {
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: 0 },
     lastSync: START.getTime(),
     lastActivityStart: 0,
     activities: {
       '101': {
-        id: 101,
+        id: '101',
         name: 'Rouvy',
         sportType: 'VirtualRide',
         startDate: new Date(START.getTime() + 1000).toISOString(),

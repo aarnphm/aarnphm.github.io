@@ -131,7 +131,7 @@ test('includes rest-day records when building the on-page date tree', () => {
     active: {
       date: '2026-08-20',
       durationS: 3600,
-      items: [{ id: 1, sport: 'run', distanceKm: 8, durationS: 3600 }],
+      items: [{ id: '1', sport: 'run', distanceKm: 8, durationS: 3600 }],
     },
   })
   assert.equal(tree[0].year, '2026')

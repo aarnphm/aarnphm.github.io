@@ -30,7 +30,7 @@ export interface StravaAuth {
 }
 
 export interface RawStravaActivity {
-  id: number
+  id: string
   name: string
   sportType: string
   trainer?: boolean
@@ -128,7 +128,7 @@ export interface StravaZones {
 
 export interface StravaRawCache {
   version?: number
-  athleteId: number
+  athleteId: string | null
   auth: StravaAuth
   lastSync: number
   lastActivityStart: number

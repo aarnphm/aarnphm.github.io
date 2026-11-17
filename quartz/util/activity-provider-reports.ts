@@ -7,7 +7,7 @@ export interface ProviderNativeProvenance {
   source: 'provider-native'
   transport: 'strava-description'
   schemaVersion: 1
-  activityId: number
+  activityId: string
   retrievedAt: number
 }
 
@@ -176,7 +176,7 @@ const clockSeconds = (value: string | undefined): number | null => {
   return hours * 3600 + minutes * 60 + seconds
 }
 
-const provenance = (activityId: number, retrievedAt: number): ProviderNativeProvenance => ({
+const provenance = (activityId: string, retrievedAt: number): ProviderNativeProvenance => ({
   source: 'provider-native',
   transport: 'strava-description',
   schemaVersion: 1,
@@ -186,7 +186,7 @@ const provenance = (activityId: number, retrievedAt: number): ProviderNativeProv
 
 const parsePelotanBlock = (
   block: string,
-  activityId: number,
+  activityId: string,
   retrievedAt: number,
 ): PelotanNativeReport | null => {
   const scoreMatch = /uv\s*load(?:™)?\s*:?[ \t]*(\d{1,3})(?:[ \t]*[—–-][ \t]*([^\r\n]+))?/i.exec(
@@ -231,7 +231,7 @@ const parsePelotanBlock = (
 
 export function parsePelotanReport(
   description: string | null,
-  activityId: number,
+  activityId: string,
   retrievedAt: number,
 ): PelotanNativeReport | null {
   if (!description) return null
@@ -244,7 +244,7 @@ export function parsePelotanReport(
 
 const parseMyWindsockBlock = (
   block: string,
-  activityId: number,
+  activityId: string,
   retrievedAt: number,
 ): MyWindsockNativeReport | null => {
   const weatherImpactPct = bounded(
@@ -334,7 +334,7 @@ const parseMyWindsockBlock = (
 
 export function parseMyWindsockReport(
   description: string | null,
-  activityId: number,
+  activityId: string,
   retrievedAt: number,
 ): MyWindsockNativeReport | null {
   if (!description) return null
@@ -347,7 +347,7 @@ export function parseMyWindsockReport(
 
 export function parseActivityProviderReports(
   description: string | null,
-  activityId: number,
+  activityId: string,
   retrievedAt: number,
 ): NativeActivityReports {
   return {

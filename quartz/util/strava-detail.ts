@@ -9,6 +9,7 @@ import type {
   SwimTrendPoint,
 } from '../plugins/stores/strava'
 import type { TriathlonDailyAnalytics } from './triathlon-day-analytics'
+import { stravaId } from './strava-id'
 
 export const STRAVA_DETAIL_INDEX_KIND = 'strava-detail-index-v1'
 export const STRAVA_DETAIL_SHARD_MAX_BYTES = 20 * 1024 * 1024
@@ -144,7 +145,7 @@ export function serializeStravaDetails<TDetail extends { date: string }>(
 export const STRAVA_MAP_PAYLOAD_KIND = 'strava-map-v1'
 
 export interface StravaMapActivityEntry {
-  id: number
+  id: string
   name: string
   date: string
   start: string
@@ -282,7 +283,7 @@ export function hydrateStravaMapPayload(value: unknown): StravaDetailPayload | n
   const details: Record<string, StravaActivityDetail> = {}
   const shardById: Record<string, string> = {}
   for (const raw of mapPayload.activities) {
-    if (!raw || typeof raw.id !== 'number' || !Array.isArray(raw.segs)) continue
+    if (!raw || stravaId(raw.id) !== raw.id || !Array.isArray(raw.segs)) continue
     if (isStravaDetailShardPath(raw.shard)) shardById[String(raw.id)] = raw.shard
     const mapRoute = raw.segs.map(flat => {
       const length = Math.floor(flat.length / 3) * 3

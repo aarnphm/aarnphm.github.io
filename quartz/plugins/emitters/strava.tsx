@@ -550,7 +550,7 @@ declare module 'vfile' {
   interface DataMap {
     stravaPayload: LoadedStravaPayload
     /** Activities linked to a TrainingPeaks workout; the workouts stay in the sealed calendar. */
-    trainingPlannedActivities: number[]
+    trainingPlannedActivities: string[]
     triathlonMaintenance: TriathlonMaintenance | null
     triathlonRenderData: TriathlonRenderData
   }

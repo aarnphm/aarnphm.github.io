@@ -13,7 +13,7 @@ export interface StravaActivityIndex {
 }
 
 export function buildStravaActivityIndex(
-  details: Readonly<Record<string, { id: number; date: string }>>,
+  details: Readonly<Record<string, { id: string; date: string }>>,
 ): StravaActivityIndex {
   const activities: Record<string, string> = {}
   for (const [id, detail] of Object.entries(details)) {

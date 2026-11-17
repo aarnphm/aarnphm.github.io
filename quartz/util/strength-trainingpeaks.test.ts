@@ -6,13 +6,13 @@ import { enrichTrainingPeaksStrength } from './strength-trainingpeaks'
 
 const cache: StravaRawCache = {
   version: 8,
-  athleteId: 1,
+  athleteId: '1',
   auth: { refreshToken: '', obtainedAt: 0 },
   lastSync: 1,
   lastActivityStart: 1,
   activities: {
     20682792884: {
-      id: 20682792884,
+      id: '20682792884',
       name: '(E) Power & Control',
       sportType: 'WeightTraining',
       distance: 0,
@@ -108,7 +108,7 @@ test('competing recordings or planned prescriptions cannot claim the same sessio
   const first = cache.activities['20682792884']
   const duplicated = {
     ...cache,
-    activities: { ...cache.activities, 20682792885: { ...first, id: 20682792885 } },
+    activities: { ...cache.activities, 20682792885: { ...first, id: '20682792885' } },
   }
   const two = buildPayload(duplicated, null, null)
   enrichTrainingPeaksStrength(two, duplicated, calendar([workout({ description })]))
@@ -120,7 +120,7 @@ test('competing recordings or planned prescriptions cannot claim the same sessio
 test('manual totals remain authoritative across TrainingPeaks reprojection', () => {
   const payload = buildPayload(cache, null, null)
   const correction = {
-    activityId: 20682792884,
+    activityId: '20682792884',
     date: '2026-10-21',
     exercises: [],
     volumeKg: 10,

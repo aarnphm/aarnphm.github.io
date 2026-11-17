@@ -40,7 +40,7 @@ import { applySwimPhysiology } from './swim-physiology'
 import { activityTrainingEffectLabel } from './triathlon-card'
 
 const detail = (values: Partial<StravaActivityDetail> = {}): StravaActivityDetail => ({
-  id: 1,
+  id: '1',
   sport: 'swim',
   name: 'Pool swim',
   date: '2026-07-09',
@@ -119,11 +119,14 @@ const detail = (values: Partial<StravaActivityDetail> = {}): StravaActivityDetai
 
 test('copies the shared analytics pace distribution into run activity details', () => {
   const payload = emptyPayload()
-  payload.details = { '1': detail({ id: 1, sport: 'run' }), '2': detail({ id: 2, sport: 'bike' }) }
+  payload.details = {
+    '1': detail({ id: '1', sport: 'run' }),
+    '2': detail({ id: '2', sport: 'bike' }),
+  }
   enrichRunPaceZones(payload, {
     activities: [
-      { id: 1, paceZoneSeconds: [120, 240, 360, 480, 600, 720] },
-      { id: 2, paceZoneSeconds: null },
+      { id: '1', paceZoneSeconds: [120, 240, 360, 480, 600, 720] },
+      { id: '2', paceZoneSeconds: null },
     ],
     paceZoneBoundsSPerKm: [387.114, 333.676, 299.501, 280.238, 263.461],
     tenKmRaceTimeS: 3_000,
@@ -205,7 +208,7 @@ const appleRun = (values: Partial<AppleWorkout> = {}): AppleWorkout => ({
 })
 
 const payloadWith = (...details: StravaActivityDetail[]): StravaPayload => {
-  const payload = emptyPayload(1)
+  const payload = emptyPayload('1')
   for (const item of details) payload.details[String(item.id)] = item
   return payload
 }
@@ -300,7 +303,7 @@ test('pool swim stamina accepts provider timestamp rounding without moving dista
 
 test('resolves run, walk, and swim devices only from exact model evidence', () => {
   const run = detail({
-    id: 1,
+    id: '1',
     sport: 'run',
     start: '2026-07-17T00:30:45Z',
     distanceKm: 5.6435,
@@ -309,7 +312,7 @@ test('resolves run, walk, and swim devices only from exact model evidence', () =
     garmin: { ...garminVerification('garmin-run'), sourceDevice: null },
   })
   const walk = detail({
-    id: 2,
+    id: '2',
     sport: 'walk',
     start: '2026-07-18T12:00:00Z',
     distanceKm: 2,
@@ -318,16 +321,16 @@ test('resolves run, walk, and swim devices only from exact model evidence', () =
     garmin: { ...garminVerification('garmin-walk'), sourceDevice: null },
   })
   const swim = detail({
-    id: 3,
+    id: '3',
     sport: 'swim',
     start: '2026-07-19T12:00:00Z',
     distanceKm: 1,
     movingTimeS: 1_800,
     elapsedTimeS: 1_800,
   })
-  const bike = detail({ id: 4, sport: 'bike', device: null })
+  const bike = detail({ id: '4', sport: 'bike', device: null })
   const garminRun = detail({
-    id: 5,
+    id: '5',
     sport: 'run',
     start: '2026-07-20T12:00:00Z',
     distanceKm: 8,
@@ -336,7 +339,7 @@ test('resolves run, walk, and swim devices only from exact model evidence', () =
     garmin: { ...garminVerification('garmin-only-run'), sourceDevice: null },
   })
   const exactGarminRun = detail({
-    id: 6,
+    id: '6',
     sport: 'run',
     start: '2026-07-21T12:00:00Z',
     distanceKm: 8,
@@ -352,7 +355,7 @@ test('resolves run, walk, and swim devices only from exact model evidence', () =
     distanceM: number,
     values: Partial<AppleWorkout>,
   ): AppleWorkout => ({
-    id,
+    id: String(id),
     activity,
     start,
     end: new Date(Date.parse(start) + durationS * 1_000).toISOString(),
@@ -587,7 +590,7 @@ test('keeps manual sauna heart rate Oura-only', () => {
 
 test('applies attached manual sauna metadata through the shared payload path', () => {
   const activity = detail({
-    id: 20012367069,
+    id: '20012367069',
     sport: 'treatment',
     name: 'Guided Down: Self-Care Sweat',
     date: '2026-09-02',
@@ -645,7 +648,7 @@ test('applies attached manual sauna metadata through the shared payload path', (
       strength: [],
       sauna: [
         {
-          id: 8_202_609_021_730,
+          id: '8202609021730',
           stravaActivityId: activity.id,
           garminActivityId,
           title: 'Guided Down, Self-Care Sweat',
@@ -709,10 +712,10 @@ test('retains parsed exercises when projecting linked and standalone sauna activ
     assert.ok(parsed?.sauna)
     assert.ok(parsed.strength)
     const id = parsed.strength.activityId
-    const payload = emptyPayload(1)
+    const payload = emptyPayload('1')
     if (linked) {
       payload.details[String(id)] = detail({
-        id,
+        id: String(id),
         sport: 'treatment',
         date: '2026-09-08',
         start: '2026-09-08T22:00:00Z',
@@ -970,7 +973,7 @@ test('enriches swim detail and trend with Apple count, rate, and active-time pac
   ])
   assert.deepEqual(payload.swimTrend, [
     {
-      id: 1,
+      id: '1',
       date: '2026-07-09',
       start: '2026-07-09T20:13:31Z',
       paceSPer100m: 160,
@@ -1346,13 +1349,13 @@ test('uses exported subsecond offsets and duration for pace and elapsed endpoint
 
 test('keeps two same-date swim activities as separate trend observations', () => {
   const morningActivity = detail({
-    id: 1,
+    id: '1',
     start: '2026-07-09T10:01:00Z',
     distanceKm: 0.5,
     movingTimeS: 620,
   })
   const eveningActivity = detail({
-    id: 2,
+    id: '2',
     start: '2026-07-09T18:02:00Z',
     distanceKm: 1,
     movingTimeS: 1_520,
@@ -1408,7 +1411,7 @@ test('keeps two same-date swim activities as separate trend observations', () =>
 
   assert.deepEqual(payload.swimTrend, [
     {
-      id: 1,
+      id: '1',
       date: '2026-07-09',
       start: '2026-07-09T10:01:00Z',
       paceSPer100m: 120,
@@ -1416,7 +1419,7 @@ test('keeps two same-date swim activities as separate trend observations', () =>
       strokeRateSpm: 30,
     },
     {
-      id: 2,
+      id: '2',
       date: '2026-07-09',
       start: '2026-07-09T18:02:00Z',
       paceSPer100m: 150,
@@ -1456,9 +1459,9 @@ test('keeps two same-date swim activities as separate trend observations', () =>
 
 test('keeps valid Strava pace history and drops an implausible GPS swim', () => {
   const payload = payloadWith(
-    detail({ id: 1, date: '2026-07-08', start: '2026-07-08T20:00:00Z' }),
+    detail({ id: '1', date: '2026-07-08', start: '2026-07-08T20:00:00Z' }),
     detail({
-      id: 2,
+      id: '2',
       date: '2026-07-09',
       distanceKm: 2.3,
       movingTimeS: 306,
@@ -1472,7 +1475,7 @@ test('keeps valid Strava pace history and drops an implausible GPS swim', () => 
   assert.equal(payload.details['2'].swimPaceSPer100m, null)
   assert.deepEqual(payload.swimTrend, [
     {
-      id: 1,
+      id: '1',
       date: '2026-07-08',
       start: '2026-07-08T20:00:00Z',
       paceSPer100m: 159,
@@ -1499,7 +1502,7 @@ test('keeps a valid stroke-rate observation when pace is unavailable', () => {
   assert.equal(payload.details['1'].strokeRateSpm, 28)
   assert.deepEqual(payload.swimTrend, [
     {
-      id: 1,
+      id: '1',
       date: '2026-07-09',
       start: '2026-07-09T20:13:31Z',
       paceSPer100m: null,
@@ -1564,13 +1567,13 @@ test('shared Strava data preserves lab zones, manual wind and fueling for embedd
   const date = '2026-09-09'
   const sources: StravaDataSources = {
     strava: {
-      athleteId: 1,
+      athleteId: '1',
       auth: { refreshToken: '', obtainedAt: 0 },
       lastSync: Date.parse(`${date}T12:00:00Z`),
       lastActivityStart: 0,
       activities: {
         '1': {
-          id: 1,
+          id: '1',
           name: 'Fixture ride',
           sportType: 'Ride',
           distance: 10000,
@@ -1597,7 +1600,7 @@ test('shared Strava data preserves lab zones, manual wind and fueling for embedd
   }
   const tracking = {
     activities: [],
-    fueling: [{ date, activityId: 1, caloriesConsumed: 0 }],
+    fueling: [{ date, activityId: '1', caloriesConsumed: 0 }],
     strength: [],
     moves: [],
     sauna: [],
@@ -1631,7 +1634,7 @@ test('shared Strava data preserves lab zones, manual wind and fueling for embedd
   const revised = buildStravaData(
     sources,
     date,
-    { ...tracking, fueling: [{ date, activityId: 1, caloriesConsumed: 400 }] },
+    { ...tracking, fueling: [{ date, activityId: '1', caloriesConsumed: 400 }] },
     inputs,
   )
   assert.equal(revised.payload.details['1'].fueling?.caloriesConsumed, 400)
@@ -1641,7 +1644,7 @@ test('shared Strava data preserves lab zones, manual wind and fueling for embedd
 test('calculates commute training effects without adding commutes to training analytics', () => {
   const date = '2026-10-07'
   const easy: RawStravaActivity = {
-    id: 1,
+    id: '1',
     name: 'Easy commute',
     sportType: 'Ride',
     commute: true,
@@ -1658,7 +1661,7 @@ test('calculates commute training effects without adding commutes to training an
   }
   const hard: RawStravaActivity = {
     ...easy,
-    id: 2,
+    id: '2',
     name: 'Hard commute',
     startDate: `${date}T18:00:00Z`,
     startDateLocal: `${date}T18:00:00Z`,
@@ -1667,7 +1670,7 @@ test('calculates commute training effects without adding commutes to training an
   }
   const sources: StravaDataSources = {
     strava: {
-      athleteId: 1,
+      athleteId: '1',
       auth: { refreshToken: '', obtainedAt: 0 },
       lastSync: Date.parse(`${date}T20:00:00Z`),
       lastActivityStart: 0,
@@ -1738,13 +1741,13 @@ test('builds recovery estimates after Apple HR enrichment', () => {
   }
   const sources: StravaDataSources = {
     strava: {
-      athleteId: 1,
+      athleteId: '1',
       auth: { refreshToken: '', obtainedAt: 0 },
       lastSync: 0,
       lastActivityStart: 0,
       activities: {
         '1': {
-          id: 1,
+          id: '1',
           name: 'Recovery physio',
           averageSpeed: 0,
           sportType: 'Workout',

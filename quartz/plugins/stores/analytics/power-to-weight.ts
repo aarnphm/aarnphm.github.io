@@ -1,5 +1,6 @@
 import type { PowerCurveFtpEstimate } from '../../../util/cycling-ftp'
 import type { CyclingMechanics } from '../../../util/cycling-torque'
+import { compareStravaIds } from '../../../util/strava-id'
 import { AppleCache } from '../apple'
 import { fitCriticalPower, type CriticalPowerEstimate } from '../critical-power'
 import { emptyPowerRank, type PowerRankBlock, type PowerRankMass } from '../power-rank'
@@ -24,7 +25,7 @@ export interface PowerToWeightEffort {
   massKg: number
   massDate: string
   massSource: 'tracking' | 'garmin' | 'apple'
-  activityId: number
+  activityId: string
   activityDate: string
 }
 
@@ -268,7 +269,7 @@ function betterPowerToWeightEffort(
   if (current == null) return true
   if (candidate.wattsPerKg !== current.wattsPerKg) return candidate.wattsPerKg > current.wattsPerKg
   if (candidate.watts !== current.watts) return candidate.watts > current.watts
-  return candidate.activityId < current.activityId
+  return compareStravaIds(candidate.activityId, current.activityId) < 0
 }
 
 export function buildPowerToWeightTrend(
@@ -280,7 +281,7 @@ export function buildPowerToWeightTrend(
   const trend = emptyPowerToWeight(today)
   const candidates: PowerToWeightEffort[] = []
   const details = Object.values(activityDetails ?? {}).sort(
-    (left, right) => left.date.localeCompare(right.date) || left.id - right.id,
+    (left, right) => left.date.localeCompare(right.date) || compareStravaIds(left.id, right.id),
   )
   for (const detail of details) {
     if (detail.commute === true || detail.sport !== 'bike' || detail.deviceWatts !== true) continue

@@ -24,7 +24,7 @@ const swim = (values: Partial<AppleSwim> = {}): AppleSwim => ({
 })
 
 const activity = (id: number, start: string, distanceM: number): SwimActivityCandidate => ({
-  id,
+  id: String(id),
   date: start.slice(0, 10),
   start,
   distanceM,
@@ -43,8 +43,8 @@ test('matches two same-day swims by start time and distance', () => {
     [activity(1, '2026-07-09T10:01:00Z', 500), activity(2, '2026-07-09T18:02:00Z', 1_000)],
   )
 
-  assert.equal(matches.get(1)?.id, 'morning')
-  assert.equal(matches.get(2)?.id, 'evening')
+  assert.equal(matches.get('1')?.id, 'morning')
+  assert.equal(matches.get('2')?.id, 'evening')
 })
 
 test('uses distance for a legacy date-only swim and leaves implausible sessions unmatched', () => {
@@ -61,8 +61,8 @@ test('uses distance for a legacy date-only swim and leaves implausible sessions 
     [activity(1, '2026-07-10T12:00:00Z', 500), activity(2, '2026-07-09T18:00:00Z', 700)],
   )
 
-  assert.equal(matches.get(2)?.totalM, 700)
-  assert.equal(matches.has(1), false)
+  assert.equal(matches.get('2')?.totalM, 700)
+  assert.equal(matches.has('1'), false)
 })
 
 test('prefers session rows when a cache still contains a legacy row for the same day', () => {
@@ -70,7 +70,7 @@ test('prefers session rows when a cache still contains a legacy row for the same
   const session = swim({ id: 'session', start: '2026-07-09T20:13:30Z', totalM: 1_000 })
   const matches = matchAppleSwims([legacy, session], [activity(1, '2026-07-09T20:13:31Z', 1_000)])
 
-  assert.equal(matches.get(1)?.id, 'session')
+  assert.equal(matches.get('1')?.id, 'session')
 })
 
 test('keeps corrected race distance and measured water environment on separate matches', () => {
@@ -95,6 +95,6 @@ test('keeps corrected race distance and measured water environment on separate m
   })
   const race = activity(1, '2026-07-26T12:43:52Z', 1_500)
 
-  assert.equal(matchAppleSwims([measured, corrected], [race]).get(1)?.id, 'strava-copy')
-  assert.equal(matchAppleSwimTelemetry([measured, corrected], [race]).get(1)?.id, 'apple-watch')
+  assert.equal(matchAppleSwims([measured, corrected], [race]).get('1')?.id, 'strava-copy')
+  assert.equal(matchAppleSwimTelemetry([measured, corrected], [race]).get('1')?.id, 'apple-watch')
 })

@@ -13,7 +13,7 @@ export interface StreetMetricValues {
 }
 
 export interface StreetMapActivity {
-  id: number
+  id: string
   segments: readonly (readonly MapRoutePoint[])[]
   metrics: StreetMetricValues
 }
@@ -24,7 +24,7 @@ interface ProjectedPoint {
 }
 
 interface TraceEdge {
-  activityId: number
+  activityId: string
   startX: number
   startY: number
   dx: number
@@ -50,7 +50,7 @@ interface StreetPiece {
   startKey: number
   endKey: number
   roadClass: string
-  activityIds: Set<number>
+  activityIds: Set<string>
 }
 
 export interface StreetMapProperties extends StreetMetricValues {
@@ -220,11 +220,11 @@ function matchingActivities(
   pieceLength: number,
   rux: number,
   ruy: number,
-): Set<number> | null {
+): Set<string> | null {
   const candidates = cells.get(gridKey(midX, midY))
   if (!candidates || candidates.length === 0) return null
   const checkDirection = pieceLength >= MIN_DIRECTION_M
-  let visits: Set<number> | null = null
+  let visits: Set<string> | null = null
   for (let i = 0; i < candidates.length; i++) {
     const edge = candidates[i]
     if (
@@ -234,7 +234,7 @@ function matchingActivities(
     )
       continue
     if (pointSegmentDistanceSq(midX, midY, edge) <= MATCH_RADIUS_SQ) {
-      visits ??= new Set<number>()
+      visits ??= new Set<string>()
       visits.add(edge.activityId)
     }
   }
@@ -294,8 +294,8 @@ function heatBucket(visits: number, maximum: number): number {
 }
 
 function aggregateMetric(
-  activityIds: ReadonlySet<number>,
-  activities: ReadonlyMap<number, StreetMetricValues>,
+  activityIds: ReadonlySet<string>,
+  activities: ReadonlyMap<string, StreetMetricValues>,
   metric: StreetMetric,
 ): number {
   let total = 0
@@ -311,7 +311,7 @@ function aggregateMetric(
 
 function streetProperties(
   piece: StreetPiece,
-  activities: ReadonlyMap<number, StreetMetricValues>,
+  activities: ReadonlyMap<string, StreetMetricValues>,
   maximumVisits: number,
 ): StreetMapProperties {
   const visits = piece.activityIds.size
@@ -339,7 +339,7 @@ function sameStreetProperties(left: StreetMapProperties, right: StreetMapPropert
 
 function streetFeatures(
   pieces: ReadonlyMap<string, StreetPiece>,
-  activities: ReadonlyMap<number, StreetMetricValues>,
+  activities: ReadonlyMap<string, StreetMetricValues>,
   maximumVisits: number,
 ): StreetMapFeature[] {
   if (pieces.size === 0) return []
@@ -408,7 +408,7 @@ function streetFeatures(
 
 function matchedStreetFeatures(
   index: TraceIndex,
-  activities: ReadonlyMap<number, StreetMetricValues>,
+  activities: ReadonlyMap<string, StreetMetricValues>,
   maximumVisits: number,
   roadFeatures: readonly unknown[],
 ): StreetMapFeatureCollection {

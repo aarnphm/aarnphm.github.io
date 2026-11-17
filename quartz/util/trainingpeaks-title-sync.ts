@@ -7,7 +7,7 @@ import {
 } from './trainingpeaks-api'
 
 export interface TrainingPeaksTitleSource {
-  stravaId: number
+  stravaId: string
   date: string
   startTime: string
   durationS: number
@@ -288,7 +288,7 @@ export function trainingPeaksWorkoutSummary(
 }
 
 export function trainingPeaksSaunaDescription(
-  source: { stravaId: number; description: string },
+  source: { stravaId: string; description: string },
   existing: string,
 ): string {
   const normalized = existing.replace(/\r\n?/g, '\n').trim()

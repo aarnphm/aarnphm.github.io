@@ -21,7 +21,7 @@ interface CardioScope {
   cache: StravaRawCache
   acts: Act[]
   daily: DailyPoint[]
-  heartRateById: Map<number, ActivityHeartRate>
+  heartRateById: Map<string, ActivityHeartRate>
   rhrArr: DailyPoint['rhr'][]
 }
 

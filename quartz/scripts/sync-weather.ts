@@ -1,18 +1,15 @@
 import matter from 'gray-matter'
-import { execFile } from 'node:child_process'
 import fs from 'node:fs/promises'
-import { promisify } from 'node:util'
-import type { RawStravaActivity } from '../plugins/stores/strava'
+import type { RouteWeatherCandidate } from './sync-weather/source'
 import { normalizeKind } from '../plugins/stores/strava'
 import {
   parseWeatherCache,
   summarizeWeatherDays,
-  weatherActivityHasCompleteRouteHours,
   weatherActivityFromRouteHours,
+  weatherActivityHasCompleteRouteHours,
   weatherRouteHourFromForecast,
   weatherSnapshotFromHours,
   type WeatherActivity,
-  type WeatherActivityCandidate,
   type WeatherCache,
   type WeatherHour,
   type WeatherRouteHour,
@@ -29,41 +26,26 @@ import { localIsoDayOffset } from '../util/local-date'
 import { joinSegments, QUARTZ } from '../util/path'
 import { weatherSyncRefreshDays } from '../util/sync-refresh-window'
 import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
-import { isRecord, readNumber, readString } from '../util/type-guards'
 import {
   fetchWeatherKitAttribution,
   fetchWeatherKitHours,
   WeatherKitRequestError,
-  type WeatherKitConfig,
 } from '../util/weather-kit'
 import {
-  routeHourQueries,
-  routeWeatherFingerprint,
   routeWeatherNeedsRefresh,
   selectRouteHour,
   type RouteHourQuery,
-  type RouteWeatherStream,
 } from '../util/weather-route-hours'
+import { weatherKitConfig } from './sync-weather/config'
+import { candidate, readStravaSource } from './sync-weather/source'
 
 const CACHE_VERSION = 5
+
 const HOUR_MS = 3_600_000
+
 const TRIATHLON_PAGE = joinSegments(QUARTZ, '..', 'content', 'triathlon.md')
-const stravaCacheFile = joinSegments(QUARTZ, '.quartz-cache', 'strava.json')
+
 const cacheFile = joinSegments(QUARTZ, '.quartz-cache', 'weather.json')
-const execFileAsync = promisify(execFile)
-const KEYCHAIN_SERVICES = ['garden-weatherkit', 'WeatherKit', 'weatherkit']
-
-interface StravaWeatherSource {
-  activities: RawStravaActivity[]
-  streams: Record<string, RouteWeatherStream>
-  details: Record<string, { description: string | null; fetchedAt: number }>
-}
-
-interface RouteWeatherCandidate extends WeatherActivityCandidate {
-  routeFingerprint: string
-  stream: RouteWeatherStream
-  queries: RouteHourQuery[]
-}
 
 function cleanDay(value: string | undefined): string | null {
   if (!value?.trim()) return null
@@ -111,236 +93,12 @@ function endDate(): string {
   return cleanDay(process.env.WEATHERKIT_END_DATE) ?? localIsoDayOffset(0)
 }
 
-async function readPrivateKey(): Promise<string | null> {
-  const inline = process.env.WEATHERKIT_PRIVATE_KEY?.trim()
-  if (inline) return inline.replaceAll('\\n', '\n')
-  const file = process.env.WEATHERKIT_PRIVATE_KEY_FILE?.trim()
-  if (!file) return null
-  return fs.readFile(file, 'utf8')
-}
-
-async function keychainPassword(accounts: string[]): Promise<string | null> {
-  for (const service of KEYCHAIN_SERVICES)
-    for (const account of accounts) {
-      try {
-        const { stdout } = await execFileAsync(
-          '/usr/bin/security',
-          ['find-generic-password', '-w', '-s', service, '-a', account],
-          { timeout: 5_000 },
-        )
-        const value = stdout.trim()
-        if (value) return value
-      } catch {}
-    }
-  return null
-}
-
-async function envOrKeychain(name: string, aliases: string[]): Promise<string | null> {
-  const value = process.env[name]?.trim()
-  if (value) return value
-  return keychainPassword([name, ...aliases])
-}
-
-async function readMachinePrivateKey(): Promise<string | null> {
-  const inline = await keychainPassword(['WEATHERKIT_PRIVATE_KEY', 'privateKey', 'private-key'])
-  if (inline) return inline.replaceAll('\\n', '\n')
-  const file = await keychainPassword([
-    'WEATHERKIT_PRIVATE_KEY_FILE',
-    'privateKeyFile',
-    'private-key-file',
-  ])
-  if (!file) return null
-  return fs.readFile(file, 'utf8')
-}
-
-async function weatherKitConfig(): Promise<WeatherKitConfig | null> {
-  const teamId = await envOrKeychain('WEATHERKIT_TEAM_ID', ['teamId', 'team-id'])
-  const serviceId = await envOrKeychain('WEATHERKIT_SERVICE_ID', ['serviceId', 'service-id'])
-  const keyId = await envOrKeychain('WEATHERKIT_KEY_ID', ['keyId', 'key-id'])
-  const privateKey = (await readPrivateKey()) ?? (await readMachinePrivateKey())
-  if (!teamId || !serviceId || !keyId || !privateKey) return null
-  return { teamId, serviceId, keyId, privateKey }
-}
-
-function readActivity(value: unknown): RawStravaActivity | null {
-  if (!isRecord(value)) return null
-  const id = readNumber(value, 'id')
-  const name = readString(value, 'name')
-  const sportType = readString(value, 'sportType')
-  const distance = readNumber(value, 'distance')
-  const movingTime = readNumber(value, 'movingTime')
-  const elapsedTime = readNumber(value, 'elapsedTime')
-  const totalElevationGain = readNumber(value, 'totalElevationGain')
-  const startDate = readString(value, 'startDate')
-  const startDateLocal = readString(value, 'startDateLocal')
-  const averageSpeed = readNumber(value, 'averageSpeed')
-  if (
-    id == null ||
-    name == null ||
-    sportType == null ||
-    distance == null ||
-    movingTime == null ||
-    elapsedTime == null ||
-    totalElevationGain == null ||
-    startDate == null ||
-    startDateLocal == null ||
-    averageSpeed == null
-  )
-    return null
-  return {
-    id,
-    name,
-    sportType,
-    distance,
-    movingTime,
-    elapsedTime,
-    totalElevationGain,
-    startDate,
-    startDateLocal,
-    averageSpeed,
-    averageHeartrate: readNumber(value, 'averageHeartrate'),
-    maxHeartrate: readNumber(value, 'maxHeartrate'),
-    averageWatts: readNumber(value, 'averageWatts'),
-    weightedAverageWatts: readNumber(value, 'weightedAverageWatts'),
-    maxWatts: readNumber(value, 'maxWatts'),
-    kilojoules: readNumber(value, 'kilojoules'),
-    deviceWatts: typeof value.deviceWatts === 'boolean' ? value.deviceWatts : undefined,
-    averageCadence: readNumber(value, 'averageCadence'),
-    sufferScore: readNumber(value, 'sufferScore'),
-    averageTemp: readNumber(value, 'averageTemp'),
-    calories: readNumber(value, 'calories'),
-  }
-}
-
-function coordinate(value: unknown): [number, number] | null {
-  if (!Array.isArray(value) || value.length < 2) return null
-  const lat = value[0]
-  const lng = value[1]
-  return typeof lat === 'number' &&
-    typeof lng === 'number' &&
-    Number.isFinite(lat) &&
-    Number.isFinite(lng)
-    ? [lat, lng]
-    : null
-}
-
-function finiteNumberArray(value: unknown): number[] | null {
-  if (!Array.isArray(value)) return null
-  const numbers = value.filter(item => typeof item === 'number' && Number.isFinite(item))
-  return numbers.length === value.length ? numbers : null
-}
-
-function isMonotonic(values: readonly number[], strictly: boolean): boolean {
-  return values.every(
-    (value, index) =>
-      value >= 0 &&
-      (index === 0 || (strictly ? value > values[index - 1] : value >= values[index - 1])),
-  )
-}
-
-function readStreams(value: unknown): Record<string, RouteWeatherStream> {
-  if (!isRecord(value)) return {}
-  const out: Record<string, RouteWeatherStream> = {}
-  for (const [id, raw] of Object.entries(value)) {
-    if (!isRecord(raw) || !Array.isArray(raw.latlng)) continue
-    const coordinates = raw.latlng.map(coordinate)
-    const timeS = finiteNumberArray(raw.time)
-    const distanceM = finiteNumberArray(raw.distance)
-    if (
-      coordinates.some(point => point === null) ||
-      !timeS ||
-      !distanceM ||
-      coordinates.length < 2 ||
-      timeS.length !== coordinates.length ||
-      distanceM.length !== coordinates.length ||
-      !isMonotonic(timeS, true) ||
-      !isMonotonic(distanceM, false)
-    )
-      continue
-    const latlng = coordinates.filter(point => point !== null)
-    out[id] = { timeS, distanceM, latlng }
-  }
-  return out
-}
-
-function readDetails(
-  value: unknown,
-): Record<string, { description: string | null; fetchedAt: number }> {
-  if (!isRecord(value)) return {}
-  const details: Record<string, { description: string | null; fetchedAt: number }> = {}
-  for (const [id, raw] of Object.entries(value)) {
-    if (!isRecord(raw) || (raw.description !== null && typeof raw.description !== 'string'))
-      continue
-    const fetchedAt = readNumber(raw, 'fetchedAt')
-    if (fetchedAt == null || !Number.isFinite(fetchedAt)) continue
-    details[id] = { description: raw.description, fetchedAt }
-  }
-  return details
-}
-
-async function readStravaSource(): Promise<StravaWeatherSource | null> {
-  try {
-    const raw: unknown = JSON.parse(await fs.readFile(stravaCacheFile, 'utf8'))
-    if (!isRecord(raw) || !isRecord(raw.activities)) return null
-    const activities = Object.values(raw.activities)
-      .map(readActivity)
-      .filter(activity => activity !== null)
-    return {
-      activities,
-      streams: readStreams(raw.streams),
-      details: readDetails(raw.activityDetails),
-    }
-  } catch {
-    return null
-  }
-}
-
 async function readWeatherCache(): Promise<WeatherCache | null> {
   try {
     return parseWeatherCache(JSON.parse(await fs.readFile(cacheFile, 'utf8')))
   } catch {
     return null
   }
-}
-
-function routeCenter(latlng: readonly [number, number][]): { latitude: number; longitude: number } {
-  const stride = Math.max(1, Math.floor(latlng.length / 200))
-  let latitude = 0
-  let longitude = 0
-  let count = 0
-  for (let i = 0; i < latlng.length; i += stride) {
-    latitude += latlng[i][0]
-    longitude += latlng[i][1]
-    count += 1
-  }
-  if (count === 0) throw new Error('route must contain at least one coordinate')
-  return { latitude: latitude / count, longitude: longitude / count }
-}
-
-function candidate(
-  activity: RawStravaActivity,
-  stream: RouteWeatherStream,
-): RouteWeatherCandidate | null {
-  const sport = normalizeKind(activity.sportType)
-  if (!sport || sport === 'strength') return null
-  const startMs = Date.parse(activity.startDate)
-  const durationS = activity.elapsedTime > 0 ? activity.elapsedTime : activity.movingTime
-  if (!Number.isFinite(startMs) || durationS <= 0) return null
-  const end = new Date(startMs + durationS * 1000).toISOString()
-  const center = routeCenter(stream.latlng)
-  const base: WeatherActivityCandidate = {
-    activityId: activity.id,
-    date: activity.startDateLocal.slice(0, 10),
-    start: new Date(startMs).toISOString(),
-    end,
-    latitude: center.latitude,
-    longitude: center.longitude,
-    durationS,
-    routeFingerprint: '',
-  }
-  const routeFingerprint = routeWeatherFingerprint(activity.id, base.start, base.end, stream)
-  const withFingerprint = { ...base, routeFingerprint }
-  return { ...withFingerprint, stream, queries: routeHourQueries(withFingerprint, stream) }
 }
 
 function floorHour(ms: number): string {

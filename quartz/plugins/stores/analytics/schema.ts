@@ -32,7 +32,7 @@ import {
 } from './primitives'
 
 export interface ActivitySummary {
-  id: number
+  id: string
   date: string
   sport: ActivityKind
   virtual?: boolean
@@ -143,7 +143,7 @@ export type HeatTemperatureSource = 'core' | 'weatherkit' | 'strava' | 'manual-s
 export type HeatSauna = NonNullable<StravaActivityDetail['sauna']> & { durationMinutes: number }
 
 export interface HeatActivityPoint {
-  id: number
+  id: string
   date: string
   startedAt: string
   sport: 'bike' | 'run' | 'sauna'
@@ -466,7 +466,7 @@ export interface FeedDayRow {
 
 export interface FeedActivityRow {
   kind: 'activity'
-  id: number
+  id: string
   date: string
   sport: ActivityKind
   name: string

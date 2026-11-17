@@ -27,7 +27,7 @@ Cool-down (2 min) — figure-4 glute stretch, downward dog, seated hamstring str
 
 function cacheFor(name: string, body: string | null, sportType = 'WeightTraining'): StravaRawCache {
   const activity: RawStravaActivity = {
-    id: 20682792884,
+    id: '20682792884',
     name,
     sportType,
     distance: 0,
@@ -41,7 +41,7 @@ function cacheFor(name: string, body: string | null, sportType = 'WeightTraining
   }
   return {
     version: 8,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: 0 },
     lastSync: Date.parse('2026-10-22T02:00:00Z'),
     lastActivityStart: 0,

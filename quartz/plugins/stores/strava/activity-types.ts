@@ -52,7 +52,7 @@ export interface StravaSportTotals {
 }
 
 export interface StravaDayItem {
-  id: number
+  id: string
   sport: ActivityKind
   electric?: boolean
   distanceKm: number
@@ -177,7 +177,7 @@ export interface ActivityAnalyses {
 }
 
 export interface StravaActivityDetail {
-  id: number
+  id: string
   equipment?: ActivityEquipment
   sources?: ActivitySource[]
   virtual?: boolean
@@ -288,7 +288,7 @@ export interface SwimActivityInterval {
 }
 
 export interface SwimTrendPoint {
-  id: number
+  id: string
   date: string
   start: string
   paceSPer100m: number | null
@@ -298,7 +298,7 @@ export interface SwimTrendPoint {
 
 export interface StravaPayload {
   generatedAt: number
-  athleteId: number
+  athleteId: string | null
   totalKm: number
   totalTimeS: number
   totalCount: number
@@ -435,7 +435,7 @@ export function toHealth(o: OuraDaily): ActivityHealth {
   }
 }
 
-export function emptyPayload(athleteId = 0): StravaPayload {
+export function emptyPayload(athleteId: string | null = null): StravaPayload {
   return {
     generatedAt: 0,
     athleteId,

@@ -35,7 +35,7 @@ const HEAT_HTL_PER_EXPOSURE = 10
 const HEAT_PASSIVE_HTL_CAP = 8
 
 interface HeatActivity {
-  id: number
+  id: string
   date: string
   startedAt: string
   sport: 'bike' | 'run' | 'sauna'

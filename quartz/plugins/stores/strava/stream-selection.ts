@@ -1,4 +1,5 @@
 import type { ActivityTrackingEntry } from '../tracking'
+import { requireStravaId } from '../../../util/strava-id'
 import {
   matchGarminActivity,
   type GarminActivityMatch,
@@ -242,7 +243,7 @@ export function applyActivityTracking(
   const activities = { ...cache.activities }
   const streams = { ...cache.streams }
   for (const entry of entries) {
-    const id = String(entry.activityId)
+    const id = requireStravaId(entry.activityId)
     const activity = cache.activities[id]
     if (!activity) continue
     const sport = normalizeKind(activity.sportType)

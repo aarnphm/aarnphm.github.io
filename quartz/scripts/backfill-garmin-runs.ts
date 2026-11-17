@@ -1,25 +1,18 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
-import type { AppleCache, AppleSwim, SwimStroke } from '../plugins/stores/apple'
+import type { AppleCache, AppleSwim } from '../plugins/stores/apple'
+import type { Args, BackfillSport } from './backfill-garmin-runs/options'
 import { AdaptiveRateLimiter, fetchWithRetry } from '../plugins/stores/citations'
 import { matchGarminActivity, type GarminCache } from '../plugins/stores/garmin'
 import {
   normalizeKind,
   type RawStravaActivity,
-  type Sport,
   type StravaRawCache,
 } from '../plugins/stores/strava'
 import { matchAppleSwims } from '../util/apple-swim-match'
 import { upsertEnvLine } from '../util/env-file'
-import {
-  encodeGarminSwimFit,
-  type GarminFitEncoding,
-  type GarminPoolSwimLength,
-  type GarminSwimFitInput,
-  type GarminSwimSample,
-  type GarminSwimStroke,
-} from '../util/garmin-fit'
+import { encodeGarminSwimFit, type GarminFitEncoding } from '../util/garmin-fit'
 import {
   assertGarminResponseAuthorized,
   cleanGarminConnectBaseUrl,
@@ -33,36 +26,38 @@ import {
 } from '../util/garmin-session'
 import { updateGarminActivityTitle } from '../util/garmin-title-update'
 import { joinSegments, QUARTZ } from '../util/path'
+import { readStravaCacheFile } from '../util/strava-cache-file'
 import { stravaActivityTcx, type TimedStravaStreams } from '../util/strava-tcx'
 import { isRecord, readNumber, readString, type UnknownRecord } from '../util/type-guards'
+import { parseArgs } from './backfill-garmin-runs/options'
+import {
+  applePoolSwimProjection,
+  garminSwimFitInput,
+  shouldDeferPoolSwimForApple,
+} from './backfill-garmin-runs/swim'
 import { uploadGarminFit } from './garmin-fit-upload'
 
 const TOKEN_URL = 'https://www.strava.com/oauth/token'
+
 const DEFAULT_API_BASE_URL = 'https://www.strava.com/api/v3'
+
 const STRAVA_API = new URL(process.env.STRAVA_API_BASE_URL ?? DEFAULT_API_BASE_URL)
   .toString()
   .replace(/\/+$/, '')
+
 const ENV_FILE = '.env'
+
 const CACHE_DIR = joinSegments(QUARTZ, '.quartz-cache')
+
 const STRAVA_CACHE = joinSegments(CACHE_DIR, 'strava.json')
+
 const GARMIN_CACHE = joinSegments(CACHE_DIR, 'garmin.json')
+
 const APPLE_CACHE = joinSegments(CACHE_DIR, 'apple-health.json')
+
 const DEFAULT_OUTPUT_DIR = joinSegments(CACHE_DIR, 'garmin-run-backfill')
+
 const STRAVA_LIMITER = new AdaptiveRateLimiter(400, 60_000)
-const DEFAULT_UPLOAD_DELAY_MS = 1500
-const APPLE_SWIM_DEFER_MS = 3 * 24 * 60 * 60 * 1000
-
-interface Args {
-  write: boolean
-  sport: BackfillSport
-  since: string | null
-  limit: number
-  ids: Set<string>
-  outputDir: string | null
-  uploadDelayMs: number
-}
-
-type BackfillSport = Extract<Sport, 'run' | 'swim'>
 
 interface TokenResponse {
   access_token: string
@@ -79,92 +74,10 @@ interface BackfillCandidate {
   reason: string
 }
 
-interface ApplePoolSwimProjection {
-  distanceMeters: number
-  elapsedTimeSeconds: number
-  timerTimeSeconds: number
-  poolLengthMeters: number
-  lengths: GarminPoolSwimLength[]
-}
-
 interface UploadResult {
   status: number
   body: string
   json: unknown
-}
-
-function usage(): string {
-  return [
-    'usage: pnpm garmin:backfill-runs -- [--write] [--sport run|swim] [--since YYYY-MM-DD] [--limit N] [--id ID]',
-    '',
-    'defaults to dry-run. --write uploads generated TCX files to Garmin Connect.',
-  ].join('\n')
-}
-
-function parseArgs(argv: string[]): Args {
-  const args: Args = {
-    write: false,
-    sport: 'run',
-    since: null,
-    limit: 0,
-    ids: new Set(),
-    outputDir: null,
-    uploadDelayMs: envNumber('GARMIN_BACKFILL_UPLOAD_DELAY_MS', DEFAULT_UPLOAD_DELAY_MS),
-  }
-  for (let i = 0; i < argv.length; i++) {
-    const arg = argv[i]
-    if (arg === '--') continue
-    if (arg === '--write') args.write = true
-    else if (arg === '--dry-run') args.write = false
-    else if (arg === '--sport') args.sport = parseSport(readArgValue(argv, ++i, arg))
-    else if (arg === '--since') args.since = readArgValue(argv, ++i, arg)
-    else if (arg === '--limit') args.limit = positiveInteger(readArgValue(argv, ++i, arg), arg)
-    else if (arg === '--id') args.ids.add(readArgValue(argv, ++i, arg))
-    else if (arg === '--ids') {
-      for (const id of readArgValue(argv, ++i, arg).split(','))
-        if (id.trim()) args.ids.add(id.trim())
-    } else if (arg === '--out') args.outputDir = readArgValue(argv, ++i, arg)
-    else if (arg === '--delay-ms')
-      args.uploadDelayMs = nonnegativeInteger(readArgValue(argv, ++i, arg), arg)
-    else if (arg === '--help' || arg === '-h') {
-      console.log(usage())
-      process.exit(0)
-    } else throw new Error(`unknown argument ${arg}\n${usage()}`)
-  }
-  if (args.since && !/^\d{4}-\d{2}-\d{2}$/.test(args.since))
-    throw new Error(`--since must be YYYY-MM-DD, got ${args.since}`)
-  return args
-}
-
-function parseSport(value: string): BackfillSport {
-  if (value === 'run' || value === 'swim') return value
-  throw new Error(`--sport must be run or swim, got ${value}`)
-}
-
-function readArgValue(argv: string[], index: number, flag: string): string {
-  const value = argv[index]
-  if (!value || value.startsWith('--')) throw new Error(`${flag} requires a value`)
-  return value
-}
-
-function envNumber(name: string, fallback: number): number {
-  const value = process.env[name]
-  if (!value?.trim()) return fallback
-  return nonnegativeInteger(value, name)
-}
-
-function nonnegativeInteger(value: string, name: string): number {
-  const parsed = Number(value)
-  if (!Number.isInteger(parsed) || parsed < 0)
-    throw new Error(`${name} must be a nonnegative integer`)
-  return parsed
-}
-
-function positiveInteger(value: string, name: string): number {
-  const parsed = Number(value)
-  if (!Number.isInteger(parsed) || parsed <= 0)
-    throw new Error(`${name} must be a positive integer`)
-  return parsed
 }
 
 async function readJsonFile<T>(path: string): Promise<T> {
@@ -303,7 +216,7 @@ function latlngArray(raw: unknown): [number, number][] {
   return out
 }
 
-async function fetchTimedStreams(token: string, id: number): Promise<TimedStravaStreams> {
+async function fetchTimedStreams(token: string, id: string): Promise<TimedStravaStreams> {
   const res = await fetchWithRetry(
     apiUrl(`/activities/${id}/streams`, {
       keys: 'time,latlng,altitude,distance,heartrate,cadence,watts,temp',
@@ -323,231 +236,6 @@ async function fetchTimedStreams(token: string, id: number): Promise<TimedStrava
     cadence: numberArray(raw, 'cadence'),
     watts: numberArray(raw, 'watts'),
     temp: numberArray(raw, 'temp'),
-  }
-}
-
-function finite(value: number | undefined): number | undefined {
-  return value != null && Number.isFinite(value) ? value : undefined
-}
-
-function positiveValue(value: number | undefined): number | undefined {
-  return value != null && Number.isFinite(value) && value > 0 ? value : undefined
-}
-
-function garminSwimStroke(stroke: SwimStroke | null): GarminSwimStroke | undefined {
-  if (stroke === 'kickboard') return 'drill'
-  return stroke ?? undefined
-}
-
-function intervalElapsedSeconds(
-  absolute: string,
-  stored: number | null | undefined,
-  activityStartMs: number,
-): number | null {
-  const time = Date.parse(absolute)
-  const elapsed = Number.isFinite(time) ? (time - activityStartMs) / 1000 : stored
-  if (elapsed == null || !Number.isFinite(elapsed) || elapsed < -1) return null
-  return Math.max(0, elapsed)
-}
-
-function uniformPoolLength(intervals: readonly GarminPoolSwimLength[]): number | null {
-  const first = intervals[0]?.distanceMeters
-  if (first == null || first <= 0) return null
-  return intervals.every(
-    interval => Math.abs(interval.distanceMeters - first) <= Math.max(0.5, first * 0.02),
-  )
-    ? first
-    : null
-}
-
-export function applePoolSwimProjection(
-  activity: RawStravaActivity,
-  swim: AppleSwim | null | undefined,
-): ApplePoolSwimProjection | null {
-  if (!swim?.intervals?.length) return null
-  const activityStartMs = Date.parse(activity.startDate)
-  if (!Number.isFinite(activityStartMs)) return null
-  const lengths: GarminPoolSwimLength[] = []
-  let previousEnd = 0
-  let measuredStrokes = 0
-  for (const interval of swim.intervals) {
-    const start = intervalElapsedSeconds(interval.start, interval.startElapsedS, activityStartMs)
-    const end = intervalElapsedSeconds(interval.end, interval.endElapsedS, activityStartMs)
-    if (
-      start == null ||
-      end == null ||
-      start < previousEnd ||
-      end <= start ||
-      !Number.isFinite(interval.distanceM) ||
-      interval.distanceM <= 0
-    )
-      return null
-    const hasMeasuredStroke =
-      interval.strokeCount != null &&
-      Number.isFinite(interval.strokeCount) &&
-      interval.strokeCount >= 0 &&
-      interval.strokeTimeS != null &&
-      Number.isFinite(interval.strokeTimeS) &&
-      interval.strokeTimeS > 0
-    if (interval.stroke !== 'kickboard' && !hasMeasuredStroke) return null
-    const strokeTime = hasMeasuredStroke
-      ? Math.min(interval.strokeTimeS ?? end - start, end - start)
-      : undefined
-    measuredStrokes += hasMeasuredStroke ? (interval.strokeCount ?? 0) : 0
-    const swimStroke = garminSwimStroke(interval.stroke)
-    lengths.push({
-      startElapsedSeconds: start,
-      endElapsedSeconds: end,
-      distanceMeters: interval.distanceM,
-      ...(strokeTime != null
-        ? { totalStrokes: interval.strokeCount ?? 0, strokeTimeSeconds: strokeTime }
-        : {}),
-      ...(swimStroke ? { swimStroke } : {}),
-    })
-    previousEnd = end
-  }
-  const poolLengthMeters = uniformPoolLength(lengths)
-  if (poolLengthMeters == null) return null
-  const distanceMeters = lengths.reduce((sum, length) => sum + length.distanceMeters, 0)
-  if (Math.abs(distanceMeters - swim.totalM) > Math.max(1, swim.totalM * 0.01)) return null
-  if (
-    swim.strokeCount != null &&
-    Math.abs(measuredStrokes - swim.strokeCount) > Math.max(2, swim.strokeCount * 0.05)
-  )
-    return null
-  const swimEndMs = swim.end ? Date.parse(swim.end) : NaN
-  const swimElapsed = Number.isFinite(swimEndMs) ? (swimEndMs - activityStartMs) / 1000 : 0
-  const elapsedTimeSeconds = Math.max(activity.elapsedTime, previousEnd, swimElapsed)
-  const measuredTime = lengths.reduce(
-    (sum, length) => sum + (length.endElapsedSeconds - length.startElapsedSeconds),
-    0,
-  )
-  const timerTimeSeconds = Math.min(elapsedTimeSeconds, measuredTime)
-  if (timerTimeSeconds <= 0) return null
-  return { distanceMeters, elapsedTimeSeconds, timerTimeSeconds, poolLengthMeters, lengths }
-}
-
-function poolDistanceAtElapsed(
-  lengths: readonly GarminPoolSwimLength[],
-  elapsedSeconds: number,
-): number {
-  let distance = 0
-  for (const length of lengths) {
-    if (elapsedSeconds <= length.startElapsedSeconds) return distance
-    if (elapsedSeconds < length.endElapsedSeconds) {
-      const progress =
-        (elapsedSeconds - length.startElapsedSeconds) /
-        (length.endElapsedSeconds - length.startElapsedSeconds)
-      return distance + length.distanceMeters * progress
-    }
-    distance += length.distanceMeters
-  }
-  return distance
-}
-
-export function shouldDeferPoolSwimForApple(
-  activity: RawStravaActivity,
-  input: GarminSwimFitInput,
-  now = Date.now(),
-): boolean {
-  if (input.kind !== 'pool' || input.lengths?.length) return false
-  const start = Date.parse(activity.startDate)
-  if (!Number.isFinite(start)) return false
-  const end = start + activity.elapsedTime * 1000
-  return now - end >= 0 && now - end < APPLE_SWIM_DEFER_MS
-}
-
-function swimSample(streams: TimedStravaStreams, index: number): GarminSwimSample {
-  const coordinate =
-    streams.latlng.length === streams.time.length ? streams.latlng[index] : undefined
-  const altitudeMeters = finite(streams.altitude[index])
-  const heartRateBpm = positiveValue(streams.heartrate[index])
-  const cadenceRpm = positiveValue(streams.cadence[index])
-  const powerWatts = positiveValue(streams.watts[index])
-  const temperatureCelsius = finite(streams.temp[index])
-  return {
-    elapsedSeconds: streams.time[index],
-    distanceMeters: finite(streams.distance[index]) ?? 0,
-    ...(coordinate ? { latitudeDegrees: coordinate[0], longitudeDegrees: coordinate[1] } : {}),
-    ...(altitudeMeters != null ? { altitudeMeters } : {}),
-    ...(heartRateBpm != null ? { heartRateBpm } : {}),
-    ...(cadenceRpm != null ? { cadenceRpm } : {}),
-    ...(powerWatts != null ? { powerWatts } : {}),
-    ...(temperatureCelsius != null ? { temperatureCelsius } : {}),
-  }
-}
-
-function strictlyTimedSwimSamples(streams: TimedStravaStreams): GarminSwimSample[] {
-  const samples: GarminSwimSample[] = []
-  for (let index = 0; index < streams.time.length; index++) {
-    const sample = swimSample(streams, index)
-    const previous = samples[samples.length - 1]
-    if (!previous) {
-      samples.push(sample)
-      continue
-    }
-    if (sample.elapsedSeconds < previous.elapsedSeconds)
-      throw new Error('Strava swim stream times must be nondecreasing')
-    if (sample.elapsedSeconds > previous.elapsedSeconds) {
-      samples.push(sample)
-      continue
-    }
-    samples[samples.length - 1] = {
-      ...previous,
-      ...sample,
-      distanceMeters:
-        sample.elapsedSeconds === 0 ? 0 : Math.max(previous.distanceMeters, sample.distanceMeters),
-    }
-  }
-  return samples
-}
-
-export function garminSwimFitInput(
-  activity: RawStravaActivity,
-  streams: TimedStravaStreams,
-  appleSwim?: AppleSwim | null,
-): GarminSwimFitInput {
-  const startTime = new Date(activity.startDate)
-  if (!Number.isFinite(startTime.getTime()))
-    throw new Error(`Strava activity ${activity.id} has an invalid start time`)
-  if (streams.time.length < 2)
-    throw new Error(`Strava activity ${activity.id} has fewer than two timed samples`)
-  let samples = strictlyTimedSwimSamples(streams)
-  if (samples.length < 2)
-    throw new Error(`Strava activity ${activity.id} has fewer than two distinct timed samples`)
-  let elapsedTimeSeconds = Math.max(
-    activity.elapsedTime,
-    streams.time[streams.time.length - 1] ?? 0,
-  )
-  const calories = positiveValue(activity.calories ?? undefined)
-  const base = {
-    sourceId: activity.id,
-    name: activity.name,
-    startTime,
-    distanceMeters: activity.distance,
-    elapsedTimeSeconds,
-    timerTimeSeconds: Math.min(activity.movingTime, elapsedTimeSeconds),
-    samples,
-    ...(calories != null ? { calories: Math.round(calories) } : {}),
-  }
-  if (streams.latlng.length === streams.time.length && streams.latlng.length >= 2)
-    return { ...base, kind: 'openWater' }
-  const apple = applePoolSwimProjection(activity, appleSwim)
-  if (!apple) return { ...base, kind: 'pool', poolLengthMeters: 25 }
-  elapsedTimeSeconds = apple.elapsedTimeSeconds
-  samples = samples.map(sample => ({
-    ...sample,
-    distanceMeters: poolDistanceAtElapsed(apple.lengths, sample.elapsedSeconds),
-  }))
-  return {
-    ...base,
-    distanceMeters: apple.distanceMeters,
-    elapsedTimeSeconds,
-    timerTimeSeconds: apple.timerTimeSeconds,
-    samples,
-    kind: 'pool',
-    poolLengthMeters: apple.poolLengthMeters,
-    lengths: apple.lengths,
   }
 }
 
@@ -635,7 +323,8 @@ function sleep(ms: number): Promise<void> {
 
 async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2))
-  const strava = await readJsonFile<StravaRawCache>(STRAVA_CACHE)
+  const strava = await readStravaCacheFile(STRAVA_CACHE)
+  if (!strava) throw new Error('Strava cache is missing')
   const garmin = await readJsonFile<GarminCache>(GARMIN_CACHE)
   const candidates = selectCandidates(strava, garmin, args)
   const apple = args.sport === 'swim' ? await readAppleCache() : null
@@ -737,3 +426,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.ar
     process.exit(1)
   })
 }
+export {
+  applePoolSwimProjection,
+  garminSwimFitInput,
+  shouldDeferPoolSwimForApple,
+} from './backfill-garmin-runs/swim'

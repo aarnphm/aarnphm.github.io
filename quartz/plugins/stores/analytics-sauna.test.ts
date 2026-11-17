@@ -14,7 +14,7 @@ const date = '2026-05-12'
 
 function fixture(entries: readonly Partial<ManualSaunaEntry>[], raw: RawStravaActivity[] = []) {
   const cache: StravaRawCache = {
-    athleteId: 123,
+    athleteId: '123',
     auth: { refreshToken: 'test-token', obtainedAt: 0 },
     lastSync: Date.parse(`${date}T23:00:00Z`),
     lastActivityStart: 0,
@@ -37,7 +37,7 @@ function fixture(entries: readonly Partial<ManualSaunaEntry>[], raw: RawStravaAc
   applyManualSauna(
     payload,
     entries.map((entry, i) => ({
-      id: 8_202_605_121_830 + i,
+      id: String(8_202_605_121_830 + i),
       stravaActivityId: null,
       garminActivityId: null,
       title: 'Evening sauna',
@@ -58,7 +58,7 @@ function fixture(entries: readonly Partial<ManualSaunaEntry>[], raw: RawStravaAc
 
 function ride(id = 1): RawStravaActivity {
   return {
-    id,
+    id: String(id),
     name: 'Warm ride',
     sportType: 'Ride',
     distance: 10_000,
@@ -154,10 +154,10 @@ test('missing sauna HTL remains visible and reduces dose coverage while zero rem
 })
 
 test('a linked sauna contributes once even when its raw recording looks like a routed hot ride', () => {
-  const { cache, payload } = fixture([{ stravaActivityId: 1 }], [ride()])
+  const { cache, payload } = fixture([{ stravaActivityId: '1' }], [ride()])
   const analytics = buildAnalytics(cache, { activityDetails: payload.details })
   assert.equal(analytics.heat.activities.length, 1)
-  assert.equal(analytics.heat.activities[0].id, 1)
+  assert.equal(analytics.heat.activities[0].id, '1')
   assert.equal(analytics.heat.activities[0].sauna?.durationMinutes, 30)
   assert.equal(analytics.heat.series[0].dose, 0.77)
   assert.equal(analytics.heat.sourceCounts.strava, 0)

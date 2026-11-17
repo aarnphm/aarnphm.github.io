@@ -3,6 +3,7 @@ import fs from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import type { RawStravaActivity, StravaStreams } from '../plugins/stores/strava'
 import { readStravaCacheFile } from '../util/strava-cache-file'
+import { stravaId } from '../util/strava-id'
 import {
   buildSurfaceCurrentEstimate,
   findSurfaceCurrentElement,
@@ -33,16 +34,15 @@ interface RequestEvidence {
   error: string | null
 }
 
-function argumentsFromCli(): { id: number | null; force: boolean } {
-  let id: number | null = null
+function argumentsFromCli(): { id: string | null; force: boolean } {
+  let id: string | null = null
   let force = false
   for (let index = 2; index < process.argv.length; index += 1) {
     const argument = process.argv[index]
     if (argument === '--force') force = true
     else if (argument === '--id') {
-      const value = Number(process.argv[++index])
-      if (!Number.isSafeInteger(value) || value <= 0)
-        throw new Error('--id requires a positive Strava activity ID')
+      const value = stravaId(process.argv[++index])
+      if (value === null) throw new Error('--id requires a positive Strava activity ID')
       id = value
     } else throw new Error(`Unknown argument ${argument}; use --id STRAVA_ID and/or --force`)
   }

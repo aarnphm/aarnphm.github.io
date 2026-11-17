@@ -1,8 +1,9 @@
 import type { PowerCurvePoint } from '../plugins/stores/strava'
+import { stravaId } from './strava-id'
 
 interface PowerCurveActivitySpan {
   end: number
-  activityId: number
+  activityId: string
   activityDate: string
 }
 
@@ -47,8 +48,7 @@ const encodeActivities = (curve: readonly PowerCurvePoint[]): string | undefined
     curve.some(
       point =>
         point.activityId == null ||
-        !Number.isInteger(point.activityId) ||
-        point.activityId < 0 ||
+        stravaId(point.activityId) === null ||
         point.activityDate == null ||
         !/^\d{4}-\d{2}-\d{2}$/.test(point.activityDate),
     )
@@ -138,12 +138,11 @@ const decodeActivities = (encoded: unknown, length: number): PowerCurveActivityS
   for (const span of encoded.split(';')) {
     const fields = span.split(',')
     if (fields.length !== 3) return null
-    const activityId = Number(fields[0])
+    const activityId = stravaId(fields[0])
     const activityDate = fields[1]
     const count = Number(fields[2])
     if (
-      !Number.isSafeInteger(activityId) ||
-      activityId < 0 ||
+      activityId === null ||
       !/^\d{4}-\d{2}-\d{2}$/.test(activityDate) ||
       !Number.isSafeInteger(count) ||
       count <= 0 ||

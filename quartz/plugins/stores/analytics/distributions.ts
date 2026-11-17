@@ -30,7 +30,7 @@ export type DistributionCadenceUnit = 'rpm' | 'spm' | 'str/min'
 export type DistributionThermalSource = 'core-app' | 'core-fit'
 
 export interface ActivityDistributionPoint {
-  id: number
+  id: string
   date: string
   startedAt: string
   sport: Sport
@@ -347,7 +347,7 @@ export function buildDistributions(
   zones: StravaZones | null | undefined,
   activityDetails: Readonly<Record<string, StravaActivityDetail>> | undefined,
   streams: Readonly<Record<string, StravaStreams>> | undefined,
-  swimMetrics: ReadonlyMap<number, SwimActivityMetrics>,
+  swimMetrics: ReadonlyMap<string, SwimActivityMetrics>,
   core: CoreBodyTemperatureCache | null | undefined,
   garmin: GarminCache | null | undefined,
   wahoo?: WahooData | null,

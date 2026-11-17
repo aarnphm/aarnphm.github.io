@@ -18,7 +18,7 @@ const emptyAnalyses = {
 }
 
 const detail = (id: number, date: string, sport: string): Record<string, unknown> => ({
-  id,
+  id: String(id),
   date,
   sport,
   device: null,
@@ -399,7 +399,7 @@ test('validates public NOAA modeled current against activity identity and record
     sourceKind: 'modeled',
     formulaId: 'garden-surface-current-v1',
     formulaVersion: 1,
-    activityId: 9,
+    activityId: '9',
     start,
     end: '2026-09-27T19:47:25.000Z',
     computedAt: Date.parse('2026-10-02T20:00:00Z'),

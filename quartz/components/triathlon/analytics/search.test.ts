@@ -9,40 +9,40 @@ const activities: Pick<
   ActivitySummary,
   'id' | 'sport' | 'name' | 'date' | 'virtual' | 'treadmill'
 >[] = [
-  { id: 1, sport: 'bike', name: 'Alpe', date: '2026-09-04', virtual: true },
-  { id: 2, sport: 'run', name: 'Easy', date: '2026-09-05', virtual: true },
-  { id: 3, sport: 'run', name: 'Warm down', date: '2026-09-06', treadmill: true },
-  { id: 4, sport: 'run', name: 'Easy', date: '2026-09-05' },
-  { id: 5, sport: 'bike', name: 'Morning', date: '2026-09-06' },
-  { id: 6, sport: 'swim', name: 'Pool', date: '2026-09-06', virtual: true },
-  { id: 8, sport: 'hike', name: 'Trail', date: '2026-09-06' },
-  { id: 7, sport: 'walk', name: 'Treadmill walk', date: '2026-09-06', treadmill: true },
+  { id: '1', sport: 'bike', name: 'Alpe', date: '2026-09-04', virtual: true },
+  { id: '2', sport: 'run', name: 'Easy', date: '2026-09-05', virtual: true },
+  { id: '3', sport: 'run', name: 'Warm down', date: '2026-09-06', treadmill: true },
+  { id: '4', sport: 'run', name: 'Easy', date: '2026-09-05' },
+  { id: '5', sport: 'bike', name: 'Morning', date: '2026-09-06' },
+  { id: '6', sport: 'swim', name: 'Pool', date: '2026-09-06', virtual: true },
+  { id: '8', sport: 'hike', name: 'Trail', date: '2026-09-06' },
+  { id: '7', sport: 'walk', name: 'Treadmill walk', date: '2026-09-06', treadmill: true },
 ]
 
 const matchingIds = (text: string) =>
   activities.filter(activity => matchesActivityQuery(activity, query(text))).map(a => a.id)
 
 test('virtual filters include virtual runs and rides, excluding outdoor and other sports', () => {
-  assert.deepEqual(matchingIds('filter:virtual'), [1, 2])
-  assert.deepEqual(matchingIds('filter: virtual'), [1, 2])
-  assert.deepEqual(matchingIds(' FILTER: VIRTUAL '), [1, 2])
+  assert.deepEqual(matchingIds('filter:virtual'), ['1', '2'])
+  assert.deepEqual(matchingIds('filter: virtual'), ['1', '2'])
+  assert.deepEqual(matchingIds(' FILTER: VIRTUAL '), ['1', '2'])
 })
 
 test('treadmill filters include treadmill and virtual runs', () => {
-  assert.deepEqual(matchingIds('filter:treadmill'), [2, 3])
-  assert.deepEqual(matchingIds('filter: treadmill'), [2, 3])
+  assert.deepEqual(matchingIds('filter:treadmill'), ['2', '3'])
+  assert.deepEqual(matchingIds('filter: treadmill'), ['2', '3'])
 })
 
 test('environment filters compose with sport, text, sorting, and inclusive dates', () => {
-  assert.deepEqual(matchingIds('filter: virtual filter: run'), [2])
-  assert.deepEqual(matchingIds('filter: bike filter:virtual'), [1])
-  assert.deepEqual(matchingIds('filter: virtual easy sort: distance'), [2])
+  assert.deepEqual(matchingIds('filter: virtual filter: run'), ['2'])
+  assert.deepEqual(matchingIds('filter: bike filter:virtual'), ['1'])
+  assert.deepEqual(matchingIds('filter: virtual easy sort: distance'), ['2'])
   assert.deepEqual(matchingIds('filter: swim filter: virtual'), [])
   const parsed = query('filter: treadmill sort:distance')
   parsed.filterDate = { start: '2026-09-06', end: '2026-09-06' }
   assert.deepEqual(
     activities.filter(a => matchesActivityQuery(a, parsed)).map(a => a.id),
-    [3],
+    ['3'],
   )
   assert.equal(parsed.sortKey, 'distance')
 })
@@ -70,6 +70,6 @@ test('partial commands normalize into the tokens used for suggestions and insert
 })
 
 test('hike filters keep hikes separate from walks', () => {
-  assert.deepEqual(matchingIds('filter:hike'), [8])
-  assert.deepEqual(matchingIds('filter:walk'), [7])
+  assert.deepEqual(matchingIds('filter:hike'), ['8'])
+  assert.deepEqual(matchingIds('filter:walk'), ['7'])
 })

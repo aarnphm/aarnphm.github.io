@@ -5,7 +5,7 @@ import { emptyWahooMetrics, type WahooActivity } from '../plugins/stores/wahoo'
 import { planRouvyWahooPairs, isWahooStravaDuplicate } from './rouvy-wahoo'
 
 const rouvy: RawStravaActivity = {
-  id: 20611099208,
+  id: '20611099208',
   name: 'ROUVY - Overgear',
   deviceName: 'Rouvy',
   sportType: 'VirtualRide',
@@ -51,7 +51,7 @@ const wahoo: WahooActivity = {
 }
 const duplicate: RawStravaActivity = {
   ...rouvy,
-  id: 20611106109,
+  id: '20611106109',
   deviceName: 'Wahoo ELEMNT BOLT 3',
   name: 'Indoor Cycling',
   sportType: 'Ride',
@@ -67,7 +67,7 @@ test('pairs virtual route and native recording despite their different distances
   assert.equal(pairs[0].duplicate?.id, duplicate.id)
 })
 test('requires unique matches in both directions', () => {
-  assert.deepEqual(planRouvyWahooPairs([rouvy, { ...rouvy, id: 2 }], [wahoo], '2026-10-16'), [])
+  assert.deepEqual(planRouvyWahooPairs([rouvy, { ...rouvy, id: '2' }], [wahoo], '2026-10-16'), [])
   assert.deepEqual(
     planRouvyWahooPairs([rouvy], [wahoo, { ...wahoo, id: 'wahoo:2', workoutId: 2 }], '2026-10-16'),
     [],
@@ -93,7 +93,7 @@ test('duplicate suppression requires Wahoo device identity and matching recordin
 })
 test('ambiguous Strava duplicates are never selected for cleanup', () => {
   const pairs = planRouvyWahooPairs(
-    [rouvy, duplicate, { ...duplicate, id: 3 }],
+    [rouvy, duplicate, { ...duplicate, id: '3' }],
     [wahoo],
     '2026-10-16',
   )

@@ -21,7 +21,7 @@ const ride = (
 ): RawStravaActivity => {
   const startDate = new Date(Date.parse('2026-07-01T12:00:00Z') + dayOffset * DAY_MS)
   return {
-    id,
+    id: String(id),
     name,
     sportType: 'Ride',
     distance: metrics.distanceM,
@@ -111,12 +111,12 @@ test('prioritizes repeated routes and falls back to complete ride characteristic
   assert.equal(matched.groups.length, 2)
   assert.deepEqual(
     matched.groups.find(group => group.match === 'route')?.efforts.map(effort => effort.id),
-    [1, 2],
+    ['1', '2'],
   )
   const characteristicGroup = matched.groups.find(group => group.match === 'characteristics')
   assert.deepEqual(
     characteristicGroup?.efforts.map(effort => effort.id),
-    [3, 4],
+    ['3', '4'],
   )
   assert.equal(characteristicGroup?.powerMetric, 'normalized')
   assert.equal(characteristicGroup?.averagePowerWatts, 221)
@@ -158,7 +158,7 @@ test('uses complete-link fallback so a marginal ride cannot bridge characteristi
   assert.equal(matched.groups[0].match, 'characteristics')
   assert.deepEqual(
     matched.groups[0].efforts.map(effort => effort.id),
-    [1, 2],
+    ['1', '2'],
   )
   assert.equal(matched.characteristicMatchedActivityCount, 2)
 })

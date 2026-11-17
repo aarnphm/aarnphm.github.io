@@ -370,7 +370,7 @@ test('treats cached empty analysis arrays as a fetched activity detail', () => {
 test('projects a distance-aligned heart rate trace for route-less pool swims', () => {
   const cache: StravaRawCache = {
     version: 2,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
@@ -457,7 +457,7 @@ test('projects bounded Garmin thermal samples onto a route-less run', () => {
   })
   const cache: StravaRawCache = {
     version: 5,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse(activity.startDate) / 1000),
@@ -575,7 +575,7 @@ test('projects Garmin thermal telemetry without GPS or heart rate onto a route-l
   })
   const cache: StravaRawCache = {
     version: 5,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse(activity.startDate) / 1000),
@@ -666,7 +666,7 @@ test('projects Garmin thermal telemetry without GPS or heart rate onto a route-l
 test('projects a time-aligned heart rate trace for route-less strength training', () => {
   const cache: StravaRawCache = {
     version: 2,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
@@ -744,7 +744,7 @@ test('projects a time-aligned heart rate trace for route-less strength training'
 test('projects a time-aligned heart rate trace for route-less yoga', () => {
   const cache: StravaRawCache = {
     version: 2,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
@@ -789,7 +789,7 @@ test('projects a time-aligned heart rate trace for route-less yoga', () => {
 test('projects a time-aligned heart rate trace for route-less treatment', () => {
   const cache: StravaRawCache = {
     version: 2,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
@@ -837,7 +837,7 @@ test('preserves the recorded peak when sampling route-less heart rate', () => {
   heartrate[203] = 135
   const cache: StravaRawCache = {
     version: 2,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
@@ -869,7 +869,7 @@ test('preserves the recorded peak when sampling route-less heart rate', () => {
 
 function ride(overrides: Partial<RawStravaActivity> = {}): RawStravaActivity {
   return {
-    id: 101,
+    id: '101',
     name: 'Cadence training',
     sportType: 'Ride',
     distance: 61_400,
@@ -885,7 +885,7 @@ function ride(overrides: Partial<RawStravaActivity> = {}): RawStravaActivity {
 
 test('merges late linked Garmin training effect and stamina while retaining outdoor Strava telemetry', () => {
   const activity = ride({
-    id: 20092789179,
+    id: '20092789179',
     distance: 1_000,
     movingTime: 1_789,
     elapsedTime: 1_789,
@@ -903,7 +903,7 @@ test('merges late linked Garmin training effect and stamina while retaining outd
     heartrate: [140, 141, 142, 143, 144, 145],
   }
   const cache: StravaRawCache = {
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: 0 },
     lastSync: 0,
     lastActivityStart: 0,
@@ -1046,7 +1046,7 @@ test('merges late linked Garmin training effect and stamina while retaining outd
 
 test('merges an explicit virtual route by time and prefers Strava summaries across payload and feed', () => {
   const activity = ride({
-    id: 20037941355,
+    id: '20037941355',
     distance: 66_800,
     movingTime: 10,
     elapsedTime: 10,
@@ -1059,7 +1059,7 @@ test('merges an explicit virtual route by time and prefers Strava summaries acro
   })
   const time = Array.from({ length: 11 }, (_, index) => index)
   const cache: StravaRawCache = {
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: 0 },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: 0,
@@ -1267,7 +1267,7 @@ test('projects a calculated cycling performance condition when Garmin omits its 
   const time = Array.from({ length: sampleCount }, (_, index) => index)
   const cache: StravaRawCache = {
     version: 6,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse(activity.startDate) / 1000),
@@ -1332,16 +1332,16 @@ test('projects a calculated cycling performance condition when Garmin omits its 
 
 test('projects each activity equipment assignment with Strava provenance through JSON', () => {
   const cache: StravaRawCache = {
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: 1 },
     lastSync: 1,
     lastActivityStart: 1,
     activities: {
       101: ride({ gearId: 'b1' }),
-      102: ride({ id: 102, gearId: 'b2' }),
-      103: ride({ id: 103, sportType: 'Run', gearId: 's1' }),
-      104: ride({ id: 104, gearId: null }),
-      105: ride({ id: 105, gearId: 'b-missing' }),
+      102: ride({ id: '102', gearId: 'b2' }),
+      103: ride({ id: '103', sportType: 'Run', gearId: 's1' }),
+      104: ride({ id: '104', gearId: null }),
+      105: ride({ id: '105', gearId: 'b-missing' }),
     },
     gear: {
       b1: { id: 'b1', name: 'Soloist', brandName: null, modelName: null, distanceM: 1000 },
@@ -1380,11 +1380,15 @@ test('projects each activity equipment assignment with Strava provenance through
 test('projects authored computer text without changing provider data or unrelated activities', () => {
   const activity = ride()
   const cache: StravaRawCache = {
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: 1 },
     lastSync: 1,
     lastActivityStart: 1,
-    activities: { 101: activity, 102: ride({ id: 102 }), 103: ride({ id: 103, sportType: 'Run' }) },
+    activities: {
+      101: activity,
+      102: ride({ id: '102' }),
+      103: ride({ id: '103', sportType: 'Run' }),
+    },
   }
   const garmin: GarminCache = {
     lastSync: 1,
@@ -1482,7 +1486,7 @@ test('projects supported run, walk, and swim recording devices', () => {
     const activity = ride({ sportType: current.sportType, deviceName: current.deviceName })
     const cache: StravaRawCache = {
       version: 6,
-      athleteId: 1,
+      athleteId: '1',
       auth: { refreshToken: '', obtainedAt: Date.now() },
       lastSync: Date.parse('2026-06-08T00:00:00Z'),
       lastActivityStart: Math.floor(Date.parse(activity.startDate) / 1000),
@@ -1499,7 +1503,7 @@ test('projects supported run, walk, and swim recording devices', () => {
 test('projects exact provider reports and removes them when the refreshed description does', () => {
   const cache: StravaRawCache = {
     version: 5,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: 1 },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
@@ -1542,7 +1546,7 @@ test('manual fueling overrides Garmin fueling by Strava activity ID', () => {
   fueling.caloriesConsumed = 200
   const cache: StravaRawCache = {
     version: 1,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
@@ -1570,9 +1574,9 @@ test('manual fueling overrides Garmin fueling by Strava activity ID', () => {
   const payload = buildPayload(cache, null, garmin, '2026-06-01')
 
   assert.equal(payload.details['101'].fueling?.source, 'garmin')
-  applyManualFueling(payload, [{ date: '2026-06-08', activityId: 101, caloriesConsumed: 140 }])
+  applyManualFueling(payload, [{ date: '2026-06-08', activityId: '101', caloriesConsumed: 140 }])
   assert.equal(payload.details['101'].fueling?.source, 'garmin')
-  applyManualFueling(payload, [{ date: '2026-06-07', activityId: 101, caloriesConsumed: 140 }])
+  applyManualFueling(payload, [{ date: '2026-06-07', activityId: '101', caloriesConsumed: 140 }])
   assert.deepEqual(payload.details['101'].fueling, {
     caloriesConsumed: 140,
     carbsConsumedG: null,
@@ -1589,7 +1593,7 @@ test('manual fueling overrides Garmin fueling by Strava activity ID', () => {
 test('projects Garmin intensity, training effect, and exercise load into activity details', () => {
   const cache: StravaRawCache = {
     version: 1,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
@@ -1638,7 +1642,7 @@ test('projects Garmin intensity, training effect, and exercise load into activit
 test('uses an overlapping Garmin recording for training effect without replacing the primary match', () => {
   const cache: StravaRawCache = {
     version: 1,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
@@ -1697,7 +1701,7 @@ test('uses an overlapping Garmin recording for training effect without replacing
 test('manual strength attaches only to the matching strength activity and date', () => {
   const cache: StravaRawCache = {
     version: 1,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
@@ -1706,7 +1710,7 @@ test('manual strength attaches only to the matching strength activity and date',
   const payload = buildPayload(cache, null, null, '2026-06-01')
   const entry = {
     date: '2026-06-07',
-    activityId: 101,
+    activityId: '101',
     volumeKg: 816.512,
     totalSets: 15,
     totalReps: 90,
@@ -1739,7 +1743,7 @@ test('manual strength attaches only to the matching strength activity and date',
 test('manual moves attach only to the matching activity and date', () => {
   const cache: StravaRawCache = {
     version: 1,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
@@ -1753,9 +1757,9 @@ test('manual moves attach only to the matching activity and date', () => {
     { name: 'Roll Center', sets: [{ repetitions: 4, perSide: false }] },
   ]
 
-  applyManualMoves(payload, [{ date: '2026-06-08', activityId: 101, moves }])
+  applyManualMoves(payload, [{ date: '2026-06-08', activityId: '101', moves }])
   assert.equal(payload.details['101'].moves, undefined)
-  applyManualMoves(payload, [{ date: '2026-06-07', activityId: 101, moves }])
+  applyManualMoves(payload, [{ date: '2026-06-07', activityId: '101', moves }])
   assert.deepEqual(payload.details['101'].moves, { entries: moves, source: 'manual' })
 })
 
@@ -1782,7 +1786,7 @@ test('preserves parsed sauna locations and lap phases through standalone and lin
         ? buildPayload(
             {
               version: 1,
-              athleteId: 1,
+              athleteId: '1',
               auth: { refreshToken: '', obtainedAt: 0 },
               lastSync: 0,
               lastActivityStart: 0,
@@ -1792,7 +1796,7 @@ test('preserves parsed sauna locations and lap phases through standalone and lin
             null,
             '2026-06-01',
           )
-        : emptyPayload(1)
+        : emptyPayload('1')
       applyManualSauna(payload, [parsed.sauna], [])
       const id = String(linked ? 101 : parsed.sauna.id)
       assert.deepEqual(payload.details[id].sauna?.location, parsed.sauna.location)
@@ -1814,12 +1818,12 @@ test('preserves parsed sauna locations and lap phases through standalone and lin
 })
 
 test('projects a manual sauna session with interval-matched Oura heart rate', () => {
-  const payload = emptyPayload(1)
+  const payload = emptyPayload('1')
   applyManualSauna(
     payload,
     [
       {
-        id: 8_202_608_231_830,
+        id: '8202608231830',
         stravaActivityId: null,
         garminActivityId: null,
         title: 'Untangle',
@@ -1867,7 +1871,7 @@ test('projects a manual sauna session with interval-matched Oura heart rate', ()
     {
       date: '2026-08-23',
       durationS: 4_500,
-      items: [{ id: 8_202_608_231_830, sport: 'sauna', distanceKm: 0, durationS: 4_500 }],
+      items: [{ id: '8202608231830', sport: 'sauna', distanceKm: 0, durationS: 4_500 }],
       dominant: 'sauna',
     },
   ])
@@ -1878,7 +1882,7 @@ test('projects a manual sauna session with interval-matched Oura heart rate', ()
 test('attaches a manual sauna session to its canonical Strava activity', () => {
   const cache: StravaRawCache = {
     version: 1,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
@@ -1924,7 +1928,7 @@ test('attaches a manual sauna session to its canonical Strava activity', () => {
     },
   }
   const weatherActivity: WeatherActivity = {
-    activityId: 102,
+    activityId: '102',
     date: '2026-06-07',
     start: '2026-06-07T11:00:00Z',
     end: '2026-06-07T12:00:00Z',
@@ -1955,8 +1959,8 @@ test('attaches a manual sauna session to its canonical Strava activity', () => {
     days: summarizeWeatherDays({ 102: weatherActivity }),
   }
   const entry = {
-    id: 8_202_606_070_730,
-    stravaActivityId: 101,
+    id: '8202606070730',
+    stravaActivityId: '101',
     garminActivityId,
     title: 'Untangle',
     date: '2026-06-07',
@@ -2020,14 +2024,14 @@ test('attaches a manual sauna session to its canonical Strava activity', () => {
     source: 'manual',
   })
   assert.deepEqual(payload.days.find(day => day.date === '2026-06-07')?.items, [
-    { id: 101, sport: 'sauna', distanceKm: 0, durationS: 4_500 },
+    { id: '101', sport: 'sauna', distanceKm: 0, durationS: 4_500 },
   ])
   assert.deepEqual(payload.strengthTotal, { count: 0, movingTimeS: 0 })
   assert.equal(payload.totalCount, 1)
   assert.equal(payload.totalTimeS, 4_500)
 
-  const missing = emptyPayload(1)
-  applyManualSauna(missing, [{ ...entry, stravaActivityId: 999 }], [], 'America/Toronto')
+  const missing = emptyPayload('1')
+  applyManualSauna(missing, [{ ...entry, stravaActivityId: '999' }], [], 'America/Toronto')
   assert.deepEqual(missing.details, {})
   assert.equal(missing.totalCount, 0)
 })
@@ -2039,7 +2043,7 @@ test('emits geometry-preserved map data separately from compact telemetry route'
   ])
   const cache: StravaRawCache = {
     version: 1,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
@@ -2081,7 +2085,7 @@ test('aligns Garmin respiration and CORE samples onto the Strava route timeline'
   })
   const cache: StravaRawCache = {
     version: 3,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse(activity.startDate) / 1000),
@@ -2196,7 +2200,7 @@ test('projects native Forerunner running dynamics and run/walk intervals', () =>
   })
   const cache: StravaRawCache = {
     version: 5,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-09-03T20:00:00Z'),
     lastActivityStart: Math.floor(Date.parse(activity.startDate) / 1000),
@@ -2339,7 +2343,7 @@ test('projects Garmin-native performance condition onto a cycling route', () => 
     startDateLocal: '2026-06-07T08:00:00',
   })
   const cache: StravaRawCache = {
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse(activity.startDate) / 1000),
@@ -2407,7 +2411,7 @@ test('projects Garmin FIT gear states and cycling dynamics onto ride distance', 
   })
   const cache: StravaRawCache = {
     version: 3,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse(activity.startDate) / 1000),
@@ -2521,7 +2525,7 @@ test('projects Wahoo balance, respiration, shifting, and cycling dynamics onto a
   })
   const cache: StravaRawCache = {
     version: 4,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse(activity.startDate) / 1000),
@@ -2843,7 +2847,7 @@ test('projects Wahoo balance, respiration, shifting, and cycling dynamics onto a
     196,
     170,
     cache.lastSync,
-    [{ activityId: 101, garminActivityId: 123, virtual: true }],
+    [{ activityId: '101', garminActivityId: 123, virtual: true }],
   ).details['101']
   assert.equal(virtual.distanceKm, 2)
   assert.equal(virtual.computer, 'wahoo')
@@ -2912,7 +2916,7 @@ test('projects Wahoo balance, respiration, shifting, and cycling dynamics onto a
     196,
     170,
     cache.lastSync,
-    [{ activityId: 101, garminActivityId: 123, virtual: false }],
+    [{ activityId: '101', garminActivityId: 123, virtual: false }],
   ).details['101']
   assert.equal(outdoor.virtual, false)
   assert.equal(outdoor.distanceKm, 2)
@@ -2994,7 +2998,7 @@ test('projects Wahoo respiration at 500 ms from Garmin-calibrated heart rate', (
   })
   const cache: StravaRawCache = {
     version: 4,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse(activity.startDate) / 1000),
@@ -3129,7 +3133,7 @@ function timedRideCache(increments: (i: number) => number, n = 100): StravaRawCa
   for (let i = 1; i < n; i++) distance.push(distance[i - 1] + increments(i))
   return {
     version: 1,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
@@ -3201,7 +3205,7 @@ function analysisRange(
   overrides: Partial<RawStravaAnalysisRange> = {},
 ): RawStravaAnalysisRange {
   return {
-    id,
+    id: String(id),
     name,
     elapsedTime: 10,
     movingTime: 10,
@@ -3273,7 +3277,7 @@ test('projects Strava lap and segment timestamps when recording indices disagree
     ]
     const cache: StravaRawCache = {
       version: 3,
-      athleteId: 1,
+      athleteId: '1',
       auth: { refreshToken: '', obtainedAt: 0 },
       lastSync: Date.parse('2026-06-08T00:00:00Z'),
       lastActivityStart: 0,
@@ -3361,7 +3365,7 @@ test('preserves zero-distance sauna laps, native duration, and exact HR boundary
   })
   const cache: StravaRawCache = {
     version: 3,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: 0,
@@ -3479,7 +3483,7 @@ test('emits exact elapsed time and bounded local speed at forced analysis bounda
   })
   const cache: StravaRawCache = {
     version: 3,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse(activity.startDate) / 1000),
@@ -3616,7 +3620,7 @@ test('keeps even route coverage when segment boundaries exceed the sampling budg
   const distance = Array.from({ length: points }, (_, index) => index * 61.4)
   const cache: StravaRawCache = {
     version: 3,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
@@ -3664,7 +3668,7 @@ test('keeps dense map route continuous across GPS jumps', () => {
   ]
   const cache: StravaRawCache = {
     version: 1,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
@@ -3696,7 +3700,7 @@ test('keeps sparse but plausible map samples continuous', () => {
   ]
   const cache: StravaRawCache = {
     version: 1,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
@@ -3722,7 +3726,7 @@ test('keeps sparse but plausible map samples continuous', () => {
 test('merges WeatherKit wind into activity detail and day health', () => {
   const cache: StravaRawCache = {
     version: 1,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
@@ -3741,7 +3745,7 @@ test('merges WeatherKit wind into activity detail and day health', () => {
     },
   }
   const activity: WeatherActivity = {
-    activityId: 101,
+    activityId: '101',
     date: '2026-06-07',
     start: '2026-06-07T11:29:55.000Z',
     end: '2026-06-07T13:34:55.000Z',
@@ -3795,7 +3799,7 @@ test('merges WeatherKit wind into activity detail and day health', () => {
 
 test('uses nearest same-day weather for route-less swim and strength activities', () => {
   const swim = ride({
-    id: 102,
+    id: '102',
     name: 'Pool swim',
     sportType: 'Swim',
     distance: 900,
@@ -3805,7 +3809,7 @@ test('uses nearest same-day weather for route-less swim and strength activities'
     startDateLocal: '2026-06-07T10:00:00',
   })
   const strength = ride({
-    id: 103,
+    id: '103',
     name: 'Weight training',
     sportType: 'WeightTraining',
     distance: 0,
@@ -3816,14 +3820,14 @@ test('uses nearest same-day weather for route-less swim and strength activities'
   })
   const cache: StravaRawCache = {
     version: 1,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse(swim.startDate) / 1000),
     activities: { 101: ride(), 102: swim, 103: strength },
   }
   const activity: WeatherActivity = {
-    activityId: 101,
+    activityId: '101',
     date: '2026-06-07',
     start: '2026-06-07T11:29:55.000Z',
     end: '2026-06-07T13:34:55.000Z',
@@ -3862,7 +3866,7 @@ test('uses nearest same-day weather for route-less swim and strength activities'
 test('buildPayload keeps late evening syncs on the local calendar day', () => {
   const cache: StravaRawCache = {
     version: 1,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-07-01T02:45:00.000Z'),
     lastActivityStart: Math.floor(Date.parse('2026-07-01T01:11:01Z') / 1000),
@@ -3889,20 +3893,20 @@ test('uses an inclusive 42-day window for the six-week power reference', () => {
   })
   const cache: StravaRawCache = {
     version: 2,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-07-13T12:00:00Z'),
     lastActivityStart: Math.floor(Date.parse('2026-06-02T12:00:00Z') / 1000),
     activities: {
       101: ride({
-        id: 101,
+        id: '101',
         movingTime: 5,
         elapsedTime: 5,
         startDate: '2026-06-01T12:00:00Z',
         startDateLocal: '2026-06-01T12:00:00',
       }),
       102: ride({
-        id: 102,
+        id: '102',
         movingTime: 5,
         elapsedTime: 5,
         startDate: '2026-06-02T12:00:00Z',
@@ -3915,7 +3919,7 @@ test('uses an inclusive 42-day window for the six-week power reference', () => {
   const payload = buildPayload(cache, null, null, '2026-06-01', null, null, null, 'UTC')
   assert.deepEqual(
     payload.powerCurveRef.find(point => point.s === 1),
-    { s: 1, w: 500, activityId: 102, activityDate: '2026-06-02' },
+    { s: 1, w: 500, activityId: '102', activityDate: '2026-06-02' },
   )
 })
 
@@ -3929,27 +3933,27 @@ test('builds the calendar-year power reference outside the visible activity wind
   })
   const cache: StravaRawCache = {
     version: 2,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-07-13T12:00:00Z'),
     lastActivityStart: Math.floor(Date.parse('2026-07-14T12:00:00Z') / 1000),
     activities: {
       101: ride({
-        id: 101,
+        id: '101',
         movingTime: 5,
         elapsedTime: 5,
         startDate: '2026-01-15T12:00:00Z',
         startDateLocal: '2026-01-15T12:00:00',
       }),
       102: ride({
-        id: 102,
+        id: '102',
         movingTime: 5,
         elapsedTime: 5,
         startDate: '2026-06-02T12:00:00Z',
         startDateLocal: '2026-06-02T12:00:00',
       }),
       103: ride({
-        id: 103,
+        id: '103',
         movingTime: 5,
         elapsedTime: 5,
         startDate: '2026-07-14T12:00:00Z',
@@ -3963,11 +3967,11 @@ test('builds the calendar-year power reference outside the visible activity wind
   assert.equal(payload.details['101']?.date, '2026-01-15')
   assert.deepEqual(
     payload.powerCurveRef.find(point => point.s === 1),
-    { s: 1, w: 500, activityId: 102, activityDate: '2026-06-02' },
+    { s: 1, w: 500, activityId: '102', activityDate: '2026-06-02' },
   )
   assert.deepEqual(
     payload.powerCurveYearRef.find(point => point.s === 1),
-    { s: 1, w: 900, activityId: 101, activityDate: '2026-01-15' },
+    { s: 1, w: 900, activityId: '101', activityDate: '2026-01-15' },
   )
   assert.equal(payload.powerCurveYear, 2026)
 })
@@ -3976,7 +3980,7 @@ test('builds separate running power references with inclusive dates and historic
   const streams: Record<string, StravaStreams> = {}
   const cache: StravaRawCache = {
     version: 2,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: 0 },
     lastSync: Date.parse('2026-07-13T12:00:00Z'),
     lastActivityStart: 0,
@@ -3996,7 +4000,7 @@ test('builds separate running power references with inclusive dates and historic
     const duration = effort.id === 205 ? 1_200 : 5
     const time = Array.from({ length: duration }, (_, index) => index)
     cache.activities[String(effort.id)] = ride({
-      id: effort.id,
+      id: String(effort.id),
       sportType: effort.sportType,
       movingTime: duration,
       elapsedTime: duration,
@@ -4015,17 +4019,17 @@ test('builds separate running power references with inclusive dates and historic
   assert.equal(payload.powerCurveYear, 2026)
   assert.deepEqual(
     payload.runPowerCurveRef.find(point => point.s === 5),
-    { s: 5, w: 500, activityId: 204, activityDate: '2026-06-02' },
+    { s: 5, w: 500, activityId: '204', activityDate: '2026-06-02' },
   )
   assert.deepEqual(
     payload.runPowerCurveYearRef.find(point => point.s === 5),
-    { s: 5, w: 700, activityId: 202, activityDate: '2026-01-01' },
+    { s: 5, w: 700, activityId: '202', activityDate: '2026-01-01' },
   )
   assert.equal(payload.powerCurveRef[0].w, 2_000)
   assert.deepEqual(payload.runPowerCurveRef.at(-1), {
     s: 1_200,
     w: 400,
-    activityId: 205,
+    activityId: '205',
     activityDate: '2026-07-13',
   })
   assert.equal(payload.powerCurveYearRef[0].w, 2_000)
@@ -4045,20 +4049,20 @@ test('retains the winning activity at every aggregate power duration', () => {
   })
   const cache: StravaRawCache = {
     version: 2,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-08-13T12:00:00Z'),
     lastActivityStart: Math.floor(Date.parse('2026-08-12T12:00:00Z') / 1000),
     activities: {
       101: ride({
-        id: 101,
+        id: '101',
         movingTime: 4,
         elapsedTime: 4,
         startDate: '2026-08-11T12:00:00Z',
         startDateLocal: '2026-08-11T08:00:00',
       }),
       102: ride({
-        id: 102,
+        id: '102',
         movingTime: 4,
         elapsedTime: 4,
         startDate: '2026-08-12T12:00:00Z',
@@ -4071,11 +4075,11 @@ test('retains the winning activity at every aggregate power duration', () => {
   const curve = buildPayload(cache, null, null, '2026-08-01', null, null, null, 'UTC').powerCurveRef
   assert.deepEqual(
     curve.find(point => point.s === 1),
-    { s: 1, w: 500, activityId: 101, activityDate: '2026-08-11' },
+    { s: 1, w: 500, activityId: '101', activityDate: '2026-08-11' },
   )
   assert.deepEqual(
     curve.find(point => point.s === 2),
-    { s: 2, w: 350, activityId: 102, activityDate: '2026-08-12' },
+    { s: 2, w: 350, activityId: '102', activityDate: '2026-08-12' },
   )
 })
 
@@ -4095,7 +4099,7 @@ test('fits critical power from complete device-power windows', () => {
   }
   const activity = (id: number, durationS: number, deviceWatts = true): RawStravaActivity =>
     ride({
-      id,
+      id: String(id),
       movingTime: durationS,
       elapsedTime: durationS,
       deviceWatts,
@@ -4104,7 +4108,7 @@ test('fits critical power from complete device-power windows', () => {
     })
   const cache: StravaRawCache = {
     version: 2,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-08-13T12:00:00Z'),
     lastActivityStart: Math.floor(Date.parse('2026-08-05T12:00:00Z') / 1000),
@@ -4135,7 +4139,7 @@ test('fits critical power from complete device-power windows', () => {
   assert.equal(payload.criticalPower.confidence, 'medium')
   assert.deepEqual(
     payload.criticalPower.anchors.map(anchor => anchor.activityId),
-    [1, 2, 3],
+    ['1', '2', '3'],
   )
   assert.deepEqual(payload.criticalPowerYear, {
     ...payload.criticalPower,
@@ -4144,7 +4148,7 @@ test('fits critical power from complete device-power windows', () => {
   })
   assert.deepEqual(
     [1, 2, 3, 6].map(id => payload.details[String(id)]?.id),
-    [1, 2, 3, 6],
+    ['1', '2', '3', '6'],
   )
 })
 
@@ -4154,13 +4158,13 @@ test('fits activity critical power from one ride only', () => {
   const watts = time.map(second => (second < 180 ? 250 + 10_000 / 180 : 250))
   const cache: StravaRawCache = {
     version: 2,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-08-13T12:00:00Z'),
     lastActivityStart: Math.floor(Date.parse('2026-08-12T12:00:00Z') / 1000),
     activities: {
       101: ride({
-        id: 101,
+        id: '101',
         movingTime: durationS,
         elapsedTime: durationS,
         deviceWatts: true,
@@ -4183,7 +4187,7 @@ test('fits activity critical power from one ride only', () => {
   assert.equal(estimate.independentEffortCount, 1)
   assert.deepEqual(
     estimate.anchors.map(anchor => anchor.activityId),
-    [101, 101, 101],
+    ['101', '101', '101'],
   )
 })
 
@@ -4193,7 +4197,7 @@ test('samples every second for the full power curve', () => {
   const seconds = Array.from({ length }, (_, index) => index)
   const cache: StravaRawCache = {
     version: 2,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
@@ -4228,7 +4232,7 @@ test('samples per-second power curves through the full stream duration', () => {
   const seconds = Array.from({ length: streamDurationS }, (_, index) => index)
   const cache: StravaRawCache = {
     version: 2,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
@@ -4255,7 +4259,7 @@ test('samples per-second power curves through the full stream duration', () => {
   assert.deepEqual(payload.powerCurveRef.at(-1), {
     s: streamDurationS,
     w: 200,
-    activityId: 101,
+    activityId: '101',
     activityDate: '2026-06-07',
   })
 })
@@ -4263,7 +4267,7 @@ test('samples per-second power curves through the full stream duration', () => {
 test('keeps Strava power inclusive while projecting a zero-excluded cycling view', () => {
   const cache: StravaRawCache = {
     version: 2,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
@@ -4305,7 +4309,7 @@ test('derives elapsed cycling efforts with Garmin weight and ClimbPro segments',
   const points = 10
   const cache: StravaRawCache = {
     version: 2,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse(activity.startDate) / 1000),
@@ -4578,7 +4582,7 @@ test('derives elapsed cycling efforts with Garmin weight and ClimbPro segments',
 test('projects running distance efforts without power and preserves elapsed pauses', () => {
   const cache: StravaRawCache = {
     auth: { refreshToken: '', obtainedAt: 0 },
-    athleteId: 1,
+    athleteId: '1',
     lastSync: 0,
     lastActivityStart: 0,
     activities: {
@@ -4612,7 +4616,7 @@ test('estimates walk performance condition across the recorded HR session when t
   const time = Array.from({ length: 601 }, (_, index) => index)
   const cache: StravaRawCache = {
     auth: { refreshToken: '', obtainedAt: 0 },
-    athleteId: 1,
+    athleteId: '1',
     lastSync: 0,
     lastActivityStart: 0,
     activities: { '101': activity },
@@ -4628,7 +4632,7 @@ test('estimates walk performance condition across the recorded HR session when t
   }
   assert.ok(cache.streams)
   for (let id = 102; id <= 106; id++) {
-    cache.activities[id] = ride({ id, distance: 1, movingTime: 1, elapsedTime: 1 })
+    cache.activities[id] = ride({ id: String(id), distance: 1, movingTime: 1, elapsedTime: 1 })
     cache.streams[id] = {
       time: [0, 1],
       latlng: [
@@ -4669,7 +4673,7 @@ test('projects walking metabolic power with same-day weight while preserving pro
   const time = Array.from({ length: 61 }, (_, index) => index * 10)
   const cache: StravaRawCache = {
     auth: { refreshToken: '', obtainedAt: 0 },
-    athleteId: 1,
+    athleteId: '1',
     lastSync: 0,
     lastActivityStart: 0,
     activities: {
@@ -4731,7 +4735,7 @@ test('projects partial HR condition into all activity kinds while retaining tele
     const time = Array.from({ length: 126 }, (_, index) => index * 5)
     const cache: StravaRawCache = {
       auth: { refreshToken: '', obtainedAt: 0 },
-      athleteId: 1,
+      athleteId: '1',
       lastSync: 0,
       lastActivityStart: 0,
       activities: {
@@ -4797,7 +4801,7 @@ test('projects Wahoo FIT torque into exact effort windows and serialized CP anch
     lastSync: syncedAt,
     activities: {
       [id]: {
-        id,
+        id: String(id),
         name: 'FTP fixture',
         sport: 'bike',
         startDate: fit.startDate,
@@ -4822,7 +4826,7 @@ test('projects Wahoo FIT torque into exact effort windows and serialized CP anch
     summitSegments: { [id]: fit.summitSegments },
   }
   const cache: StravaRawCache = {
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: syncedAt },
     lastSync: syncedAt,
     lastActivityStart: Date.parse(fit.startDate),
@@ -4839,7 +4843,7 @@ test('projects Wahoo FIT torque into exact effort windows and serialized CP anch
     },
     activities: {
       101: {
-        id: 101,
+        id: '101',
         name: 'FTP fixture',
         sportType: 'Ride',
         startDate: fit.startDate,
@@ -4866,7 +4870,7 @@ test('projects Wahoo FIT torque into exact effort windows and serialized CP anch
     null,
     null,
     syncedAt,
-    [{ activityId: 101, garminActivityId: null, virtual: false, wahooFitPath: path }],
+    [{ activityId: '101', garminActivityId: null, virtual: false, wahooFitPath: path }],
   )
   const detail = payload.details['101']
   assert.ok(detail.cyclingTorque)
@@ -4996,7 +5000,7 @@ test('projects Wahoo FIT torque into exact effort windows and serialized CP anch
     null,
     null,
     syncedAt,
-    [{ activityId: 101, garminActivityId: 123, virtual: true, wahooFitPath: path }],
+    [{ activityId: '101', garminActivityId: 123, virtual: true, wahooFitPath: path }],
   ).details['101'].cyclingPowerTrace
   assert.ok(virtual)
   assert.equal(virtual.source, 'wahoo')
@@ -5014,7 +5018,7 @@ test('builds cycling averages from original Strava device power and preserves mi
   const time = Array.from({ length: 361 }, (_, index) => index)
   const activity = ride({ movingTime: 360, elapsedTime: 360, deviceWatts: true })
   const cache: StravaRawCache = {
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: 0 },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Date.parse(activity.startDate),

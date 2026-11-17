@@ -10,8 +10,8 @@ import {
 
 test('builds and validates the generated Strava activity date index', () => {
   const index = buildStravaActivityIndex({
-    '19745591953': { id: 19745591953, date: '2026-08-14' },
-    '19745591954': { id: 19745591954, date: '2026-08-15' },
+    '19745591953': { id: '19745591953', date: '2026-08-14' },
+    '19745591954': { id: '19745591954', date: '2026-08-15' },
   })
 
   assert.deepEqual(index, {
@@ -27,7 +27,7 @@ test('builds and validates the generated Strava activity date index', () => {
     false,
   )
   assert.throws(
-    () => buildStravaActivityIndex({ wrong: { id: 19745591953, date: '2026-08-14' } }),
+    () => buildStravaActivityIndex({ wrong: { id: '19745591953', date: '2026-08-14' } }),
     /invalid ID/,
   )
 })

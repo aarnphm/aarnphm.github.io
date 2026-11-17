@@ -30,7 +30,7 @@ const hasPrivateAnalysisData = (value: unknown): boolean => {
 const isProviderProvenance = (
   value: Record<string, unknown>,
   provider: 'pelotan' | 'mywindsock',
-  activityId: number,
+  activityId: string,
 ): boolean =>
   value.source === 'provider-native' &&
   value.provider === provider &&
@@ -42,7 +42,7 @@ const isProviderProvenance = (
 
 const UV_SEVERITIES = new Set(['negligible', 'low', 'moderate', 'high', 'serious', 'extreme'])
 
-const isPelotanReport = (value: unknown, activityId: number): boolean => {
+const isPelotanReport = (value: unknown, activityId: string): boolean => {
   if (value === null) return true
   return (
     isRecord(value) &&
@@ -57,7 +57,7 @@ const isPelotanReport = (value: unknown, activityId: number): boolean => {
   )
 }
 
-const isMyWindsockReport = (value: unknown, activityId: number): boolean => {
+const isMyWindsockReport = (value: unknown, activityId: string): boolean => {
   if (value === null) return true
   if (!isRecord(value) || !isProviderProvenance(value, 'mywindsock', activityId)) return false
   return (
@@ -84,7 +84,7 @@ const ROUTE_SAMPLE_KEYS = new Set([
   'movingAirPenaltyKm',
 ])
 
-const isMyWindsockRoute = (value: unknown, activityId: number, elapsedTimeS: number): boolean => {
+const isMyWindsockRoute = (value: unknown, activityId: string, elapsedTimeS: number): boolean => {
   if (value == null) return true
   if (
     !isRecord(value) ||
@@ -180,7 +180,7 @@ const isMonotonicSamples = (samples: readonly unknown[], elapsedTimeS: number): 
 
 const isEnvironmentEstimate = (
   value: unknown,
-  activityId: number,
+  activityId: string,
   elapsedTimeS: number,
   activityStart: unknown,
 ): boolean => {
@@ -279,7 +279,7 @@ const isGardenWind = (value: unknown): boolean => {
 
 export const isActivityAnalyses = (
   value: unknown,
-  activityId: number,
+  activityId: string,
   elapsedTimeS: number,
   activityStart: unknown,
 ): boolean => {

@@ -20,9 +20,9 @@ export const plannedTabStyle = (label: string): string =>
 /** The section builder names its tabs `tri-workout-analysis-<activity id>-<view>-tab`. */
 export const workoutAnalysisOwner = (
   tabId: string | undefined,
-): { base: string; activityId: number } | null => {
-  const match = /^(tri-workout-analysis-(\d+))-[a-z-]+-tab$/.exec(tabId ?? '')
-  return match ? { base: match[1], activityId: Number(match[2]) } : null
+): { base: string; activityId: string } | null => {
+  const match = /^(tri-workout-analysis-([1-9]\d*))-[a-z-]+-tab$/.exec(tabId ?? '')
+  return match ? { base: match[1], activityId: match[2] } : null
 }
 
 export const plannedTabAttributes = (base: string): Record<string, string> => ({

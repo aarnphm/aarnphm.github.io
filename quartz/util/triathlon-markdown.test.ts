@@ -73,7 +73,7 @@ const activity = (
 })
 
 const activityDetail = (): StravaActivityDetail => ({
-  id: 1,
+  id: '1',
   sport: 'run',
   name: 'current activity',
   date: '2026-07-30',
@@ -131,7 +131,7 @@ const activityDetail = (): StravaActivityDetail => ({
   powerZones: [0, 250, 750, 1_200, 600],
   powerHist: null,
   powerWithoutZeros: null,
-  powerCurve: [{ s: 30, w: 500, activityId: 1, activityDate: '2026-07-30' }],
+  powerCurve: [{ s: 30, w: 500, activityId: '1', activityDate: '2026-07-30' }],
   activityCriticalPower: null,
   bestEfforts: null,
   strokes: null,
@@ -309,7 +309,7 @@ test('scopes generated archive and day notes to their route', () => {
   assert.match(day, /#### activities\.1/)
   assert.match(day, /##### activities\.1\.detail/)
   assert.match(day, /###### activities\.1\.detail\.powerCurve/)
-  assert.match(day, /\| 1 \| 30 \| 500 \| 1 \| "2026-07-30" \|/)
+  assert.match(day, /\| 1 \| 30 \| 500 \| "1" \| "2026-07-30" \|/)
   assert.match(day, /\| activities \| 1 \|/)
   assert.doesNotMatch(day, /old activity/)
   assert.doesNotMatch(archive, /```json/)

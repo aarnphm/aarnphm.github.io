@@ -78,7 +78,7 @@ function plan(
 
 function stravaActivity(): RawStravaActivity {
   return {
-    id: 123,
+    id: '123',
     name: 'Threshold & tempo <ride>',
     sportType: 'Ride',
     distance: 1_000,

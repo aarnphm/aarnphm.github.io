@@ -13,7 +13,7 @@ const activity = (
 ): RawStravaActivity => {
   const startDate = new Date(Date.parse('2026-07-01T12:00:00Z') + dayOffset * DAY_MS)
   return {
-    id,
+    id: String(id),
     name,
     sportType: 'Run',
     distance: distanceM,
@@ -76,7 +76,7 @@ test('groups repeated same-direction GPS routes and rejects route lookalikes', (
   assert.equal(matched.groups.length, 1)
   assert.deepEqual(
     matched.groups[0].efforts.map(effort => effort.id),
-    [1, 2, 3, 4],
+    ['1', '2', '3', '4'],
   )
   assert.equal(matched.groups[0].id, '1')
   assert.equal(matched.groups[0].routeDistanceKm, 5.03)
@@ -108,8 +108,8 @@ test('uses complete-link clustering so a marginal route cannot bridge two groups
   assert.deepEqual(
     matched.groups.map(group => group.efforts.map(effort => effort.id)),
     [
-      [3, 4],
-      [1, 2],
+      ['3', '4'],
+      ['1', '2'],
     ],
   )
 })

@@ -20,7 +20,7 @@ test('equal watt content preserves exact curves across timelines and isolated re
   const first = meanMaxCurve(timeline(watts))
   const expected = structuredClone(first)
   first[0].w = 999
-  first[0].activityId = 42
+  first[0].activityId = '42'
   first.splice(1, 1)
   const second = meanMaxCurve(timeline(Float64Array.from(watts)))
   assert.deepEqual(second, expected)
