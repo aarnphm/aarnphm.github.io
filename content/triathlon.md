@@ -1979,14 +1979,6 @@ garmin: 24875271878
 ```
 
 ```tracking
-activity: 20768894121
-garmin: 24885068267
-wahoo: [[triathlon/wahoo/26-10-28.fit]]
-power: wahoo
-virtual: true
-```
-
-```tracking
 title: Lively Free Flow
 date: 2026-11-06
 time: 16:00
