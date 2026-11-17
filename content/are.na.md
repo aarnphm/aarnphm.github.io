@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-11-14 10:00:09 GMT-05:00
+modified: 2026-11-16 10:05:06 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -5460,6 +5460,206 @@ title: are.na
     > My work had changed since you left and it is much better. I will be having a show May 4 -9 at the Daniels Gallery 17 E 64yh St (where Emmerich was), I wish you could be there. Much love to you both.
 
 ## places
+
+- https://www.google.com/maps?cid=2113971200120967555 -- Electric Cinema Portobello
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [theatre]
+    - coord: [51.5155712, -0.2048903]
+    - address: 191 Portobello Road, London W11 2ED, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=10263193166944068953 -- Electric Cinema White City
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [theatre]
+    - coord: [51.5106918, -0.2254695]
+    - address: 2 Television Centre, 101 Wood Lane, London W12 7FR, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=3109534013655747415 -- Jolene Newington Green
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [bakery]
+    - coord: [51.5513088, -0.0844365]
+    - address: 21 Newington Green, London N16 9PU, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=9206509722502664640 -- Jolene Redchurch Street
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [bakery]
+    - coord: [51.5245578, -0.0743051]
+    - address: 67 Redchurch Street, London E2 7DJ, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=515504801004057583 -- Jolene Colebrooke Row
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [bakery]
+    - coord: [51.5365247, -0.101368]
+    - address: 16 Essex Road, London N1 8AA, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=18436294301344514145 -- Jolene Hornsey Road
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [bakery]
+    - coord: [51.563197, -0.1178204]
+    - address: 324 Hornsey Road, London N7 7HE, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=12771305776160956426 -- Buster’s Sea Cove St Lawrence Market
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [restaurant]
+    - coord: [43.64825, -79.3714802]
+    - address: 93 Front Street E, Toronto, ON, Canada
+    - later: true
+
+- https://www.google.com/maps?cid=14555428674680637767 -- Buster’s Sea Cove Commerce Court
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [restaurant]
+    - coord: [43.6481326, -79.37950889999999]
+    - address: 199 Bay Street Suite C-150, Toronto, ON, Canada
+    - later: true
+
+- https://www.google.com/maps?cid=351349559713701153 -- Market Street Catch Market Street
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [restaurant]
+    - coord: [43.6484979, -79.3720712]
+    - address: 14 Market Street, Toronto, ON, Canada
+    - later: true
+
+- https://www.google.com/maps?cid=16878008692737382048 -- Market Street Catch Scotia Plaza
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [restaurant]
+    - coord: [43.64975159999999, -79.3785138]
+    - address: 100 Yonge Street, Toronto, ON, Canada
+    - later: true
+
+- https://www.google.com/maps?cid=10774081194776304760 -- Dover Street Counter
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [restaurant]
+    - coord: [51.5090504, -0.143097]
+    - address: 31 Dover St, London W1S 4ND, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=15833224257972022099 -- Columbia Road Flower Market
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [market]
+    - coord: [51.529134, -0.06982569999999999]
+    - address: Columbia Road, London E2, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=619313186053167294 -- Regent’s Park
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [park]
+    - coord: [51.533313, -0.1557646]
+    - address: Regent’s Park, London, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=2992483195778010107 -- Rodney’s Oyster House Toronto
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [restaurant]
+    - coord: [43.6449661, -79.3969109]
+    - address: 469 King St W, Toronto, ON, Canada
+    - later: true
+
+- https://www.google.com/maps?cid=13158325078975758141 -- Pearl Diver Toronto
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [restaurant]
+    - coord: [43.65160239999999, -79.3737975]
+    - address: 100 Adelaide St E, Toronto, ON M5C 1K9, Canada
+    - later: true
+
+- https://www.google.com/maps?cid=747214917343899482 -- Oyster Boy
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [restaurant]
+    - coord: [43.6452239, -79.4143797]
+    - address: 872 Queen St W, Toronto, ON M6J 1G3, Canada
+    - later: true
+
+- https://www.google.com/maps?cid=1109216939073132934 -- Lobster Burger Bar Toronto
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [restaurant]
+    - coord: [43.6473945, -79.38678019999999]
+    - address: 214 King St W Suite 100, Toronto, ON M5H 3S6, Canada
+    - later: true
+
+- https://www.google.com/maps?cid=11191753888490978486 -- The Fish Store and YuNes’ Sandwiches
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [restaurant]
+    - coord: [43.6549208, -79.4162656]
+    - address: 657 College St, Toronto, ON, Canada
+    - later: true
+
+- https://www.google.com/maps?cid=2396591726821818907 -- Sea Witch Fish and Chips
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [restaurant]
+    - coord: [43.6822143, -79.4240009]
+    - address: 636 St Clair Ave W, Toronto, ON M6C 1A9, Canada
+    - later: true
+
+- https://www.google.com/maps?cid=9467858993782844996 -- Clemente Bar
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [bar]
+    - coord: [40.7416326, -73.9870711]
+    - address: 11 Madison Ave, New York, NY 10010, United States
+    - later: true
+
+- https://www.google.com/maps?cid=5558744589559778882 -- Sloane’s SoHo
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [bar]
+    - coord: [40.7239796, -74.00311789999999]
+    - address: 58 Thompson St, New York, NY 10012, United States
+    - later: true
+
+- https://www.google.com/maps?cid=11998428881072543167 -- Bar CC Chelsea
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [bar]
+    - coord: [40.7431145, -74.0077052]
+    - address: 85 10th Ave, New York, NY 10011, United States
+    - later: true
+
+- https://www.google.com/maps?cid=13781580769764531441 -- Sip at Sip and Guzzle
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [bar]
+    - coord: [40.7314775, -74.0024921]
+    - address: 29 Cornelia St, New York, NY 10014, United States
+    - later: true
+
+- https://www.google.com/maps?cid=4410576522016346468 -- Bar Rêve Cobble Hill
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [bar]
+    - coord: [40.6840953, -73.9924355]
+    - address: 222 Smith St, Brooklyn, NY 11231, United States
+    - later: true
+
+- https://www.google.com/maps?cid=16830612838037221482 -- St Clement London
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [hotel]
+    - coord: [51.511202, -0.1146207]
+    - address: 180 The Thames, London WC2R 2NF, United Kingdom
+    - later: true
 
 - https://www.google.com/maps?cid=5465583344063692624 -- Toum Mayfair
   - [meta]:
@@ -14641,6 +14841,31 @@ title: are.na
   - view: list
   - json: true
 
+- https://x.com/heyyalexwang/status/2111158818730397932 -- Alex Wang on deriving transformer layers from memory
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [transformers, neural memory]
+    - later: true
+- https://x.com/jankulveit/status/2112613048552677739 -- Jan Kulveit on language model psychology
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [model behavior, language model psychology]
+    - later: true
+- https://x.com/GradiumAI/status/2112563128487514512 -- Gradium introduces Phonon for on-device speech synthesis
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [text to speech, on-device inference]
+    - later: true
+- https://x.com/eliebakouch/status/2112952247789269449 -- Elie Bakouch on Mirendil’s code-only pretraining results
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [language model pretraining, code models]
+    - later: true
+- https://x.com/justinmast/status/2112583500008403437 -- Bombadil: a model for plant electrical signals
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [plant electrophysiology, foundation models]
+    - later: true
 - https://alphaxiv.org/pdf/2605.29713 -- The Little Book of Generative AI Foundations: An Intuitive Mathematical Primer
   - [meta]:
     - date: 11/14/2026
@@ -23340,6 +23565,11 @@ title: are.na
 
 ## design
 
+- https://x.com/yangyou/status/2112904728132936155 -- See the whole picture: A brand campaign built with Parallel
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [brand campaigns, out-of-home advertising]
+    - later: true
 - https://x.com/texturesdev/status/2115805869917315570 -- Textures: a brand-texture library for agents
   - [meta]:
     - date: 11/10/2026
@@ -24047,6 +24277,11 @@ title: are.na
 
 ## video
 
+- https://x.com/NHLFlames/status/2112019723177140640 -- Devin Cooley postgame interview against Anaheim
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [nhl, postgame interview]
+    - later: true
 - https://www.youtube.com/watch?v=RDgw6ydB6lU -- An Introduction to Philosophy - Isaiah Berlin & Bryan Magee (1977)
   - [meta]:
     - date: 11/14/2026
@@ -29394,6 +29629,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://x.com/xhfloz/status/2112906382697500735 -- XH’s setup notes for everyday agent workflows
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [agent workflows, voice interfaces]
+    - later: true
 - https://en.wikipedia.org/wiki/Reynolds_number -- Reynolds number
   - [meta]:
     - date: 11/13/2026
@@ -30741,6 +30981,11 @@ title: are.na
 
 ## organizations
 
+- https://x.com/ohabryka/status/2080365171420332117 -- Oliver Habryka announces Lightcone Commons
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [philanthropy, grantmaking]
+    - later: true
 - https://ai.google -- Google AI
   - [meta]:
     - date: 10/30/2026
