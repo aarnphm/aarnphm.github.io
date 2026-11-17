@@ -1,18 +1,13 @@
 ---
 date: '2026-11-15'
 description: paintings and drawings from Esther Påls’s carousel, listed by the titles and artists printed on each slide.
-id: Paintings depicting loneliness
-modified: 2026-11-15 00:00:00 GMT-05:00
-title: Paintings depicting loneliness
+id: loneliness
+modified: 2026-11-16 11:18:30 GMT-05:00
+tags:
+  - life
+  - evergreen
+title: loneliness
 ---
-
-Source: [https://www.instagram.com/p/DflBEk-DDj8/](https://www.instagram.com/p/DflBEk-DDj8/) by [@estherpals_art](https://www.instagram.com/estherpals_art/).
-
-## 01. Some of My Favorite Paintings Depicting Loneliness
-
-Cover slide.
-
-![[thoughts/images/9X82CVRDCcjlLDnBNd-QjzLUSmxJ5NI7HRDmNQNvdYY.jpg]]
 
 ## 02. Christmas Eve at the Grave
 
