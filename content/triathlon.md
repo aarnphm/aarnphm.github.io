@@ -168,7 +168,7 @@ maintenance:
       bikeId: b18037537
       chainring: carbonti
       cycles:
-        - distance: 0
+        - distance: 0.00
           end: null
           reasoning: waxed with cyclowax
           start: '2026-11-12'
@@ -320,7 +320,7 @@ maintenance:
           - reason: training to race tires
         - - type: Pirelli P Zero Race SL-R 700x28c
           - bikeId: b18037537
-          - distance: 1131
+          - distance: 1131.00
           - range:
               - end: '2026-08-10'
                 reason: punctures and big ruptures, but fixed
@@ -352,7 +352,7 @@ maintenance:
       tube:
         - - type: Pirelli P Zero TPU
           - bikeId: b18037537
-          - distance: 875.4
+          - distance: 875.40
           - range:
               - end: '2026-08-17'
                 reason: big punctures, but will be the backup now.

@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-11-16 10:05:06 GMT-05:00
+modified: 2026-11-17 09:59:27 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -82,6 +82,11 @@ title: are.na
 
 ## discourse
 
+- https://x.com/DarioAmodei/status/2112732230124818891 -- Dario Amodei responds to Nathan Calvin on Anthropic’s safety strategy
+  - [meta]:
+    - date: 11/17/2026
+    - tags: [ai governance, corporate accountability]
+    - later: true
 - https://x.com/joannejang/status/2112639489009127935 -- Joanne Jang on Core Automation’s agent-run businesses
   - [meta]:
     - date: 11/10/2026
@@ -853,6 +858,21 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/noampomsky/status/2112715759176786200 -- Ava shares a reading of Elizabeth Holmes in You Can See Everything
+  - [meta]:
+    - date: 11/17/2026
+    - tags: [documentary criticism, psychoanalysis]
+    - later: true
+- https://x.com/marinolinich/status/2112769091001835991 -- Marino Linich on rumination and defining problems
+  - [meta]:
+    - date: 11/17/2026
+    - tags: [rumination, problem solving]
+    - later: true
+- https://x.com/brian_lovin/status/2112932731793363055 -- Brian Lovin recommends Macrofying
+  - [meta]:
+    - date: 11/17/2026
+    - tags: [macro photography, printing]
+    - later: true
 - https://x.com/kasratweets/status/2112637236340736042 -- Kasra on stepping away from self-help Substacks
   - [meta]:
     - date: 11/12/2026
@@ -14841,6 +14861,16 @@ title: are.na
   - view: list
   - json: true
 
+- https://x.com/livgorton/status/2112756891122360498 -- Liv Gorton’s response to Neural Networks Are Already Clean
+  - [meta]:
+    - date: 11/17/2026
+    - tags: [mechanistic interpretability, research replication]
+    - later: true
+- https://x.com/furongh/status/2112884723663917240 -- Furong Huang introduces ICA Lens
+  - [meta]:
+    - date: 11/17/2026
+    - tags: [mechanistic interpretability, independent component analysis]
+    - later: true
 - https://x.com/heyyalexwang/status/2111158818730397932 -- Alex Wang on deriving transformer layers from memory
   - [meta]:
     - date: 11/16/2026
@@ -20340,6 +20370,11 @@ title: are.na
   - view: list
   - json: true
 
+- https://x.com/poteto/status/2112736749281759566 -- Lauren Tan on statecharts and formal verification with pstack
+  - [meta]:
+    - date: 11/17/2026
+    - tags: [statecharts, formal verification]
+    - later: true
 - https://en.wikipedia.org/wiki/Mersenne_Twister -- Mersenne Twister
   - [meta]:
     - date: 11/10/2026
@@ -23565,6 +23600,11 @@ title: are.na
 
 ## design
 
+- https://x.com/raunofreiberg/status/2112875577388712123 -- Rauno Freiberg recommends og:video
+  - [meta]:
+    - date: 11/17/2026
+    - tags: [open graph, link previews]
+    - later: true
 - https://x.com/yangyou/status/2112904728132936155 -- See the whole picture: A brand campaign built with Parallel
   - [meta]:
     - date: 11/16/2026
