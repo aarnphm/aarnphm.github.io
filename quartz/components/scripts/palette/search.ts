@@ -16,6 +16,7 @@ import { isSemanticCancellation } from '../semantic.inline'
 import { getCommandItems } from './actions'
 import { searchPaletteCode } from './code'
 import { appendHighlightedText } from './format'
+import { mountOverviewBlock, readOverview, readSources, type ReadPassage } from './intelligence'
 import { searchPaths } from './paths'
 import {
   ensureAttachmentData,
@@ -187,6 +188,7 @@ export async function querySearch(
         { ids: documents.map(document => document.slug), weight: 1 },
       ]).map(({ id }) => ({ slug: id, score: scores.get(id) ?? Number.NaN }))
       displayQuickOpenResults(s, combined, query, scope)
+      if (paletteMode.intelligence) void readIntelligence(s, query, combined, generation)
     } catch (error) {
       if (isSemanticCancellation(error)) return
       if (
@@ -198,8 +200,11 @@ export async function querySearch(
       console.warn('[QuickOpen] semantic search failed:', error)
       s.output.removeAttribute('aria-busy')
       quickOpenProgress(s, false)
-      if (scopedDocuments.length) displayQuickOpenResults(s, scopedDocuments, query, scope)
-      else displayPendingTitles(s, query, 'semantic unavailable · ctrl+k for full text', scope)
+      if (scopedDocuments.length) {
+        displayQuickOpenResults(s, scopedDocuments, query, scope)
+        // Without the ranker the reader still gets the lexical hits.
+        if (paletteMode.intelligence) void readIntelligence(s, query, scopedDocuments, generation)
+      } else displayPendingTitles(s, query, 'semantic unavailable · ctrl+k for full text', scope)
     } finally {
       settled = true
     }
@@ -216,6 +221,83 @@ export async function querySearch(
       : actions
 
     getCommandItems(s, matchedActions)
+  }
+}
+
+/** The sidecar hash of the published bake, once baked overviews are on R2; null keeps the public
+ *  page honest ("overview is local for now"). */
+const BAKED_READS_SIDECAR: string | null = null
+const INTELLIGENCE_PASSAGES = 10
+const INTELLIGENCE_CHARS = 900
+
+/** Intelligence mode: Gemma reads the top results into an overview above them. The passages are
+ *  the notes' text from the full-text search index (contentIndex.json carries only descriptions),
+ *  the same chunks Ctrl-K's lexical search loads, so the only new request is the stream itself. */
+async function readIntelligence(
+  s: PaletteState,
+  query: string,
+  documents: readonly SemanticDocument[],
+  generation: number,
+) {
+  if (!query) return
+  const sources = await readSources(query, BAKED_READS_SIDECAR)
+  // With no reader to send text to, the descriptions already loaded are enough for the status line.
+  const data =
+    sources[0]?.kind === 'none' ? s.data : await ensureAttachmentData(s).catch(() => s.data)
+  if (!data || generation !== s.queryGeneration || !s.isActive) return
+  const passages: ReadPassage[] = []
+  for (const document of documents) {
+    if (passages.length >= INTELLIGENCE_PASSAGES) break
+    if (!isFullSlug(document.slug) || isSearchExcluded(document.slug)) continue
+    const fileData = data[document.slug]
+    if (!fileData || fileData.protected) continue
+    const text = (fileData.content || fileData.description || '')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .slice(0, INTELLIGENCE_CHARS)
+    if (!text) continue
+    passages.push({ row: passages.length, slug: document.slug, text })
+  }
+  if (!passages.length) return
+  s.intelligence?.abort()
+  const controller = new AbortController()
+  s.intelligence = controller
+  const block = mountOverviewBlock(
+    s.output,
+    passages,
+    slug =>
+      new URL(resolveRelative(s.currentSlug, slug as FullSlug), location.toString()).toString(),
+    hop => {
+      s.bar.value = `? ${hop}`
+      s.bar.dispatchEvent(new Event('input', { bubbles: true }))
+    },
+  )
+  const live = () => !controller.signal.aborted && generation === s.queryGeneration && s.isActive
+  try {
+    let received = false
+    for await (const event of readOverview(
+      { query, passages, max_tokens: 120 },
+      sources,
+      controller.signal,
+    )) {
+      if (!live()) return block.dispose()
+      received = true
+      block.push(event)
+    }
+    if (!received && live()) {
+      const readers = sources.flatMap(source =>
+        source.kind === 'live' ? [source.url.replace(/^https?:\/\//, '')] : [],
+      )
+      block.fail(
+        readers.length ? `no reader at ${readers.join(' or ')}` : 'overview is local for now',
+      )
+    }
+  } catch (error) {
+    if (controller.signal.aborted) return block.dispose()
+    console.warn('[intelligence] overview failed:', error)
+    block.fail('unavailable')
+  } finally {
+    if (s.intelligence === controller) s.intelligence = null
   }
 }
 

@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Geary Avenue pizzeria inside Greater Good Bar.'
 id: 'North of Brooklyn Geary'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/De9nxxGlQvi/'
 tags:
   - 'places'
 title: 'North of Brooklyn Geary'

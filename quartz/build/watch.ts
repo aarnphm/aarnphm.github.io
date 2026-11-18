@@ -147,8 +147,8 @@ export async function startWatching(
       buildData.disposed = true
       buildData.pending.clear()
       buildData.agentSkillsPending.clear()
-      await Promise.all([watcher.close(), agentSkillsWatcher.close()])
-      return hadPending
+      const pendingWatchers = await Promise.all([watcher.close(), agentSkillsWatcher.close()])
+      return hadPending || pendingWatchers.some(Boolean)
     },
   }
 }
@@ -164,7 +164,7 @@ async function createIgnoredFilter(ctx: BuildCtx): Promise<GlobbyFilterFunction>
     if (pathStr.startsWith('.git/')) return true
     if (!devFeatureEnabled(argv, 'courses') && isCourseContentPath(pathStr)) return true
     if (isTestPath(pathStr)) return true
-    if (gitIgnoredMatcher(pathStr)) return true
+    if (argv.gitignore !== false && gitIgnoredMatcher(pathStr)) return true
     for (const pattern of cfg.configuration.ignorePatterns) {
       if (minimatch(pathStr, pattern)) {
         return true
@@ -309,7 +309,7 @@ async function rebuild(clientRefresh: () => void, buildData: BuildData) {
       ? ctx.allFiles
       : omitDisabledCourseContent(
           argv,
-          await glob('**', argv.directory, ctx.cfg.configuration.ignorePatterns),
+          await glob('**', argv.directory, ctx.cfg.configuration.ignorePatterns, argv.gitignore),
         )
     const { markdown: markdownPaths, files: filePaths } = derivePaths(argv, allFiles)
     console.log(

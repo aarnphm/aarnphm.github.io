@@ -17,6 +17,8 @@ import { isRecord } from './type-guards'
 interface TrainingCalendarSecrets {
   TRAINING_CALENDAR_PASSWORD_HASH?: string
   TRAINING_CALENDAR_DATA_KEY?: string
+  /** Plaintext lives only in the local .env; deploys upload the hash and key alone. */
+  TRAININGPEAKS_CALENDAR_PASSWORD?: string
 }
 
 export interface TrainingCalendarEnv extends TrainingCalendarSecrets {
@@ -58,11 +60,33 @@ function sessionToken(request: Request): string | null {
 
 const digest = (value: string): string => createHash('sha256').update(value).digest('hex')
 
-function configured(env: TrainingCalendarSecrets): env is Required<TrainingCalendarSecrets> {
+type ConfiguredSecrets = TrainingCalendarSecrets &
+  Required<
+    Pick<TrainingCalendarSecrets, 'TRAINING_CALENDAR_PASSWORD_HASH' | 'TRAINING_CALENDAR_DATA_KEY'>
+  >
+
+function configured(env: TrainingCalendarSecrets): env is ConfiguredSecrets {
   return (
     validTrainingPasswordHash(env.TRAINING_CALENDAR_PASSWORD_HASH) &&
     validTrainingDataKey(env.TRAINING_CALENDAR_DATA_KEY)
   )
+}
+
+const loopbackHosts = ['localhost', '127.0.0.1', '[::1]']
+let localUnlock: { key: string; ok: boolean } | undefined
+
+/**
+ * Loopback dev with the plaintext password in .env acts as a standing session, so the gate never
+ * shows there. Production fails both halves: its hosts are public and it never holds the plaintext.
+ * The scrypt check runs once per isolate and password/hash pair.
+ */
+function locallyUnlocked(url: URL, env: ConfiguredSecrets): boolean {
+  const password = env.TRAININGPEAKS_CALENDAR_PASSWORD
+  if (!password || !loopbackHosts.includes(url.hostname)) return false
+  const key = digest(`${password}\0${env.TRAINING_CALENDAR_PASSWORD_HASH}`)
+  if (localUnlock?.key !== key)
+    localUnlock = { key, ok: verifyTrainingPassword(password, env.TRAINING_CALENDAR_PASSWORD_HASH) }
+  return localUnlock.ok
 }
 
 async function readPassword(request: Request): Promise<string | Response> {
@@ -203,7 +227,7 @@ export async function handleTrainingCalendarRequest(
   if (pathname === TRAINING_CALENDAR_ASSET || pathname.startsWith(`${TRAINING_CALENDAR_ASSET}/`))
     return json({ error: 'Not found.' }, 404)
   if (pathname !== TRAINING_CALENDAR_API && pathname !== TRAINING_CALENDAR_SESSION_API) return null
-  if (url.protocol !== 'https:' && !['localhost', '127.0.0.1', '[::1]'].includes(url.hostname))
+  if (url.protocol !== 'https:' && !loopbackHosts.includes(url.hostname))
     return json({ error: 'HTTPS required.' }, 403)
   const isSession = pathname === TRAINING_CALENDAR_SESSION_API
   if (
@@ -218,12 +242,17 @@ export async function handleTrainingCalendarRequest(
   if (!configured(env) || !env.TRAINING_CALENDAR_ACCESS)
     return json({ error: 'Training calendar unavailable.' }, 503)
   try {
+    const local = locallyUnlocked(url, env)
+    if (local && isSession && request.method === 'GET')
+      return json({ authenticated: true, expiresAt: Date.now() + sessionSeconds * 1000 })
     const access = env.TRAINING_CALENDAR_ACCESS.getByName('calendar')
     if (isSession) return await access.fetch(request)
-    const session = await access.fetch(
-      new Request(new URL(TRAINING_CALENDAR_SESSION_API, url), { headers: request.headers }),
-    )
-    if (!session.ok) return session
+    if (!local) {
+      const session = await access.fetch(
+        new Request(new URL(TRAINING_CALENDAR_SESSION_API, url), { headers: request.headers }),
+      )
+      if (!session.ok) return session
+    }
     const asset = await env.ASSETS.fetch(new Request(new URL(TRAINING_CALENDAR_ASSET, url)))
     if (!asset.ok) return json({ error: 'Training calendar unavailable.' }, 503)
     const data: unknown = await asset.json()

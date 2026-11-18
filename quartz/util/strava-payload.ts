@@ -373,6 +373,15 @@ export function buildStravaData(
     since,
     generatedAt,
   })
+  for (const day of analytics.daily) {
+    if (!payload.health[day.date] && day.sleepDurationS == null && day.sleepScore == null) continue
+    payload.health[day.date] = {
+      ...(payload.health[day.date] ?? emptyHealth()),
+      sleepDurationS: day.sleepDurationS,
+      sleepScore: day.sleepScore,
+      sleepSources: day.sleepSources,
+    }
+  }
   enrichRunPaceZones(payload, analytics.distributions)
   enrichCalculatedIntensityFactors(payload, analytics.activities, ATHLETE.ftp, ATHLETE.lt)
   enrichCalculatedExerciseLoads(payload)

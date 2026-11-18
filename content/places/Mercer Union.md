@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Artist-run centre commissioning and exhibiting contemporary art.'
 id: 'Mercer Union'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DezjVfhnzJY/'
 tags:
   - 'places'
 title: 'Mercer Union'

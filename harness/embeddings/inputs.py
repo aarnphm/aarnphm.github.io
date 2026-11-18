@@ -13,7 +13,7 @@ import pymupdf
 
 REPOSITORY = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPOSITORY / 'quartz/scripts/pdf-search'))
-from scope import queued_pdfs
+from scope import page_numbers, queued_pdfs
 from cache import ExtractionSpec, PageCache
 
 
@@ -138,8 +138,9 @@ class Inventory:
     partial: set[int] = set()
     invalid = 0
     latest = None
+    requested = set(page_numbers(source.sha256, source.total))
     for path in cache.directory.glob('*.json'):
-      if not path.stem.isdecimal() or not 1 <= int(path.stem) <= source.total:
+      if not path.stem.isdecimal() or int(path.stem) not in requested:
         continue
       stat = path.stat()
       previous = self.checked.get(path)

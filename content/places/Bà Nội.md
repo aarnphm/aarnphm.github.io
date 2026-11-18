@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'Vietnamese bakery and cafe on Bloor Street West.'
 id: 'Bà Nội'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/DfGE9jAqXu6/'
 tags:
   - 'places'
 title: 'Bà Nội'
@@ -18,5 +17,3 @@ type:
   - 'coffee shop'
 url: 'https://ba-noi.myshopify.com/'
 ---
-
-Recommendation from [Angie's Toronto food tour](https://www.instagram.com/reel/DfGE9jAqXu6/): Butter tart.

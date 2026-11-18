@@ -9,7 +9,6 @@ date: '2026-11-02'
 description: 'Italian restaurant in Islington serving seasonal dishes and handmade pasta.'
 id: 'Trullo Islington'
 modified: '2026-11-02'
-source: 'https://www.instagram.com/reel/Dd3UzWQsPpC/'
 tags:
   - 'places'
 title: 'Trullo Islington'

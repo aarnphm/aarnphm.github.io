@@ -11,5 +11,3 @@ tags:
 title: 'Klute'
 year: 1971
 ---
-
-Recommended by Jessica Lee Gagné in [ShotDeck’s ASC recommendations](https://www.instagram.com/reel/Db8PFLVp_XX/) at 15.5s.

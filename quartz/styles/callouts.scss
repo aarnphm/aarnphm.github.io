@@ -110,7 +110,7 @@ blockquote:not([class~='is-collapsed']) {
   }
 
   &.is-collapsed {
-    & > .callout-title > .fold-callout-icon {
+    & > .callout-title > .callout-fold-toggle .fold-callout-icon {
       transform: rotateZ(-90deg);
     }
 
@@ -139,9 +139,30 @@ blockquote:not([class~='is-collapsed']) {
 
   --icon-size: 18px;
 
+  & > .callout-fold-toggle {
+    align-items: center;
+    appearance: none;
+    background: transparent;
+    border: 0;
+    color: var(--dark);
+    cursor: pointer;
+    display: inline-flex;
+    flex: 0 0 1.5rem;
+    height: 1.5rem;
+    justify-content: center;
+    margin-left: auto;
+    padding: 0;
+    width: 1.5rem;
+
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: 2px;
+    }
+  }
+
   & .fold-callout-icon {
     background-color: currentColor;
-    cursor: pointer;
+    cursor: inherit;
     display: inline-block;
     flex: 0 0 var(--icon-size);
     width: var(--icon-size);
@@ -166,5 +187,20 @@ blockquote:not([class~='is-collapsed']) {
   .callout-title-inner {
     font-weight: $semiBoldWeight;
     cursor: pointer;
+  }
+}
+
+@media (pointer: coarse) {
+  .callout-title > .callout-fold-toggle {
+    flex-basis: 44px;
+    height: 44px;
+    width: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .callout > .callout-content,
+  .callout-title .fold-callout-icon {
+    transition: none;
   }
 }

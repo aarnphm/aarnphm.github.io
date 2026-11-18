@@ -2,10 +2,10 @@
 date: '2024-11-04'
 description: comparing neural representations through SVD and canonical correlations, with the whitening derivation and limits of affine invariance.
 id: SVCCA
-modified: 2026-10-02 09:08:00 GMT-04:00
+modified: 2026-11-09 10:24:13 GMT-05:00
 tags:
   - ml
-  - interp
+  - interpretability
 title: SVCCA
 ---
 

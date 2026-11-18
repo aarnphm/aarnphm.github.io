@@ -11,5 +11,3 @@ tags:
 title: 'The Killing Fields'
 year: 1984
 ---
-
-Recommended by Daniel Grant in [ShotDeck’s ASC recommendations](https://www.instagram.com/reel/Db8PFLVp_XX/) at 42s.

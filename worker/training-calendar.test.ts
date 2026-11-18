@@ -14,7 +14,7 @@ import { isRecord } from './type-guards'
 
 // Failure modes: public HTML/asset leaks, alternate hosts and encoded paths, wrong passwords,
 // CSRF, cookie forgery, week-long persistence, expired/revoked sessions, legacy storage,
-// credential rotation, brute force, and
+// credential rotation, brute force, the loopback-only dev unlock, and
 // missing keys or an old plaintext asset. Exercise the real Worker, assets, crypto, and DO.
 const origin = 'https://t.aarnphm.xyz'
 const password = 'test-only calendar passphrase 2026'
@@ -315,6 +315,42 @@ test('legacy idle-expiry storage preserves valid sessions and accepts new logins
     (await request('/api/training-calendar', { headers: { Cookie: nextCookie } })).status,
     200,
   )
+})
+
+test('loopback dev with the plaintext password in env unlocks without a login', async () => {
+  const local = 'http://localhost:8080'
+  const withPlaintext = (plaintext: string) => ({
+    ...config,
+    vars: { ...config.vars, TRAININGPEAKS_CALENDAR_PASSWORD: plaintext },
+  })
+  try {
+    await server.update({ root: evidence, workers: [{ config: withPlaintext(password) }] })
+    for (const host of [local, 'http://127.0.0.1:8080']) {
+      const session = await request('/api/training-calendar/session', undefined, host)
+      assert.equal(session.status, 200)
+      assert.equal(session.headers.get('Set-Cookie'), null)
+      const body: unknown = await session.json()
+      assert.ok(isRecord(body) && body.authenticated === true)
+      assert.ok(typeof body.expiresAt === 'number' && body.expiresAt > Date.now())
+      const data = await request('/api/training-calendar', undefined, host)
+      assert.equal(data.status, 200)
+      assert.deepEqual(await data.json(), calendar)
+    }
+    for (const host of [origin, 'https://aarnphm.xyz', 'https://portfolio.example.workers.dev']) {
+      assert.equal((await request('/api/training-calendar/session', undefined, host)).status, 401)
+      const data = await request('/api/training-calendar', undefined, host)
+      assert.equal(data.status, 401)
+      assert.ok(!(await data.text()).includes(secretPlan))
+    }
+    await server.update({
+      root: evidence,
+      workers: [{ config: withPlaintext('not the password') }],
+    })
+    assert.equal((await request('/api/training-calendar/session', undefined, local)).status, 401)
+    assert.equal((await request('/api/training-calendar', undefined, local)).status, 401)
+  } finally {
+    await server.update({ root: evidence, workers: [{ config }] })
+  }
 })
 
 test('missing secrets and legacy plaintext assets fail closed even for a valid session', async () => {

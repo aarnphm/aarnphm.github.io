@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Bakery and coffee shop on Gerrard Street East in East Chinatown.'
 id: 'Issho Bakery'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/reel/DcZuYT6hkC9/'
 tags:
   - 'places'
 title: 'Issho Bakery'

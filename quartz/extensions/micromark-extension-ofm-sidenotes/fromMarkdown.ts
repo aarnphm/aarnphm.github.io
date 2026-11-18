@@ -1,8 +1,12 @@
-import type { PhrasingContent, Paragraph } from 'mdast'
+import type { Nodes, Root, PhrasingContent, Paragraph } from 'mdast'
 import type { Extension as MdastExtension, CompileContext, Token } from 'mdast-util-from-markdown'
 import type { Extension as MicromarkExtension } from 'micromark-util-types'
+import type { Point } from 'unist'
 import { fromMarkdown } from 'mdast-util-from-markdown'
 import type { Sidenote, SidenoteReference, SidenoteDefinition } from './types'
+import { extractLiteralReferences } from '../../util/references/literal'
+import { isEscapedAt, readReferenceAt } from '../../util/references/scan'
+import { isWikilink } from '../micromark-extension-ofm-wikilinks/node'
 
 export interface FromMarkdownOptions {
   micromarkExtensions?: MicromarkExtension[]
@@ -12,6 +16,8 @@ export interface FromMarkdownOptions {
 export function sidenoteFromMarkdown(options: FromMarkdownOptions = {}): MdastExtension {
   const micromarkExts = options.micromarkExtensions || []
   const mdastExts = options.mdastExtensions || []
+  const labelStarts = new WeakMap<Sidenote | SidenoteReference | SidenoteDefinition, Point>()
+  const contentStarts = new WeakMap<Sidenote, Point>()
 
   return {
     enter: {
@@ -95,6 +101,7 @@ export function sidenoteFromMarkdown(options: FromMarkdownOptions = {}): MdastEx
 
     const raw = this.sliceSerialize(token)
     node.data.sidenoteParsed.label = raw
+    labelStarts.set(node, token.start)
     return undefined
   }
 
@@ -108,6 +115,7 @@ export function sidenoteFromMarkdown(options: FromMarkdownOptions = {}): MdastEx
           extensions: micromarkExts,
           mdastExtensions: mdastExts,
         })
+        rebaseTree(labelTree, labelStarts.get(node))
 
         const nodes: PhrasingContent[] = []
         for (const child of labelTree.children) {
@@ -137,6 +145,7 @@ export function sidenoteFromMarkdown(options: FromMarkdownOptions = {}): MdastEx
 
     const contentRaw = this.sliceSerialize(token)
     node.data.sidenoteParsed.content = contentRaw
+    contentStarts.set(node, token.start)
     return undefined
   }
 
@@ -150,6 +159,7 @@ export function sidenoteFromMarkdown(options: FromMarkdownOptions = {}): MdastEx
           extensions: micromarkExts,
           mdastExtensions: mdastExts,
         })
+        rebaseTree(contentTree, contentStarts.get(node))
 
         const children: PhrasingContent[] = []
         for (const child of contentTree.children) {
@@ -186,12 +196,18 @@ export function sidenoteFromMarkdown(options: FromMarkdownOptions = {}): MdastEx
     if (!node) return undefined
     const raw = this.sliceSerialize(token)
     node.label = raw.startsWith('^') ? raw.slice(1) : raw
+    labelStarts.set(
+      node,
+      raw.startsWith('^')
+        ? { ...token.start, column: token.start.column + 1, offset: token.start.offset + 1 }
+        : token.start,
+    )
     return undefined
   }
 
   function exitReferenceLabel(this: CompileContext): undefined {
     const node = this.stack[this.stack.length - 1] as any as SidenoteReference
-    parseLabelNodes(node, micromarkExts, mdastExts)
+    parseLabelNodes(node, micromarkExts, mdastExts, labelStarts.get(node))
     return undefined
   }
 
@@ -211,20 +227,55 @@ export function sidenoteFromMarkdown(options: FromMarkdownOptions = {}): MdastEx
     const node = this.stack[this.stack.length - 1] as any as SidenoteDefinition
     if (!node) return undefined
     node.label = this.sliceSerialize(token)
+    labelStarts.set(node, token.start)
     return undefined
   }
 
   function exitDefinitionLabel(this: CompileContext): undefined {
     const node = this.stack[this.stack.length - 1] as any as SidenoteDefinition
-    parseLabelNodes(node, micromarkExts, mdastExts)
+    parseLabelNodes(node, micromarkExts, mdastExts, labelStarts.get(node))
     return undefined
   }
+}
+
+function rebaseTree(tree: Root, origin: Point | undefined): void {
+  if (!origin) return
+  const point = (value: Point): Point => ({
+    line: value.line + origin.line - 1,
+    column: value.line === 1 ? value.column + origin.column - 1 : value.column,
+    ...(value.offset !== undefined && origin.offset !== undefined
+      ? { offset: value.offset + origin.offset }
+      : {}),
+  })
+  function walk(node: Nodes): void {
+    if (isWikilink(node) && node.data?.reference && origin?.offset !== undefined) {
+      const reference = node.data.reference
+      const parsed = readReferenceAt(reference.raw, 0, {
+        context: reference.context,
+        offset: reference.span.start + origin.offset,
+        table: reference.table,
+      })
+      if (parsed.kind === 'complete') node.data.reference = parsed.reference
+    }
+    if (node.position)
+      node.position = { start: point(node.position.start), end: point(node.position.end) }
+    const labels =
+      node.type === 'sidenote'
+        ? node.data?.sidenoteParsed?.labelNodes
+        : node.type === 'sidenoteReference' || node.type === 'sidenoteDefinition'
+          ? node.labelNodes
+          : undefined
+    if (labels) for (const label of labels) walk(label)
+    if ('children' in node) for (const child of node.children) walk(child)
+  }
+  walk(tree)
 }
 
 function parseLabelNodes(
   node: SidenoteReference | SidenoteDefinition,
   micromarkExts: MicromarkExtension[],
   mdastExts: MdastExtension[],
+  origin?: Point,
 ) {
   const labelRaw = node.label || ''
   try {
@@ -232,6 +283,7 @@ function parseLabelNodes(
       extensions: micromarkExts,
       mdastExtensions: mdastExts,
     })
+    rebaseTree(labelTree, origin)
 
     const nodes: PhrasingContent[] = []
     for (const child of labelTree.children) {
@@ -263,20 +315,6 @@ function parseProperties(raw: string): Record<string, string | string[]> {
     while (cursor < raw.length && /\s/.test(raw[cursor])) cursor += 1
     return raw[cursor] === ':'
   }
-  const extractWikilinks = (value: string): string[] => {
-    const links: string[] = []
-    let cursor = 0
-    while (cursor < value.length) {
-      const start = value.indexOf('[[', cursor)
-      if (start === -1) break
-      const end = value.indexOf(']]', start + 2)
-      if (end === -1) break
-      links.push(value.slice(start, end + 2))
-      cursor = end + 2
-    }
-    return links
-  }
-
   while (index < raw.length) {
     skipSpace()
     if (raw[index] === ',') {
@@ -293,24 +331,20 @@ function parseProperties(raw: string): Record<string, string | string[]> {
     skipSpace()
 
     const valueStart = index
-    let wikilinkDepth = 0
     while (index < raw.length) {
-      if (raw.startsWith('[[', index)) {
-        wikilinkDepth += 1
-        index += 2
-        continue
+      if (raw.startsWith('[[', index) && !isEscapedAt(raw, index)) {
+        const parsed = readReferenceAt(raw, index, { context: 'literal' })
+        if (parsed.kind === 'complete') {
+          index = parsed.reference.span.end
+          continue
+        }
       }
-      if (raw.startsWith(']]', index) && wikilinkDepth > 0) {
-        wikilinkDepth -= 1
-        index += 2
-        continue
-      }
-      if (raw[index] === ',' && wikilinkDepth === 0 && hasNextKey(index + 1)) break
+      if (raw[index] === ',' && hasNextKey(index + 1)) break
       index += 1
     }
 
     const value = raw.slice(valueStart, index).trim()
-    const wikilinks = extractWikilinks(value)
+    const wikilinks = extractLiteralReferences(value).map(reference => reference.raw)
     props[key] = wikilinks.length > 0 ? wikilinks : value
   }
 

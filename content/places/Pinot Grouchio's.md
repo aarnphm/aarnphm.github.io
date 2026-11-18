@@ -8,8 +8,7 @@ coordinates:
 date: '2026-11-02'
 description: 'Wine bar on Dundas Street West with changing daily offerings.'
 id: "Pinot Grouchio's"
-modified: '2026-11-02'
-source: 'https://www.instagram.com/p/DfNZFAegXFC/'
+modified: '2026-11-09'
 tags:
   - 'places'
 title: "Pinot Grouchio's"

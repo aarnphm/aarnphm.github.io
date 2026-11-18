@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Neighbourhood pub in Leslieville serving British comfort food and cocktails.'
 id: 'Corduroy Lounge'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DfIzlB_lF0Z/'
 tags:
   - 'places'
 title: 'Corduroy Lounge'

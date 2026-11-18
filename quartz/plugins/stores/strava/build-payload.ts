@@ -8,6 +8,7 @@ import {
   type CyclingTorqueHistory,
   type CyclingTorqueSample,
 } from '../../../util/cycling-torque'
+import { resolveDailySleepHealth } from '../../../util/daily-sleep-health'
 import { localIsoDay } from '../../../util/local-date'
 import { latestProviderSync } from '../../../util/provider-sync'
 import { requireStravaId } from '../../../util/strava-id'
@@ -411,6 +412,20 @@ export function buildPayload(
 
   const health: Record<string, ActivityHealth> = {}
   if (oura) for (const [date, o] of Object.entries(oura.days)) health[date] = toHealth(o)
+  for (const date of new Set([
+    ...Object.keys(health),
+    ...Object.keys(oura?.details ?? {}),
+    ...Object.keys(garmin?.sleep ?? {}),
+  ])) {
+    const resolved = resolveDailySleepHealth(
+      date,
+      oura?.days[date],
+      oura?.details?.[date],
+      garmin?.sleep?.[date],
+    )
+    if (health[date] || resolved.sleepDurationS != null || resolved.sleepScore != null)
+      health[date] = { ...(health[date] ?? emptyHealth()), ...resolved }
+  }
   if (weather)
     for (const [date, w] of Object.entries(weather.days)) {
       const h = health[date] ?? emptyHealth()

@@ -76,9 +76,40 @@
     outline-offset: 1px;
   }
 
+  .lat-rail {
+    container-type: inline-size;
+    --lat-track-width: calc(100cqw - 0.75rem);
+    --lat-track-height: calc(100vh - var(--lat-top) - var(--lat-head) - 1.5rem);
+
+    @media all and ($mobile) {
+      --lat-track-width: 100cqw;
+      --lat-track-height: 42vh;
+    }
+  }
+
   .lat-rail svg.lat-track {
     cursor: pointer;
     touch-action: none;
+
+    // The SSR track fills both dimensions; keep glyphs uniform before hydration measures it.
+    text {
+      transform-box: fill-box;
+      transform-origin: left center;
+      transform: scale(
+        min(
+          1,
+          calc(200 * var(--lat-track-height) / (var(--lat-rail-height) * var(--lat-track-width)))
+        ),
+        min(
+          1,
+          calc(var(--lat-rail-height) * var(--lat-track-width) / (200 * var(--lat-track-height)))
+        )
+      );
+    }
+
+    .lat-year:not(.lat-undated) {
+      transform-origin: right center;
+    }
   }
 
   // the dated lanes as density strips, the undated band as one row per kind
@@ -221,10 +252,11 @@
 
 // one line per suggestion: the name, then its meta at the right. Every row of a list shares the
 // operator the box already shows (#, goto:, filter:), so the per-row token is dropped. The
-// picked row is boxed in the accent like a picked link row, without an underline
+// text sits in the middle of its row; the picked row (and the hovered one) only turns the name
+// to the accent: no fill, no rules, no underline
 [data-layout='latent'] :where(#quartz-root) .lat-search .search-completions {
   .search-completions-label {
-    padding: 0.375rem 0.75rem 0.125rem;
+    padding: 0.375rem 0.75rem;
     color: var(--gray);
   }
 
@@ -236,19 +268,15 @@
   .search-completion {
     min-height: 1.75rem;
     padding: 0.25rem 0.75rem;
-    align-items: baseline;
-
-    &[aria-selected='true'] {
-      @include picked-row;
-    }
+    align-items: center;
 
     &[aria-selected='true'] .search-completion-value,
     &:hover .search-completion-value {
       text-decoration: none;
     }
 
-    &:hover:not([aria-selected='true']) {
-      background: var(--ledger-surface);
+    &:is([aria-selected='true'], :hover) .search-completion-value {
+      color: var(--secondary);
     }
   }
 
@@ -273,6 +301,8 @@
   .search-completion-description {
     grid-column: 2;
     min-width: 0;
+    // the counts end on one edge, as the ledger's figures do
+    text-align: right;
     color: var(--gray);
     font-variant-numeric: tabular-nums;
   }
@@ -375,6 +405,11 @@
     border-radius: var(--radius-none);
     box-shadow: 0 0.4rem 1.2rem color-mix(in srgb, var(--dark) 12%, transparent);
     background: var(--light);
+
+    // --dark is the light ink in dark mode, so the lift turns into a pale halo there
+    :root[saved-theme='dark'] & {
+      box-shadow: none;
+    }
     color: var(--darkgray);
     font: var(--text-meta)/1.45 var(--lat-text);
 

@@ -1,0 +1,161 @@
+@use '../variables.scss' as *;
+
+// The reader has no end, so a pane stacked under it cannot be scrolled to: below 1100px the
+// probe, and on a phone the rail and the links as well. Once the page is live (the bar's script
+// runs with it, latent-client/panes.ts) those panes leave the flow and the bar at the foot of
+// the screen opens one at a time as a sheet over the reader. Before that, and without script,
+// the reader is one document long and the stacked panes are reachable as they are.
+[data-layout='latent'] :where(#quartz-root) .latent {
+  --lat-bar: calc(44px + env(safe-area-inset-bottom, 0px));
+
+  > .lat-panes {
+    display: none;
+  }
+
+  // a closed pane is hidden and an open one keeps its own display (the links are a flex column)
+  @mixin sheet($pane) {
+    &[data-latent-live]:not([data-lat-pane='#{$pane}']) > .lat-#{$pane} {
+      display: none;
+    }
+
+    &[data-latent-live][data-lat-pane='#{$pane}'] > .lat-#{$pane} {
+      position: fixed;
+      inset: 0 0 var(--lat-bar) 0;
+      // under the site's menus and popovers, which a pane's controls open
+      z-index: calc(var(--z-dropdown) - 2);
+      height: auto;
+      max-height: none;
+      margin: 0;
+      overflow: hidden auto;
+      overscroll-behavior: contain;
+      background: var(--light);
+    }
+  }
+
+  @media (max-width: 1100px) {
+    &[data-latent-live] > .lat-panes {
+      position: fixed;
+      inset: auto 0 0 0;
+      z-index: calc(var(--z-dropdown) - 1);
+      display: flex;
+      box-sizing: border-box;
+      height: var(--lat-bar);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      border-top: 1px solid var(--lat-rule);
+      background: var(--ledger-surface);
+
+      button {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 0;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        // the open pane's cell carries an ink bar under the rule; the others hold its space
+        border-top: 2px solid transparent;
+        border-radius: 0;
+        background: none;
+        color: var(--darkgray);
+        font-family: var(--lat-mono);
+        font-size: var(--text-meta);
+        line-height: 1;
+        cursor: pointer;
+
+        & + button {
+          border-inline-start: 1px solid var(--lat-hair);
+        }
+
+        &[aria-pressed='true'] {
+          border-top-color: var(--dark);
+          background: var(--ledger-selected);
+          color: var(--dark);
+        }
+
+        &:focus-visible {
+          outline: 2px solid var(--dark);
+          outline-offset: -2px;
+        }
+      }
+
+      // the rail and the links still stand beside the reader down to the phone layout
+      button:is([data-pane='rail'], [data-pane='links']) {
+        display: none;
+      }
+    }
+
+    // the last passage and the reader's sentinels clear the bar
+    &[data-latent-live] {
+      padding-bottom: var(--lat-bar);
+    }
+
+    @include sheet('probe');
+
+    // the sheet scrolls as one: a panel that shrank to fit it ran under the ledger
+    &[data-latent-live][data-lat-pane='probe'] > .lat-probe > .lat-panel {
+      flex-shrink: 0;
+    }
+  }
+
+  @media all and ($mobile) {
+    // the reader leads before the page is live too: the panes that leave the flow at that moment
+    // were under it, so the passage on screen stays where it is
+    display: flex;
+    flex-direction: column;
+    // the grid's `start` would size each pane to its content
+    align-items: stretch;
+
+    > .lat-reader {
+      order: -1;
+      margin-top: 0;
+    }
+
+    > .lat-rail {
+      margin-top: 1rem;
+    }
+
+    &[data-latent-live] > .lat-panes button:is([data-pane='rail'], [data-pane='links']) {
+      display: flex;
+    }
+
+    @include sheet('rail');
+    @include sheet('links');
+
+    // the track fills the sheet; its labels counter-scale from the same height
+    &[data-latent-live][data-lat-pane='rail'] > .lat-rail {
+      --lat-track-height: calc(100dvh - var(--lat-bar) - var(--lat-head) - 1.5rem);
+
+      svg.lat-track {
+        height: var(--lat-track-height);
+      }
+    }
+
+    // iOS zooms the page into a field set under 16px. The taller field moves what hangs from its
+    // height: the magnifier, the key hint and the sub-heads that stick under it
+    .lat-links {
+      --lat-search-h: 2.25rem;
+
+      @media (pointer: coarse) {
+        --lat-search-h: 44px;
+      }
+
+      .lat-search input[type='search'] {
+        height: var(--lat-search-h);
+        font-size: 16px;
+      }
+
+      .lat-search::after {
+        top: calc(var(--lat-search-h) / 2);
+      }
+
+      .lat-search-key {
+        inset-block-start: calc(var(--lat-search-h) / 2 - 0.5rem);
+      }
+
+      .lat-group {
+        top: calc(var(--lat-head) + var(--lat-search-h));
+      }
+    }
+  }
+}

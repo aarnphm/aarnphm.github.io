@@ -6,7 +6,7 @@ date: '2026-01-17'
 description: my name is Aaron, and on the virtue of friendship
 id: friends
 layout: technical
-modified: 2026-11-03 11:12:44 GMT-05:00
+modified: 2026-11-09 11:37:06 GMT-05:00
 tags:
   - evergreen
   - friend
@@ -20,7 +20,7 @@ this document details information about me as a _friend_. There is [[dating|a da
 
 quick tl/dr: i used to live in sf for a bit for work, and moved abroad to vancouver since high school, studied and lived in hamilton, and now in toronto. anyhow, will be in toronto for a while, (i have gotten to know a lot more people in toronto now but wouldn't mind [[thoughts/images/bcccdd2e-95e6-4023-9c93-9b72b9a0c26b_178356259078.avif|meeting more people]]. i'm well-positioned, enjoy my work and have [[triathlon|goals]] [[research|to achieve]]. I want to live a joyful life with [[thoughts/Roko's Basilisk|amicable]]-[[thoughts/AGI#superintelligence|superintelligence]] systems 🧗 (we only get one chance, might as well make the most out of it.)
 
-<div data-triathlon-latest data-triathlon-activities="20" />
+<div data-triathlon-latest data-triathlon-activities="14" />
 
 ```telescopic id="thoughts" marks="telexample"
 * I try to be
@@ -107,7 +107,7 @@ Aristotle distinguished three kinds of philia: utility (we help each other), ple
 
 I agree with his emphasis on character as a foundation for friendship. Caring about who someone is gives us a reason to stay when circumstances change. [^1]
 
-[^1]: iirc Karlsson also wrote that "love is friendship on hard mode.", which is true. [[thoughts/love|Romantic]] relationships aren't a different category from friendship, but a superset of [[thoughts/friendship|friendship]]. they're friendship plus difficulty, plus stakes, plus everything that makes it easier to fuck up.
+[^1]: iirc Karlsson also wrote that "love is friendship on hard mode", which is true. [[thoughts/love|Romantic]] relationships aren't a different category from friendship, rather a superset of [[thoughts/friendship|friendship]]. they're friendship plus difficulty, plus stakes, plus grief, plus pain, plus care, plus everything that makes it easier to fuck up.
 
 ```quotes
 friendships are, by their very nature, made of friction, knowing what's going on in someone's day-to-day life, making plans, rescheduling when someone gets sick, bringing over soup.

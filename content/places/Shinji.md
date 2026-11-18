@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Japanese steakhouse serving wagyu, sushi and seafood in the Bay Adelaide Centre.'
 id: 'Shinji'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/reel/Dbnh1nNOgKR/'
 tags:
   - 'places'
 title: 'Shinji'

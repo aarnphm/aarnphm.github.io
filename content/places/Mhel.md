@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'Korean and Japanese small plates with sake on Havelock Street.'
 id: 'Mhel'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/DdaGREXJ5Pb/'
 tags:
   - 'places'
 title: 'Mhel'

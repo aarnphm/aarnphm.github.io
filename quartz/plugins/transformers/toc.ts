@@ -1,5 +1,5 @@
 import type { Element as HastElement, Root as HastRoot } from 'hast'
-import type { Heading, Root } from 'mdast'
+import type { Heading, Nodes, Root } from 'mdast'
 import Slugger from 'github-slugger'
 import { headingRank } from 'hast-util-heading-rank'
 import { toString } from 'mdast-util-to-string'
@@ -7,6 +7,8 @@ import { visit } from 'unist-util-visit'
 import type { Wikilink } from '../../extensions/micromark-extension-ofm-wikilinks'
 import { isWikilink } from '../../extensions/micromark-extension-ofm-wikilinks'
 import { QuartzTransformerPlugin } from '../../types/plugin'
+import { labelToText, parseReferenceLabel } from '../../util/references/label'
+import { referenceLabelSource } from '../../util/references/literal'
 
 export interface Options {
   maxDepth: 1 | 2 | 3 | 4 | 5 | 6
@@ -32,8 +34,6 @@ export type TocRenderOptions = Pick<Options, 'maxDepth' | 'minEntries'> & {
   display: boolean
   sourceEntries: number
 }
-type TocHeadingChild = Heading['children'][number] | Wikilink
-
 const slugAnchor = new Slugger()
 
 function normalizeHeadingText(text: string): string {
@@ -41,32 +41,16 @@ function normalizeHeadingText(text: string): string {
 }
 
 function normalizeWikilinkText(node: Wikilink): string {
-  const { alias, anchor, target } = node.data?.wikilink ?? {}
-
-  const trimmedAlias = alias?.trim()
-  if (trimmedAlias) {
-    return trimmedAlias
-  }
-
-  const trimmedAnchor = anchor?.trim().replace(/^#\^?/, '')
-  if (trimmedAnchor) {
-    return trimmedAnchor
-  }
-
-  const trimmedTarget = target?.trim()
-  if (trimmedTarget) {
-    return trimmedTarget
-  }
-
-  return ''
+  const reference = node.data?.reference
+  return reference ? labelToText(parseReferenceLabel(referenceLabelSource(reference))) : ''
 }
 
 function extractHeadingText(node: Heading): string {
-  const children: TocHeadingChild[] = node.children
-  const content = children
-    .map(child => (isWikilink(child) ? normalizeWikilinkText(child) : toString(child)))
-    .join('')
-  return normalizeHeadingText(content)
+  const text = (child: Nodes): string => {
+    if (isWikilink(child)) return normalizeWikilinkText(child)
+    return 'children' in child ? child.children.map(text).join('') : toString(child)
+  }
+  return normalizeHeadingText(text(node))
 }
 
 function finalizeToc(toc: TocEntry[], highestDepth: number, minEntries: number): TocCollection {
@@ -120,7 +104,7 @@ function isHidden(node: HastElement): boolean {
 }
 
 function hasClass(node: HastElement, name: string): boolean {
-  const className = node.properties?.className
+  const className: unknown = node.properties?.className
   if (typeof className === 'string') {
     return className.split(/\s+/).includes(name)
   }

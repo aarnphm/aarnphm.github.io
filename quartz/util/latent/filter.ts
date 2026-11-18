@@ -117,3 +117,29 @@ export function filterCompletions(
     kind => !named.has(kind) && kind.startsWith(partial) && (counts[kind] ?? 0) > 0,
   ).map(kind => ({ kind, from, to: value.length, insert: `${sign}${kind}`, count: counts[kind]! }))
 }
+
+/**
+ * What the explorer shows before anyone picks: notes and pdfs. Bases and images wait behind the
+ * toggles under the probe's sources (latent-client/search.ts bindKinds), which hide them from
+ * the links, the reader and the rail alike.
+ */
+export const DEFAULT_VIEW: LatentKind[] = ['note', 'pdf']
+
+/**
+ * The kinds a view shows, in KIND_ORDER, of those the store has: `wanted` (a saved pick) or the
+ * default. A pick that leaves nothing of this store shows all of it.
+ */
+export function viewKinds(
+  wanted: readonly string[] | null | undefined,
+  present: readonly LatentKind[],
+): LatentKind[] {
+  const pick = wanted ?? DEFAULT_VIEW
+  const keep = KIND_ORDER.filter(kind => present.includes(kind) && pick.includes(kind))
+  return keep.length ? keep : KIND_ORDER.filter(kind => present.includes(kind))
+}
+
+/** The box with its `filter:` tokens replaced by one naming `kinds`, in front of the rest. */
+export function withFilter(raw: string, kinds: LatentKind[]): string {
+  const { rest } = parseFilter(raw)
+  return [`filter:${kinds.join(',')}`, rest].filter(Boolean).join(' ')
+}

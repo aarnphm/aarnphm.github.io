@@ -7,6 +7,14 @@ description: Add or update a physical place in Garden's Arena places channel and
 
 Work in `/Users/aarnphm/workspace/garden` unless the current Garden checkout is elsewhere. A request to save a place authorizes both local catalogue edits. This skill works with Luna or any other model; it does not change model settings. Read the checkout's current AGENTS.md and inspect scoped Git state before editing.
 
+## Intake media and note text
+
+A post or reel supplied for place intake, including a bare link in an established intake chat, asks for catalogue entries. Use the signed-in local desktop to inspect Instagram; if access is unavailable, report the blocker and skip remote post fetch/search. The Instagram skill can supply acquisition guidance; skip its default archive and attribution workflow for intake.
+
+Keep screenshots, carousel images, reel stills, website photos, source URLs, and coordinate-verification receipts under `docs/verification/<task>/artifacts/`. Do not save intake captures under `content/thoughts/images/`, including its `instagram/` subtree, or embed them in place notes. A separate explicit media-archive request has its own scope.
+
+Reserve the note body for Aaron's own visit notes and reviews; leave it empty for ordinary intake. Put practical visit facts in frontmatter `details`, a reference URL in `external`, and additional reference URLs in `reference_links`. Keep the primary venue or Maps URL in `url`. Omit generated recommendations, creator credits, social handles, source/attribution paragraphs, slide numbers, timestamps, archived-reel links, and `source` or `source_rating_by` metadata. Keep research provenance in the verification artifacts. Imported ratings may use `source_rating` and `source_rating_scale`, kept separate from Aaron's personal `rating`.
+
 ## Resolve the location
 
 Accept a place name plus supplied context, a Google Maps link, or a website. Resolve the physical branch before writing. Use city/address details from the request and conversation. If a name or website identifies several plausible branches, ask for the missing city or branch. Do not choose an unrelated business just because its domain matches the name.
@@ -21,7 +29,7 @@ Search `content/are.na.md` and `content/places/*.md` by name, address, original 
 
 ## Update both catalogues
 
-Inspect the current `## places` section and `content/places to go.base`; use their live schemas. Insert a new place at the top of that section after any channel-level metadata, keeping neighbouring items intact. Store the supplied Maps link when available. For a website or name, choose the verified branch Maps link or official branch website. Use the same primary URL in the Arena item and note; secondary source links may be nested under the Arena item.
+Inspect the current `## places` section and `content/places to go.base`; use their live schemas. Insert a new place at the top of that section after any channel-level metadata, keeping neighbouring items intact. Store the supplied Maps link when available. For a website or name, choose the verified branch Maps link or official branch website. Use the same primary URL in the Arena item and note. Keep intake-source links and creator credits in verification artifacts rather than adding them to Arena metadata or nested links.
 
 Arena uses this grammar (the coordinates are placeholders to replace with verified numbers):
 
@@ -61,7 +69,7 @@ pnpm exec oxfmt --check 'content/places/Place Name Branch.md'
 git diff --check
 ```
 
-The verifier reads the actual Arena section and note, runs the Arena transformer, renders the actual places Base, and records the matched item and map marker under `docs/verification/garden-add-place/artifacts/`. Inspect the scoped diff for duplicate items and unrelated edits. Avoid formatting the entire Arena file.
+The verifier reads the actual Arena section and note, runs the Arena transformer, renders the actual places Base, and records the matched item and map marker under `docs/verification/garden-add-place/artifacts/`. Inspect the scoped diff for duplicate items, intake attribution, captured-media embeds, writes under `content/thoughts/images/`, and unrelated edits. Avoid formatting the entire Arena file.
 
 If browser proof is requested or needed for a rendering issue, use the existing watcher, wait for its matching `build:ready`, confirm HTTP 200, and inspect the Arena item and places map. Preserve existing processes. Production parser/render artifacts do not prove the live page; report a watcher or emission blocker precisely.
 

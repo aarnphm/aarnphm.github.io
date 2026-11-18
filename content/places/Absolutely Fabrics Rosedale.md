@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Rosedale clothing store carrying emerging designers, established fashion houses and archival vintage.'
 id: 'Absolutely Fabrics Rosedale'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DeuVzOlIC6l/'
 tags:
   - 'places'
 title: 'Absolutely Fabrics Rosedale'

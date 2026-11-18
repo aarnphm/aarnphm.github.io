@@ -8,9 +8,9 @@ author:
 date: '2025-11-23'
 description: generalisation of causal abstraction from mechanism intervention to transformations
 id: '@geiger2025causalabstraction'
-modified: 2026-06-05 15:08:22 GMT-04:00
+modified: 2026-11-09 10:24:12 GMT-05:00
 tags:
-  - interp
+  - interpretability
 title: 'Causal abstraction: A theoretical foundation for mechanistic interpretability'
 year: 2025
 ---

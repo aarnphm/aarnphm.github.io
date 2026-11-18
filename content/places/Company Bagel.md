@@ -9,7 +9,6 @@ date: '2026-11-04'
 description: 'Bagel shop on Ossington Avenue making naturally fermented sourdough bagels.'
 id: 'Company Bagel'
 modified: '2026-11-04'
-source: 'https://www.instagram.com/reel/DfVdamEKWdo/'
 tags:
   - 'places'
 title: 'Company Bagel'

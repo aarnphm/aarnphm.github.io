@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.12"
-# dependencies = ["mlx>=0.32.3", "mlx-vlm==0.7.10", "transformers>=5.14", "numpy"]
+# dependencies = ["mlx==0.32.4", "mlx-vlm==0.7.10", "transformers==5.20.2", "numpy"]
 # ///
 """The words that make a text feature fire (docs/latent-steering.md, item 5), for the explorer's
 feature card: integrated gradients from embeddinggemma-2's input tokens to the feature's
@@ -36,7 +36,7 @@ from pathlib import Path
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).parent))
-from features import STOP, WORD  # noqa: E402
+from features import STOP, WORD
 
 MODEL_ID, REV = (
   'mlx-community/embeddinggemma-2-bf16',
@@ -115,7 +115,7 @@ def main() -> None:
   )
   enc *= np.array(meta['encScale'], np.float32)[:, None]
   mean = mx.array(np.array(meta['mean'], np.float32))
-  norm, bias = meta['norm'], np.array(meta['bias'], np.float32)
+  norm = meta['norm']
   part = json.loads((side / 'index.json').read_text())['part']
 
   cache = Path(args.cache) / f'latent-words-v2-{side.name[:16]}.jsonl'
@@ -136,7 +136,7 @@ def main() -> None:
   if args.limit:
     todo = todo[: args.limit]
   log(
-    f'{len(done)} features cached, {len(todo)} to do, {args.rows} rows × {args.steps} steps'
+    f'{len(done)} features cached, {len(todo)} to do, {args.rows} rows x {args.steps} steps'
   )
 
   model, processor = load(MODEL_ID, revision=REV)

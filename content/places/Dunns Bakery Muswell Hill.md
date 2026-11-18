@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Muswell Hill branch of Dunns Bakery, serving bread, cakes and pastries.'
 id: 'Dunns Bakery Muswell Hill'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/reel/DfMaijrpbIZ/'
 tags:
   - 'places'
 title: 'Dunns Bakery Muswell Hill'

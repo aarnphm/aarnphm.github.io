@@ -12,6 +12,5 @@ seealso:
   - '[[arena/philosophy/entry-v1-369f767ba313ccb41dffea3d3abf070d7a51ff8dfea8e16a53867b92f47c462e|Arena]]'
 status: to read
 title: Elements of Morals
+details: linked English translation by Caroline Rollin Corson, published in 1884.
 ---
-
-linked English translation by Caroline Rollin Corson, published in 1884.

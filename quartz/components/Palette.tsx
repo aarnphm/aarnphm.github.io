@@ -35,6 +35,9 @@ const paletteInnerHtml = render(
           <kbd>⟶</kbd> pour sélectionner
         </li>
         <li data-quick-open>
+          <kbd>?</kbd> pour demander
+        </li>
+        <li data-quick-open>
           <kbd>⌘ ⌥ ↵</kbd> pour ouvrir dans un panneau
         </li>
         <li data-command style={{ display: 'none' }}>

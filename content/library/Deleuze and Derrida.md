@@ -12,6 +12,5 @@ seealso:
   - '[[arena/philosophy/entry-v1-476cea2dce252d03bef316bbebc8014eedf0c471ca9066aac07971bfe71fd7c9|Arena]]'
 status: to read
 title: Deleuze and Derrida
+details: Arena links to chapter 4, “Deleuze and Hegelian Difference.”
 ---
-
-Arena links to chapter 4, “Deleuze and Hegelian Difference.”

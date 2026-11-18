@@ -17,6 +17,5 @@ tags:
 title: Bicycle Thieves
 year: 1948
 runtime: 89
+external: https://en.wikipedia.org/wiki/Bicycle_Thieves
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](https://en.wikipedia.org/wiki/Bicycle_Thieves).

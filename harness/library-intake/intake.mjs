@@ -63,6 +63,23 @@ function validate(book) {
   )
     errors.push('id: invalid filename')
   if (book.finished != null) errors.push('finished: leave null for unread books')
+  for (const field of ['source', 'source_rating_by']) {
+    if (Object.hasOwn(book, field))
+      errors.push(`${field}: keep intake attribution in verification artifacts, outside notes`)
+  }
+  if (typeof book.body === 'string') {
+    if (/thoughts\/images\//i.test(book.body))
+      errors.push(
+        'body: keep captured media in verification artifacts; retain book covers in posters',
+      )
+    if (
+      /^\s*(?:source|bibliography|credits?|attribution|photo(?:graphy)?(?: credit)?):/im.test(
+        book.body,
+      ) ||
+      /instagram\.com\/(?:p|reels?)\//i.test(book.body)
+    )
+      errors.push('body: omit intake attribution and source citations; keep useful reading notes')
+  }
   const poster = book.posters?.match(/^\[\[(library\/posters\/[^|\]]+)(?:\|[^\]]+)?\]\]$/)?.[1]
   if (!poster || !fs.existsSync(path.join(root, 'content', poster)))
     errors.push('posters: expected existing library/posters wikilink')
@@ -99,7 +116,8 @@ if (command === 'context') {
       'finished',
       'pdf',
     ],
-    rules: 'Read harness/library-intake/README.md. Run search before researching a new title.',
+    rules:
+      'Read harness/library-intake/README.md. Run search before researching a new title. Keep captures and provenance in docs/verification/library-intake/artifacts/, outside content/thoughts/images/. Omit intake attribution from notes. Keep verified book covers in content/library/posters/ and the external bibliographic URL.',
   })
 } else if (command === 'search') {
   if (!argument) throw new Error('Usage: intake.mjs search "title or author"')

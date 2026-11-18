@@ -17,6 +17,5 @@ tags:
 title: Sansho the Bailiff
 year: 1954
 runtime: 124
+external: https://en.wikipedia.org/wiki/Sansho_the_Bailiff
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](https://en.wikipedia.org/wiki/Sansho_the_Bailiff).

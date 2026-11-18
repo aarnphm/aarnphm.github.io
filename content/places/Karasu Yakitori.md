@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Yakitori omakase restaurant grilling skewers over binchotan charcoal on Adelaide Street West.'
 id: 'Karasu Yakitori'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/reel/Dezt_U4xoaV/'
 tags:
   - 'places'
 title: 'Karasu Yakitori'

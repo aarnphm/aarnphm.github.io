@@ -13,6 +13,7 @@ import type { TrackEntry } from './tracking'
 import type { WeatherCache } from './weather'
 import { applyOuraSleepRows } from '../../scripts/sync-oura'
 import { health as garminHealthFixture } from '../../util/fixtures/garmin-health'
+import { garminConnectSleep } from '../../util/garmin-connect'
 import { emptyOuraHealth } from '../../util/oura-health'
 import {
   buildTriathlonDailyAnalytics,
@@ -600,6 +601,57 @@ test('merges exact-night Garmin sleep measurements through analytics, day SSR da
   garmin.sleep = { [date]: { ...garminSleep, date: iso(21) } }
   const wrongDay = buildAnalytics(cache, { garmin, since: iso(0) })
   assert.equal(wrongDay.daily.find(day => day.date === date)?.sleepMetrics, null)
+})
+
+test('Garmin-only sleep reaches recovery, exported day rows and activity health with provenance', () => {
+  const { cache, oura } = fixtures()
+  const date = iso(20)
+  const sleep = garminConnectSleep(
+    {
+      dailySleepDTO: {
+        calendarDate: date,
+        sleepFromDevice: true,
+        sleepStartTimestampGMT: Date.parse(`${date}T02:00:00Z`),
+        sleepEndTimestampGMT: Date.parse(`${date}T10:00:00Z`),
+        sleepTimeSeconds: 27000,
+        deepSleepSeconds: 5000,
+        lightSleepSeconds: 17000,
+        remSleepSeconds: 5000,
+        awakeSleepSeconds: 1800,
+        sleepScores: { overall: { value: 82 } },
+      },
+    },
+    date,
+  )
+  assert.ok(sleep)
+  const garmin: GarminCache = { lastSync: cache.lastSync, activities: {}, sleep: { [date]: sleep } }
+  const analytics = buildAnalytics(cache, { garmin, since: iso(0) })
+  const day = analytics.daily.find(day => day.date === date)
+  assert.equal(day?.sleepDurationS, 27000)
+  assert.equal(day?.sleepScore, 82)
+  assert.deepEqual(day?.sleepSources, { sleepDurationS: 'garmin', sleepScore: 'garmin' })
+  assert.equal(day?.readiness, null)
+  assert.equal(day?.hrv, null)
+  assert.equal(analytics.recovery.series.find(day => day.date === date)?.sleepS, 27000)
+  const rows: unknown[] = buildDataFeed(cache, analytics, { garmin })
+    .trim()
+    .split('\n')
+    .map(line => JSON.parse(line))
+  const row = rows.find(row => isRecord(row) && row.kind === 'day' && row.date === date)
+  assert.ok(isRecord(row))
+  assert.equal(row.sleepDurationS, 27000)
+  assert.deepEqual(row.sleepSources, day?.sleepSources)
+  const health = buildPayload(cache, null, garmin).health[date]
+  assert.equal(health.sleepDurationS, 27000)
+  assert.equal(health.sleepScore, 82)
+  assert.deepEqual(health.sleepSources, day?.sleepSources)
+  const preferred = buildAnalytics(cache, { oura, garmin, since: iso(0) }).daily.find(
+    day => day.date === date,
+  )
+  assert.equal(preferred?.sleepScore, oura.days[date].sleepScore)
+  assert.equal(preferred?.sleepSources?.sleepScore, 'oura')
+  garmin.sleep = { [date]: { ...sleep, date: iso(21) } }
+  assert.equal(buildPayload(cache, null, garmin).health[date]?.sleepDurationS ?? null, null)
 })
 
 test('carries build-time power curves and ranks exact durations at the latest measured mass', () => {
@@ -3476,7 +3528,9 @@ test('nap totals serialize independently of nightly recovery and survive day pay
   const summaries = buildTriathlonDailyAnalytics(analytics, oura.details)
   assert.equal(summaries[date].naps?.[0].reportedDay, iso(21))
   assert.equal(summaries[date].naps?.[0].sleepScoreDelta, 0)
-  assert.equal(summaries[date].sleep, null)
+  assert.equal(summaries[date].sleep?.totalSleepS, oura.days[date].sleepDurationS)
+  assert.equal(summaries[date].sleep?.nightSource, null)
+  assert.equal(summaries[date].sleep?.phase5Min, null)
   assert.ok(isTriathlonDailyAnalytics(JSON.parse(JSON.stringify(summaries))))
   assert.equal(isTriathlonDailyAnalytics({ [date]: { ...summaries[date], naps: [null] } }), false)
   assert.equal(

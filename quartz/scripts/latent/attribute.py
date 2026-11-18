@@ -16,7 +16,7 @@ exactly into contributions:
 
   sources  token embeddings (one per position), active transcoder features (layer, position,
            feature: activation a times its decoder row), error nodes (layer, position), and the
-           transcoder biases b_dec (one per layer)
+           transcoder biases (b_dec less b_pre W_skip, one per layer)
   targets  the top logits at the last position (logit minus the mean logit, before the softcap)
            and the pre-activations of the features kept in the graph
 
@@ -91,6 +91,9 @@ def load_plt(path: Path, n_layers: int):
         W_dec=w['W_dec'].astype(mx.float32),
         W_skip=w['W_skip'].astype(mx.float32),
         b_dec=w['b_dec'].astype(mx.float32),
+        b_pre=(
+          w['b_pre'] if 'b_pre' in w else mx.zeros_like(w['b_dec'])
+        ).astype(mx.float32),
         sx=float(w['sx'][0]),
         sy=float(w['sy'][0]),
         k=int(meta['k']),
@@ -100,11 +103,18 @@ def load_plt(path: Path, n_layers: int):
   return tcs
 
 
+def bias_of(tc):
+  """The constant part of a layer's write: b_dec, less the skip map of the input mean (the frozen
+  model keeps the skip path linear, x' W_skip, and its offset joins the bias node)."""
+  return tc['b_dec'] - tc['b_pre'] @ tc['W_skip']
+
+
 def encode_tc(tc, x):
   """Transcoder code of x (P, d) in model units: (pre-activation, z)."""
   import mlx.core as mx
 
-  pre = (x.astype(mx.float32) / tc['sx']) @ tc['W_enc'] + tc['b_enc']
+  xc = x.astype(mx.float32) / tc['sx'] - tc['b_pre']
+  pre = xc @ tc['W_enc'] + tc['b_enc']
   thr = mx.topk(pre, tc['k'], axis=-1).min(axis=-1, keepdims=True)
   return pre, mx.where(pre >= thr, mx.maximum(pre, 0), 0)
 
@@ -188,7 +198,7 @@ def record(lm, tcs, ids: list[int]):
     h = h1 * scalar
     tc = tcs[i]
     pre, z = encode_tc(tc, x[0])
-    skip = (x[0] / tc['sx']) @ tc['W_skip'] * tc['sy']
+    skip = (x[0] / tc['sx'] - tc['b_pre']) @ tc['W_skip'] * tc['sy']
     yhat = (z @ tc['W_dec'] + tc['b_dec']) * tc['sy'] + skip
     err = y[0] - yhat
     F.append(
@@ -275,7 +285,7 @@ class Graph:
     self.frozen, self.S, self.hf = record(lm, tcs, ids)
     self.L, self.P = len(tcs), len(ids)
     self.writes = [
-      ((s['z'] @ tc['W_dec']) + tc['b_dec']) * tc['sy'] + s['err']
+      ((s['z'] @ tc['W_dec']) + bias_of(tc)) * tc['sy'] + s['err']
       for s, tc in zip(self.S, tcs)
     ]
     mx.eval(self.writes)
@@ -290,6 +300,19 @@ class Graph:
     self.active = act
     self.bos = bos
     self.index = {(l, p, f): j for j, (l, p, f, _) in enumerate(act)}
+    # per layer: (columns in the active set, positions, features, activations), built once
+    # rather than rescanning ~90k actives for every layer of every batch of rows
+    self.by_layer = {}
+    cols: dict[int, list[int]] = {}
+    for j, (l, *_) in enumerate(act):
+      cols.setdefault(l, []).append(j)
+    for l, js in cols.items():
+      self.by_layer[l] = (
+        js,
+        mx.array([act[j][1] for j in js]),
+        mx.array([act[j][2] for j in js]),
+        mx.array([act[j][3] for j in js]),
+      )
 
   def rows(self, kind: str, items: list, batch: int = 32):
     """Rows over sources for targets. kind 'logit': items are unembedding directions (d,);
@@ -344,7 +367,7 @@ class Graph:
       )
       bias = mx.stack(
         [
-          mx.sum(g * (tc['b_dec'] * tc['sy']), axis=(-1, -2))
+          mx.sum(g * (bias_of(tc) * tc['sy']), axis=(-1, -2))
           for g, tc in zip(gw, tcs)
         ],
         1,
@@ -352,12 +375,9 @@ class Graph:
       # features: a * sy * <W_dec_f, g[l, p]>, gathered for the active set
       feat = np.zeros((B, n), np.float32)
       for l in range(L if stop is None else stop):
-        rows_l = [j for j, (al, *_) in enumerate(self.active) if al == l]
-        if not rows_l:
+        if l not in self.by_layer:
           continue
-        pp = mx.array([self.active[j][1] for j in rows_l])
-        ff = mx.array([self.active[j][2] for j in rows_l])
-        aa = mx.array([self.active[j][3] for j in rows_l])
+        rows_l, pp, ff, aa = self.by_layer[l]
         dec = tcs[l]['W_dec'][ff] * tcs[l]['sy']  # (r, d)
         gl = gw[l][:, pp, :]  # (B, r, d)
         feat[:, rows_l] = np.array(mx.sum(gl * dec[None], axis=-1) * aa[None])
@@ -410,51 +430,28 @@ def influence(A: np.ndarray, w: np.ndarray) -> np.ndarray:
   return np.linalg.solve((np.eye(n) - Ah).T, w)
 
 
-def main() -> None:
-  ap = argparse.ArgumentParser()
-  ap.add_argument(
-    '--plt', required=True, help='a transcoders.py output folder (all layers)'
-  )
-  ap.add_argument('--prompt', required=True)
-  ap.add_argument(
-    '--chat', action='store_true', help='wrap the prompt in the chat template'
-  )
-  ap.add_argument(
-    '--logits', type=int, default=8, help='at most this many target logits'
-  )
-  ap.add_argument('--logit-mass', type=float, default=0.95)
-  ap.add_argument(
-    '--nodes', type=int, default=400, help='feature nodes to expand'
-  )
-  ap.add_argument('--batch', type=int, default=32)
-  ap.add_argument('--node-share', type=float, default=0.8)
-  ap.add_argument('--edge-share', type=float, default=0.98)
-  ap.add_argument('--quantised', action='store_true')
-  ap.add_argument('--out', default='')
-  args = ap.parse_args()
-
+def build(
+  model,
+  lm,
+  t,
+  tcs,
+  ids: list[int],
+  *,
+  prompt: str = '',
+  plt: str | Path = '',
+  logits: int = 8,
+  logit_mass: float = 0.95,
+  nodes_: int = 400,
+  batch: int = 32,
+  node_share: float = 0.8,
+  edge_share: float = 0.98,
+  mean=None,
+) -> dict:
+  """One attribution graph over token ids (bos first): the dict main() writes. `mean` is the
+  mean unembedding row (unembed_mean), passed in when building many graphs."""
   import mlx.core as mx
-  from label import MODEL, REVISION, resolve
-  from mlx_lm import load
+  from label import MODEL, REVISION
 
-  import acts
-
-  model, tok = load(resolve(MODEL, REVISION))
-  lm = acts.text_model(model)
-  if not args.quantised:
-    acts.densify(lm)
-  tcs = load_plt(Path(args.plt), len(lm.model.layers))
-  t = getattr(tok, '_tokenizer', tok)
-  if args.chat:
-    ids = list(
-      t.apply_chat_template(
-        [{'role': 'user', 'content': args.prompt}],
-        add_generation_prompt=True,
-        enable_thinking=False,
-      )
-    )
-  else:
-    ids = acts.encode(tok, args.prompt, 512)
   t0 = time.time()
   G = Graph(lm, tcs, ids)
   # exactness: the written-out forward is the library's, and the frozen replacement with its
@@ -464,10 +461,10 @@ def main() -> None:
   probs = mx.softmax(ref, axis=-1)
   order = np.argsort(-np.array(probs))
   keep, mass = [], 0.0
-  for tid in order[: args.logits]:
+  for tid in order[:logits]:
     keep.append(int(tid))
     mass += float(probs[int(tid)].item())
-    if mass >= args.logit_mass:
+    if mass >= logit_mass:
       break
   E = unembed_rows(lm, keep)
   c = lm.final_logit_softcapping or 0
@@ -484,24 +481,25 @@ def main() -> None:
     f'{P} tokens, {len(G.active)} active features; written-out vs library logits {rec_err:.2e},'
     f' replacement vs written-out residual {exact:.2e}'
   )
-  mean = unembed_mean(lm)
+  if mean is None:
+    mean = unembed_mean(lm)
   dirs = [E[i] - mean for i in range(len(keep))]
 
   n = len(G.active)
   lw = np.array([float(probs[tid].item()) for tid in keep])
   lw = lw / lw.sum()
-  LF, LE, LB, LEm, LT = G.rows('logit', dirs, args.batch)
+  LF, LE, LB, LEm, LT = G.rows('logit', dirs, batch)
   done_rows: dict[int, tuple] = {}
   score = (
     np.abs(LF).T @ lw
   )  # first-order influence of each feature on the logits
   order_f: list[int] = []
-  while len(order_f) < min(args.nodes, n):
-    cand = [j for j in np.argsort(-score) if j not in done_rows][: args.batch]
+  while len(order_f) < min(nodes_, n):
+    cand = [j for j in np.argsort(-score) if j not in done_rows][:batch]
     if not cand or score[cand[0]] <= 0:
       break
     items = [G.active[j][:3] for j in cand]
-    F, E, Bs, Em, T = G.rows('feature', items, args.batch)
+    F, E, Bs, Em, T = G.rows('feature', items, batch)
     for b, j in enumerate(cand):
       done_rows[j] = (F[b], E[b], Bs[b], Em[b], T[b])
       order_f.append(j)
@@ -574,16 +572,16 @@ def main() -> None:
   nodes.extend(
     dict(id=f'err:{l}.{p}', kind='error', layer=l, pos=p) for l, p in err_ids
   )
-  for p in range(P):
-    nodes.append(
-      dict(
-        id='bos' if p == 0 else f'emb:{p}',
-        kind='embedding',
-        layer=-1,
-        pos=p,
-        token=t.decode([ids[p]]),
-      )
+  nodes.extend(
+    dict(
+      id='bos' if p == 0 else f'emb:{p}',
+      kind='embedding',
+      layer=-1,
+      pos=p,
+      token=t.decode([ids[p]]),
     )
+    for p in range(P)
+  )
   K, nf = len(keep), len(S)
   N = len(nodes)
   A = np.zeros((N, N), np.float32)
@@ -601,9 +599,7 @@ def main() -> None:
   src = np.arange(K, N)
   ordr = src[np.argsort(-infl[src])]
   cum = np.cumsum(infl[ordr]) / max(1e-12, infl[src].sum())
-  kept_src = set(
-    ordr[: int(np.searchsorted(cum, args.node_share)) + 1].tolist()
-  )
+  kept_src = set(ordr[: int(np.searchsorted(cum, node_share)) + 1].tolist())
   alive = [i for i in range(N) if i < K or i in kept_src]
   # prune edges by |weight| x target influence, keep edge-share
   sub = A[np.ix_(alive, alive)]
@@ -615,9 +611,7 @@ def main() -> None:
       min(
         len(flat) - 1,
         int(
-          np.searchsorted(
-            np.cumsum(flat) / max(1e-12, flat.sum()), args.edge_share
-          )
+          np.searchsorted(np.cumsum(flat) / max(1e-12, flat.sum()), edge_share)
         ),
       )
     ]
@@ -638,11 +632,11 @@ def main() -> None:
   for i in alive:
     nodes[i]['influence'] = round(float(infl[i] if i >= K else w[i]), 5)
   graph = dict(
-    prompt=args.prompt,
+    prompt=prompt,
     tokens=[t.decode([x]) for x in ids],
     model=MODEL,
     revision=REVISION,
-    plt=str(args.plt),
+    plt=str(plt),
     fvu={l: tc['fvu'] for l, tc in enumerate(tcs)},
     logits=[
       dict(token=t.decode([tid]), prob=round(float(probs[tid].item()), 4))
@@ -658,15 +652,77 @@ def main() -> None:
     ),
     seconds=round(time.time() - t0, 1),
   )
+  return graph
+
+
+def main() -> None:
+  ap = argparse.ArgumentParser()
+  ap.add_argument(
+    '--plt', required=True, help='a transcoders.py output folder (all layers)'
+  )
+  ap.add_argument('--prompt', required=True)
+  ap.add_argument(
+    '--chat', action='store_true', help='wrap the prompt in the chat template'
+  )
+  ap.add_argument(
+    '--logits', type=int, default=8, help='at most this many target logits'
+  )
+  ap.add_argument('--logit-mass', type=float, default=0.95)
+  ap.add_argument(
+    '--nodes', type=int, default=400, help='feature nodes to expand'
+  )
+  ap.add_argument('--batch', type=int, default=32)
+  ap.add_argument('--node-share', type=float, default=0.8)
+  ap.add_argument('--edge-share', type=float, default=0.98)
+  ap.add_argument('--quantised', action='store_true')
+  ap.add_argument('--out', default='')
+  args = ap.parse_args()
+
+  from label import MODEL, REVISION, resolve
+  from mlx_lm import load
+
+  import acts
+
+  model, tok = load(resolve(MODEL, REVISION))
+  lm = acts.text_model(model)
+  if not args.quantised:
+    acts.densify(lm)
+  tcs = load_plt(Path(args.plt), len(lm.model.layers))
+  t = getattr(tok, '_tokenizer', tok)
+  if args.chat:
+    ids = list(
+      t.apply_chat_template(
+        [{'role': 'user', 'content': args.prompt}],
+        add_generation_prompt=True,
+        enable_thinking=False,
+      )
+    )
+  else:
+    ids = acts.encode(tok, args.prompt, 512)
+  graph = build(
+    model,
+    lm,
+    t,
+    tcs,
+    ids,
+    prompt=args.prompt,
+    plt=args.plt,
+    logits=args.logits,
+    logit_mass=args.logit_mass,
+    nodes_=args.nodes,
+    batch=args.batch,
+    node_share=args.node_share,
+    edge_share=args.edge_share,
+  )
   slug = (
     re.sub(r'[^a-z0-9]+', '-', args.prompt.lower()).strip('-')[:60] or 'graph'
   )
   out = Path(args.out) if args.out else OUT / f'{slug}.json'
   out.parent.mkdir(parents=True, exist_ok=True)
   out.write_text(json.dumps(graph, ensure_ascii=False) + '\n')
-  nf_alive = sum(1 for i in alive if nodes[i]['kind'] == 'feature')
+  nf = sum(1 for n in graph['nodes'] if n['kind'] == 'feature')
   log(
-    f'{len(alive)} nodes ({nf_alive} features), {len(links)} links -> {out} in {graph["seconds"]}s'
+    f'{len(graph["nodes"])} nodes ({nf} features), {len(graph["links"])} links -> {out} in {graph["seconds"]}s'
   )
 
 

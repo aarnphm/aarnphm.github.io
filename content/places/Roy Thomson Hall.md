@@ -9,7 +9,6 @@ date: '2026-11-02'
 description: 'Concert hall on Simcoe Street and home of the Toronto Symphony Orchestra.'
 id: 'Roy Thomson Hall'
 modified: '2026-11-02'
-source: 'https://www.instagram.com/p/DfNZFAegXFC/'
 tags:
   - 'places'
 title: 'Roy Thomson Hall'

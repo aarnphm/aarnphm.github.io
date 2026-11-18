@@ -1,27 +1,35 @@
-import type { Element } from 'hast'
-import { h } from 'hastscript'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import type { ProcessedContent } from '../plugins/vfile'
 import type { ChangeEvent } from '../types/plugin'
+import type { ReferenceDependency } from './references/dependencies'
 import { defaultProcessedContent } from '../plugins/vfile'
 import { isFilePath, isFullSlug } from './path'
 import { transclusionChangeEvents } from './transclusion-dependencies'
 
-function note(name: string, children: Element[] = []): ProcessedContent {
+function note(name: string, dependencies: ReferenceDependency[] = []): ProcessedContent {
   const path = `content/${name}.md`
   const relativePath = `${name}.md`
   if (!isFullSlug(name) || !isFilePath(path) || !isFilePath(relativePath)) throw new Error(name)
   const result = defaultProcessedContent({ slug: name, filePath: path, relativePath })
-  result[0].children = children
+  result[1].data.referenceDependencies = dependencies
   result[1].data.htmlAst = result[0]
   return result
 }
 
-function embed(target: string, anchor = '', serialized = false): Element {
-  return h('blockquote', { className: ['transclude'], 'data-block': anchor }, [
-    h('a', { [serialized ? 'data-slug' : 'dataSlug']: target }, target),
-  ])
+function embed(target: string, anchor = ''): ReferenceDependency {
+  return {
+    target,
+    origin: 'fixture.md',
+    fragments: [anchor],
+    embed: true,
+    decodeUri: false,
+    implicitAlias: false,
+    status: 'found',
+    resolvedSlug: target,
+    lookupKeys: [],
+    diagnostics: [],
+  }
 }
 
 function change(file: ProcessedContent, type: ChangeEvent['type'] = 'change'): ChangeEvent {
@@ -57,7 +65,7 @@ test('adding a previously missing target and deleting a target both rebuild stre
 test('base view transclusions depend on the owning Base file', () => {
   const base = note('library')
   base[1].data.bases = true
-  const stream = note('stream', [embed('library/books')])
+  const stream = note('stream', [embed('library', '#books')])
 
   assert.deepEqual(slugs([base, stream], [change(base)]), ['library', 'stream'])
 })

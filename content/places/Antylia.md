@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'Latin American restaurant from chefs Ashley and Aldo on Bloor Street West'
 id: 'Antylia'
 modified: 2026-10-30
-source: https://www.instagram.com/reel/DfDq5exJTTN/
 tags:
   - places
 title: 'Antylia'

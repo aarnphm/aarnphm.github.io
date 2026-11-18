@@ -152,11 +152,13 @@ try {
   assert.ok(isFilePath(basePath))
   const base: QuartzPluginData = {
     slug: slugifyFilePath(basePath),
+    filePath: basePath,
+    relativePath: basePath,
     basesConfig: compiled.config,
     basesExpressions: compiled.expressions,
     frontmatter: { title: 'Places', pageLayout: 'default' },
   }
-  const rendered = renderBaseViewsForFile(base, [place])
+  const rendered = renderBaseViewsForFile(base, [place, base])
   for (const view of rendered.views) {
     assert.equal(view.resultCount, 1, `Place missing from Base view ${view.view.name}`)
     await fs.writeFile(path.join(out, `${view.view.name}.html`), toHtml(view.tree))

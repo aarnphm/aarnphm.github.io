@@ -19,6 +19,7 @@ from cache import ExtractionSpec, PageCache, canonical, digest
 from dates import note_dates, resolve
 from publication import publish, prune_vectors
 from regions import publish_regions
+from scope import page_numbers
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from embed_build import (
@@ -61,6 +62,7 @@ class PdfMetadata(TypedDict, total=False):
   partialPages: list[int]
   fullyTranscribedPages: list[int]
   totalPages: int
+  excludedPages: list[int]
   date: str
   datePrecision: str
   dateSource: str
@@ -152,7 +154,10 @@ def read_passages(
     cache = PageCache(cache_root, source_sha, spec)
     if cache.key != document['key']:
       raise ValueError(f'Extraction identity mismatch: {source}')
-    pages = [cache.read(number) for number in document['pages']]
+    requested = set(page_numbers(source_sha, document['totalPages']))
+    published = [number for number in document['pages'] if number in requested]
+    excluded = sorted(set(range(1, document['totalPages'] + 1)) - requested)
+    pages = [cache.read(number) for number in published]
     if any(page is None for page in pages):
       raise ValueError(f'Extraction cache is incomplete or corrupt: {source}')
     titles = [
@@ -176,7 +181,7 @@ def read_passages(
       'aliases': aliases,
       'acronyms': acronyms,
       'sourceSha256': source_sha,
-      'pages': document['pages'],
+      'pages': published,
       'partialPages': [
         p.page_number for p in pages if p and p.status == 'partial'
       ],
@@ -185,6 +190,8 @@ def read_passages(
       ],
       'totalPages': document['totalPages'],
     }
+    if excluded:
+      documents[slug]['excludedPages'] = excluded
     dated = resolve(slug, source, notes or {})
     if dated:
       documents[slug].update(dated)

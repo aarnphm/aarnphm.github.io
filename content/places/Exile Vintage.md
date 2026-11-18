@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Vintage clothing shop in Kensington Market with leather jackets, occasion wear and a bargain basement.'
 id: 'Exile Vintage'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DezjVfhnzJY/'
 tags:
   - 'places'
 title: 'Exile Vintage'

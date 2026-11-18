@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Regional Chinese dishes served for sharing on Davenport Road.'
 id: 'Mimi Chinese'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/reel/Dbnh1nNOgKR/'
 tags:
   - 'places'
 title: 'Mimi Chinese'

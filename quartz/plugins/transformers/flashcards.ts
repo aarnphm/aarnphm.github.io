@@ -3,11 +3,13 @@ import { fromMarkdown } from 'mdast-util-from-markdown'
 import { mathFromMarkdown } from 'mdast-util-math'
 import { math } from 'micromark-extension-math'
 import { wikilink, wikilinkFromMarkdown } from '../../extensions/micromark-extension-ofm-wikilinks'
+import { isWikilink } from '../../extensions/micromark-extension-ofm-wikilinks/node'
 import { speech, speechFromMarkdown } from '../../extensions/micromark-extension-speech'
 import { QuartzTransformerPlugin } from '../../types/plugin'
 import { CardKind, parseFlashcards } from '../../util/flashcards'
 import { flashcardsSlug, isFlashcardPath, sourceSlugForDeck } from '../../util/flashcards-path'
 import { FullSlug } from '../../util/path'
+import { visitReferenceNodes } from '../../util/references/markdown'
 
 const html = (value: string): RootContent => ({ type: 'html', value })
 const shell = (value: string, cardId?: string): RootContent => ({
@@ -18,17 +20,18 @@ const shell = (value: string, cardId?: string): RootContent => ({
 
 export const Flashcards: QuartzTransformerPlugin = () => ({
   name: 'Flashcards',
-  markdownPlugins(ctx) {
-    const allSlugs = new Set(ctx?.allSlugs ?? [])
-    const hasSlug = (slug: string) => allSlugs.has(slug as FullSlug)
+  markdownPlugins() {
     const extensions = [wikilink(), math(), speech()]
-    const mdastExtensions = [
-      wikilinkFromMarkdown({ hasSlug }),
-      mathFromMarkdown(),
-      speechFromMarkdown(),
-    ]
-    const parseFace = (src: string) =>
-      fromMarkdown(src, { extensions, mdastExtensions }).children as RootContent[]
+    const mdastExtensions = [wikilinkFromMarkdown(), mathFromMarkdown(), speechFromMarkdown()]
+    const parseFace = (src: string) => {
+      const tree = fromMarkdown(src, { extensions, mdastExtensions })
+      visitReferenceNodes(tree, node => {
+        delete node.position
+        if (isWikilink(node) && node.data?.reference)
+          node.data.reference = Object.freeze({ ...node.data.reference, source: 'generated' })
+      })
+      return tree.children
+    }
 
     return [
       () => (tree: Root, file) => {

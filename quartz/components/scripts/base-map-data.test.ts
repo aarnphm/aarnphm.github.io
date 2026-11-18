@@ -47,7 +47,7 @@ test('readBaseMapData rejects malformed serialized state', () => {
   assert.equal(readBaseMapData({ markers: '[]', currentSlug: '/invalid/' }), undefined)
 })
 
-test('createPopupContent escapes authored values and resolves wikilinks', () => {
+test('createPopupContent escapes authored values and renders projected reference tokens', () => {
   const data = readBaseMapData({
     markers: JSON.stringify([
       {
@@ -57,7 +57,7 @@ test('createPopupContent escapes authored values and resolves wikilinks', () => 
         slug: 'places/hamilton',
         popupFields: {
           raw: '<img src=x onerror=alert(1)>',
-          related: '[[places/toronto#Details|Toronto <b>]]',
+          related: { kind: 'reference', href: '/places/toronto#details', label: 'Toronto <b>' },
           icon: { kind: 'icon', value: 'lucide:map-pin' },
         },
       },
@@ -74,7 +74,7 @@ test('createPopupContent escapes authored values and resolves wikilinks', () => 
   assert.match(popup, /&lt;img src=x onerror=alert\(1\)&gt;/)
   assert.match(
     popup,
-    /href="\.\.\/places\/toronto#details" class="internal" data-slug="places\/toronto#details">Toronto &lt;b&gt;<\/a>/,
+    /href="\/places\/toronto#details" class="internal" data-slug="places\/toronto#details">Toronto &lt;b&gt;<\/a>/,
   )
   assert.match(popup, /<i class="icon-map-pin" aria-hidden="true"><\/i>/)
   assert.doesNotMatch(popup, /<script>|<img/)
@@ -84,4 +84,40 @@ test('readPopupFields accepts object and serialized Mapbox properties', () => {
   assert.deepEqual(readPopupFields({ status: 'visited' }), { status: 'visited' })
   assert.deepEqual(readPopupFields('{"status":"visited"}'), { status: 'visited' })
   assert.deepEqual(readPopupFields('{'), {})
+})
+
+test('popup references validate projected destinations and retain unprojected values as literal text', () => {
+  const data = readBaseMapData({
+    markers: JSON.stringify([
+      {
+        lat: 43,
+        lon: -79,
+        title: 'Place',
+        slug: 'places/place',
+        popupFields: {
+          styled: { kind: 'reference', href: '/places/toronto', label: 'Toronto' },
+          view: { kind: 'reference', href: '/places/Visited', label: 'Places' },
+          malformed: '[[places/toronto]] trailing]]',
+          external: '[[https://example.test|External]]',
+          forged: { kind: 'reference', href: 'javascript:alert(1)', label: 'Unsafe' },
+          protocolRelative: { kind: 'reference', href: '//evil.test/', label: 'Unsafe' },
+        },
+      },
+    ]),
+    currentSlug: 'places/index',
+  })
+  assert.ok(data)
+  const popup = createPopupContent(data.markers[0], data.currentSlug, {})
+  assert.match(
+    popup,
+    /href="\/places\/toronto" class="internal" data-slug="places\/toronto">Toronto<\/a>/,
+  )
+  assert.match(
+    popup,
+    /href="\/places\/Visited" class="internal" data-slug="places\/Visited">Places<\/a>/,
+  )
+  assert.ok(popup.includes('[[places/toronto]] trailing]]'))
+  assert.ok(popup.includes('[[https://example.test|External]]'))
+  assert.ok(!popup.includes('href="javascript:'))
+  assert.ok(!popup.includes('href="//evil.test'))
 })

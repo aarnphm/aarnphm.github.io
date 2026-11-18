@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Independent magazine shop carrying titles from around the world.'
 id: 'Issues Magazine Shop'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DeuVzOlIC6l/'
 tags:
   - 'places'
 title: 'Issues Magazine Shop'

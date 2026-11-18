@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Barbecue restaurant and smokehouse on Queen Street East in the Beaches.'
 id: 'Breakwall BBQ'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/reel/DcZuYT6hkC9/'
 tags:
   - 'places'
 title: 'Breakwall BBQ'

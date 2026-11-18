@@ -2,7 +2,6 @@ import { Root } from 'hast'
 import { imageSize } from 'image-size'
 import fs from 'node:fs/promises'
 import path from 'path'
-import { Node } from 'unist'
 import { visit } from 'unist-util-visit'
 import { VFile } from 'vfile'
 import { defaultContentPageLayout, sharedPageComponents } from '../../../quartz.layout'
@@ -13,9 +12,12 @@ import { QuartzComponentProps } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
 import { BuildCtx, contentDataFor } from '../../util/ctx'
-import { pathToRoot, slugifyFilePath, FilePath, FullSlug } from '../../util/path'
+import { pathToRoot, slugifyFilePath, FilePath, FullSlug, isFilePath } from '../../util/path'
+import { normalizeReferencePath } from '../../util/references/catalog'
+import { referenceCatalogFor, referenceSourcePath } from '../../util/references/context'
+import { parseLiteralReference, resolveLiteralReference } from '../../util/references/literal'
+import { referenceFields } from '../../util/references/request'
 import { StaticResources } from '../../util/resources'
-import { parseWikilink, resolveWikilinkTarget } from '../../util/wikilinks'
 import { QuartzPluginData } from '../vfile'
 import { write, removeWritten } from './helpers'
 
@@ -122,9 +124,6 @@ export interface MasonryImage {
   height: number
 }
 
-const isHastNode = (value: unknown): value is Node =>
-  typeof value === 'object' && value !== null && 'type' in value
-
 async function deleteMasonryImages(ctx: BuildCtx, slug: FullSlug): Promise<void> {
   await removeWritten(ctx, `${slug}.images`, '.json')
 }
@@ -203,7 +202,7 @@ export const Masonry: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts =>
   }
 }
 
-async function extractImagesFromTree(tree: Node, contentRoot: string): Promise<MasonryImage[]> {
+async function extractImagesFromTree(tree: Root, contentRoot: string): Promise<MasonryImage[]> {
   const imageNodes: Array<{
     src: string
     alt: string
@@ -213,29 +212,29 @@ async function extractImagesFromTree(tree: Node, contentRoot: string): Promise<M
     sourcePath?: string
   }> = []
 
-  visit(tree as Root, 'element', (node: any) => {
-    if (node.tagName === 'img' && node.properties?.src) {
-      const imgPath = node.properties.src as string
-      const cleanPath = imgPath.startsWith('/') ? imgPath.slice(1) : imgPath
-      const sourcePath = path.join(contentRoot, cleanPath)
-
-      if (node.properties.width && node.properties.height) {
-        imageNodes.push({
-          src: imgPath,
-          alt: (node.properties.alt as string) || '',
-          width: parseInt(node.properties.width),
-          height: parseInt(node.properties.height),
-          needsSize: false,
-        })
-      } else {
-        imageNodes.push({
-          src: imgPath,
-          alt: (node.properties.alt as string) || '',
-          needsSize: true,
-          sourcePath,
-        })
-      }
-    }
+  const dimension = (value: unknown): number | undefined => {
+    const parsed =
+      typeof value === 'number'
+        ? value
+        : typeof value === 'string'
+          ? parseInt(value, 10)
+          : undefined
+    return parsed !== undefined && Number.isFinite(parsed) && parsed > 0 ? parsed : undefined
+  }
+  visit(tree, 'element', node => {
+    if (node.tagName !== 'img' || typeof node.properties.src !== 'string') return
+    const imgPath = node.properties.src
+    const cleanPath = imgPath.startsWith('/') ? imgPath.slice(1) : imgPath
+    const width = dimension(node.properties.width)
+    const height = dimension(node.properties.height)
+    imageNodes.push({
+      src: imgPath,
+      alt: typeof node.properties.alt === 'string' ? node.properties.alt : '',
+      width,
+      height,
+      needsSize: width === undefined || height === undefined,
+      sourcePath: path.join(contentRoot, cleanPath),
+    })
   })
 
   return mapConcurrent(imageNodes, defaultIoConcurrency, async node => {
@@ -271,12 +270,26 @@ async function extractImagesFromDirectory(
   dirPath: string,
   contentRoot: string,
   files: FilePath[],
+  origin: string,
 ): Promise<MasonryImage[]> {
-  // Use the build's asset inventory so recursive discovery follows the same ignore rules.
-  const prefix = dirPath.replace(/\\/g, '/').replace(/^\/+|\/+$/g, '') + '/'
-  const imageFiles = files.filter(
-    file => file.startsWith(prefix) && imageExtensions.has(path.extname(file).toLowerCase()),
+  const raw = dirPath.replaceAll('\\', '/')
+  const directory = normalizeReferencePath(
+    raw.startsWith('./') || raw.startsWith('../') ? `${path.posix.dirname(origin)}/${raw}` : raw,
   )
+  if (directory === undefined) return []
+  const prefix = directory ? `${directory}/` : ''
+  const root = contentRoot.replaceAll('\\', '/').replace(/\/$/, '')
+  const imageFiles = files
+    .map(file => {
+      const source = file.replaceAll('\\', '/')
+      return source.startsWith(`${root}/`) ? source.slice(root.length + 1) : source
+    })
+    .filter(
+      (file): file is FilePath =>
+        isFilePath(file) &&
+        file.startsWith(prefix) &&
+        imageExtensions.has(path.extname(file).toLowerCase()),
+    )
 
   const images = await mapConcurrent(imageFiles, defaultIoConcurrency, async relativePath => {
     const ext = path.extname(relativePath)
@@ -298,7 +311,7 @@ async function extractImagesFromDirectory(
 
 async function processMasonry(
   ctx: BuildCtx,
-  tree: Node,
+  tree: Root,
   file: VFile,
   allFiles: QuartzPluginData[],
   opts: FullPageLayout,
@@ -319,32 +332,36 @@ async function processMasonry(
       ? (
           await Promise.all(
             masonryRefs.map(async ref => {
-              const parsed = parseWikilink(ref)
+              const parsed = parseLiteralReference(ref)
               if (!parsed) return []
 
-              const targetPath = parsed.target
+              const targetPath = referenceFields(parsed).target
 
               // try directory extraction first
               const dirImages = await extractImagesFromDirectory(
                 targetPath,
                 ctx.argv.directory,
                 ctx.allFiles,
+                referenceSourcePath(file.data),
               )
               if (dirImages.length > 0) {
                 return dirImages
               }
 
               // fall back to file reference
-              const resolved = resolveWikilinkTarget(parsed, slug)
+              const resolved = resolveLiteralReference(parsed, slug, {
+                catalog: referenceCatalogFor(ctx),
+                origin: referenceSourcePath(file.data),
+              })
               if (!resolved) return []
 
               allFilesBySlug ??= new Map(
                 allFiles.filter(f => f.slug).map(f => [f.slug!, f] as const),
               )
               const referencedFile = allFilesBySlug.get(resolved.slug)
-              if (!referencedFile?.tree || !isHastNode(referencedFile.tree)) return []
+              if (!referencedFile?.htmlAst) return []
 
-              return extractImagesFromTree(referencedFile.tree, ctx.argv.directory)
+              return extractImagesFromTree(referencedFile.htmlAst, ctx.argv.directory)
             }),
           )
         ).flat()
@@ -370,7 +387,7 @@ async function processMasonry(
     externalResources,
     cfg: cfg.configuration,
     children: [],
-    tree: tree as Root,
+    tree,
     allFiles,
   }
 

@@ -236,8 +236,12 @@ export const wholeActivityStats = (
     set('readiness', health.readiness, 'oura')
     set('hrv', health.hrv, 'oura')
     set('resting-hr', health.rhr, 'oura')
-    set('sleep-score', health.sleepScore, 'oura')
-    set('sleep-duration', positive(health.sleepDurationS) ? health.sleepDurationS : null, 'oura')
+    set('sleep-score', health.sleepScore, health.sleepSources?.sleepScore ?? 'oura')
+    set(
+      'sleep-duration',
+      positive(health.sleepDurationS) ? health.sleepDurationS : null,
+      health.sleepSources?.sleepDurationS ?? 'oura',
+    )
   }
 
   const fueling = activity.fueling

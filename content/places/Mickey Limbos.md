@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'Basement bar and restaurant on Ossington Avenue in the former Dakota Tavern space.'
 id: 'Mickey Limbos'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/Dc1vJkCp-Je/'
 tags:
   - 'places'
 title: 'Mickey Limbos'
@@ -18,5 +17,3 @@ type:
   - 'restaurant'
 url: 'https://mickeylimbos.com/'
 ---
-
-Recommendation from [the reel](https://www.instagram.com/reel/Dc1vJkCp-Je/): Pool, photo booth and sharing plates.

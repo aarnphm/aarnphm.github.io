@@ -20,6 +20,5 @@ tags:
 title: Blow-Up
 year: 1966
 runtime: 111
+external: https://en.wikipedia.org/wiki/Blowup
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](https://en.wikipedia.org/wiki/Blowup).

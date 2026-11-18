@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'Electronic music nightclub on Bathurst Street near Bloor.'
 id: 'CODA'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/DfGE9jAqXu6/'
 tags:
   - 'places'
 title: 'CODA'
@@ -17,5 +16,3 @@ type:
   - 'nightclub'
 url: 'https://codatoronto.com/'
 ---
-
-Recommendation from [Angie's Toronto food tour](https://www.instagram.com/reel/DfGE9jAqXu6/): Dancing.

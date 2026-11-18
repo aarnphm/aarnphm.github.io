@@ -30,6 +30,7 @@ export function bindTips(rt: Runtime): void {
     if (!text) return
     shown = el
     tip.textContent = text
+    tip.toggleAttribute('data-wide', el.dataset.tipWide !== undefined)
     tip.hidden = false
     delete tip.dataset.open
     // measure at the top left so the width is the note's own, not what is left of the viewport

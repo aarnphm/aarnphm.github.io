@@ -7,7 +7,7 @@ flashcards:
   default: true
 id: word
 layout: technical
-modified: 2026-11-01 13:47:46 GMT-05:00
+modified: 2026-11-14 09:54:50 GMT-05:00
 tags:
   - evergreen
 title: lists
@@ -380,3 +380,18 @@ title: lists
 - spent
 - knackered
 - languid
+- Wanderlust
+- Fernweh
+- Geborgenheit
+- Kopfkino
+- Fingerspitzengefühl
+- Sehnsucht
+- Augenblick
+- Sitzfleisch
+- Feierabend
+- obscurantism
+- lugubrious
+- rapturous
+- contemptuous
+- vicaity
+- buttress

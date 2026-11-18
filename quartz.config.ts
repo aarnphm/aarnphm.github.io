@@ -35,6 +35,7 @@ const configuration: GlobalConfiguration = {
     '**/target',
     '**/data',
     'hinterland/healthexporter/**',
+    'thoughts/images/instagram/**',
     'quartz/static/emails.txt',
   ],
   defaultDateType: 'created',
@@ -185,6 +186,7 @@ const config: QuartzConfig = {
         Plugin.LazyScripts({
           scripts: [
             { name: 'triathlon', entry: 'components/triathlon/runtime/mount.ts' },
+            { name: 'high-park-terrain', entry: 'components/triathlon/fun/terrain-gl.ts' },
             { name: 'pdf-reader', entry: 'components/pdf-reader/app.tsx' },
             {
               name: 'course-workspace',
@@ -197,6 +199,7 @@ const config: QuartzConfig = {
             { name: 'base-bookcase', entry: 'components/scripts/base-bookcase.inline.ts' },
             { name: 'pele', entry: 'components/scripts/pele.client.ts' },
             { name: 'latent', entry: 'components/scripts/latent.client.ts' },
+            { name: 'latent-embed', entry: 'components/scripts/latent-embed.client.ts' },
             { name: 'latent.worker', entry: 'workers/latent.worker.ts' },
           ],
         }),

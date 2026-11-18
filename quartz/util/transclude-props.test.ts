@@ -1,6 +1,8 @@
 import type { Element, RootContent } from 'hast'
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import type { ReferenceDependency } from './references/dependencies'
+import { isFullSlug, type FullSlug } from './path'
 import {
   findHeadingSectionBounds,
   getHastClassNames,
@@ -28,97 +30,146 @@ function transcludeElement(
   }
 }
 
-test('reads camelCase transclude target properties from render HAST', () => {
-  const target = readTranscludeTarget(
-    transcludeElement(
-      {
-        className: ['transclude'],
-        dataUrl: 'thoughts/craft',
-        dataBlock: '#open-source',
-        dataEmbedAlias: 'open-source work',
-        dataMetadata: '{"collapsed":true}',
-      },
-      {
-        href: './thoughts/craft#open-source',
-        className: ['internal', 'alias'],
-        dataSlug: 'thoughts/craft',
-      },
-    ),
-  )
+const request = (overrides: Partial<ReferenceDependency> = {}): ReferenceDependency => ({
+  target: 'craft',
+  origin: 'host.md',
+  fragments: ['Open source'],
+  embed: true,
+  decodeUri: false,
+  implicitAlias: true,
+  status: 'found',
+  lookupKeys: ['name:craft'],
+  resolvedPath: 'thoughts/craft.md',
+  resolvedSlug: slug('thoughts/craft'),
+  route: { slug: slug('thoughts/craft'), anchor: '#open-source' },
+  selector: { kind: 'heading', segments: ['Open source'], anchor: '#open-source' },
+  label: 'open-source work',
+  resolvedSettings: { kind: 'object', value: { collapsed: true } },
+  diagnostics: [],
+  ...overrides,
+})
 
+function slug(value: string): FullSlug {
+  assert.ok(isFullSlug(value))
+  return value
+}
+
+function typedTransclude(record: ReferenceDependency): Element {
+  const node = transcludeElement(
+    { className: ['transclude'] },
+    { href: './thoughts/craft#open-source', className: ['internal', 'alias'] },
+  )
+  node.data = { position: {}, referenceRequest: record }
+  return node
+}
+
+test('reads resolved transclusion semantics without serialized transport properties', () => {
+  const target = readTranscludeTarget(typedTransclude(request()))
   assert.ok(target)
   assert.equal(target.targetSlug, 'thoughts/craft')
   assert.equal(target.url, 'thoughts/craft')
   assert.equal(target.blockRef, '#open-source')
   assert.equal(target.alias, 'open-source work')
-  assert.equal(target.rawMetadata, '{"collapsed":true}')
+  assert.deepEqual(target.fragments, ['Open source'])
+  assert.deepEqual(target.metadata, { collapsed: true })
 })
 
-test('reads dashed transclude target properties from serialized-style HAST', () => {
+test('retains an explicitly empty label ahead of an implicit label', () => {
   const target = readTranscludeTarget(
-    transcludeElement(
-      {
-        class: 'transclude',
-        'data-url': 'thoughts/craft',
-        'data-block': '#open-source',
-        'data-embed-alias': 'undefined',
-      },
-      {
-        href: './thoughts/craft#open-source',
-        className: ['internal', 'alias'],
-        'data-slug': 'thoughts/craft',
-      },
-    ),
+    typedTransclude(request({ label: '', implicitLabel: 'derived caption' })),
   )
-
   assert.ok(target)
-  assert.equal(target.targetSlug, 'thoughts/craft')
-  assert.equal(target.url, 'thoughts/craft')
-  assert.equal(target.blockRef, '#open-source')
-  assert.equal(target.alias, '#open-source')
+  assert.equal(target.alias, '')
 })
 
-test('distinguishes nested transcludes that share a terminal anchor', () => {
-  const fondos = readTranscludeTarget(
-    transcludeElement(
-      {
-        className: ['transclude'],
-        dataUrl: 'triathlon',
-        dataBlock: '#cycling',
-        dataAnchorPath: '["2026-08-01","cycling"]',
-      },
-      { href: './triathlon#cycling', dataSlug: 'triathlon' },
-    ),
-  )
-  const julyThirty = readTranscludeTarget(
-    transcludeElement(
-      {
-        className: ['transclude'],
-        dataUrl: 'triathlon',
-        dataBlock: '#cycling',
-        'data-anchor-path': '["2026-07-30","cycling"]',
-      },
-      { href: './triathlon#cycling', dataSlug: 'triathlon' },
-    ),
-  )
+test('unlabelled transclusions keep an empty caption for domain presentation defaults', () => {
+  const target = readTranscludeTarget(typedTransclude(request({ label: undefined })))
+  assert.ok(target)
+  assert.equal(target.alias, '')
+})
 
+test('canonical heading selections share cycle identity across authored paths and labels', () => {
+  const nested = readTranscludeTarget(
+    typedTransclude(
+      request({
+        fragments: ['Parent', 'Open source'],
+        selector: { kind: 'heading', segments: ['Parent', 'Open source'], anchor: '#open-source' },
+      }),
+    ),
+  )
+  const short = readTranscludeTarget(typedTransclude(request({ label: 'another label' })))
+  assert.ok(nested)
+  assert.ok(short)
+  assert.equal(transcludeVisitKey(nested), transcludeVisitKey(short))
+})
+
+test('distinct provider dates and feature fragments retain separate cycle identities', () => {
+  const feature = (fragments: string[]) =>
+    readTranscludeTarget(
+      typedTransclude(
+        request({
+          target: 'triathlon',
+          resolvedPath: 'triathlon.md',
+          resolvedSlug: slug('triathlon'),
+          route: { slug: slug('triathlon') },
+          fragments,
+          selector: { kind: 'triathlon', raw: fragments.join('#') },
+        }),
+      ),
+    )
+  const fondos = feature(['2026-08-01', 'cycling'])
+  const julyThirty = feature(['2026-07-30', 'cycling'])
   assert.ok(fondos)
   assert.ok(julyThirty)
-  assert.equal(transcludeVisitKey(fondos), 'triathlon["2026-08-01","cycling"]')
-  assert.equal(transcludeVisitKey(julyThirty), 'triathlon["2026-07-30","cycling"]')
   assert.notEqual(transcludeVisitKey(fondos), transcludeVisitKey(julyThirty))
 })
 
-test('keeps whole-page transcludes keyed by target slug', () => {
+test('whole-page transcludes retain the canonical source slug as cycle identity', () => {
   const target = readTranscludeTarget(
-    transcludeElement(
-      { className: ['transclude'], dataUrl: 'thoughts/craft' },
-      { href: './thoughts/craft', dataSlug: 'thoughts/craft' },
+    typedTransclude(
+      request({
+        fragments: [],
+        selector: { kind: 'whole' },
+        route: { slug: slug('thoughts/craft') },
+      }),
     ),
   )
-
   assert.ok(target)
-  assert.equal(transcludeVisitKey(target), target.targetSlug)
+  assert.equal(transcludeVisitKey(target), 'thoughts/craft')
+})
+
+test('unresolved requests and serialized transport attributes cannot authorize expansion', () => {
+  const statuses: ReferenceDependency['status'][] = [
+    'missing',
+    'ambiguous',
+    'external',
+    'unsupported',
+  ]
+  for (const status of statuses) {
+    const node = typedTransclude(request({ status }))
+    node.properties = {
+      ...node.properties,
+      'data-url': 'thoughts/craft',
+      'data-block': '#open-source',
+      'data-metadata': '{"collapsed":true}',
+    }
+    node.children[0] = {
+      type: 'element',
+      tagName: 'a',
+      properties: { href: './thoughts/craft#open-source', 'data-slug': 'thoughts/craft' },
+      children: [],
+    }
+    assert.equal(readTranscludeTarget(node), undefined, status)
+  }
+  assert.equal(
+    readTranscludeTarget(
+      transcludeElement(
+        { className: ['transclude'], 'data-url': 'thoughts/craft' },
+        { href: './thoughts/craft', 'data-slug': 'thoughts/craft' },
+      ),
+    ),
+    undefined,
+  )
 })
 
 test('reads HAST classes from parser and render property names', () => {

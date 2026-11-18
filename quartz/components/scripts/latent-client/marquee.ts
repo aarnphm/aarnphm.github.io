@@ -1,9 +1,10 @@
 import type { Runtime } from './runtime'
 
 // the probe's one-line labels that an ellipsis can cut: feature names, chips, the card title,
-// the titles under "in text", steering pins, a feature card's description
+// the titles under "in text", steering pins, a feature card's one-line table values (description,
+// steers) and its notes span, an axis pole's words
 const CUT =
-  '.lat-feat-chip, .lat-feat-head, .lat-feat-name, .lat-feat-cross a, .lat-feat-pin > span, .lat-chip, .lat-feat-about'
+  '.lat-feat-chip, .lat-feat-head, .lat-feat-name, .lat-feat-cross a, .lat-feat-pin > span, .lat-chip, .lat-feat-text, .lat-feat-span, .lat-pole-terms'
 
 /**
  * Hovering a label that is cut short scrolls it to its end and back at a reading pace (the
@@ -11,9 +12,12 @@ const CUT =
  * wrapped in a span the first time, since a transform needs a box narrower than the clip.
  */
 export function bindMarquee(rt: Runtime, root: HTMLElement): void {
+  // with reduced motion nothing scrolls: the card's one-line values wrap instead (css)
+  const still = matchMedia('(prefers-reduced-motion: reduce)')
   root.addEventListener(
     'pointerover',
     event => {
+      if (still.matches) return
       const el = (event.target as Element | null)?.closest?.<HTMLElement>(CUT)
       if (!el || !root.contains(el) || el.dataset.marquee !== undefined) return
       if (el.scrollWidth <= el.clientWidth + 1) return

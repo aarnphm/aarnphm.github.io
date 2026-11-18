@@ -1,13 +1,12 @@
 @use '../../styles/variables.scss' as *;
+@use './notebook/scope' as notebook-scope;
 
 @use './notebook/_shell';
 @use './notebook/_cell-controls';
 @use './notebook/_output-panels';
 @use './notebook/_output-content';
 
-article.notebook-page,
-article.notebook-runtime-page,
-.slides-root {
+@include notebook-scope.surface {
   @media all and ($mobile) {
     .notebook-code-cell {
       display: block;

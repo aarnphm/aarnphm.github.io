@@ -11,6 +11,15 @@
       "bbox": [55.5267243, 55.8467243, 12.4100724, 12.7300724]
     },
     {
+      "id": "osm:node:493851468",
+      "name": "Muslone",
+      "aliases": ["muslone"],
+      "kind": "city",
+      "city": "Muslone",
+      "centroid": [45.711586, 10.692163],
+      "bbox": [45.691586, 45.731586, 10.672163, 10.712163]
+    },
+    {
       "id": "osm:relation:111968",
       "name": "San Francisco",
       "aliases": ["san francisco", "sf"],
@@ -27,6 +36,33 @@
       "city": "Toronto",
       "centroid": [43.6552136, -79.4022604],
       "bbox": [43.6517445, 43.6579542, -79.4077041, -79.3981331]
+    },
+    {
+      "id": "osm:relation:1293250",
+      "name": "臺北市",
+      "aliases": ["臺北市"],
+      "kind": "city",
+      "city": "臺北市",
+      "centroid": [25.0375198, 121.5636796],
+      "bbox": [24.9605158, 25.2102648, 121.4571436, 121.6659425]
+    },
+    {
+      "id": "osm:relation:1376330",
+      "name": "Ciudad de México",
+      "aliases": ["ciudad de méxico"],
+      "kind": "city",
+      "city": "Ciudad de México",
+      "centroid": [19.3207722, -99.1514677],
+      "bbox": [19.0487187, 19.5927573, -99.3649242, -98.9403028]
+    },
+    {
+      "id": "osm:relation:14057705",
+      "name": "Haines Falls",
+      "aliases": ["haines falls"],
+      "kind": "city",
+      "city": "Haines Falls",
+      "centroid": [42.1955284, -74.1001178],
+      "bbox": [42.1904784, 42.2029193, -74.113512, -74.088134]
     },
     {
       "id": "osm:relation:1634158",
@@ -56,6 +92,24 @@
       "bbox": [46.664589, 46.7040906, 7.8267786, 7.8887741]
     },
     {
+      "id": "osm:relation:1711187",
+      "name": "Musanze District",
+      "aliases": ["musanze district"],
+      "kind": "city",
+      "city": "Musanze District",
+      "centroid": [-1.50405, 29.63631],
+      "bbox": [-1.59874, -1.3845769, 29.4503258, 29.7659281]
+    },
+    {
+      "id": "osm:relation:174904",
+      "name": "City of Hudson",
+      "aliases": ["city of hudson"],
+      "kind": "city",
+      "city": "City of Hudson",
+      "centroid": [42.2528649, -73.790959],
+      "bbox": [42.239337, 42.263549, -73.809973, -73.768108]
+    },
+    {
       "id": "osm:relation:175342",
       "name": "Greater London",
       "aliases": ["greater london"],
@@ -83,6 +137,15 @@
       "bbox": [45.432536, 45.6528812, -122.8367489, -122.4720252]
     },
     {
+      "id": "osm:relation:1920901",
+      "name": "City of Edinburgh",
+      "aliases": ["city of edinburgh"],
+      "kind": "city",
+      "city": "City of Edinburgh",
+      "centroid": [55.9533456, -3.1883749],
+      "bbox": [55.8187919, 56.0040837, -3.4495326, -3.0749528]
+    },
+    {
       "id": "osm:relation:1933745",
       "name": "Cambridge",
       "aliases": ["cambridge"],
@@ -92,6 +155,15 @@
       "bbox": [42.3524025, 42.4042593, -71.1603989, -71.0639844]
     },
     {
+      "id": "osm:relation:1954127",
+      "name": "Mississauga",
+      "aliases": ["mississauga"],
+      "kind": "city",
+      "city": "Mississauga",
+      "centroid": [43.5884727, -79.643658],
+      "bbox": [43.4789901, 43.7370604, -79.8103184, -79.5385553]
+    },
+    {
       "id": "osm:relation:197239",
       "name": "Memphis",
       "aliases": ["memphis"],
@@ -99,6 +171,15 @@
       "city": "Memphis",
       "centroid": [35.146026, -90.0517786],
       "bbox": [34.9941528, 35.263879, -90.308366, -89.637089]
+    },
+    {
+      "id": "osm:relation:207359",
+      "name": "Los Angeles",
+      "aliases": ["los angeles"],
+      "kind": "city",
+      "city": "Los Angeles",
+      "centroid": [34.0536923, -118.2427676],
+      "bbox": [33.659541, 34.337306, -118.6681798, -118.1552983]
     },
     {
       "id": "osm:relation:2387995",
@@ -119,6 +200,69 @@
       "bbox": [51.3364256, 51.3697384, 0.9858235, 1.0809773]
     },
     {
+      "id": "osm:relation:271110",
+      "name": "Amsterdam",
+      "aliases": ["amsterdam"],
+      "kind": "city",
+      "city": "Amsterdam",
+      "centroid": [52.3730796, 4.8924534],
+      "bbox": [52.2781742, 52.4310638, 4.7287776, 5.0791622]
+    },
+    {
+      "id": "osm:relation:2799538",
+      "name": "Marrakech ⵎⵕⵕⴰⴽⵯⵛ مراكش",
+      "aliases": ["marrakech ⵎⵕⵕⴰⴽⵯⵛ مراكش"],
+      "kind": "city",
+      "city": "Marrakech ⵎⵕⵕⴰⴽⵯⵛ مراكش",
+      "centroid": [31.6258257, -7.9891608],
+      "bbox": [31.5441986, 31.7104265, -8.0893315, -7.8847385]
+    },
+    {
+      "id": "osm:relation:3164357",
+      "name": "Town of Catskill",
+      "aliases": ["town of catskill"],
+      "kind": "city",
+      "city": "Town of Catskill",
+      "centroid": [42.2173102, -73.8645734],
+      "bbox": [42.127379, 42.277578, -74.056561, -73.842025]
+    },
+    {
+      "id": "osm:relation:3173690",
+      "name": "Town of Shandaken",
+      "aliases": ["town of shandaken"],
+      "kind": "city",
+      "city": "Town of Shandaken",
+      "centroid": [42.1200896, -74.3954274],
+      "bbox": [41.950461, 42.168947, -74.547932, -74.262296]
+    },
+    {
+      "id": "osm:relation:3177683",
+      "name": "Town of Gardiner",
+      "aliases": ["town of gardiner"],
+      "kind": "city",
+      "city": "Town of Gardiner",
+      "centroid": [41.6798157, -74.1504231],
+      "bbox": [41.641239, 41.75184, -74.309377, -74.083223]
+    },
+    {
+      "id": "osm:relation:3232436",
+      "name": "Town of Pine Plains",
+      "aliases": ["town of pine plains"],
+      "kind": "city",
+      "city": "Town of Pine Plains",
+      "centroid": [41.9797287, -73.6563091],
+      "bbox": [41.932094, 42.014747, -73.733709, -73.556275]
+    },
+    {
+      "id": "osm:relation:3232453",
+      "name": "Town of Red Hook",
+      "aliases": ["town of red hook"],
+      "kind": "city",
+      "city": "Town of Red Hook",
+      "centroid": [41.9950884, -73.8755317],
+      "bbox": [41.967304, 42.081069, -73.943829, -73.811944]
+    },
+    {
       "id": "osm:relation:324211",
       "name": "Toronto",
       "aliases": ["toronto"],
@@ -128,6 +272,24 @@
       "bbox": [43.5796082, 43.8554425, -79.6392832, -79.1132193]
     },
     {
+      "id": "osm:relation:3301367",
+      "name": "Town of Stamford",
+      "aliases": ["town of stamford"],
+      "kind": "city",
+      "city": "Town of Stamford",
+      "centroid": [42.4073024, -74.614318],
+      "bbox": [42.285493, 42.424051, -74.824272, -74.563293]
+    },
+    {
+      "id": "osm:relation:3492156",
+      "name": "Malibu",
+      "aliases": ["malibu"],
+      "kind": "city",
+      "city": "Malibu",
+      "centroid": [34.035591, -118.689423],
+      "bbox": [33.9469077, 34.0671676, -118.9517221, -118.5701008]
+    },
+    {
       "id": "osm:relation:4246124",
       "name": "Melbourne",
       "aliases": ["melbourne"],
@@ -135,6 +297,51 @@
       "city": "Melbourne",
       "centroid": [-37.8142454, 144.9631732],
       "bbox": [-38.49937, -37.369693, 144.44405, 146.1925]
+    },
+    {
+      "id": "osm:relation:44915",
+      "name": "Milano",
+      "aliases": ["milano"],
+      "kind": "city",
+      "city": "Milano",
+      "centroid": [45.4641943, 9.1896346],
+      "bbox": [45.3867381, 45.5358482, 9.0408867, 9.2781103]
+    },
+    {
+      "id": "osm:relation:5326784",
+      "name": "Madrid",
+      "aliases": ["madrid"],
+      "kind": "city",
+      "city": "Madrid",
+      "centroid": [40.416782, -3.703507],
+      "bbox": [40.3119774, 40.6437293, -3.8889539, -3.5183264]
+    },
+    {
+      "id": "osm:relation:537967",
+      "name": "Saint-Barthélemy",
+      "aliases": ["saint barthélemy"],
+      "kind": "city",
+      "city": "Saint-Barthélemy",
+      "centroid": [17.8967693, -62.825598],
+      "bbox": [17.670931, 18.1375569, -63.06639, -62.5844019]
+    },
+    {
+      "id": "osm:relation:5400890",
+      "name": "Lisboa",
+      "aliases": ["lisboa"],
+      "kind": "city",
+      "city": "Lisboa",
+      "centroid": [38.7077507, -9.1365919],
+      "bbox": [38.6913994, 38.7967584, -9.2298356, -9.0863328]
+    },
+    {
+      "id": "osm:relation:5423198",
+      "name": "Lone",
+      "aliases": ["lone"],
+      "kind": "city",
+      "city": "Lone",
+      "centroid": [48.5308711, 10.0696001],
+      "bbox": [48.5101857, 48.5815638, 9.8927068, 10.2158037]
     },
     {
       "id": "osm:relation:5750005",
@@ -155,6 +362,24 @@
       "bbox": [43.0505073, 43.4706805, -80.2485579, -79.6221146]
     },
     {
+      "id": "osm:relation:71525",
+      "name": "Paris",
+      "aliases": ["paris"],
+      "kind": "city",
+      "city": "Paris",
+      "centroid": [48.8534951, 2.3483915],
+      "bbox": [48.8155755, 48.902156, 2.224122, 2.4697602]
+    },
+    {
+      "id": "osm:relation:7252281",
+      "name": "Whitby",
+      "aliases": ["whitby"],
+      "kind": "city",
+      "city": "Whitby",
+      "centroid": [54.4866202, -0.6135859],
+      "bbox": [54.4632166, 54.496836, -0.658681, -0.5917861]
+    },
+    {
       "id": "osm:relation:7540518",
       "name": "Unorganized South Nipissing",
       "aliases": ["unorganized south nipissing"],
@@ -162,6 +387,15 @@
       "city": "Unorganized South Nipissing",
       "centroid": [45.8256394, -78.3505799],
       "bbox": [45.4144787, 46.2342022, -79.2578582, -77.4978984]
+    },
+    {
+      "id": "osm:relation:78857",
+      "name": "Saint-Paul-de-Vence",
+      "aliases": ["saint paul de vence"],
+      "kind": "city",
+      "city": "Saint-Paul-de-Vence",
+      "centroid": [43.697972, 7.1216304],
+      "bbox": [43.6728768, 43.7122798, 7.0956397, 7.143548]
     },
     {
       "id": "osm:relation:962190",
@@ -180,6 +414,15 @@
       "city": "Brooklyn",
       "centroid": [40.6526006, -73.9497211],
       "bbox": [40.550339, 40.739434, -74.056688, -73.832945]
+    },
+    {
+      "id": "osm:relation:970871",
+      "name": "Ramatuelle",
+      "aliases": ["ramatuelle"],
+      "kind": "city",
+      "city": "Ramatuelle",
+      "centroid": [43.215142, 6.6128041],
+      "bbox": [43.1680588, 43.2553713, 6.6010846, 6.6888784]
     }
   ]
 }

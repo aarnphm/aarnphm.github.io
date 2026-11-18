@@ -1,0 +1,12 @@
+// The latent explorer's sheet (/embeddings and notes that embed a view of it). Page-scoped
+// (plugins/emitters/component-resources/page-scoped-styles.ts): only pages whose html carries a
+// `latent…` or `lat-…` class link it, so every other page skips ~90 KB of css.
+@use './latent.scss';
+@use './latent-search.scss';
+@use './latent-tips.scss';
+@use './latent-features.scss';
+@use './latent-gemma.scss';
+@use './latent-share.scss';
+@use './latent-folio.scss';
+@use './latent-embed.scss';
+@use './latent-panes.scss';

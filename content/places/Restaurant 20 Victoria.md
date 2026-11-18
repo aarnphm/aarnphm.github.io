@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'Contemporary tasting-menu restaurant on Victoria Street.'
 id: 'Restaurant 20 Victoria'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/DdaGREXJ5Pb/'
 tags:
   - 'places'
 title: 'Restaurant 20 Victoria'

@@ -24,7 +24,3 @@ tags:
 external: https://penguinrandomhouselibrary.com/book/?isbn=9781400044832
 description: Three friends raised at an isolated English boarding school confront the purpose of their upbringing and the limits placed on their lives.
 ---
-
-Source: [Lucia’s New York park reading reel](https://www.instagram.com/reel/DdkR7elpusn/), 00:08.
-
-Bibliography: [publisher](https://penguinrandomhouselibrary.com/book/?isbn=9781400044832).

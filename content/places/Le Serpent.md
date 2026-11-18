@@ -9,7 +9,6 @@ date: '2026-11-05'
 description: 'Contemporary brasserie in the Fonderie Darling serving Italian-influenced dishes and wine.'
 id: 'Le Serpent'
 modified: '2026-11-05'
-source: 'https://www.instagram.com/reel/DfIa3Essz-_/'
 tags:
   - 'places'
 title: 'Le Serpent'

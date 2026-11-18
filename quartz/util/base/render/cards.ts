@@ -49,7 +49,7 @@ export function buildCards(
     const imageValue = imageField
       ? resolveValueWithFormulas(file, imageField, getContext, getPropertyExpr)
       : undefined
-    const image = resolveCardImage(imageValue, currentSlug)
+    const image = resolveCardImage(imageValue, currentSlug, allFiles, file)
 
     const metadataItems: RenderElement[] = []
     const metadataFields = (isKanban ? order.slice(1) : order).filter(
@@ -62,7 +62,7 @@ export function buildCards(
     for (const field of metadataFields) {
       const value = resolveValueWithFormulas(file, field, getContext, getPropertyExpr)
       if (!hasRenderableValue(value)) continue
-      const renderedValue = renderPropertyValueNodes(value, currentSlug, allFiles)
+      const renderedValue = renderPropertyValueNodes(value, currentSlug, allFiles, file)
       if (renderedValue.length === 0) continue
       const label = getPropertyDisplayName(field, properties)
       metadataItems.push(

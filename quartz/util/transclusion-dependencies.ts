@@ -1,29 +1,34 @@
 import { resolve } from 'node:path'
-import { visit } from 'unist-util-visit'
 import type { ProcessedContent } from '../plugins/vfile'
 import type { ChangeEvent } from '../types/plugin'
-import { hasHastClass, readTranscludeTarget } from './transclude-props'
+import type { ReferenceDependency } from './references/dependencies'
+import { referenceFileKind, referenceLookupKeys } from './references/catalog'
+import { referenceCatalogFromFiles } from './references/context'
+
+function embedsDocument(dependency: ReferenceDependency): boolean {
+  return (
+    dependency.embed &&
+    !['external', 'unsupported'].includes(dependency.status) &&
+    (!dependency.resolvedPath ||
+      ['note', 'base', 'canvas', 'notebook', 'flashcard'].includes(
+        referenceFileKind(dependency.resolvedPath),
+      ))
+  )
+}
 
 export function transclusionDependencies(
   content: ProcessedContent[],
 ): { source: string; consumer: string }[] {
-  const slugs = new Set(content.map(([, file]) => file.data.slug))
-  const bases = content
-    .flatMap(([, file]) => (file.data.bases && file.data.slug ? [file.data.slug] : []))
-    .sort((a, b) => b.length - a.length)
   const edges = new Map<string, { source: string; consumer: string }>()
-  for (const [tree, file] of content) {
+  for (const [, file] of content) {
     const consumer = file.data.slug
     if (!consumer) continue
-    visit(tree, 'element', node => {
-      if (node.tagName !== 'blockquote' || !hasHastClass(node, 'transclude')) return
-      const target = readTranscludeTarget(node)?.targetSlug
-      if (!target) return
-      const source = slugs.has(target)
-        ? target
-        : (bases.find(base => target.startsWith(`${base}/`)) ?? target)
+    for (const dependency of file.data.referenceDependencies ?? []) {
+      if (!embedsDocument(dependency)) continue
+      const source = dependency.resolvedSlug ?? dependency.target
+      if (!source) continue
       edges.set(JSON.stringify([source, consumer]), { source, consumer })
-    })
+    }
   }
   return [...edges.values()]
 }
@@ -40,6 +45,13 @@ export function transclusionChangeEvents(
   const dependents = new Map<string, Set<string>>()
   const affected = new Set<string>()
   const touchedPaths = new Set<string>()
+  const lookupKeys = new Set(
+    referenceCatalogFromFiles(
+      events.flatMap(event =>
+        [event.file?.data, event.previousFile?.data].filter(file => file !== undefined),
+      ),
+    ).entries.flatMap(referenceLookupKeys),
+  )
 
   for (const event of events) {
     if (event.file?.data.slug) affected.add(event.file.data.slug)
@@ -51,6 +63,13 @@ export function transclusionChangeEvents(
   for (const [, file] of content) {
     const slug = file.data.slug
     if (!slug) continue
+    if (
+      file.data.referenceDependencies?.some(
+        dependency =>
+          embedsDocument(dependency) && dependency.lookupKeys.some(key => lookupKeys.has(key)),
+      )
+    )
+      affected.add(slug)
     if (
       file.data.codeDependencies?.some(
         dependency =>
@@ -71,6 +90,9 @@ export function transclusionChangeEvents(
   if (events.some(event => event.file || event.previousFile)) {
     for (const base of bases) {
       if (dependents.has(base)) affected.add(base)
+    }
+    for (const [, file] of content) {
+      if (file.data.slug && file.data.embeddedSearchQueries?.length) affected.add(file.data.slug)
     }
   }
 

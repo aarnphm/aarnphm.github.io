@@ -5,8 +5,17 @@ import type { ChangeEvent } from '../../../types/plugin'
 import type { BuildCtx } from '../../../util/ctx'
 import { getDate } from '../../../components/Date'
 import { descriptionToPlainText } from '../../../util/description'
-import { FilePath, FullSlug, joinSegments, SimpleSlug, slugifyFilePath } from '../../../util/path'
+import {
+  FilePath,
+  FullSlug,
+  isFullSlug,
+  joinSegments,
+  SimpleSlug,
+  simplifySlug,
+  slugifyFilePath,
+} from '../../../util/path'
 import { isSearchExcluded } from '../../../util/search-exclude'
+import { canonicalTagRoute } from '../../../util/tags'
 import { ArenaData } from '../../transformers/arena'
 import { ProcessedContent, QuartzPluginData } from '../../vfile'
 
@@ -34,6 +43,11 @@ export type ContentLayout =
   | 'latent'
   | 'study-log'
   | 'statements'
+export interface ReferenceCompletionTargets {
+  headings: { text: string; anchor: string }[]
+  blocks: string[]
+}
+
 export type ContentDetails = {
   slug: string
   title: string
@@ -41,6 +55,7 @@ export type ContentDetails = {
   links: SimpleSlug[]
   aliases: string[]
   tags: string[]
+  tagDisplay?: Record<string, string>
   layout: ContentLayout
   content?: string
   fileName: FilePath
@@ -50,6 +65,7 @@ export type ContentDetails = {
   readingTime?: Partial<ReadTimeResults>
   description?: string
   protected?: boolean
+  referenceTargets?: ReferenceCompletionTargets
 }
 
 export interface Options {
@@ -122,6 +138,10 @@ type ReusableContentDetails = Pick<ContentDetails, 'content' | 'richContent' | '
 export function normalizedContentSlug(fileData: QuartzPluginData): FullSlug | undefined {
   const slug = fileData.slug
   if (typeof slug !== 'string') return undefined
+  if (slug.startsWith('tags/')) {
+    const canonical = canonicalTagRoute(slug)
+    return isFullSlug(canonical) ? canonical : undefined
+  }
   return (slug === 'are.na' ? 'arena' : slug) as FullSlug
 }
 
@@ -161,14 +181,22 @@ function filterVisibleLinks(
   links: readonly SimpleSlug[],
   contentBySlug: ReadonlyMap<string, QuartzPluginData>,
 ): SimpleSlug[] {
-  return links.filter(link => {
-    const targetFile = contentBySlug.get(link)
-    if (targetFile?.frontmatter?.noindex === true || targetFile?.frontmatter?.protected === true) {
-      return false
-    }
+  return links
+    .map(link => {
+      const canonical = canonicalTagRoute(link)
+      return isFullSlug(canonical) ? simplifySlug(canonical) : link
+    })
+    .filter(link => {
+      const targetFile = contentBySlug.get(link)
+      if (
+        targetFile?.frontmatter?.noindex === true ||
+        targetFile?.frontmatter?.protected === true
+      ) {
+        return false
+      }
 
-    return true
-  })
+      return true
+    })
 }
 
 function refreshVisibleLinks(
@@ -186,6 +214,8 @@ export function contentDataBySlug(content: ProcessedContent[]): Map<string, Quar
     const slug = file.data.slug
     if (typeof slug === 'string') {
       contentBySlug.set(slug, file.data)
+      const canonical = normalizedContentSlug(file.data)
+      if (canonical) contentBySlug.set(canonical, file.data)
     }
   }
   return contentBySlug
@@ -273,12 +303,9 @@ export function addProcessedContentToIndex(
   includeRichContent: boolean,
   reusableDetails?: ReusableContentDetails,
 ): void {
-  let slug = file.data.slug!
+  const slug = normalizedContentSlug(file.data)
+  if (!slug) return
   const date = getDate(ctx.cfg.configuration, file.data) ?? new Date()
-
-  if (slug === 'are.na') {
-    slug = 'arena' as FullSlug
-  }
 
   if (file.data.flashcards && !file.data.flashcardRoute?.default) return
 
@@ -293,6 +320,7 @@ export function addProcessedContentToIndex(
       filePath: file.data.filePath!,
       fileName: file.data.filePath!,
       tags: ['canvas', ...(file.data.frontmatter?.tags ?? [])],
+      tagDisplay: file.data.tagDisplay,
       aliases: file.data.frontmatter?.aliases ?? [],
       content: sanitizeXml(searchableContent),
       richContent: '',
@@ -330,6 +358,7 @@ export function addProcessedContentToIndex(
     filePath: file.data.filePath!,
     fileName: contentFileName(ctx, file.data),
     tags: file.data.frontmatter?.tags ?? [],
+    tagDisplay: file.data.tagDisplay,
     aliases: file.data.frontmatter?.aliases ?? [],
     content,
     richContent: isProtected || !includeRichContent ? '' : reusableDetails?.richContent,
@@ -363,6 +392,7 @@ export function addProcessedContentToIndex(
       filePath: file.data.filePath!,
       fileName: file.data.filePath!.replace('.md', '') as FilePath,
       tags: file.data.frontmatter?.tags ?? [],
+      tagDisplay: file.data.tagDisplay,
       aliases: [],
       content: channel.blocks.map(b => b.title || b.content).join(' '),
       richContent: '',

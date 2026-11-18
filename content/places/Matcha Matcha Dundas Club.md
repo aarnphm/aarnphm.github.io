@@ -8,8 +8,7 @@ coordinates:
 date: '2026-11-01'
 description: 'Dundas Street West branch serving Japanese matcha drinks.'
 id: 'Matcha Matcha Dundas Club'
-modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DeuVzOlIC6l/'
+modified: '2026-11-10'
 tags:
   - 'places'
 title: 'Matcha Matcha Dundas Club'

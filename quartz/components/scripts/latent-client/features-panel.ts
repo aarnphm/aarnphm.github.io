@@ -12,6 +12,23 @@ import { type Runtime, docOfRow, previewOf } from './runtime'
 
 export async function renderPanel(rt: Runtime, st: FeatureState): Promise<void> {
   const seq = ++st.renderSeq
+  const built = await panelGroups(rt, st, seq)
+  if (!built) return
+  st.panel.innerHTML = toHtml(built.groups as never)
+  if (st.panel.querySelector('.lat-why[data-why-pending]')) fillWhy(rt, st, built.dicts, seq)
+}
+
+/**
+ * The features panel as hast, or null when a newer render or focus overtook it. `now` builds
+ * "reasoning" in place instead of leaving its placeholder for fillWhy (the build does this for
+ * latent embeds).
+ */
+export async function panelGroups(
+  rt: Runtime,
+  st: FeatureState,
+  seq = st.renderSeq,
+  now = false,
+): Promise<{ groups: Element[]; dicts: FeatureDict[] } | null> {
   const focus = rt.focus
   const query = st.query
   const stale = () =>
@@ -20,47 +37,16 @@ export async function renderPanel(rt: Runtime, st: FeatureState): Promise<void> 
     Promise.all(st.names.map(name => loadDict(rt, st, name))),
     steerTables(rt, st),
   ])
-  if (stale()) return
+  if (stale()) return null
+  if (st.embed) {
+    const groups = await embedGroups(rt, st, dicts, now)
+    return stale() ? null : { groups, dicts }
+  }
   const groups: Element[] = []
-  // the focused chunk: its own family's dictionary first, then what the others read in it
-  const kind = docOfRow(rt, focus)?.s
-  const ordered = [...dicts].sort(
-    (a, b) => Number(!a.meta.kinds.includes(kind)) - Number(!b.meta.kinds.includes(kind)),
-  )
-  const own = ordered[0]
-  const [codes, preview, tags] = await Promise.all([
-    Promise.all(ordered.map(dict => codesOf(rt, dict, focus))),
-    previewOf(rt, focus),
-    tagsOf(rt, st),
-  ])
-  if (stale()) return
-  const focusRows = codes[0].map(([f, a]) => ({ dict: own, f, a }))
-  const read = preview.d >= 0 ? tags?.get(preview.d) : undefined
-  groups.push(
-    section('focus', `${focusRows.length} of ${own.meta.features.toLocaleString('en-US')}`, [
-      h('p.lat-feat-where', truncate(preview.t, 48)),
-      featureList(focusRows, st),
-      ...(read?.length
-        ? [
-            h(
-              'p.lat-feat-tags',
-              {
-                dataTip:
-                  'tag probes: a logistic probe per frontmatter tag, trained on tagged notes, kept when it ranks held-out notes at AUC 0.85 or better. these are tags this document reads as and does not carry.',
-                dataTipAt: 'up',
-                tabIndex: 0,
-              },
-              [
-                h('span', 'reads as'),
-                ...read.map(([t, p]) =>
-                  h('span.lat-feat-tag', { title: tagGloss(st, dicts, t) }, `#${t} ${p}`),
-                ),
-              ],
-            ),
-          ]
-        : []),
-    ]),
-  )
+  const focusGroup = await focusSection(rt, st, dicts)
+  if (stale()) return null
+  const { ordered, codes, own } = focusGroup
+  groups.push(focusGroup.section)
   for (const [i, other] of ordered.slice(1).entries()) {
     const read = codes[i + 1].slice(0, 3).map(([f, a]) => ({ dict: other, f, a }))
     if (read.length)
@@ -75,13 +61,13 @@ export async function renderPanel(rt: Runtime, st: FeatureState): Promise<void> 
       f,
       a,
     }))
-    if (stale()) return
+    if (stale()) return null
     groups.push(
       section(`query · ${truncate(query.text, 28)}`, `${rows.length}`, [featureList(rows, st)]),
     )
   }
-  const why = await whySection(rt, st, dicts)
-  if (stale()) return
+  const why = await whySection(rt, st, dicts, now)
+  if (stale()) return null
   if (why) groups.splice(whyAt, 0, why)
   if (st.needle) {
     const hits = findFeatures(dicts, st.needle)
@@ -125,9 +111,78 @@ export async function renderPanel(rt: Runtime, st: FeatureState): Promise<void> 
       `${fvu}`,
     ),
   )
-  if (stale()) return
-  st.panel.innerHTML = toHtml(groups as never)
-  if (st.panel.querySelector('.lat-why[data-why-pending]')) fillWhy(rt, st, dicts, seq)
+  if (stale()) return null
+  return { groups, dicts }
+}
+
+/** The focused chunk's group: its own family's dictionary first, then what the others read in it. */
+async function focusSection(rt: Runtime, st: FeatureState, dicts: FeatureDict[]) {
+  const focus = rt.focus
+  const kind = docOfRow(rt, focus)?.s
+  const ordered = [...dicts].sort(
+    (a, b) => Number(!a.meta.kinds.includes(kind)) - Number(!b.meta.kinds.includes(kind)),
+  )
+  const own = ordered[0]
+  const [codes, preview, tags] = await Promise.all([
+    Promise.all(ordered.map(dict => codesOf(rt, dict, focus))),
+    previewOf(rt, focus),
+    tagsOf(rt, st),
+  ])
+  const focusRows = codes[0].map(([f, a]) => ({ dict: own, f, a }))
+  const read = preview.d >= 0 ? tags?.get(preview.d) : undefined
+  return {
+    ordered,
+    codes,
+    own,
+    section: section(
+      'focus',
+      `${focusRows.length} of ${own.meta.features.toLocaleString('en-US')}`,
+      [
+        h('p.lat-feat-where', truncate(preview.t, 48)),
+        featureList(focusRows, st),
+        ...(read?.length
+          ? [
+              h(
+                'p.lat-feat-tags',
+                {
+                  dataTip:
+                    'tag probes: a logistic probe per frontmatter tag, trained on tagged notes, kept when it ranks held-out notes at AUC 0.85 or better. these are tags this document reads as and does not carry.',
+                  dataTipAt: 'up',
+                  tabIndex: 0,
+                },
+                [
+                  h('span', 'reads as'),
+                  ...read.map(([t, p]) =>
+                    h('span.lat-feat-tag', { title: tagGloss(st, dicts, t) }, `#${t} ${p}`),
+                  ),
+                ],
+              ),
+            ]
+          : []),
+      ],
+    ),
+  }
+}
+
+/**
+ * A latent embed's column: the steering set, then the selected feature's card (or, with none,
+ * the focus's own features), then reasoning. The embed quotes a view, so the search, query and
+ * other dictionaries' groups of /embeddings stay there.
+ */
+async function embedGroups(
+  rt: Runtime,
+  st: FeatureState,
+  dicts: FeatureDict[],
+  now: boolean,
+): Promise<Element[]> {
+  const groups: Element[] = []
+  const steering = await steeringSection(rt, st, dicts)
+  if (steering) groups.push(steering)
+  const dict = st.selected && dicts.find(d => d.meta.name === st.selected!.dict)
+  if (dict && st.selected) groups.push(await featureCard(rt, st, dict, st.selected.f))
+  else groups.push((await focusSection(rt, st, dicts)).section)
+  groups.push(await whySection(rt, st, dicts, now))
+  return groups
 }
 
 /** Build "reasoning" once the browser is idle after a paint, then swap it into the same panel. */
@@ -143,6 +198,19 @@ function fillWhy(rt: Runtime, st: FeatureState, dicts: FeatureDict[], seq: numbe
   const go = () => void run().catch(error => console.warn('[latent] reasoning', error))
   if ('requestIdleCallback' in window) requestIdleCallback(go, { timeout: 1500 })
   else setTimeout(go, 200)
+}
+
+const loweredRows = new WeakMap<object, { label: string; about: string; tokens: string[] }>()
+
+/** A row's label and description, lowercased and split once per row. */
+function lowered(row: { label?: string; about?: string }) {
+  let entry = loweredRows.get(row)
+  if (!entry) {
+    const label = row.label?.toLowerCase() ?? ''
+    entry = { label, about: row.about?.toLowerCase() ?? '', tokens: label.split(/\W+/) }
+    loweredRows.set(row, entry)
+  }
+  return entry
 }
 
 /**
@@ -162,17 +230,17 @@ export function findFeatures(
       .map(dict => ({ dict, f, score: 1 }))
   }
   const words = needle.split(/\s+/).filter(Boolean)
+  // one pattern per word, not one per word per row
+  const wholes = words.map(w => new RegExp(`\\b${w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`))
   const out: { dict: FeatureDict; f: number; score: number; n: number }[] = []
   for (const dict of dicts)
     for (const row of dict.table) {
-      const label = row.label?.toLowerCase() ?? ''
-      const about = row.about?.toLowerCase() ?? ''
+      const { label, about, tokens } = lowered(row)
       let score = 0
-      for (const w of words) {
-        const whole = new RegExp(`\\b${w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`)
-        const s = whole.test(label)
+      for (const [i, w] of words.entries()) {
+        const s = wholes[i].test(label)
           ? 1
-          : label.split(/\W+/).some(t => t.startsWith(w))
+          : tokens.some(t => t.startsWith(w))
             ? 0.75
             : row.terms.some(t => t.startsWith(w))
               ? 0.5

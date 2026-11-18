@@ -11,5 +11,3 @@ tags:
 title: 'In the Mood for Love'
 year: 2000
 ---
-
-Recommended by Tommy Maddox-Upshaw in [ShotDeck’s ASC recommendations](https://www.instagram.com/reel/Db8PFLVp_XX/) at 57s.

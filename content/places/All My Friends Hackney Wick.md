@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Hackney Wick bar and record shop with a hi-fi sound system and food traders.'
 id: 'All My Friends Hackney Wick'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/reel/DfMaijrpbIZ/'
 tags:
   - 'places'
 title: 'All My Friends Hackney Wick'

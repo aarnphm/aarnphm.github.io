@@ -1,0 +1,103 @@
+maintenance:
+  OSPW:
+    - - type: Ultegra R8100 Pulley Wheel
+      - distance: 1335
+      - id: ultegra
+      - range:
+          - end: '2026-08-10'
+            start: '2026-05-16'
+      - reason: upgrades to CeramicSpeed OSPW
+    - - type: CeramicSpeed OSPW RS 5 Spoke
+      - id: ceramicspeed
+      - distance: 2215.13
+      - range:
+          - end: null
+            start: '2026-08-10'
+  chainrings:
+    - - type: Ultegra FC-R8100 52-36T
+      - id: ultegra
+      - distance: 1731.28
+      - range:
+          - end: '2026-08-22'
+            reason: upgrades to CarbonTi
+            start: '2026-05-16'
+    - - type: CarbonTi 54-40T
+      - id: carbonti
+      - distance: 1796.73
+      - range:
+          - end: null
+            reason: null
+            start: '2026-08-26'
+  chain:
+    '1':
+      chainring: ultegra
+      cycles:
+        - end: '2026-07-16'
+          reasoning: upgrade to new chain for race
+      distance: 751.81
+      lubricant: Muc-Off Dry Lube
+      ospw: ultegra
+      since: '2026-05-16'
+      wax: null
+      waxed: false
+    '2':
+      chainring: ultegra
+      cycles:
+        - end: '2026-08-10'
+          reasoning: upgrade to waxed drip-on
+      distance: 619.84
+      lubricant: Muc-Off Dry Lube
+      ospw: ultegra
+      since: '2026-07-16'
+      waxed: false
+    '3':
+      chainring: ultegra
+      cycles:
+        - end: '2026-08-26'
+          reasoning: upgrade to carbon-ti, need new chainring
+      distance: 453.57
+      lubricant: UFO Wax Drip-On
+      ospw: ceramicspeed
+      since: '2026-08-10'
+      wax: null
+      waxed: true
+    '4':
+      chainring: carbonti
+      cycles:
+        - start: '2026-11-12'
+          end: null
+          distance: 0.00
+          reasoning: waxed with cyclowax
+      distance: 1774.35
+      lubricant: UFO Wax Drip-On
+      ospw: ceramicspeed
+      range:
+        - end: '2026-11-11'
+          start: '2026-08-26'
+      since: '2026-08-26'
+      status: backup
+      wax: Cyclowax Performance Tablet
+      waxKit:
+        name: Cyclowax Performance Wax Kit
+        url: https://www.cyclowax.com/en-ca/products/performance-wax-kit
+      waxed: true
+    '5':
+      chainring: carbonti
+      cycles:
+        - start: '2026-11-12'
+          end: null
+          distance: 22.39
+          reasoning: waxed with cyclowax
+      distance: 22.39
+      lubricant: null
+      ospw: ceramicspeed
+      range:
+        - end: null
+          start: '2026-11-12'
+      since: '2026-11-12'
+      status: active
+      wax: Cyclowax Performance Tablet
+      waxKit:
+        name: Cyclowax Performance Wax Kit
+        url: https://www.cyclowax.com/en-ca/products/performance-wax-kit
+      waxed: true

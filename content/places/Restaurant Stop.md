@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'Eastern European restaurant and wine bar on Roncesvalles Avenue.'
 id: 'Restaurant Stop'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/DdaGREXJ5Pb/'
 tags:
   - 'places'
 title: 'Restaurant Stop'

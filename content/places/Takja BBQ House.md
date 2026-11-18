@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'Korean barbecue restaurant serving dry-aged meats, banchan, and a shared hansang menu'
 id: 'Takja BBQ House'
 modified: 2026-10-30
-source: https://www.instagram.com/reel/DfDq5exJTTN/
 tags:
   - places
 title: 'Takja BBQ House'

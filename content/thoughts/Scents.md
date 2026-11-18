@@ -3,7 +3,7 @@ comments: false
 date: '2024-01-07'
 description: A (mostly) up-to-date scents that I use/like/prefer.
 id: Scents
-modified: 2026-06-09 22:59:26 GMT-04:00
+modified: 2026-11-11 05:05:33 GMT-04:00
 seealso:
   - '[[books|antilibrary]]'
 tags:
@@ -25,6 +25,16 @@ title: Scents
 - Tom Ford's _Noir de Noir_
 - Maison Louis Marie's _No. 4_
 - oddityfragrance's [_Resonant_](https://oddityfragrance.com/products/resonant)
+
+## to try.
+
+From [selleb.world's reel](https://www.instagram.com/reel/DexZMw1xpxH/), in order:
+
+- Marc-Antoine Barrois' [_Ganymede_](https://us.marcantoinebarrois.com/products/ganymede), eau de parfum
+- Marc-Antoine Barrois' [_Tilia_](https://us.marcantoinebarrois.com/products/tilia), eau de parfum
+- Maison Crivelli's [_Tobacco Carnaval_](https://maisoncrivelli.com/en-ca/products/tobacco-carnaval), extrait de parfum
+- Hermès' [_Rose Ikebana_](https://www.hermes.com/uk/en/product/rose-ikebana-eau-de-toilette-V113578V0/), eau de toilette (Hermessence)
+- État Libre d'Orange's [_Jasmin et Cigarette_](https://www.etatlibredorange.com/products/jasmin-et-cigarette), eau de parfum
 
 ## review.
 

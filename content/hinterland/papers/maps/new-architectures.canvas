@@ -1,0 +1,603 @@
+{
+	"nodes": [
+		{
+			"id": "title",
+			"type": "text",
+			"text": "# new architectures",
+			"x": 0,
+			"y": -160,
+			"width": 420,
+			"height": 80
+		},
+		{
+			"id": "n-README",
+			"type": "file",
+			"file": "thoughts/inference/architectures.md",
+			"x": 0,
+			"y": 0,
+			"width": 420,
+			"height": 520,
+			"color": "4"
+		},
+		{
+			"id": "n-dsv41",
+			"type": "file",
+			"file": "thoughts/papers/deepseekai2026deepseekv41flashpushinglimitskv.md",
+			"x": 0,
+			"y": 580,
+			"width": 420,
+			"height": 520,
+			"color": "4"
+		},
+		{
+			"id": "n-kimik3",
+			"type": "file",
+			"file": "thoughts/papers/kimiteam2026kimik3openfrontier.md",
+			"x": 0,
+			"y": 1160,
+			"width": 420,
+			"height": 520,
+			"color": "4"
+		},
+		{
+			"id": "n-qwen4next",
+			"type": "file",
+			"file": "thoughts/papers/qiu2026designqwen38nextarchitectureevaluation.md",
+			"x": 0,
+			"y": 1740,
+			"width": 420,
+			"height": 520,
+			"color": "4"
+		},
+		{
+			"id": "n-replayssm",
+			"type": "file",
+			"file": "thoughts/inference/replayssm.md",
+			"x": 0,
+			"y": 2320,
+			"width": 420,
+			"height": 520,
+			"color": "4"
+		},
+		{
+			"id": "n-grill-key",
+			"type": "file",
+			"file": "thoughts/inference/architecture-review.md",
+			"x": 0,
+			"y": 2900,
+			"width": 420,
+			"height": 520,
+			"color": "4"
+		},
+		{
+			"id": "p-2609.19969",
+			"type": "file",
+			"file": "thoughts/papers/deepseekai2026deepseekv41flashpushinglimitskv.md",
+			"x": 540,
+			"y": 0,
+			"width": 360,
+			"height": 460
+		},
+		{
+			"id": "p-2512.24880",
+			"type": "file",
+			"file": "thoughts/papers/xie2026mhcmanifoldconstrainedhyperconnections.md",
+			"x": 540,
+			"y": 520,
+			"width": 360,
+			"height": 460
+		},
+		{
+			"id": "p-2601.07372",
+			"type": "file",
+			"file": "thoughts/papers/cheng2026conditionalmemoryscalablelookup.md",
+			"x": 540,
+			"y": 1040,
+			"width": 360,
+			"height": 460
+		},
+		{
+			"id": "p-2603.15031",
+			"type": "file",
+			"file": "thoughts/papers/kimiteam2026attentionresiduals.md",
+			"x": 540,
+			"y": 1560,
+			"width": 360,
+			"height": 460
+		},
+		{
+			"id": "p-2601.18089",
+			"type": "file",
+			"file": "thoughts/papers/elango2026latentmoeoptimalaccuracyflop.md",
+			"x": 540,
+			"y": 2080,
+			"width": 360,
+			"height": 460
+		},
+		{
+			"id": "p-2607.24653",
+			"type": "file",
+			"file": "thoughts/papers/kimiteam2026kimik3openfrontier.md",
+			"x": 540,
+			"y": 2600,
+			"width": 360,
+			"height": 460
+		},
+		{
+			"id": "p-2608.30320",
+			"type": "file",
+			"file": "thoughts/papers/qiu2026designqwen38nextarchitectureevaluation.md",
+			"x": 540,
+			"y": 3120,
+			"width": 360,
+			"height": 460
+		},
+		{
+			"id": "p-2409.19606",
+			"type": "file",
+			"file": "thoughts/papers/zhu2025hyperconnections.md",
+			"x": 540,
+			"y": 3640,
+			"width": 360,
+			"height": 460
+		},
+		{
+			"id": "pr-59528",
+			"type": "file",
+			"file": "hinterland/papers/maps/prs/59528.md",
+			"x": 1020,
+			"y": 0,
+			"width": 300,
+			"height": 240
+		},
+		{
+			"id": "pr-59733",
+			"type": "file",
+			"file": "hinterland/papers/maps/prs/59733.md",
+			"x": 1020,
+			"y": 280,
+			"width": 300,
+			"height": 240
+		},
+		{
+			"id": "pr-59197",
+			"type": "file",
+			"file": "hinterland/papers/maps/prs/59197.md",
+			"x": 1020,
+			"y": 560,
+			"width": 300,
+			"height": 240
+		},
+		{
+			"id": "pr-48018",
+			"type": "file",
+			"file": "hinterland/papers/maps/prs/48018.md",
+			"x": 1020,
+			"y": 840,
+			"width": 300,
+			"height": 240
+		},
+		{
+			"id": "pr-52506",
+			"type": "file",
+			"file": "hinterland/papers/maps/prs/52506.md",
+			"x": 1020,
+			"y": 1120,
+			"width": 300,
+			"height": 240
+		},
+		{
+			"id": "pr-52928",
+			"type": "file",
+			"file": "hinterland/papers/maps/prs/52928.md",
+			"x": 1020,
+			"y": 1400,
+			"width": 300,
+			"height": 240
+		},
+		{
+			"id": "pr-51855",
+			"type": "file",
+			"file": "hinterland/papers/maps/prs/51855.md",
+			"x": 1020,
+			"y": 1680,
+			"width": 300,
+			"height": 240
+		},
+		{
+			"id": "pr-56227",
+			"type": "file",
+			"file": "hinterland/papers/maps/prs/56227.md",
+			"x": 1020,
+			"y": 1960,
+			"width": 300,
+			"height": 240
+		},
+		{
+			"id": "pr-58132",
+			"type": "file",
+			"file": "hinterland/papers/maps/prs/58132.md",
+			"x": 1020,
+			"y": 2240,
+			"width": 300,
+			"height": 240
+		},
+		{
+			"id": "pr-59532",
+			"type": "file",
+			"file": "hinterland/papers/maps/prs/59532.md",
+			"x": 1020,
+			"y": 2520,
+			"width": 300,
+			"height": 240
+		},
+		{
+			"id": "pr-59894",
+			"type": "file",
+			"file": "hinterland/papers/maps/prs/59894.md",
+			"x": 1020,
+			"y": 2800,
+			"width": 300,
+			"height": 240
+		},
+		{
+			"id": "pr-52988",
+			"type": "file",
+			"file": "hinterland/papers/maps/prs/52988.md",
+			"x": 1020,
+			"y": 3080,
+			"width": 300,
+			"height": 240
+		}
+	],
+	"edges": [
+		{
+			"id": "e-README-p-2609.19969",
+			"fromNode": "n-README",
+			"fromSide": "right",
+			"toNode": "p-2609.19969",
+			"toSide": "left",
+			"label": "\u00a77"
+		},
+		{
+			"id": "e-dsv41-p-2609.19969",
+			"fromNode": "n-dsv41",
+			"fromSide": "right",
+			"toNode": "p-2609.19969",
+			"toSide": "left"
+		},
+		{
+			"id": "e-dsv41-p-2512.24880",
+			"fromNode": "n-dsv41",
+			"fromSide": "right",
+			"toNode": "p-2512.24880",
+			"toSide": "left"
+		},
+		{
+			"id": "e-dsv41-p-2601.07372",
+			"fromNode": "n-dsv41",
+			"fromSide": "right",
+			"toNode": "p-2601.07372",
+			"toSide": "left"
+		},
+		{
+			"id": "e-kimik3-p-2603.15031",
+			"fromNode": "n-kimik3",
+			"fromSide": "right",
+			"toNode": "p-2603.15031",
+			"toSide": "left",
+			"label": "\u00a71.4"
+		},
+		{
+			"id": "e-kimik3-p-2601.18089",
+			"fromNode": "n-kimik3",
+			"fromSide": "right",
+			"toNode": "p-2601.18089",
+			"toSide": "left",
+			"label": "\u00a71.5"
+		},
+		{
+			"id": "e-kimik3-p-2607.24653",
+			"fromNode": "n-kimik3",
+			"fromSide": "right",
+			"toNode": "p-2607.24653",
+			"toSide": "left",
+			"label": "\u00a70, \u00a71.2, \u00a71.4"
+		},
+		{
+			"id": "e-qwen4next-p-2608.30320",
+			"fromNode": "n-qwen4next",
+			"fromSide": "right",
+			"toNode": "p-2608.30320",
+			"toSide": "left",
+			"label": "\u00a71.0"
+		},
+		{
+			"id": "e-qwen4next-p-2409.19606",
+			"fromNode": "n-qwen4next",
+			"fromSide": "right",
+			"toNode": "p-2409.19606",
+			"toSide": "left",
+			"label": "\u00a71.2"
+		},
+		{
+			"id": "e-README-pr-59528",
+			"fromNode": "n-README",
+			"fromSide": "right",
+			"toNode": "pr-59528",
+			"toSide": "left",
+			"label": "\u00a73"
+		},
+		{
+			"id": "e-qwen4next-pr-59528",
+			"fromNode": "n-qwen4next",
+			"fromSide": "right",
+			"toNode": "pr-59528",
+			"toSide": "left",
+			"label": "\u00a73, \u00a74, \u00a75"
+		},
+		{
+			"id": "e-README-pr-59733",
+			"fromNode": "n-README",
+			"fromSide": "right",
+			"toNode": "pr-59733",
+			"toSide": "left",
+			"label": "\u00a73"
+		},
+		{
+			"id": "e-kimik3-pr-59733",
+			"fromNode": "n-kimik3",
+			"fromSide": "right",
+			"toNode": "pr-59733",
+			"toSide": "left",
+			"label": "\u00a71.6, \u00a73.4, \u00a74"
+		},
+		{
+			"id": "e-README-pr-59197",
+			"fromNode": "n-README",
+			"fromSide": "right",
+			"toNode": "pr-59197",
+			"toSide": "left",
+			"label": "\u00a74, \u00a76"
+		},
+		{
+			"id": "e-dsv41-pr-59197",
+			"fromNode": "n-dsv41",
+			"fromSide": "right",
+			"toNode": "pr-59197",
+			"toSide": "left",
+			"label": "\u00a73.5, \u00a74"
+		},
+		{
+			"id": "e-replayssm-pr-59197",
+			"fromNode": "n-replayssm",
+			"fromSide": "right",
+			"toNode": "pr-59197",
+			"toSide": "left",
+			"label": "\u00a74"
+		},
+		{
+			"id": "e-README-pr-48018",
+			"fromNode": "n-README",
+			"fromSide": "right",
+			"toNode": "pr-48018",
+			"toSide": "left",
+			"label": "\u00a75, \u00a76"
+		},
+		{
+			"id": "e-dsv41-pr-48018",
+			"fromNode": "n-dsv41",
+			"fromSide": "right",
+			"toNode": "pr-48018",
+			"toSide": "left",
+			"label": "\u00a73.4"
+		},
+		{
+			"id": "e-replayssm-pr-48018",
+			"fromNode": "n-replayssm",
+			"fromSide": "right",
+			"toNode": "pr-48018",
+			"toSide": "left",
+			"label": "\u00a75"
+		},
+		{
+			"id": "e-README-pr-52506",
+			"fromNode": "n-README",
+			"fromSide": "right",
+			"toNode": "pr-52506",
+			"toSide": "left",
+			"label": "\u00a75"
+		},
+		{
+			"id": "e-dsv41-pr-52506",
+			"fromNode": "n-dsv41",
+			"fromSide": "right",
+			"toNode": "pr-52506",
+			"toSide": "left",
+			"label": "\u00a73.4"
+		},
+		{
+			"id": "e-kimik3-pr-52506",
+			"fromNode": "n-kimik3",
+			"fromSide": "right",
+			"toNode": "pr-52506",
+			"toSide": "left",
+			"label": "\u00a73.3"
+		},
+		{
+			"id": "e-replayssm-pr-52506",
+			"fromNode": "n-replayssm",
+			"fromSide": "right",
+			"toNode": "pr-52506",
+			"toSide": "left",
+			"label": "\u00a75"
+		},
+		{
+			"id": "e-README-pr-52928",
+			"fromNode": "n-README",
+			"fromSide": "right",
+			"toNode": "pr-52928",
+			"toSide": "left",
+			"label": "\u00a75, \u00a76"
+		},
+		{
+			"id": "e-dsv41-pr-52928",
+			"fromNode": "n-dsv41",
+			"fromSide": "right",
+			"toNode": "pr-52928",
+			"toSide": "left",
+			"label": "\u00a73.4"
+		},
+		{
+			"id": "e-kimik3-pr-52928",
+			"fromNode": "n-kimik3",
+			"fromSide": "right",
+			"toNode": "pr-52928",
+			"toSide": "left",
+			"label": "\u00a73.3"
+		},
+		{
+			"id": "e-replayssm-pr-52928",
+			"fromNode": "n-replayssm",
+			"fromSide": "right",
+			"toNode": "pr-52928",
+			"toSide": "left",
+			"label": "\u00a73, \u00a75"
+		},
+		{
+			"id": "e-README-pr-51855",
+			"fromNode": "n-README",
+			"fromSide": "right",
+			"toNode": "pr-51855",
+			"toSide": "left",
+			"label": "\u00a75, \u00a76"
+		},
+		{
+			"id": "e-kimik3-pr-51855",
+			"fromNode": "n-kimik3",
+			"fromSide": "right",
+			"toNode": "pr-51855",
+			"toSide": "left",
+			"label": "\u00a73.3, \u00a74"
+		},
+		{
+			"id": "e-replayssm-pr-51855",
+			"fromNode": "n-replayssm",
+			"fromSide": "right",
+			"toNode": "pr-51855",
+			"toSide": "left",
+			"label": "\u00a74, \u00a75"
+		},
+		{
+			"id": "e-README-pr-56227",
+			"fromNode": "n-README",
+			"fromSide": "right",
+			"toNode": "pr-56227",
+			"toSide": "left",
+			"label": "\u00a75, \u00a76"
+		},
+		{
+			"id": "e-dsv41-pr-56227",
+			"fromNode": "n-dsv41",
+			"fromSide": "right",
+			"toNode": "pr-56227",
+			"toSide": "left",
+			"label": "\u00a73.2, \u00a74"
+		},
+		{
+			"id": "e-replayssm-pr-56227",
+			"fromNode": "n-replayssm",
+			"fromSide": "right",
+			"toNode": "pr-56227",
+			"toSide": "left",
+			"label": "\u00a74"
+		},
+		{
+			"id": "e-README-pr-58132",
+			"fromNode": "n-README",
+			"fromSide": "right",
+			"toNode": "pr-58132",
+			"toSide": "left",
+			"label": "\u00a75, \u00a76"
+		},
+		{
+			"id": "e-dsv41-pr-58132",
+			"fromNode": "n-dsv41",
+			"fromSide": "right",
+			"toNode": "pr-58132",
+			"toSide": "left",
+			"label": "\u00a73.3, \u00a74"
+		},
+		{
+			"id": "e-replayssm-pr-58132",
+			"fromNode": "n-replayssm",
+			"fromSide": "right",
+			"toNode": "pr-58132",
+			"toSide": "left",
+			"label": "\u00a74"
+		},
+		{
+			"id": "e-README-pr-59532",
+			"fromNode": "n-README",
+			"fromSide": "right",
+			"toNode": "pr-59532",
+			"toSide": "left",
+			"label": "\u00a75"
+		},
+		{
+			"id": "e-dsv41-pr-59532",
+			"fromNode": "n-dsv41",
+			"fromSide": "right",
+			"toNode": "pr-59532",
+			"toSide": "left",
+			"label": "\u00a73.3, \u00a74"
+		},
+		{
+			"id": "e-replayssm-pr-59532",
+			"fromNode": "n-replayssm",
+			"fromSide": "right",
+			"toNode": "pr-59532",
+			"toSide": "left",
+			"label": "\u00a74"
+		},
+		{
+			"id": "e-README-pr-59894",
+			"fromNode": "n-README",
+			"fromSide": "right",
+			"toNode": "pr-59894",
+			"toSide": "left",
+			"label": "\u00a75, \u00a76"
+		},
+		{
+			"id": "e-dsv41-pr-59894",
+			"fromNode": "n-dsv41",
+			"fromSide": "right",
+			"toNode": "pr-59894",
+			"toSide": "left",
+			"label": "\u00a73.3, \u00a74"
+		},
+		{
+			"id": "e-replayssm-pr-59894",
+			"fromNode": "n-replayssm",
+			"fromSide": "right",
+			"toNode": "pr-59894",
+			"toSide": "left",
+			"label": "\u00a74"
+		},
+		{
+			"id": "e-grill-key-pr-59894",
+			"fromNode": "n-grill-key",
+			"fromSide": "right",
+			"toNode": "pr-59894",
+			"toSide": "left"
+		},
+		{
+			"id": "e-kimik3-pr-52988",
+			"fromNode": "n-kimik3",
+			"fromSide": "right",
+			"toNode": "pr-52988",
+			"toSide": "left",
+			"label": "\u00a71.6, \u00a73.3, \u00a74"
+		}
+	]
+}

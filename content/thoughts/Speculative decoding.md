@@ -31,6 +31,17 @@ The draft tokens are already available, so the target can score them in one caus
 >
 > Strict [[#speculative sampling|speculative sampling]] preserves the target distribution through its acceptance test and correction distribution. Speed also depends on draft cost and the cost of scoring several target positions together.
 
+## block-diffusion drafting
+
+Block-diffusion drafters predict several token positions in parallel, then verify their proposed block against the target. Independent position marginals can form an incoherent sequence, and verification can waste batch capacity on a low-probability tail. [[thoughts/inference/speculative-drafting|The speculative-drafting exploration]] compares methods that restore within-block dependence and reuse verifier information across rounds.
+
+- [[thoughts/papers/chen2026dflashblockdiffusionflash|DFlash]] supplies the block-diffusion baseline and target-feature conditioning.
+- [[thoughts/papers/cheng2026dsparkconfidencescheduledspeculativedecoding|DSpark]] adds sequential correction and confidence-scheduled verification; [[thoughts/papers/huang2026dominodecouplingcausalmodeling|Domino]] studies a related prefix-dependent head.
+- [[thoughts/inference/dflash2|DFlash2]] combines a top-K pairwise selector with a two-tap convolution.
+- [[thoughts/papers/rusanovsky2026lilicorrlightweightlikelihoodcorrelation|LiLiCorr]] learns pairwise scores over a candidate lattice.
+- [[thoughts/papers/wang2026xpressparallelrefinementdiffusion|xPress]] uses repeated parallel causal refinement.
+- [[thoughts/papers/zhang2026dflowenablingverifierinformation|DFlow]] relays rejected-position verifier states into the next drafting round.
+
 ## papers
 
 - https://arxiv.org/abs/2506.20675

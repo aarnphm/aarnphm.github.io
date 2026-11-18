@@ -58,7 +58,7 @@ function createListItemRenderer(
         const value = resolveValueWithFormulas(file, propertyKey, getContext, getPropertyExpr)
         if (!hasRenderableValue(value)) continue
 
-        const renderedValue = renderPropertyValueNodes(value, currentSlug, allFiles)
+        const renderedValue = renderPropertyValueNodes(value, currentSlug, allFiles, file)
         if (renderedValue.length === 0) continue
 
         inlineNodes.push(separator)
@@ -76,7 +76,7 @@ function createListItemRenderer(
       if (!propertyKey || seen.has(propertyKey)) continue
       const value = resolveValueWithFormulas(file, propertyKey, getContext, getPropertyExpr)
       const renderedValue = hasRenderableValue(value)
-        ? renderPropertyValueNodes(value, currentSlug, allFiles)
+        ? renderPropertyValueNodes(value, currentSlug, allFiles, file)
         : []
 
       const label = getPropertyDisplayName(propertyKey, properties)

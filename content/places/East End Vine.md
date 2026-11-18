@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Wine and tapas restaurant on Gerrard Street East.'
 id: 'East End Vine'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DfDUc1yoNEc/'
 tags:
   - 'places'
 title: 'East End Vine'

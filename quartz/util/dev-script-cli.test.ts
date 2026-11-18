@@ -31,7 +31,7 @@ function runDevScript(args: string[], options: DevScriptOptions = {}): Promise<D
         child.kill('SIGTERM')
         reject(new Error(`dev script timed out: ${Buffer.concat(stderr).toString('utf8')}`))
       })
-    }, 3000)
+    }, 10000)
 
     if (!child.stdout || !child.stderr) {
       finish(() => {

@@ -10,9 +10,13 @@ final class VolumeKeys {
     var handlesKeys = false
     var onKey: ((VolumeKey, Bool) -> Void)?
     var available: Bool { tap != nil }
+    private(set) var trusted = false
+    private(set) var issue: String?
 
     func start() {
-        guard tap == nil, AXIsProcessTrusted() else { return }
+        trusted = AXIsProcessTrusted()
+        guard trusted else { stop(); issue = "Enable Audio Output in Device Control and Data Access (Accessibility)."; return }
+        guard tap == nil else { return }
         let mask = CGEventMask(1) << NSEvent.EventType.systemDefined.rawValue
         guard let tap = CGEvent.tapCreate(tap: .cgSessionEventTap, place: .headInsertEventTap,
             options: .defaultTap, eventsOfInterest: mask, callback: { _, type, event, context in
@@ -33,7 +37,11 @@ final class VolumeKeys {
                     }
                     return nil
                 }
-            }, userInfo: Unmanaged.passUnretained(self).toOpaque()) else { return }
+            }, userInfo: Unmanaged.passUnretained(self).toOpaque()) else {
+                issue = "Accessibility is enabled, but macOS could not create the volume-key event tap."
+                return
+            }
+        issue = nil
         self.tap = tap
         source = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, tap, 0)
         if let source { CFRunLoopAddSource(CFRunLoopGetMain(), source, .commonModes) }
@@ -42,7 +50,12 @@ final class VolumeKeys {
 
     func requestAccess() {
         let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true] as CFDictionary
-        _ = AXIsProcessTrustedWithOptions(options)
+        let trusted = AXIsProcessTrustedWithOptions(options)
+        // macOS can suppress repeated prompts. Always give the button a destination.
+        if !trusted,
+           let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility") {
+            NSWorkspace.shared.open(url)
+        }
         start()
     }
 

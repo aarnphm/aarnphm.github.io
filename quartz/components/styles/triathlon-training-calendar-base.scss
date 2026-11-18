@@ -442,7 +442,6 @@
   min-height: 1rem;
   margin: 0;
   padding: 0.65rem;
-  border-bottom: 1px solid var(--calendar-line);
   color: var(--darkgray);
   font-family: var(--codeFont);
   font-size: var(--text-meta, 0.75rem);
@@ -584,7 +583,6 @@
   min-width: 0;
   margin: 0;
   border: 0;
-  border-bottom: 1px solid var(--calendar-line);
   border-radius: var(--radius-none);
   background: color-mix(in srgb, var(--training-execution) var(--training-card-tint), var(--light));
 

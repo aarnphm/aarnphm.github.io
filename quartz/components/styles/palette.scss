@@ -622,3 +622,164 @@ body[data-slug='index'] .palette > #palette-container > #space {
     }
   }
 }
+
+// Intelligence mode: Gemma's overview above the quick-open results (palette/intelligence.ts).
+#palette-container .intelligence {
+  margin: 0 0 8px;
+  padding: 8px 12px 10px;
+  border: 1px solid var(--lightgray);
+  font-size: var(--text-body, 1rem);
+  line-height: 1.45;
+
+  &.is-unavailable {
+    color: var(--darkgray);
+    padding-bottom: 8px;
+
+    .intel-grid {
+      opacity: 0.45;
+    }
+
+    // Nothing was read: the status line is the whole block.
+    .intelligence-head {
+      margin-bottom: 0;
+    }
+
+    .intelligence-text,
+    .intelligence-cites {
+      display: none;
+    }
+  }
+
+  .intelligence-head {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--text-meta);
+    color: var(--darkgray);
+    margin-bottom: 4px;
+  }
+
+  .intelligence-glyph {
+    display: inline-flex;
+    width: 1rem;
+    height: 1rem;
+    color: var(--dark);
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .intelligence-text {
+    margin: 0;
+    white-space: pre-wrap;
+
+    &:empty::before {
+      content: '\00a0';
+    }
+  }
+
+  .intelligence-cites {
+    list-style: none;
+    margin: 6px 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    font-size: var(--text-meta);
+
+    li {
+      // The chip's underline carries the attention share, as the link chips do on /embeddings.
+      background: linear-gradient(var(--tertiary), var(--tertiary)) no-repeat left bottom /
+        calc(var(--mass, 0) * 100%) 2px;
+      padding-bottom: 1px;
+    }
+
+    a {
+      color: var(--dark);
+      text-decoration: none;
+    }
+  }
+
+  .intelligence-hops {
+    margin: 6px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+
+    &:empty {
+      display: none;
+    }
+
+    button {
+      font: inherit;
+      font-size: var(--text-meta);
+      color: var(--darkgray);
+      background: none;
+      border: 0;
+      padding: 0;
+      cursor: pointer;
+
+      &:hover {
+        color: var(--dark);
+      }
+    }
+  }
+}
+
+// The grid glyph: nine dots, the centre one lit; loading runs an opacity wave across it.
+.intel-grid circle {
+  opacity: 0.45;
+}
+
+.intel-grid .intel-dot {
+  opacity: 1;
+}
+
+.is-loading .intel-grid circle {
+  animation: intel-wave 1.5s ease-in-out infinite;
+
+  &:nth-child(2),
+  &:nth-child(4) {
+    animation-delay: 0.12s;
+  }
+
+  &:nth-child(3),
+  &:nth-child(5),
+  &:nth-child(7) {
+    animation-delay: 0.24s;
+  }
+
+  &:nth-child(6),
+  &:nth-child(8) {
+    animation-delay: 0.36s;
+  }
+
+  &:nth-child(9) {
+    animation-delay: 0.48s;
+  }
+}
+
+@keyframes intel-wave {
+  0%,
+  60%,
+  100% {
+    opacity: 0.45;
+  }
+
+  20% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-loading .intel-grid circle {
+    animation: none;
+  }
+
+  .is-loading .intel-grid .intel-dot {
+    opacity: 0.5;
+  }
+}

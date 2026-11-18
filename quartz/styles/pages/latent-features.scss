@@ -3,7 +3,7 @@
 // `layout: latent`: the probe's features tab (quartz/components/scripts/latent-client/features.ts).
 // Rows share the axis cards' grid: a hairline bar for the activation, the feature's terms, its id,
 // and the ± steering pair, all in the probe's mono micro type.
-[data-layout='latent'] :where(#quartz-root) .lat-probe .lat-features {
+:is([data-layout='latent'] :where(#quartz-root), .latent-embed) .lat-probe .lat-features {
   padding: 0 0 0.5rem;
 
   .lat-feat-group,
@@ -46,10 +46,12 @@
     white-space: nowrap;
   }
 
+  // the focused passage's title, set like an axis pole's words: italic text face
   .lat-feat-where {
     margin: 0 0 0.25rem;
-    font-family: var(--lat-mono);
-    font-size: var(--lat-micro);
+    font-family: var(--lat-text);
+    font-style: italic;
+    font-size: var(--text-meta);
     color: var(--darkgray);
   }
 
@@ -166,12 +168,6 @@
     }
   }
 
-  .lat-feat-terms {
-    font-style: italic;
-    color: var(--darkgray);
-    font-size: var(--text-meta);
-  }
-
   .lat-feat-kinds {
     display: flex;
     flex-wrap: wrap;
@@ -243,33 +239,16 @@
     }
   }
 
-  // one line, cut with an ellipsis; hover scrolls it through (latent-client/marquee.ts)
-  .lat-feat-about {
-    font-size: var(--text-meta);
-    color: var(--dark);
-    line-height: 1.35;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  // the label's score and the arrow whose note lists the label's terms
-  .lat-feat-terms {
-    display: flex;
-    align-items: baseline;
-    gap: 0.4rem;
-  }
-
+  // the label row's detection score, and the arrow whose note lists the label's terms
   .lat-feat-score {
-    font-style: normal;
     font-family: var(--lat-mono);
     font-size: var(--lat-micro);
-    color: var(--gray);
+    color: var(--darkgray);
+    font-variant-numeric: tabular-nums;
     white-space: nowrap;
   }
 
   .lat-feat-more {
-    font-style: normal;
     font-family: var(--lat-mono);
     font-size: var(--lat-micro);
     color: var(--gray);
@@ -279,11 +258,10 @@
     }
   }
 
-  // the card's title reads whole on its own line; the id chip and + sit on the row below
+  // the card's title reads whole on its own line; the id chip and + are the table's meta row
   .lat-feat-card > header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.25rem;
 
     .lat-feat-head {
       white-space: normal;
@@ -292,17 +270,12 @@
     }
   }
 
-  .lat-feat-card-tools {
-    display: flex;
-    align-items: stretch;
-    gap: 0.25rem;
-  }
-
+  // the + is a square the chip's height beside it, its glyph centred
   .lat-feat-add {
-    display: inline-grid;
-    place-items: center;
+    box-sizing: border-box;
     width: 1.3rem;
     padding: 0;
+    text-align: center;
     font-family: var(--lat-mono);
     font-size: var(--lat-micro);
     line-height: inherit;
@@ -555,7 +528,7 @@
 // reads as) in one mono column of --lat-feat-label, and what it labels starting on one line to
 // its right, wrapped chips included. Rows of chips are inline so the label shares the first
 // chip's baseline and wrapped lines return to the content edge, not under the label.
-[data-layout='latent'] :where(#quartz-root) .lat-probe .lat-features {
+:is([data-layout='latent'] :where(#quartz-root), .latent-embed) .lat-probe .lat-features {
   --lat-feat-label: 5.25rem;
 
   .lat-feat-card > :is(.lat-feat-path, .lat-feat-near, .lat-feat-kinds),
@@ -635,11 +608,53 @@
       margin: 0;
     }
   }
+
+  // one-line text values (description, steers) on the same two columns: the value is cut with
+  // an ellipsis and scrolls through on hover (latent-client/marquee.ts). With reduced motion it
+  // wraps instead, so the whole sentence reads without anything moving.
+  .lat-feat-card > .lat-feat-near.lat-feat-line {
+    display: grid;
+    grid-template-columns: var(--lat-feat-label) minmax(0, 1fr);
+    align-items: baseline;
+    gap: 0;
+    padding-left: 0;
+    line-height: 1.45;
+
+    > *,
+    > span:first-child {
+      display: block;
+      width: auto;
+      max-width: none;
+      margin: 0;
+    }
+
+    > .lat-feat-text {
+      min-width: 0;
+      color: var(--dark);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      // the scrolling span is one atomic box, which an ellipsis would hide whole
+      &[data-marquee] {
+        text-overflow: clip;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        white-space: normal;
+        text-wrap: pretty;
+      }
+    }
+  }
+
+  .lat-feat-card > .lat-feat-near.lat-feat-unit > .lat-feat-text {
+    color: var(--gray);
+  }
 }
 
 // the links pane's group bars use the probe's one mark width and box, so the counts line up
 // and every kind tag on the page is the same chip
-[data-layout='latent'] :where(#quartz-root) .lat-links .lat-group {
+:is([data-layout='latent'] :where(#quartz-root), .latent-embed) .lat-links .lat-group {
   .lat-mark {
     box-sizing: border-box;
     min-width: calc(5ch + 5 * 0.08em + 0.85em + 0.6rem + 2px);
@@ -651,7 +666,7 @@
 }
 
 // a cut label under the pointer scrolls through its whole text (latent-client/marquee.ts)
-[data-layout='latent'] :where(#quartz-root) .lat-probe [data-marquee] {
+:is([data-layout='latent'] :where(#quartz-root), .latent-embed) .lat-probe [data-marquee] {
   text-overflow: clip;
 
   @media (prefers-reduced-motion: no-preference) {
@@ -731,7 +746,7 @@
 // Steering by score fusion (docs/latent-steering.md): each term's strength is a slider in its
 // own unit, tags and axes list beside features in `#` search with their sparse probe under them,
 // and "reasoning" splits each link's cosine into feature-pair edges.
-[data-layout='latent'] :where(#quartz-root) .lat-probe .lat-features {
+:is([data-layout='latent'] :where(#quartz-root), .latent-embed) .lat-probe .lat-features {
   .lat-steer-amount {
     grid-template-columns: 5.5rem 2.6rem;
     column-gap: 0.35rem;
@@ -835,7 +850,8 @@
     }
   }
 
-  .lat-feat-word {
+  // the row's label rule greys every span; the words keep the ink, faded by their share
+  .lat-feat-words > .lat-feat-word {
     color: var(--dark);
     opacity: calc(0.5 + var(--a) * 0.5);
   }
@@ -932,7 +948,7 @@
 }
 
 // Chunk previews keep feature chips operable without changing the compact document rows.
-[data-layout='latent'] :where(#quartz-root) .lat-links .lat-link-why {
+:is([data-layout='latent'] :where(#quartz-root), .latent-embed) .lat-links .lat-link-why {
   margin: 0.3rem 0 0;
 
   .lat-feat-chip {

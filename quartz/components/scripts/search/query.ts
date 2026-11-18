@@ -8,6 +8,7 @@ import { isSearchExcluded } from '../../../util/search-exclude'
 import { parseSearchQuery, searchScopeIncludes, type SearchScope } from '../../../util/search-scope'
 import { highlight, matchesTerm, pathSearchText, tokenizeTerm } from '../../../util/search-text'
 import { fuseSearchRanks } from '../../../util/semantic-search'
+import { canonicalTag, parseTagSearchQuery, tagLabel } from '../../../util/tags'
 import { imageSimilarityStatus, searchableImage } from '../image-search-controls'
 import { getLexicalSearchClient } from '../lexical-search'
 import { pdfPageLabel } from '../pdf-search-controls'
@@ -79,7 +80,7 @@ const formatForDisplay = (
     set content(value: string) {
       content = value
     },
-    tags: highlightTags(term, fileData.tags, renderType),
+    tags: highlightTags(term, fileData.tags, renderType, fileData.tagDisplay),
     aliases: aliases,
     titleMatch,
     fileName: fileData.fileName,
@@ -100,18 +101,24 @@ function matchExcerpt(term: string, fileData: ContentDetails): string {
   return highlight(term, content || escapeHTML(fileData.description || fileData.fileName), true)
 }
 
-function highlightTags(term: string, tags: string[], renderType: SearchType) {
+function highlightTags(
+  term: string,
+  tags: string[],
+  renderType: SearchType,
+  tagDisplay?: Record<string, string>,
+) {
   if (!tags || renderType !== 'tags') {
     return []
   }
 
-  const tagTerm = term.toLowerCase()
+  const tagTerm = canonicalTag(term)
   return tags
     .map(tag => {
-      if (tag.toLowerCase().includes(tagTerm)) {
-        return `<li><p class="match-tag">#${tag}</p></li>`
+      const label = escapeHTML(tagLabel(tag, { tagDisplay }))
+      if (canonicalTag(tag).includes(tagTerm)) {
+        return `<li><p class="match-tag">#${label}</p></li>`
       } else {
-        return `<li><p>#${tag}</p></li>`
+        return `<li><p>#${label}</p></li>`
       }
     })
     .slice(0, numTagResults)
@@ -224,10 +231,10 @@ async function querySearch(s: SearchSession, rawTerm: string, token: number) {
   }
   const modeForRanking: SearchMode = shared.searchMode
   const searchLimit = s.idDataMap.length
-  const initialType: SearchType = trimmed.startsWith('#') ? 'tags' : 'basic'
+  const tagSearch = parseTagSearchQuery(trimmed)
+  const initialType: SearchType = tagSearch ? 'tags' : 'basic'
   let workingType: SearchType = initialType
   let highlightTerm = trimmed
-  let tagTerm = ''
   let searchResults: LexicalFieldResult[] = []
   const lexicalClient = getLexicalSearchClient()
   const loadedData = requireData(s)
@@ -242,31 +249,28 @@ async function querySearch(s: SearchSession, rawTerm: string, token: number) {
         ),
       },
     ]
-  } else if (initialType === 'tags') {
-    tagTerm = trimmed.substring(1).trim()
-    const separatorIndex = tagTerm.indexOf(' ')
-    if (separatorIndex !== -1) {
-      const tag = tagTerm.substring(0, separatorIndex).trim()
-      const query = tagTerm.substring(separatorIndex + 1).trim()
+  } else if (tagSearch) {
+    if (tagSearch.term) {
       searchResults = await lexicalClient.search(loadedData, {
-        query,
+        query: tagSearch.term,
         scope,
         limit: searchLimit,
         index: ['title', 'fileName', 'content', 'aliases'],
-        tag: { tags: tag },
+        tag: { tags: tagSearch.tag },
       })
       if (token !== s.searchSeq) return
       workingType = 'basic'
-      highlightTerm = query
+      highlightTerm = tagSearch.term
     } else {
       searchResults = await lexicalClient.search(loadedData, {
-        query: tagTerm,
+        query: tagSearch.tag,
         scope,
         limit: searchLimit,
         index: ['tags'],
+        ...(tagSearch.exact ? { tag: { tags: tagSearch.tag } } : {}),
       })
       if (token !== s.searchSeq) return
-      highlightTerm = tagTerm
+      highlightTerm = tagSearch.tag
     }
   } else {
     searchResults = await lexicalClient.search(loadedData, {

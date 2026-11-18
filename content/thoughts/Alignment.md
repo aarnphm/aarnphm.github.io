@@ -2,10 +2,11 @@
 date: '2024-03-05'
 description: human intent, model behavior, and safety research
 id: Alignment
-modified: 2026-10-09 09:05:00 GMT-04:00
+modified: 2026-11-09 10:22:52 GMT-05:00
 tags:
   - ml
   - alignment
+  - interpretability
 title: Alignment
 ---
 

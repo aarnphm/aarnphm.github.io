@@ -227,10 +227,14 @@ export const runWorkoutLaps = (
   d: StravaActivityDetail,
 ): RunLapSplit[] => {
   const laps: RunLapSplit[] = []
-  for (const [index, range] of validAnalysisRanges(d)
+  let ranges = validAnalysisRanges(d)
     .filter(candidate => candidate.kind === 'lap')
     .sort((left, right) => left.startElapsedS - right.startElapsedS)
-    .entries()) {
+  if (ranges.length <= 1) {
+    const mileSplits = projectedRunSplits({ ...presentation, distance: 'imperial' }, d)
+    if (mileSplits.length > 0) ranges = mileSplits
+  }
+  for (const [index, range] of ranges.entries()) {
     const speedKph =
       range.averageSpeedKph != null && range.averageSpeedKph > 0
         ? range.averageSpeedKph
@@ -247,15 +251,35 @@ export const runWorkoutLaps = (
   return laps
 }
 
+const REST_PACE_RATIO = 1.35
+
+/**
+ * The laps the pace scale is drawn for. A recovery walk at 116:00 /mi would otherwise stretch the
+ * axis until every rep looks alike. The median is weighted by distance because recovery covers
+ * little of it, even when it takes as long as the reps.
+ */
+export const workoutMajorityLaps = <L extends { range: ActivityAnalysisRange; paceS: number }>(
+  laps: readonly L[],
+): L[] => {
+  const half = laps.reduce((total, lap) => total + lap.range.distanceKm, 0) / 2
+  let covered = 0
+  const median = [...laps]
+    .sort((left, right) => left.paceS - right.paceS)
+    .find(lap => (covered += lap.range.distanceKm) >= half)?.paceS
+  return median == null ? [...laps] : laps.filter(lap => lap.paceS <= median * REST_PACE_RATIO)
+}
+
 export const runWorkoutPaceAxis = (
   paces: number[],
+  clearFloor = false,
 ): { min: number; max: number; ticks: number[] } => {
   const fastest = Math.min(...paces)
   const slowest = Math.max(...paces)
   const targetStep = Math.max(1, (slowest - fastest) / 5)
   const step = [30, 60, 120, 180, 300, 600, 900].find(candidate => candidate >= targetStep) ?? 900
   const min = Math.max(30, Math.floor(fastest / step) * step)
-  let max = Math.ceil(slowest / step) * step
+  // Recovery bars rest on the floor, so the slowest work lap has to stand clear of it.
+  let max = Math.ceil((slowest + (clearFloor ? step / 2 : 0)) / step) * step
   if (max <= min) max = min + step
   const ticks: number[] = []
   for (let value = min; value <= max; value += step) ticks.push(value)

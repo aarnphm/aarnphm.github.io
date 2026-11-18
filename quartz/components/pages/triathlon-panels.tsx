@@ -11,6 +11,7 @@ const NAV = [
   ['maps', 'maps', 'g m'],
   ['calendar', 'calendar', 'g e'],
   ['on', 'on', 'g o'],
+  ['fun', 'fun', 'g u'],
 ] as const
 
 export type TriView = (typeof NAV)[number][0]

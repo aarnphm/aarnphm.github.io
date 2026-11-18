@@ -16,8 +16,6 @@ tags:
   - crime
 title: 'Dr. Mabuse, the Gambler'
 year: 1922
+external: https://en.wikipedia.org/wiki/Dr._Mabuse_the_Gambler
+details: released in two parts, running 154 and 114 minutes.
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](https://en.wikipedia.org/wiki/Dr._Mabuse_the_Gambler).
-
-released in two parts, running 154 and 114 minutes.

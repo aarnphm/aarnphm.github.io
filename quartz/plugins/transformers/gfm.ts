@@ -11,7 +11,7 @@ export const checkFootnoteRef = ({ type, tagName, properties }: Element) =>
   type === 'element' && tagName === 'a' && Boolean(properties) && properties.dataFootnoteRef != null
 
 export const checkFootnoteSection = ({ type, tagName, properties }: Element) =>
-  type === 'element' && tagName === 'section' && properties.dataFootnotes == ''
+  type === 'element' && tagName === 'section' && properties.dataFootnotes != null
 
 export const GitHubFlavoredMarkdown: QuartzTransformerPlugin = () => ({
   name: 'GitHubFlavoredMarkdown',

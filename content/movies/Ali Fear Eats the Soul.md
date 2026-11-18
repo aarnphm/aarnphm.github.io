@@ -17,6 +17,5 @@ tags:
 title: 'Ali: Fear Eats the Soul'
 year: 1974
 runtime: 93
+external: https://en.wikipedia.org/wiki/Ali:_Fear_Eats_the_Soul
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](https://en.wikipedia.org/wiki/Ali:_Fear_Eats_the_Soul).

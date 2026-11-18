@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import type { LatentDoc, LatentKind } from './types'
-import { filterCompletions, keepsAll, parseFilter, rowMask } from './filter'
+import { filterCompletions, keepsAll, parseFilter, rowMask, viewKinds, withFilter } from './filter'
 
 test('parseFilter: no token leaves the box alone', () => {
   const f = parseFilter('attention heads')
@@ -66,4 +66,19 @@ test('filterCompletions: kinds left to name, replacing only the part typed', () 
   assert.deepEqual(filterCompletions('filter:-n', counts)[0].insert, '-note')
   assert.deepEqual(filterCompletions('filter:pdf', counts), [])
   assert.deepEqual(filterCompletions('filter:pdf ', counts), [])
+})
+
+test('viewKinds: notes and pdfs by default, a saved pick otherwise, never nothing', () => {
+  const all: LatentKind[] = ['note', 'pdf', 'image', 'base']
+  assert.deepEqual(viewKinds(null, all), ['note', 'pdf'])
+  assert.deepEqual(viewKinds(['base', 'note', 'bogus'], all), ['note', 'base'])
+  assert.deepEqual(viewKinds(['image'], ['note', 'pdf']), ['note', 'pdf'])
+})
+
+test('withFilter: one token naming the kinds, the query kept', () => {
+  assert.equal(
+    withFilter('attention filter:pdf heads', ['pdf', 'image']),
+    'filter:pdf,image attention heads',
+  )
+  assert.equal(withFilter('filter:pdf filter:-base', ['note']), 'filter:note')
 })

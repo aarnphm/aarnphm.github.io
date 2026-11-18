@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Thai restaurant serving chicken rice, khao soi and a changing chef’s special on Bloor Street West.'
 id: 'Thai Nyyom'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DeIMQ4jFNoF/'
 tags:
   - 'places'
 title: 'Thai Nyyom'

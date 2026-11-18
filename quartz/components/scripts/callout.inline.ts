@@ -1,12 +1,25 @@
 import { rootNavSignal } from './root-lifecycle'
 
-function toggleCallout(this: HTMLElement) {
+function toggleCallout(this: HTMLElement, event: MouseEvent) {
+  const target = event.target
+  if (
+    target instanceof Element &&
+    !target.closest('.callout-fold-toggle') &&
+    target.closest('a, button, input, select, textarea, [contenteditable="true"]')
+  ) {
+    return
+  }
+
   const outerBlock = this.parentElement!
   outerBlock.classList.toggle('is-collapsed')
   const content = outerBlock.getElementsByClassName('callout-content')[0] as HTMLElement
-  if (!content) return
   const collapsed = outerBlock.classList.contains('is-collapsed')
-  content.style.gridTemplateRows = collapsed ? '0fr' : '1fr'
+  this.querySelector<HTMLButtonElement>('.callout-fold-toggle')?.setAttribute(
+    'aria-expanded',
+    String(!collapsed),
+  )
+  if (content) content.style.gridTemplateRows = collapsed ? '0fr' : '1fr'
+  if (!content) return
   document.dispatchEvent(new CustomEvent('callouttoggle', { detail: { collapsed } }))
 }
 
@@ -17,8 +30,11 @@ function setupCallout(root: Document | HTMLElement = document) {
   for (const div of collapsible) {
     const title = div.getElementsByClassName('callout-title')[0] as HTMLElement
     const content = div.getElementsByClassName('callout-content')[0] as HTMLElement
-    if (!title || !content) continue
+    if (!title) continue
 
+    title
+      .querySelector<HTMLButtonElement>('.callout-fold-toggle')
+      ?.setAttribute('aria-expanded', String(!div.classList.contains('is-collapsed')))
     const signal = rootNavSignal(title)
     if (hydratedCalloutSignals.get(title) !== signal) {
       hydratedCalloutSignals.set(title, signal)
@@ -26,7 +42,7 @@ function setupCallout(root: Document | HTMLElement = document) {
     }
 
     const collapsed = div.classList.contains('is-collapsed')
-    content.style.gridTemplateRows = collapsed ? '0fr' : '1fr'
+    if (content) content.style.gridTemplateRows = collapsed ? '0fr' : '1fr'
   }
 }
 

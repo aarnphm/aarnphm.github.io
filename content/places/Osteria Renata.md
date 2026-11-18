@@ -9,7 +9,6 @@ date: '2026-10-31'
 description: 'Italian restaurant making fresh pasta in Prahran, Melbourne.'
 id: 'Osteria Renata'
 modified: '2026-10-31'
-source: 'https://www.instagram.com/reel/DZjoT0yit7C/'
 tags:
   - 'places'
 title: 'Osteria Renata'

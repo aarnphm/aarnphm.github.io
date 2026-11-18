@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'independent cinema on Queen Street East in The Beaches'
 id: 'Fox Theatre'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/DdpjBtqJlMt/'
 tags:
   - 'places'
 title: 'Fox Theatre'

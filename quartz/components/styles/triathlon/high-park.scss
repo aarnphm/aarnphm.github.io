@@ -1,0 +1,590 @@
+@use './foundations' as *;
+
+// /triathlon/fun: the High Park loops page. SVG drawn at build time; the client adds the lap
+// clock's hover and renders a ride's drop-down on first open (fun/high-park.ts). The drop-down
+// itself is styled in high-park-laps.scss.
+.tri-hp {
+  --hp-ink: color-mix(in srgb, var(--tri-bike) 45%, var(--dark));
+  --hp-best: color-mix(in srgb, var(--tri-run) 70%, var(--tri-zone-heart-rate));
+  // Relief tint, lowest ground to highest: valley green, the bike sage, upland sand.
+  --hp-low: color-mix(in srgb, #66800b 34%, var(--light));
+  --hp-mid: color-mix(in srgb, var(--tri-bike) 58%, var(--light));
+  --hp-high: color-mix(in srgb, #d0a215 34%, var(--light));
+  display: grid;
+  align-content: start;
+  gap: 2.25rem;
+  box-sizing: border-box;
+  // Same window as tools, analytics and the calendar: page width, viewport height, scrolls inside.
+  width: 100%;
+  max-width: var(--tri-page-w);
+  height: calc(100dvh - 7rem);
+  min-width: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 1.75rem 2rem 3rem;
+  border: 1px solid var(--gray);
+  border-radius: var(--radius-none);
+  background: var(--light);
+  color: var(--darkgray);
+  font-family: var(--bodyFont);
+  @include thin-scrollbar;
+
+  h1,
+  h2 {
+    margin: 0;
+    color: var(--dark);
+    font-family: var(--headerFont);
+    font-weight: 400;
+  }
+
+  a {
+    color: var(--dark);
+    background: transparent;
+    text-decoration: underline;
+    text-decoration-color: var(--ledger-line);
+    text-underline-offset: 3px;
+  }
+
+  a:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+
+  svg text {
+    fill: var(--gray);
+    font: 0.62rem var(--codeFont);
+  }
+
+  figure {
+    margin: 0;
+  }
+}
+
+// On the dark page the tint has to stay darker than the contours and the pink lap.
+:root[saved-theme='dark'] .tri-hp {
+  --hp-low: color-mix(in srgb, #66800b 30%, var(--light));
+  --hp-mid: color-mix(in srgb, var(--tri-bike) 20%, var(--light));
+  --hp-high: color-mix(in srgb, #d0a215 22%, var(--light));
+}
+
+.tri-hp-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+// Same preference as the pace chart's mph/km/h switch.
+.tri-hp-unit {
+  min-height: 1.75rem;
+  padding: 0 0.1rem;
+  border: 0;
+  background: none;
+  color: var(--darkgray);
+  font: 0.72rem var(--codeFont);
+  text-decoration: underline dotted color-mix(in srgb, var(--gray) 60%, transparent);
+  text-underline-offset: 3px;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--dark);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+}
+
+.tri-hp .tri-hp-title {
+  font-size: clamp(2rem, 5vw, 2.9rem);
+  line-height: 1.05;
+}
+
+// Map left, numbers and lap clock right; the map is portrait because the circuit runs north-south.
+.tri-hp-spread {
+  display: grid;
+  grid-template-columns: minmax(14rem, 24rem) minmax(0, 1fr);
+  gap: 2.5rem;
+  align-items: start;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--ledger-line);
+}
+
+.tri-hp-map svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+
+  path {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+}
+
+.tri-hp-plate {
+  position: relative;
+  aspect-ratio: 4 / 5;
+}
+
+// The flat map keeps the circuit's own aspect inside the plate, fitted by height.
+.tri-hp-flat {
+  position: relative;
+  height: 100%;
+  margin-inline: auto;
+}
+
+// 3d | 2d, the triathlon tab style (tool-overlays.scss), in the plate's empty top-left corner.
+.tri-hp-dims {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.tri-hp-traces path {
+  stroke: var(--hp-ink);
+  stroke-opacity: 0.32;
+  stroke-width: 1;
+}
+
+.tri-hp-trace-best {
+  stroke: var(--hp-best);
+  stroke-width: 2;
+}
+
+.tri-hp-map .tri-hp-start {
+  fill: var(--light);
+  stroke: var(--dark);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+// Map labels are HTML so they keep the page's type size whatever width the map draws at.
+.tri-hp-start-label {
+  position: absolute;
+  margin: -0.45rem 0 0 0.85rem;
+  color: var(--dark);
+  font: 0.62rem/1 var(--codeFont);
+  pointer-events: none;
+}
+
+// As wide as the flat map: the plate is 4:5 and the map fits it by height (--hp-flat is the
+// circuit's width over height), so the scale bar's share of the legend holds.
+.tri-hp-legend {
+  position: relative;
+  width: min(100%, calc(var(--hp-flat, 0.8) * 125%));
+  margin: 0.9rem auto 0;
+  color: var(--gray);
+  font: 0.62rem/1 var(--codeFont);
+}
+
+// The scale bar's width is a share of the legend's, so this stays a full-width block.
+.tri-hp-2d {
+  display: block;
+}
+
+// The whole plate, so swapping the flat map (hidden, keeping its space) does not move the page.
+.tri-hp-terrain {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+// Resolves the palette's custom properties to plain colours for WebGL.
+.tri-hp-probe {
+  display: none;
+}
+
+// Pin labels sit at the top of each pin; the client moves them with transforms only.
+.tri-hp-pin {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0.1rem 0.25rem;
+  background: color-mix(in srgb, var(--light) 82%, transparent);
+  color: var(--dark);
+  font: 0.62rem/1 var(--codeFont);
+  white-space: nowrap;
+  translate: -50% -115%;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.tri-hp-scale {
+  display: block;
+}
+
+// Width is 200 m over the map frame's width in metres, so it holds at every map size.
+.tri-hp-scale-bar {
+  display: block;
+  box-sizing: border-box;
+  height: 0.3rem;
+  margin-top: 0.3rem;
+  border: 1px solid var(--gray);
+  border-top: 0;
+}
+
+.tri-hp-north {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+
+.tri-hp-side {
+  display: grid;
+  gap: 2rem;
+  min-width: 0;
+}
+
+.tri-hp table.tri-hp-tally {
+  display: table;
+  width: 100%;
+  max-width: none;
+  overflow: visible;
+  margin: 0;
+  border-collapse: collapse;
+  font: 0.75rem/1.5 var(--codeFont);
+  font-variant-numeric: tabular-nums;
+
+  th,
+  td {
+    padding: 0.4rem 0;
+    border: 0;
+    border-bottom: 1px solid var(--ledger-line);
+  }
+
+  th {
+    color: var(--gray);
+    font-weight: 400;
+    text-align: left;
+  }
+
+  td {
+    color: var(--dark);
+    text-align: right;
+  }
+}
+
+.tri-hp-clock svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+
+  path {
+    fill: none;
+  }
+}
+
+.tri-hp-grid {
+  path {
+    stroke: var(--ledger-line);
+    stroke-width: 0.5;
+    stroke-dasharray: 2 3;
+  }
+
+  text {
+    text-anchor: end;
+    font-size: 0.55rem;
+  }
+
+  .is-month {
+    text-anchor: start;
+  }
+}
+
+.tri-hp-dots {
+  stroke: var(--hp-ink);
+  stroke-opacity: 0.55;
+  stroke-width: 3.4;
+  stroke-linecap: square;
+
+  &.is-off {
+    stroke-opacity: 0.25;
+  }
+}
+
+.tri-hp-record {
+  stroke: var(--hp-best);
+  stroke-width: 1.25;
+}
+
+.tri-hp-record-dot {
+  fill: var(--light);
+  stroke: var(--hp-best);
+  stroke-width: 1.5;
+}
+
+.tri-hp-hover {
+  fill: none;
+  stroke: var(--dark);
+  stroke-width: 1.25;
+  opacity: 0;
+  pointer-events: none;
+
+  &.is-on {
+    opacity: 1;
+  }
+}
+
+.tri-gloss.tri-hp-tip {
+  gap: 0.25rem;
+  min-width: 11rem;
+  transition: none;
+}
+
+.tri-hp-tip-name {
+  max-width: 15rem;
+  overflow: hidden;
+  color: var(--darkgray);
+  font-size: 0.72rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tri-hp-tip-rows {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 0.15rem 1rem;
+  margin: 0.15rem 0 0;
+  font: 0.68rem/1.35 var(--codeFont);
+  font-variant-numeric: tabular-nums;
+
+  dt {
+    color: var(--gray);
+  }
+
+  dd {
+    margin: 0;
+    color: var(--dark);
+    text-align: right;
+  }
+}
+
+.tri-hp-log {
+  min-width: 0;
+
+  h2 {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--ledger-line);
+    font-size: 1.3rem;
+
+    span {
+      color: var(--gray);
+      font: 0.7rem var(--codeFont);
+    }
+  }
+
+  ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    display: block;
+    border-bottom: 1px solid var(--ledger-line);
+    font: 0.72rem/1.4 var(--codeFont);
+    font-variant-numeric: tabular-nums;
+  }
+
+  // Reset the site's details styling (callout surface, padding).
+  details {
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+
+  summary {
+    display: grid;
+    grid-template-columns: 3.4rem 2.5rem minmax(0, 1fr) 9rem 2.4rem 2.6rem 0.6rem;
+    gap: 0.75rem;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0.25rem 0;
+    cursor: pointer;
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: -2px;
+    }
+  }
+
+  time {
+    color: var(--gray);
+  }
+}
+
+.tri-hp-glyph {
+  display: block;
+  width: 2.5rem;
+  height: 2.5rem;
+
+  path {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+}
+
+.tri-hp-glyph-route {
+  stroke: var(--gray);
+  stroke-opacity: 0.7;
+  stroke-width: 1;
+}
+
+.tri-hp-glyph-park {
+  stroke: var(--hp-best);
+  stroke-width: 1.6;
+}
+
+.tri-hp-ride {
+  overflow: hidden;
+  color: var(--dark);
+  font-family: var(--bodyFont);
+  font-size: 0.86rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.tri-hp-laps {
+  display: flex;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.tri-hp-strip {
+  display: block;
+  flex: none;
+
+  path {
+    stroke: var(--hp-ink);
+    stroke-opacity: 0.7;
+    stroke-width: 3;
+  }
+
+  .is-best {
+    stroke: var(--hp-best);
+    stroke-opacity: 1;
+  }
+}
+
+.tri-hp-n {
+  color: var(--gray);
+  text-align: right;
+}
+
+.tri-hp-best {
+  color: var(--dark);
+  text-align: right;
+}
+
+.tri-hp-empty {
+  margin: 0;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--ledger-line);
+  color: var(--gray);
+  font: 0.75rem/1.5 var(--codeFont);
+
+  span {
+    margin-right: 0.6rem;
+    color: var(--dark);
+  }
+}
+
+// Closed: an outlined square; open: filled.
+.tri-hp-toggle {
+  width: 0.5rem;
+  height: 0.5rem;
+  border: 1px solid var(--gray);
+
+  details[open] > summary & {
+    background: var(--dark);
+    border-color: var(--dark);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tri-hp-log summary:hover {
+    background: var(--ledger-surface);
+  }
+}
+
+@media all and (max-width: 48rem) {
+  .tri-hp {
+    height: auto;
+    overflow: visible;
+    padding: 0.5rem 0 3rem;
+    border: none;
+  }
+
+  .tri-hp-spread {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tri-hp-map {
+    justify-self: center;
+    width: min(100%, 26rem);
+  }
+
+  // The relief lies wide on a phone; a square box wastes less of the screen.
+  .tri-hp-plate {
+    aspect-ratio: 1;
+  }
+
+  .tri-hp-legend {
+    width: min(100%, calc(var(--hp-flat, 1) * 100%));
+  }
+
+  .tri-hp-clock svg text {
+    font-size: 15px;
+  }
+
+  .tri-hp-log summary {
+    grid-template-columns: 2.5rem minmax(0, 1fr) auto auto 0.6rem;
+    grid-template-areas:
+      'glyph ride n best toggle'
+      'glyph date laps laps toggle';
+    row-gap: 0.15rem;
+    padding: 0.5rem 0;
+
+    .tri-hp-glyph {
+      grid-area: glyph;
+    }
+    time {
+      grid-area: date;
+    }
+    .tri-hp-ride {
+      grid-area: ride;
+    }
+    .tri-hp-laps {
+      grid-area: laps;
+      justify-content: flex-end;
+    }
+    .tri-hp-n {
+      grid-area: n;
+    }
+    .tri-hp-best {
+      grid-area: best;
+    }
+    .tri-hp-toggle {
+      grid-area: toggle;
+    }
+  }
+}

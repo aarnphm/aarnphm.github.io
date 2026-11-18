@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'Cocktail bar serving small sharing plates in Leslieville.'
 id: 'Bar Bokeh'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/Dc1vJkCp-Je/'
 tags:
   - 'places'
 title: 'Bar Bokeh'
@@ -18,5 +17,3 @@ type:
   - 'restaurant'
 url: 'https://barbokeh.com/'
 ---
-
-Recommendation from [the reel](https://www.instagram.com/reel/Dc1vJkCp-Je/): Cocktails, shrimp toast, calamari and beef tartare.

@@ -2,6 +2,7 @@ import type { Analytics } from '../../../plugins/stores/analytics'
 import type { OuraDayDetail } from '../../../plugins/stores/oura'
 import type { TriathlonContext } from '../runtime/context'
 import { ouraRestorationBaseline } from '../../../util/oura-health'
+import { ouraDailySleep } from '../../../util/triathlon-day-sleep'
 import { daySleepBarIndex, mountDaySleepCharts, setSleepView } from '../activity/day-sleep'
 import { buildSleepDayDetail } from './panels/recovery'
 import { clampN } from './shared'
@@ -17,8 +18,7 @@ export const mountSleepPanel = (
   const dayInner = block?.querySelector<HTMLElement>('.tri-sleep-day-inner')
   if (!block || !charts || !day || !dayInner) return () => {}
   const nights = data.recovery.series
-  const supplementalByDate = new Map(data.daily.map(day => [day.date, day.sleepMetrics]))
-  const healthByDate = new Map(data.daily.map(day => [day.date, day.garminHealth]))
+  const dailyByDate = new Map(data.daily.map(day => [day.date, day]))
   let live = true
   let selectedDate: string | null = null
   let selectedView: 'night' | 'naps' = 'night'
@@ -50,16 +50,16 @@ export const mountSleepPanel = (
     if (!live || context.signal.aborted || selectedDate !== date || !dayInner.isConnected) return
     clearDetail()
     const detail = details?.[date]
-    const supplemental = supplementalByDate.get(date) ?? null
-    const health = healthByDate.get(date) ?? null
+    const daily = dailyByDate.get(date)
     dayInner.replaceChildren(
       buildSleepDayDetail(
         context.formatter,
         date,
         detail ?? null,
-        supplemental,
-        health,
+        daily?.sleepMetrics ?? null,
+        daily?.garminHealth ?? null,
         ouraRestorationBaseline(date, details ?? {}),
+        ouraDailySleep(daily),
       ),
     )
     detailCleanup = mountDaySleepCharts(dayInner, () => context.presentation.locale)
@@ -70,7 +70,14 @@ export const mountSleepPanel = (
   const open = (date: string): void => {
     selectedDate = date
     setActive(date)
-    if (supplementalByDate.get(date) || healthByDate.get(date)) renderDetail(date, null)
+    const daily = dailyByDate.get(date)
+    if (
+      daily?.sleepMetrics ||
+      daily?.garminHealth ||
+      daily?.sleepScore != null ||
+      daily?.sleepDurationS != null
+    )
+      renderDetail(date, null)
     const path = context.root?.dataset.ouraDetailPath
     if (!path) {
       renderDetail(date, null)

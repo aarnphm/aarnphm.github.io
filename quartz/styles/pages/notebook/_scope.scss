@@ -1,0 +1,11 @@
+@mixin surface {
+  article.notebook-page,
+  article.notebook-runtime-page,
+  .slides-root,
+  blockquote.transclude:has(
+      > .notebook-code-cell,
+      > .transclude-content > div > .notebook-code-cell
+    ) {
+    @content;
+  }
+}

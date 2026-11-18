@@ -2,6 +2,7 @@ import { Element, ElementContent, Root, Text } from 'hast'
 import { h } from 'hastscript'
 import { EXIT, visit } from 'unist-util-visit'
 import type { NotebookRuntimeCell, NotebookRuntimeData } from '../../runtime/notebook/types'
+import type { ReferenceSelector } from '../references/catalog-types'
 import { FullSlug } from '../path'
 import { isRecord } from '../type-guards'
 import { notebookRuntimeJson } from './cell-html'
@@ -16,10 +17,12 @@ function propertyPresent(node: Element, key: string): boolean {
   return node.properties !== undefined && key in node.properties
 }
 
-export function notebookCellRef(blockRef: string | undefined): string | undefined {
-  if (!blockRef?.startsWith('#')) return undefined
-  const ref = blockRef.slice(1)
-  return ref.startsWith('^') ? ref.slice(1) : ref
+export function notebookCellSelection(
+  selector: ReferenceSelector | undefined,
+  fragments: readonly string[] = [],
+): string | undefined {
+  const cells = selector?.kind === 'notebook' ? selector.cells : fragments
+  return cells.length === 1 ? cells[0].replace(/^\^/, '') : undefined
 }
 
 function notebookCellFrameId(node: Element): string | undefined {

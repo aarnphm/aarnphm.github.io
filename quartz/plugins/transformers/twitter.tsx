@@ -4,7 +4,6 @@ import { visit } from 'unist-util-visit'
 import { QuartzTransformerPlugin } from '../../types/plugin'
 import { parseTwitterPostUrl } from '../../util/twitter'
 import { fetchTwitterPost } from '../../util/twitter-content'
-import { wikiTextTransform } from './ofm'
 
 export function filterEmbedTwitter(node: Element): boolean {
   const href = node.properties.href
@@ -33,11 +32,6 @@ const isNakedLink = (parent: Paragraph, child: Link) => {
 
 export const Twitter: QuartzTransformerPlugin = () => ({
   name: 'Twitter',
-  textTransform(_, src) {
-    src = wikiTextTransform(src)
-
-    return src
-  },
   markdownPlugins() {
     return [
       () => async (tree, file) => {

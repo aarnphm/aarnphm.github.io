@@ -17,6 +17,5 @@ tags:
 title: Kings of the Road
 year: 1976
 runtime: 175
+external: https://en.wikipedia.org/wiki/Kings_of_the_Road
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](https://en.wikipedia.org/wiki/Kings_of_the_Road).

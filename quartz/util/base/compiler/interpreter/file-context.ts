@@ -1,8 +1,11 @@
+import type { ReferenceCatalog } from '../../../references/catalog'
 import { QuartzPluginData } from '../../../../plugins/vfile'
 import { ReloadableWeakMap } from '../../../module-caches'
-import { FilePath, FullSlug, simplifySlug, slugifyFilePath, splitAnchor } from '../../../path'
+import { FullSlug, simplifySlug, splitAnchor } from '../../../path'
+import { referenceCatalogFromFiles } from '../../../references/context'
+import { parseLiteralReference } from '../../../references/literal'
+import { referenceFields } from '../../../references/request'
 import { isRecord } from '../../../type-guards'
-import { parseWikilink, resolveWikilinkTarget } from '../../../wikilinks'
 import { toValue, valueToString } from './value-conversion'
 import {
   isDateValue,
@@ -248,74 +251,31 @@ const resolveFileSlug = (file: QuartzPluginData): string | undefined => {
 const normalizeLinkText = (value: string): string => value.trim()
 
 const LINK_SLUG_CACHE_MAX = 4096
-const linkSlugCache = new Map<string, string | null>()
-
-const computeLinkSlugFromTrimmed = (
-  trimmed: string,
-  currentSlug: string | undefined,
-): string | undefined => {
-  if (/^[a-z][a-z0-9+.-]*:/.test(trimmed)) return undefined
-  const parsed = parseWikilink(trimmed)
-  if (parsed) {
-    if (/^[a-z][a-z0-9+.-]*:/.test(parsed.target)) return undefined
-    if (currentSlug) {
-      const resolved = resolveWikilinkTarget(parsed, currentSlug as FullSlug)
-      return resolved ? simplifySlug(resolved.slug) : undefined
-    }
-    const parsedTarget = parsed.target.trim()
-    if (!parsedTarget) return undefined
-    const slug = slugifyFilePath(parsedTarget as FilePath)
-    return simplifySlug(slug)
-  }
-  const [target, anchor] = splitAnchor(trimmed)
-  if (currentSlug) {
-    const resolved = resolveWikilinkTarget(
-      {
-        raw: trimmed,
-        target,
-        anchor: anchor.length > 0 ? anchor : undefined,
-        alias: undefined,
-        embed: trimmed.startsWith('!'),
-      },
-      currentSlug as FullSlug,
-    )
-    if (resolved) return simplifySlug(resolved.slug)
-  }
-  if (!target) return undefined
-  const normalized = target.replace(/\\/g, '/').replace(/^\/+/, '')
-  if (!normalized) return undefined
-  const slug = slugifyFilePath(normalized as FilePath)
-  return simplifySlug(slug)
-}
+const linkSlugCache = new ReloadableWeakMap<ReferenceCatalog, Map<string, string | null>>()
 
 export const resolveLinkSlugFromText = (raw: string, ctx: EvalContext): string | undefined => {
   const trimmed = raw.trim()
   if (!trimmed) return undefined
-  const currentSlug = ctx.file.slug
-    ? String(ctx.file.slug)
-    : ctx.thisFile?.slug
-      ? String(ctx.thisFile.slug)
-      : undefined
-  const needsCurrentSlug =
-    trimmed.startsWith('#') ||
-    trimmed.startsWith('[[#') ||
-    trimmed.startsWith('![[#') ||
-    trimmed === '[[]]' ||
-    trimmed === '![[]]'
-  const cacheKey = needsCurrentSlug ? `${currentSlug ?? ''}\0${trimmed}` : trimmed
-  const cached = linkSlugCache.get(cacheKey)
-  if (cached !== undefined) {
-    return cached ?? undefined
+  const catalog = referenceCatalogFromFiles(ctx.allFiles)
+  let cache = linkSlugCache.get(catalog)
+  if (!cache) {
+    cache = new Map()
+    linkSlugCache.set(catalog, cache)
   }
-  const result = computeLinkSlugFromTrimmed(trimmed, currentSlug)
-  if (linkSlugCache.size >= LINK_SLUG_CACHE_MAX) {
-    const oldestKey = linkSlugCache.keys().next().value
-    if (oldestKey !== undefined) {
-      linkSlugCache.delete(oldestKey)
-    }
+  const origin = vaultPath(ctx.file) || (ctx.thisFile ? vaultPath(ctx.thisFile) : '')
+  const key = `${origin}\0${trimmed}`
+  const cached = cache.get(key)
+  if (cached !== undefined) return cached ?? undefined
+  const parsed = parseLiteralReference(trimmed)
+  const target = parsed ? referenceFields(parsed).target : splitAnchor(trimmed)[0]
+  const resolved = catalog.resolve(target, origin, { decodeUri: !parsed })
+  const slug = resolved.kind === 'found' ? simplifySlug(resolved.entry.slug) : undefined
+  if (cache.size >= LINK_SLUG_CACHE_MAX) {
+    const oldest = cache.keys().next().value
+    if (oldest !== undefined) cache.delete(oldest)
   }
-  linkSlugCache.set(cacheKey, result ?? null)
-  return result
+  cache.set(key, slug ?? null)
+  return slug
 }
 
 export const resolveLinkSlugFromValue = (value: Value, ctx: EvalContext): string | undefined => {

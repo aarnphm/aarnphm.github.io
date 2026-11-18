@@ -14,6 +14,7 @@ import { BuildCtx } from '../util/ctx'
 import { emitQuartzDevEvent } from '../util/dev-events'
 import {
   cleanOutputExcept,
+  outputAssetManifestPath,
   preservedOutputAssets,
   readOutputAssetManifest,
   relocateOutputAssets,
@@ -139,7 +140,7 @@ export async function cleanOutputForBuild(
   publicOutput?: string,
 ): Promise<void> {
   resetGeneratedResourceState(ctx)
-  ctx.outputAssetManifest = await readOutputAssetManifest()
+  ctx.outputAssetManifest = await readOutputAssetManifest(outputAssetManifestPath(ctx))
   if (publicOutput) relocateOutputAssets(ctx, publicOutput, ctx.argv.output)
   await syncOutputAssetClaims(ctx, refreshStaticFiles)
   const outputAssetClaims = ctx.outputAssetClaims ?? []
@@ -204,7 +205,7 @@ export async function emitFullBuild(
               `Reusing output; emitting ${[...selected.emitters].join(', ')} and resources`,
             )
             resetGeneratedResourceState(ctx)
-            ctx.outputAssetManifest = await readOutputAssetManifest()
+            ctx.outputAssetManifest = await readOutputAssetManifest(outputAssetManifestPath(ctx))
             relocateOutputAssets(ctx, publicArgv.output, stage)
             await syncOutputAssetClaims(ctx, true)
             ctx.outputAssetPreserved = await preservedOutputAssets(
@@ -289,7 +290,7 @@ export async function emitFullBuild(
 
 export async function emitStagedChanges(ctx: BuildCtx, emit: () => Promise<void>): Promise<void> {
   const argv = ctx.argv
-  ctx.outputAssetManifest ??= await readOutputAssetManifest()
+  ctx.outputAssetManifest ??= await readOutputAssetManifest(outputAssetManifestPath(ctx))
   await withStagedOutput(
     argv.output,
     async stage => {

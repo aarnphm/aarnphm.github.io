@@ -269,7 +269,7 @@
     },
     "https://hyrox.com/event/sweat-pals-hyrox-miami-beach-26-27/": {
       "sources": ["https://hyrox.com/event/sweat-pals-hyrox-miami-beach-26-27/"],
-      "fetched": "2026-10-11",
+      "fetched": "2026-11-05",
       "venue": "Miami Beach Convention Center",
       "venueMap": null,
       "athleteGuide": null,
@@ -395,7 +395,7 @@
               {
                 "start": "08:00",
                 "end": "10:50",
-                "activity": "HYROX DOUBLES WOMEN",
+                "activity": "HYROX DOUBLES MEN",
                 "location": null,
                 "race": false
               },
@@ -409,7 +409,7 @@
               {
                 "start": "15:10",
                 "end": "19:30",
-                "activity": "HYROX DOUBLES MEN",
+                "activity": "HYROX DOUBLES WOMEN",
                 "location": null,
                 "race": false
               }

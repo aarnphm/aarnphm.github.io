@@ -121,6 +121,12 @@ test('tracking and navigation retain adjacent string IDs while Garmin and manual
     assert.equal(parsed?.fueling?.activityId, id)
     assert.equal(parsed?.trainingExclusion?.activityId, id)
     assert.equal(workoutAnalysisOwner(`tri-workout-analysis-${id}-power-tab`)?.activityId, id)
+    const embedded = `embed-2-tri-workout-analysis-${id}`
+    assert.deepEqual(workoutAnalysisOwner(`${embedded}-power-tab`), {
+      base: embedded,
+      activityId: id,
+    })
+    assert.equal(workoutAnalysisOwner(`embed-2-tri-workout-analysis-0${id}-power-tab`), null)
     assert.equal(triathlonActivityAnchor(id), `tri-activity-${id}`)
   }
   assert.equal(String(manualSaunaActivityId('2026-11-16', '12:30')), '8202611161230')

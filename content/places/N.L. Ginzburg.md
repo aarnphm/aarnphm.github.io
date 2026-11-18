@@ -8,8 +8,7 @@ coordinates:
 date: '2026-11-01'
 description: 'Italian trattoria on College Street in Little Italy.'
 id: 'N.L. Ginzburg'
-modified: '2026-11-01'
-source: 'https://www.instagram.com/reel/DchKUk8Byux/'
+modified: '2026-11-08'
 tags:
   - 'places'
 title: 'N.L. Ginzburg'

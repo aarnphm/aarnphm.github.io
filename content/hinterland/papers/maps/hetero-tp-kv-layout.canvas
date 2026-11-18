@@ -1,0 +1,229 @@
+{
+	"nodes": [
+		{
+			"id": "title",
+			"type": "text",
+			"text": "# hetero TP + KV layout",
+			"x": 0,
+			"y": -160,
+			"width": 420,
+			"height": 80
+		},
+		{
+			"id": "n-reading-map",
+			"type": "file",
+			"file": "thoughts/inference/kv-layout.md",
+			"x": 0,
+			"y": 0,
+			"width": 420,
+			"height": 520,
+			"color": "5"
+		},
+		{
+			"id": "pr-42082",
+			"type": "file",
+			"file": "hinterland/papers/maps/prs/42082.md",
+			"x": 540,
+			"y": 0,
+			"width": 300,
+			"height": 240
+		},
+		{
+			"id": "pr-26556",
+			"type": "file",
+			"file": "hinterland/papers/maps/prs/26556.md",
+			"x": 540,
+			"y": 280,
+			"width": 300,
+			"height": 240
+		},
+		{
+			"id": "pr-33339",
+			"type": "file",
+			"file": "hinterland/papers/maps/prs/33339.md",
+			"x": 540,
+			"y": 560,
+			"width": 300,
+			"height": 240
+		},
+		{
+			"id": "pr-51718",
+			"type": "file",
+			"file": "hinterland/papers/maps/prs/51718.md",
+			"x": 540,
+			"y": 840,
+			"width": 300,
+			"height": 240
+		},
+		{
+			"id": "pr-34158",
+			"type": "file",
+			"file": "hinterland/papers/maps/prs/34158.md",
+			"x": 540,
+			"y": 1120,
+			"width": 300,
+			"height": 240
+		},
+		{
+			"id": "pr-37090",
+			"type": "file",
+			"file": "hinterland/papers/maps/prs/37090.md",
+			"x": 540,
+			"y": 1400,
+			"width": 300,
+			"height": 240
+		},
+		{
+			"id": "pr-44455",
+			"type": "file",
+			"file": "hinterland/papers/maps/prs/44455.md",
+			"x": 540,
+			"y": 1680,
+			"width": 300,
+			"height": 240
+		},
+		{
+			"id": "pr-19280",
+			"type": "file",
+			"file": "hinterland/papers/maps/prs/19280.md",
+			"x": 540,
+			"y": 1960,
+			"width": 300,
+			"height": 240
+		},
+		{
+			"id": "pr-22745",
+			"type": "file",
+			"file": "hinterland/papers/maps/prs/22745.md",
+			"x": 540,
+			"y": 2240,
+			"width": 300,
+			"height": 240
+		},
+		{
+			"id": "pr-27743",
+			"type": "file",
+			"file": "hinterland/papers/maps/prs/27743.md",
+			"x": 540,
+			"y": 2520,
+			"width": 300,
+			"height": 240
+		},
+		{
+			"id": "pr-30207",
+			"type": "file",
+			"file": "hinterland/papers/maps/prs/30207.md",
+			"x": 540,
+			"y": 2800,
+			"width": 300,
+			"height": 240
+		},
+		{
+			"id": "pr-33241",
+			"type": "file",
+			"file": "hinterland/papers/maps/prs/33241.md",
+			"x": 540,
+			"y": 3080,
+			"width": 300,
+			"height": 240
+		}
+	],
+	"edges": [
+		{
+			"id": "e-reading-map-pr-42082",
+			"fromNode": "n-reading-map",
+			"fromSide": "right",
+			"toNode": "pr-42082",
+			"toSide": "left",
+			"label": "\u00a70, \u00a75"
+		},
+		{
+			"id": "e-reading-map-pr-26556",
+			"fromNode": "n-reading-map",
+			"fromSide": "right",
+			"toNode": "pr-26556",
+			"toSide": "left",
+			"label": "\u00a72, \u00a75"
+		},
+		{
+			"id": "e-reading-map-pr-33339",
+			"fromNode": "n-reading-map",
+			"fromSide": "right",
+			"toNode": "pr-33339",
+			"toSide": "left",
+			"label": "\u00a72, \u00a75"
+		},
+		{
+			"id": "e-reading-map-pr-51718",
+			"fromNode": "n-reading-map",
+			"fromSide": "right",
+			"toNode": "pr-51718",
+			"toSide": "left",
+			"label": "\u00a72, \u00a75"
+		},
+		{
+			"id": "e-reading-map-pr-34158",
+			"fromNode": "n-reading-map",
+			"fromSide": "right",
+			"toNode": "pr-34158",
+			"toSide": "left",
+			"label": "\u00a73"
+		},
+		{
+			"id": "e-reading-map-pr-37090",
+			"fromNode": "n-reading-map",
+			"fromSide": "right",
+			"toNode": "pr-37090",
+			"toSide": "left",
+			"label": "\u00a73"
+		},
+		{
+			"id": "e-reading-map-pr-44455",
+			"fromNode": "n-reading-map",
+			"fromSide": "right",
+			"toNode": "pr-44455",
+			"toSide": "left",
+			"label": "\u00a73, \u00a75"
+		},
+		{
+			"id": "e-reading-map-pr-19280",
+			"fromNode": "n-reading-map",
+			"fromSide": "right",
+			"toNode": "pr-19280",
+			"toSide": "left",
+			"label": "\u00a75"
+		},
+		{
+			"id": "e-reading-map-pr-22745",
+			"fromNode": "n-reading-map",
+			"fromSide": "right",
+			"toNode": "pr-22745",
+			"toSide": "left",
+			"label": "\u00a75"
+		},
+		{
+			"id": "e-reading-map-pr-27743",
+			"fromNode": "n-reading-map",
+			"fromSide": "right",
+			"toNode": "pr-27743",
+			"toSide": "left",
+			"label": "\u00a75"
+		},
+		{
+			"id": "e-reading-map-pr-30207",
+			"fromNode": "n-reading-map",
+			"fromSide": "right",
+			"toNode": "pr-30207",
+			"toSide": "left",
+			"label": "\u00a75"
+		},
+		{
+			"id": "e-reading-map-pr-33241",
+			"fromNode": "n-reading-map",
+			"fromSide": "right",
+			"toNode": "pr-33241",
+			"toSide": "left",
+			"label": "\u00a75"
+		}
+	]
+}

@@ -1,5 +1,7 @@
 import type { SwimLocation, SwimStroke } from './apple'
 import type { GarminHealthDay } from './garmin-health'
+import type { GarminSleepDateRange, GarminSleepSummary } from './garmin-sleep'
+export type { GarminSleepRespirationSample, GarminSleepSummary } from './garmin-sleep'
 import type { ActivityKind, RawStravaActivity } from './strava'
 
 const START_TOLERANCE_MS = 20 * 60 * 1000
@@ -237,31 +239,6 @@ export interface GarminWeightSample {
   boneMassKg: number | null
 }
 
-export interface GarminSleepRespirationSample {
-  /** UTC Unix timestamp in milliseconds. */
-  timestamp: number
-  breathsPerMinute: number | null
-}
-
-export interface GarminSleepSummary {
-  source: 'garmin'
-  date: string
-  startTime: string | null
-  endTime: string | null
-  utcOffsetMinutes?: number
-  averageBreathsPerMinute: number | null
-  lowestBreathsPerMinute: number | null
-  highestBreathsPerMinute: number | null
-  averageSpO2: number | null
-  lowestSpO2: number | null
-  bodyBatteryStart: number | null
-  bodyBatteryEnd: number | null
-  bodyBatteryChange: number | null
-  averageStress: number | null
-  restlessMoments: number | null
-  respiration?: GarminSleepRespirationSample[]
-}
-
 export interface GarminCache {
   version?: number
   lastSync: number
@@ -279,6 +256,8 @@ export interface GarminCache {
   weight?: GarminWeightSample[]
   sleep?: Record<string, GarminSleepSummary>
   sleepLastSync?: number
+  /** Successfully checked date ranges, including confirmed absence. */
+  sleepCoverage?: GarminSleepDateRange[]
   health?: Record<string, GarminHealthDay>
   healthLastSync?: number
 }

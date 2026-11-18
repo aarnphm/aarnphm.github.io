@@ -9,6 +9,7 @@ import type {
 } from './lexical-search-types'
 import { isSearchExcluded } from '../../util/search-exclude'
 import { searchScopeIncludes } from '../../util/search-scope'
+import { canonicalTag, tagMatches } from '../../util/tags'
 import { prepareLexicalDocument } from './lexical-search-document'
 
 type PendingSearch = {
@@ -98,9 +99,16 @@ export class LexicalSearchClient {
       ([slug, source]) => !isSearchExcluded(slug) && !isSearchExcluded(source.fileName),
     )
     const scoped = spec.scope !== undefined && spec.scope !== 'all'
-    const completeSpec = scoped ? { ...spec, limit: Math.max(spec.limit, sources.length) } : spec
+    const filtered = scoped || spec.tag !== undefined
+    const preparedSpec =
+      spec.index.length === 1 && spec.index[0] === 'tags'
+        ? { ...spec, query: canonicalTag(spec.query) }
+        : spec
+    const completeSpec = filtered
+      ? { ...preparedSpec, limit: Math.max(spec.limit, sources.length) }
+      : preparedSpec
     const selectResults = (results: LexicalFieldResult[]) =>
-      scoped
+      filtered
         ? results.map(result => ({
             ...result,
             result: result.result
@@ -108,7 +116,8 @@ export class LexicalSearchClient {
                 const entry = sources[id]
                 return (
                   entry !== undefined &&
-                  searchScopeIncludes(spec.scope ?? 'all', { ...entry[1], slug: entry[0] })
+                  searchScopeIncludes(spec.scope ?? 'all', { ...entry[1], slug: entry[0] }) &&
+                  (!spec.tag || entry[1].tags.some(tag => tagMatches(tag, spec.tag?.tags ?? '')))
                 )
               })
               .slice(0, spec.limit),

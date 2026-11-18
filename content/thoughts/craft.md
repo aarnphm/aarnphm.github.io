@@ -6,7 +6,7 @@ comments: false
 date: '2021-12-22'
 description: and a celebration for the act of making.
 id: craft
-modified: 2026-10-26 10:42:14 GMT-04:00
+modified: 2026-11-16 09:35:04 GMT-05:00
 permalinks:
   - /thoughts/work
   - /craft
@@ -111,6 +111,8 @@ There is also a [[ideas|backlog]] of unfinished ideas that I might work on, one 
 
 ## lives
 
+_I've lived many lives, below are one of many_
+
 <!-- prettier-ignore -->
 - [[triathlon|an amateur triathlete]]
 
@@ -118,6 +120,7 @@ There is also a [[ideas|backlog]] of unfinished ideas that I might work on, one 
 
 - NVIDIA, 11/26-Now
   - DL Performance Software Engineer, LLM Inference
+  - Source: [website](https://www.nvidia.com/en-us/)
 - Modular, 01/2026—06/2026
   - Inference Optimization Engineer, MAX Serve
   - _Acquired by Qualcomm_

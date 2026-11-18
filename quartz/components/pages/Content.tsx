@@ -1,6 +1,7 @@
 import type { Element } from 'hast'
 import { EXIT, visit } from 'unist-util-visit'
 import { coursesBundleEnabled } from '../../dev-features'
+import latentStyle from '../../styles/pages/latent-sheet.scss'
 import {
   QuartzComponent,
   QuartzComponentConstructor,
@@ -79,7 +80,14 @@ export default (() => {
     unbadgeScript,
     Workspace?.afterDOMLoaded,
   )
-  Content.css = concatenateResources(SeeAlso.css, Workspace?.css, frMarginsStyle, apparatusStyle)
+  // the latent sheet ships page-scoped (page-scoped-styles.ts): /embeddings and notes with an embed
+  Content.css = concatenateResources(
+    SeeAlso.css,
+    Workspace?.css,
+    frMarginsStyle,
+    apparatusStyle,
+    latentStyle,
+  )
   Content.sourceNames = inheritComponentSourceNames(
     'Content',
     Workspace ? [SeeAlso, Workspace] : [SeeAlso],

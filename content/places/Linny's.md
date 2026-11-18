@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'steakhouse on Ossington Avenue with Jewish deli influences'
 id: "Linny's"
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/DdpjBtqJlMt/'
 tags:
   - 'places'
 title: "Linny's"

@@ -2,10 +2,10 @@ import type {
   GarminCache,
   GarminLactateThresholdValue,
   GarminRunningLactateThreshold,
-  GarminSleepSummary,
   GarminVo2Day,
   GarminWeightSample,
 } from '../../plugins/stores/garmin'
+import type { GarminSleepDateRange, GarminSleepSummary } from '../../plugins/stores/garmin-sleep'
 import {
   garminConnectLactateThresholdHistory,
   garminConnectRunningLactateThreshold,
@@ -136,6 +136,7 @@ export function mergeGarminLactateThresholdHistory(
 
 interface GarminSleepFetchResult {
   sleep: Record<string, GarminSleepSummary>
+  coverage: GarminSleepDateRange[]
   fetchedDays: number
   failedDays: string[]
 }
@@ -154,6 +155,8 @@ export async function fetchGarminSleepRange(
   const summaries: Record<string, GarminSleepSummary> = { ...previous }
   let fetchedDays = 0
   const failedDays: string[] = []
+  const coverage: GarminSleepDateRange[] = []
+  let currentRange: GarminSleepDateRange | undefined
   for (let day = start; day <= end; day = shiftIsoDay(day, 1)) {
     try {
       const raw = await fetchGarminJson(
@@ -161,6 +164,7 @@ export async function fetchGarminSleepRange(
         base,
         `/wellness-service/wellness/dailySleepData/${encodeURIComponent(displayName)}`,
         new URLSearchParams({ date: day, nonSleepBufferMinutes: '0' }),
+        { signal: AbortSignal.timeout(30_000) },
       )
       if (!isRecord(raw) || (raw.dailySleepDTO !== null && !isRecord(raw.dailySleepDTO)))
         throw new Error('Garmin sleep response omitted a valid dailySleepDTO')
@@ -168,7 +172,13 @@ export async function fetchGarminSleepRange(
       if (summary) summaries[day] = summary
       else delete summaries[day]
       fetchedDays++
+      if (currentRange) currentRange.end = day
+      else {
+        currentRange = { start: day, end: day }
+        coverage.push(currentRange)
+      }
     } catch (error) {
+      currentRange = undefined
       failedDays.push(day)
       console.warn(
         `[garmin] sleep ${day} failed: ${error instanceof Error ? error.message : error}`,
@@ -182,6 +192,7 @@ export async function fetchGarminSleepRange(
     ),
     fetchedDays,
     failedDays,
+    coverage,
   }
 }
 

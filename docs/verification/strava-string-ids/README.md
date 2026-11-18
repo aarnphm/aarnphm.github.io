@@ -1,6 +1,6 @@
 # Exact Strava IDs
 
-Base: `7e5eb6cbebf756952869535c171c52f67aa1cff3`. Branch: `codex/strava-string-ids`.
+Base: `abcaa505915f4dfa1d4dbe67dd7e47ba609cc1b7`. Branch: `codex/strava-string-ids`.
 
 Strava activity and athlete IDs use canonical positive decimal strings. API ingestion prefers `id_str`; only positive safe integers qualify for the legacy numeric fallback. A present malformed `id_str`, a missing identity, or an unsafe numeric identity fails ingestion. The migration does not attempt to reconstruct rounded numbers.
 
@@ -31,20 +31,22 @@ All API tests use a local HTTP fixture and private temporary caches. No live Str
 
 The five new regression tests cover colliding numeric representations of `9007199254740992` and `9007199254740993`, string precedence, safe fallback, malformed and unsafe IDs, nested athletes, safe cache conversion and JSON roundtrips, reconciliation, exact detail/stream URLs, empty syncs, equipment sync, concurrent detail refreshes, lap IDs, tracking joins, moves, exclusions, manual sauna, preview/map serialization, power curves, analytics, planned links, myWindsock archives and route projection. Failure cases assert unchanged cache bytes.
 
+The update to current `main` also exercises occurrence-prefixed planned tabs, maintenance mileage, and High Park lap summaries with adjacent IDs that would collide as numbers. All 14 tests in the integration run passed. To repeat it, add `quartz/util/triathlon-maintenance-sync.e2e.test.ts`, `quartz/util/high-park-loops.test.ts`, and `quartz/components/pages/triathlon-panels/high-park.test.tsx` to the focused `tsx --test` command above.
+
 ## Results
 
 | Check                   | Migration                                       | Same base commit                   |
 | ----------------------- | ----------------------------------------------- | ---------------------------------- |
 | New regression tests    | 5 passed                                        | Not present                        |
-| Full suite              | 2,353 passed, 27 failed, 2 skipped              | 2,345 passed, 30 failed, 2 skipped |
+| Full suite              | 2,439 passed, 27 failed, 2 skipped              | 2,431 passed, 30 failed, 2 skipped |
 | Full lint               | Passed                                          | Not separately rerun               |
-| Typecheck               | 20 existing errors                              | Same 20 diagnostics                |
+| Typecheck               | 16 existing errors                              | Same 16 diagnostics                |
 | Changed-file formatting | Passed                                          | Not applicable                     |
-| Aggregate `pnpm check`  | Stops at 3 unrelated Markdown formatting errors | Same 3 files                       |
+| Aggregate `pnpm check`  | Stops at 5 unrelated Markdown formatting errors | Same 5 files                       |
 | Staged token budget     | Passed; no file over 5,000 tokens               | Not applicable                     |
 
-Every failing test name in the migration also fails on baseline. The baseline additionally fails three OCR harness tests. `comparison.json` records the names. The formatting failures are `content/library/A Lesson Before Dying.md`, `content/library/Melancholy I-II.md`, and `content/library/The Gospel According to Jesus Christ.md`.
+Every failing test name in the migration also fails on baseline. The baseline additionally fails three OCR harness tests. The aggregate formatting check flags the same five files under `content/library` on both checkouts.
 
 Ten oversized touched modules were split behind their existing entry points to satisfy the repository token budget. Whole-symbol comparison and an independent read-only review checked the extractions. The audit also identified and prompted fixes for preview validation, equipment-only sync, numeric ordering, Garmin ID guards, archive readers and lap identity handling.
 
-Generated logs and response fixtures are in `artifacts/`: `full-tests.log`, `baseline-full-tests.log`, `comparison.json`, `typecheck.log`, `baseline-typecheck.log`, `pnpm-check.log`, `baseline-pnpm-check.log`, `cli-replay.json`, `pipeline-replay.json`, `module-proof.json`, and `token-budget.json`. The repository's artifact cleanup expires these outputs after 72 hours; the committed tests are the durable replay.
+The updated run saved logs and fixtures under `artifacts/merge/`, including `focused.log`, `suite.log`, `base-suite.log`, `types.log`, `base-types.log`, `cli-replay.json`, and `pipeline-replay.json`. The repository's cleanup expires these outputs after 72 hours. The committed tests reproduce them.

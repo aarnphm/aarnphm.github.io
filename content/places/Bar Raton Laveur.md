@@ -5,8 +5,7 @@ category:
 date: '2026-10-30'
 description: 'laneway wine bar off Ossington serving natural wines and small bites'
 id: Bar Raton Laveur
-modified: 2026-10-30
-source: https://www.instagram.com/reel/Dd6jtNURXQf/
+modified: '2026-11-09'
 tags:
   - places
 title: Bar Raton Laveur

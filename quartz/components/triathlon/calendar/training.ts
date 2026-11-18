@@ -349,7 +349,8 @@ export const mountTrainingCalendar = (
         card.getBoundingClientRect().top -
         scroller.getBoundingClientRect().top -
         scroller.clientTop -
-        (isList ? header.offsetHeight : 0),
+        // offsetHeight rounds; a fractional remainder shows the previous day as a second rule.
+        (isList ? header.getBoundingClientRect().height : 0),
     )
     if (isList) {
       // Add only the trailing space needed to align a workout near the end of the list.

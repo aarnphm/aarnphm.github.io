@@ -123,6 +123,64 @@ body[data-slug='dating'] article .profile-frame {
   }
 }
 
+// On a phone the testimonials run sideways, one full-width quote at a time. Where scroll markers
+// exist, small squares (the footnote mark's shape) under the band say which quote is up.
+@container profile (width < 48rem) {
+  :is(
+      body:not(.stack-mode)[data-layout='newspaper'] :where(#quartz-root),
+      .note-layout[data-layout='newspaper']
+    )
+    article
+    .profile-pulls {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    scroll-marker-group: after;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    blockquote.quotes {
+      flex: 0 0 100%;
+      box-sizing: border-box;
+      padding-inline: 0;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      // Nothing of the neighbouring quote may bleed across the edge.
+      overflow: clip;
+
+      & + blockquote.quotes {
+        border-top: 0;
+      }
+
+      &::scroll-marker {
+        content: '';
+        width: 0.42rem;
+        height: 0.42rem;
+        border: 1px solid var(--darkgray);
+      }
+
+      &::scroll-marker:target-current {
+        background: var(--dark);
+        border-color: var(--dark);
+      }
+    }
+
+    &::scroll-marker-group {
+      display: flex;
+      justify-content: center;
+      gap: 0.6rem;
+      margin-top: -1.75rem;
+      margin-bottom: 2.5rem;
+    }
+  }
+}
+
 // No backlinks or footer chrome under a feature. The extra element beats the per-page mobile
 // rules in custom.scss that force the footer back on as a grid.
 :is(

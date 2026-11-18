@@ -30,8 +30,10 @@ import content from '../../components/styles/telescopic.inline.scss'
 // Some deviation: separator=" ", shouldExpandOnMouseOver=false
 import { QuartzTransformerPlugin } from '../../types/plugin'
 import { simplifySlug, splitAnchor, stripSlashes, transformLink } from '../../util/path'
+import { referenceCatalogFor, referenceSourcePath } from '../../util/references/context'
+import { extractLiteralReferences, resolveLiteralReference } from '../../util/references/literal'
+import { referenceFields } from '../../util/references/request'
 import { type Content, telescopeHast, telescopicContent } from '../../util/telescopic'
-import { extractWikilinksWithPositions } from '../../util/wikilinks'
 
 interface Config {
   /**
@@ -198,23 +200,28 @@ export const TelescopicText: QuartzTransformerPlugin<Partial<Config>> = userOpts
               const code = (node as Element).children[0] as Element
 
               let codeText = toString(code)
-              const ranges = extractWikilinksWithPositions(codeText)
+              const ranges = extractLiteralReferences(codeText)
               if (ranges.length > 0) {
                 let rewritten = ''
                 let lastIndex = 0
                 for (const range of ranges) {
-                  if (range.start > lastIndex) {
-                    rewritten += codeText.slice(lastIndex, range.start)
+                  if (range.span.start > lastIndex) {
+                    rewritten += codeText.slice(lastIndex, range.span.start)
                   }
 
-                  const parsed = range.wikilink
+                  const fields = referenceFields(range)
+                  const resolved = resolveLiteralReference(range, file.data.slug!, {
+                    catalog: referenceCatalogFor(ctx),
+                    origin: referenceSourcePath(file.data),
+                  })
                   const { dest, alias } = resolveWikilink(
-                    parsed.target,
-                    parsed.anchor,
-                    parsed.alias,
+                    fields.target,
+                    resolved?.anchor ??
+                      (fields.fragments.length ? `#${fields.fragments.join('#')}` : undefined),
+                    fields.label,
                   )
                   rewritten += toHtml(h('a', { href: dest }, { type: 'text', value: alias }))
-                  lastIndex = range.end
+                  lastIndex = range.span.end
                 }
                 if (lastIndex < codeText.length) {
                   rewritten += codeText.slice(lastIndex)

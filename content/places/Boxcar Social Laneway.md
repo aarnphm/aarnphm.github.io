@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'laneway café inspired by Japanese listening bars, with specialty coffee and rotating vinyl'
 id: 'Boxcar Social Laneway'
 modified: 2026-10-30
-source: https://www.instagram.com/reel/DfDq5exJTTN/
 tags:
   - places
 title: 'Boxcar Social Laneway'

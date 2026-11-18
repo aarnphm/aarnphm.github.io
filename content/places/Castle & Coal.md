@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'Neighbourhood bakery and cafe on Dovercourt Road.'
 id: 'Castle & Coal'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/DfGE9jAqXu6/'
 tags:
   - 'places'
 title: 'Castle & Coal'
@@ -18,5 +17,3 @@ type:
   - 'coffee shop'
 url: 'https://castleandcoal.ca/contact'
 ---
-
-Recommendation from [Angie's Toronto food tour](https://www.instagram.com/reel/DfGE9jAqXu6/): Mocha.

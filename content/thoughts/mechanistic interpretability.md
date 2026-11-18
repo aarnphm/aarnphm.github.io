@@ -8,7 +8,7 @@ date: '2024-10-30'
 description: Features, circuits, and causal tests for reverse engineering neural networks.
 id: mechanistic interpretability
 layout: technical
-modified: 2026-10-23 02:16:18 GMT-04:00
+modified: 2026-11-09 10:24:13 GMT-05:00
 permalinks:
   - /mechinterp
   - /interpretability
@@ -23,7 +23,7 @@ tags:
   - ml
   - alignment
   - llm
-  - interp
+  - interpretability
 title: mechanistic interpretability
 ---
 

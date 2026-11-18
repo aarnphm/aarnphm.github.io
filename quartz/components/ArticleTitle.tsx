@@ -27,7 +27,8 @@ export default ((userOpts?: Options) => {
     const slug = fileData.slug!
     const isArenaIndex = slug === 'arena'
     const isArenaChannel = slug.startsWith('arena/') && slug !== 'arena'
-    const isStreamPage = slug === 'stream' || slug.startsWith('stream/on')
+    const isStreamGraphsIndex = slug === 'stream/graphs'
+    const isStreamPage = slug === 'stream' || slug.startsWith('stream/on') || isStreamGraphsIndex
     const isStreamIndex = slug === 'stream/on'
     const hasStreamProtectedContent =
       isStreamPage && Object.keys(fileData.streamData?.protectedPayloads ?? {}).length > 0
@@ -115,9 +116,29 @@ export default ((userOpts?: Options) => {
               <a href="/stream/index.xml" class="internal" data-no-popover>
                 rss
               </a>
-              <a href={isStreamIndex ? '/stream' : '/stream/on'} class="internal" data-no-popover>
-                {isStreamIndex ? 'stream' : 'list'}
-              </a>
+              {isStreamGraphsIndex ? (
+                <>
+                  <a href="/stream" class="internal" data-no-popover>
+                    stream
+                  </a>
+                  <a href="/stream/on" class="internal" data-no-popover>
+                    list
+                  </a>
+                </>
+              ) : (
+                <>
+                  <a
+                    href={isStreamIndex ? '/stream' : '/stream/on'}
+                    class="internal"
+                    data-no-popover
+                  >
+                    {isStreamIndex ? 'stream' : 'list'}
+                  </a>
+                  <a href="/stream/graphs" class="internal" data-no-popover>
+                    graphs
+                  </a>
+                </>
+              )}
               {slug !== 'stream' && (
                 <span class="stream-share-actions" role="group" aria-label="partager le stream">
                   <PressKitButtons citation={false} />

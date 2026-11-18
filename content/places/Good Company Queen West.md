@@ -8,8 +8,7 @@ coordinates:
 date: '2026-11-01'
 description: 'Cocktail bar on Queen Street West.'
 id: 'Good Company Queen West'
-modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DfGFOhKGoEJ/'
+modified: '2026-11-09'
 tags:
   - 'places'
 title: 'Good Company Queen West'

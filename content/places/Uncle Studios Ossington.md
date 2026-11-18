@@ -9,7 +9,6 @@ date: '2026-10-29'
 description: Canadian clothing brand's Ossington flagship with an in-store coffee counter
 id: Uncle Studios Ossington
 modified: 2026-10-29
-source: https://www.instagram.com/reel/DfDXzo3BDEg/
 tags:
   - places
 title: Uncle Studios Ossington

@@ -9,7 +9,6 @@ date: '2026-11-05'
 description: 'Restaurant on Rue Notre-Dame Ouest in Montréal’s Little Burgundy neighbourhood.'
 id: 'Joe Beef'
 modified: '2026-11-05'
-source: 'https://www.instagram.com/reel/DfIa3Essz-_/'
 tags:
   - 'places'
 title: 'Joe Beef'

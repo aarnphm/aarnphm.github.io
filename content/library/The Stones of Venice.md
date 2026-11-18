@@ -12,6 +12,5 @@ seealso:
   - '[[arena/resources/entry-v1-a29b707e41610321a2db7255fb034db2509b3b030c8e5e7b7aa4d8ca636f21c8|Arena]]'
 status: to read
 title: The Stones of Venice
+details: Arena links to volume II of the three-volume work.
 ---
-
-Arena links to volume II of the three-volume work.

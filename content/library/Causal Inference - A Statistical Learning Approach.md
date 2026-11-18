@@ -12,6 +12,5 @@ seealso:
   - '[[arena/papers/entry-v1-261995c0766853e8f3e628f49989b2cee9063bbfd442f7956066bbb70c63d30a|Arena]]'
 status: to read
 title: 'Causal Inference: A Statistical Learning Approach'
+details: the linked text is a draft dated September 8, 2026.
 ---
-
-the linked text is a draft dated September 8, 2026.

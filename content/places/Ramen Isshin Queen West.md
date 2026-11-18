@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Japanese ramen restaurant on Queen Street West.'
 id: 'Ramen Isshin Queen West'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/reel/DcZuYT6hkC9/'
 tags:
   - 'places'
 title: 'Ramen Isshin Queen West'

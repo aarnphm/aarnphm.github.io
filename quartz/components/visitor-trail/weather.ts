@@ -200,6 +200,7 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
     const flex = 1 - cover * 0.45
     const push = state.gust > 0.025 ? Math.min(2.2, 0.6 + state.gust * 1.8) * flex : 0
     const front = 55 + state.gust * 90
+    scene.style.setProperty('--trail-leaf-push', push.toFixed(3))
     scene.style.setProperty('--trail-leaf-push-x', (state.dx * push).toFixed(3))
     scene.style.setProperty('--trail-leaf-lag-x', `${(state.dx / front).toFixed(4)}s`)
     scene.style.setProperty('--trail-leaf-lag-y', `${(state.dy / front).toFixed(4)}s`)

@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'French bakery on College Street making bread, viennoiseries and pastries'
 id: 'Bakery Pompette'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/Dd7kqfJpljI/'
 tags:
   - 'places'
 title: 'Bakery Pompette'

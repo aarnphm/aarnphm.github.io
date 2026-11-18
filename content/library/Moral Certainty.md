@@ -17,8 +17,8 @@ tags:
   - philosophy
 title: De la certitude morale
 year: 1880
+details: |-
+  Léon Ollé-Laprune's _De la certitude morale_ (1880).
+
+  The cover is Hachette BnF's 2013 facsimile of the 1880 edition, ISBN 9782012818118.
 ---
-
-Léon Ollé-Laprune's _De la certitude morale_ (1880).
-
-The cover is Hachette BnF's 2013 facsimile of the 1880 edition, ISBN 9782012818118. [Edition details](https://www.hachettebnf.fr/livre/de-la-certitude-morale-9782012818118/).

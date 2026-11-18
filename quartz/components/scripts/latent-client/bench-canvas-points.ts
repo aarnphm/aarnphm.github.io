@@ -26,7 +26,7 @@ export function drawBenchPoints(
   const kinds = bench.kinds!
   const n = Math.min(kinds.length, at.xs.length)
   const docs = bench.level !== 'rows'
-  const atlas = bench.level === 'feats' ? bench.atlas : null
+  const lvl = bench.level === 'feats' ? (bench.atlas?.lvl ?? bench.embed?.lvl ?? null) : null
   const heat = bench.level === 'feats' ? null : bench.heat
   if (heat) return drawBenchHeat(ctx, bench, at, shown, colours, heat, n)
   const radius = new Float32Array(BANDS)
@@ -46,9 +46,7 @@ export function drawBenchPoints(
     const slot = b * KINDS + kinds[i]
     const path = (paths[slot] ??= new Path2D())
     // a feature's size is its Matryoshka level, eased by depth
-    const r = atlas
-      ? LEVEL_RADIUS[atlas.lvl[i]] * (0.8 + 0.4 * Math.max(0, Math.min(1, t)))
-      : radius[b]
+    const r = lvl ? LEVEL_RADIUS[lvl[i]] * (0.8 + 0.4 * Math.max(0, Math.min(1, t))) : radius[b]
     const x = at.xs[i]
     const y = at.ys[i]
     // same area as the disc: side r·√π

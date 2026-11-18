@@ -93,6 +93,10 @@ async function initializeBench(rt: Runtime, saved?: SharedBench | null): Promise
       }
     }
   }
+  // a fresh bench draws what the explorer shows (view.ts); its own toggles part ways after that
+  if (!saved && rt.view)
+    for (const kind of Object.keys(KIND_INDEX) as LatentKind[])
+      if (!rt.view.includes(kind)) bench.hidden |= 1 << KIND_INDEX[kind]
   bench.kinds = new Uint8Array(rt.docs.length)
   for (const doc of rt.docs) bench.kinds[doc.d] = KIND_INDEX[doc.s]
   // x, y, z and the level as rows of a ruled table: the axis and a garden select for its

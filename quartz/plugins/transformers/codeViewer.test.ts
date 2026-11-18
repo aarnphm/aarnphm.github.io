@@ -319,12 +319,7 @@ describe('code viewer runtime cells', () => {
 
     const tree: Root = {
       type: 'root',
-      children: [
-        {
-          type: 'wikilink',
-          data: { wikilink: { embed: true, target: 'script.py' } },
-        } as unknown as RootContent,
-      ],
+      children: [...fromMarkdownWithWikilinks('![[script.py]]').children],
     }
     const file = vfile(root, 'notes/page.md')
 
@@ -347,10 +342,7 @@ describe('code viewer runtime cells', () => {
       children: [
         { type: 'code', lang: 'lean', meta: 'shell', value: '#eval 1 + 1' },
         { type: 'code', lang: 'lean', value: '#check Prop' },
-        {
-          type: 'wikilink',
-          data: { wikilink: { embed: true, target: 'proof.lean' } },
-        } as unknown as RootContent,
+        ...fromMarkdownWithWikilinks('![[proof.lean]]').children,
       ],
     }
     const file = vfile(root, 'notes/page.md')

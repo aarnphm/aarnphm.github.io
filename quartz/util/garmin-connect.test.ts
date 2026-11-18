@@ -183,7 +183,7 @@ const overnightSleep = {
   restlessMomentsCount: 39,
 }
 
-test('extracts Garmin overnight physiology without copying sleep stages', () => {
+test('keeps legacy Garmin sleep physiology when the overnight duration is unavailable', () => {
   assert.deepEqual(garminConnectSleep(overnightSleep, '2026-09-08'), {
     source: 'garmin',
     date: '2026-09-08',
@@ -200,6 +200,177 @@ test('extracts Garmin overnight physiology without copying sleep stages', () => 
     averageStress: 11,
     restlessMoments: 39,
   })
+})
+
+test('keeps Garmin overnight measurements, score qualifiers, stage intervals and timed readings', () => {
+  const start = overnightSleep.dailySleepDTO.sleepStartTimestampGMT
+  const end = overnightSleep.dailySleepDTO.sleepEndTimestampGMT
+  const summary = garminConnectSleep(
+    {
+      ...overnightSleep,
+      dailySleepDTO: {
+        ...overnightSleep.dailySleepDTO,
+        sleepTimeSeconds: 30_300,
+        awakeSleepSeconds: 53,
+        unmeasurableSleepSeconds: 0,
+        awakeCount: 0,
+        avgHeartRate: 49,
+        sleepScores: {
+          overall: { value: 82, qualifierKey: 'GOOD' },
+          stress: { qualifierKey: 'EXCELLENT', optimalStart: 0, optimalEnd: 15 },
+          remPercentage: { value: 24, qualifierKey: 'EXCELLENT' },
+          unknown: { value: 55 },
+        },
+      },
+      sleepLevels: [
+        { startGMT: '2026-09-08T05:32:00.0', endGMT: '2026-09-08T05:33:00.0', activityLevel: 2 },
+        { startGMT: '2026-09-08T05:30:56.0', endGMT: '2026-09-08T05:31:00.0', activityLevel: 0 },
+        { startGMT: '2026-09-08T05:31:00.0', endGMT: '2026-09-08T05:32:00.0', activityLevel: 1 },
+        { startGMT: '2026-09-08T13:55:00.0', endGMT: '2026-09-08T13:56:49.0', activityLevel: 3 },
+        { startGMT: '2026-09-08T13:56:49.0', endGMT: '2026-09-08T13:57:00.0', activityLevel: 1 },
+        { startGMT: '2026-09-08T05:33:00.0', endGMT: '2026-09-08T05:34:00.0', activityLevel: 99 },
+      ],
+      sleepHeartRate: [
+        { startGMT: start + 120_000, value: -1 },
+        { startGMT: start, value: 49 },
+        { startGMT: start, value: -1 },
+        { startGMT: end + 1, value: 60 },
+      ],
+      hrvData: [
+        { startGMT: start + 16_000, value: 52 },
+        { startGMT: start + 316_000, value: 63 },
+        { startGMT: start - 1, value: 40 },
+      ],
+      restingHeartRate: 45,
+      avgOvernightHrv: 57,
+      avgSkinTempDeviationC: -0.3,
+    },
+    '2026-09-08',
+  )
+  assert.deepEqual(summary?.sleep, {
+    totalSleepS: 30_300,
+    deepS: 2_340,
+    lightS: 20_640,
+    remS: 7_320,
+    awakeS: 53,
+    unmeasurableS: 0,
+    awakeCount: 0,
+    sleepScore: 82,
+    sleepScoreQualifier: 'GOOD',
+    averageHeartRateBpm: 49,
+    restingHeartRateBpm: 45,
+    averageHrvMs: 57,
+    skinTempDeviationC: -0.3,
+    scoreFactors: {
+      stress: { qualifier: 'EXCELLENT', value: null },
+      remPercentage: { qualifier: 'EXCELLENT', value: 24 },
+    },
+    stages: [
+      { startTime: start, endTime: Date.parse('2026-09-08T05:31:00Z'), stage: 'deep' },
+      {
+        startTime: Date.parse('2026-09-08T05:31:00Z'),
+        endTime: Date.parse('2026-09-08T05:32:00Z'),
+        stage: 'light',
+      },
+      {
+        startTime: Date.parse('2026-09-08T05:32:00Z'),
+        endTime: Date.parse('2026-09-08T05:33:00Z'),
+        stage: 'rem',
+      },
+      { startTime: Date.parse('2026-09-08T13:55:00Z'), endTime: end, stage: 'awake' },
+    ],
+    heartRate: [
+      { timestamp: start, bpm: 49 },
+      { timestamp: start + 120_000, bpm: null },
+    ],
+    hrv: [
+      { timestamp: start + 16_000, ms: 52 },
+      { timestamp: start + 316_000, ms: 63 },
+    ],
+  })
+})
+
+test('excludes a manual overnight window and retains independent native Garmin naps', () => {
+  const napStart = Date.parse('2026-09-08T18:00:00Z')
+  const napEnd = Date.parse('2026-09-08T18:25:00Z')
+  const nap = {
+    calendarDate: '2026-09-08',
+    napTimeSec: 1_500,
+    napStartTimestampGMT: '2026-09-08T18:00:00',
+    napEndTimestampGMT: '2026-09-08T18:25:00',
+    napStartTimeOffset: -240,
+    napEndTimeOffset: -300,
+    napSource: 0,
+    napFeedback: 'SHORT_NAP',
+  }
+  const dailySleepDTO = {
+    ...overnightSleep.dailySleepDTO,
+    sleepTimeSeconds: 30_300,
+    sleepFromDevice: undefined,
+    sleepWindowConfirmationType: 'manually_confirmed',
+  }
+  assert.equal(garminConnectSleep({ ...overnightSleep, dailySleepDTO }, '2026-09-08'), null)
+  assert.equal(
+    garminConnectSleep(
+      {
+        ...overnightSleep,
+        dailySleepDTO: {
+          ...dailySleepDTO,
+          sleepFromDevice: true,
+          sleepWindowConfirmationType: 'MANUALLY_CONFIRMED',
+        },
+      },
+      '2026-09-08',
+    ),
+    null,
+  )
+  const summary = garminConnectSleep(
+    {
+      ...overnightSleep,
+      dailySleepDTO: { ...dailySleepDTO, dailyNapDTOS: [nap, nap, { ...nap, napTimeSec: 0 }] },
+    },
+    '2026-09-08',
+  )
+  assert.equal(summary?.sleep, undefined)
+  assert.equal(summary?.startTime, null)
+  assert.equal(summary?.averageBreathsPerMinute, null)
+  assert.deepEqual(summary?.naps, [
+    {
+      id: `garmin-nap-${napStart}-${napEnd}`,
+      startTime: napStart,
+      endTime: napEnd,
+      startUtcOffsetMinutes: -240,
+      endUtcOffsetMinutes: -300,
+      durationS: 1_500,
+      providerSource: 0,
+      feedback: 'SHORT_NAP',
+    },
+  ])
+})
+
+test('ignores invalid Garmin nap offsets without rejecting the native nap interval', () => {
+  const date = '2026-09-08'
+  const summary = garminConnectSleep(
+    {
+      dailySleepDTO: {
+        calendarDate: date,
+        dailyNapDTOS: [
+          {
+            calendarDate: date,
+            napTimeSec: 1_500,
+            napStartTimestampGMT: '2026-09-08T18:00:00',
+            napEndTimestampGMT: '2026-09-08T18:25:00',
+            napStartTimeOffset: 841,
+            napEndTimeOffset: -300.5,
+          },
+        ],
+      },
+    },
+    date,
+  )
+  assert.equal(summary?.naps?.[0]?.durationS, 1_500)
+  assert.equal(summary?.naps?.[0]?.startUtcOffsetMinutes, undefined)
+  assert.equal(summary?.naps?.[0]?.endUtcOffsetMinutes, undefined)
 })
 
 test('preserves native overnight respiration timestamps and the clipped first interval', () => {

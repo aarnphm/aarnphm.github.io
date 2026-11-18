@@ -12,6 +12,5 @@ seealso:
   - '[[arena/philosophy/entry-v1-d21a23254620010c3049c5a545e8bc8a980c830dde47894ac0d1732d50576846|Arena]]'
 status: to read
 title: Nicomachean Ethics
+details: linked translation by W. D. Ross.
 ---
-
-linked translation by W. D. Ross.

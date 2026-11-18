@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Caribbean restaurant on Crouch Hill serving dishes including curry goat.'
 id: 'One Love Kitchen Crouch Hill'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/reel/DfMaijrpbIZ/'
 tags:
   - 'places'
 title: 'One Love Kitchen Crouch Hill'

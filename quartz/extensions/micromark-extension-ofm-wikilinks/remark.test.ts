@@ -3,6 +3,7 @@
  * verifies full unified pipeline including mdast-to-hast conversion.
  */
 
+import type { Element } from 'hast'
 import { fromHtml } from 'hast-util-from-html'
 import assert from 'node:assert'
 import test, { describe } from 'node:test'
@@ -11,26 +12,54 @@ import remarkParse from 'remark-parse'
 import remarkRehype from 'remark-rehype'
 import { unified } from 'unified'
 import { visit } from 'unist-util-visit'
-import { parseWikilink } from '../../util/wikilinks'
+import { parseLiteralReference } from '../../util/references/literal'
+import { referenceHastHandler } from '../../util/references/render'
+import { referenceFields } from '../../util/references/request'
 import { remarkWikilink } from './index'
 
 /**
  * helper to process markdown through full pipeline.
  * parses markdown → converts to HTML → returns HTML string.
  */
-function processToHTML(
-  markdown: string,
-  options?: { obsidian?: boolean; stripExtensions?: string[] },
-): string {
+function processToHTML(markdown: string): string {
   const processor = unified()
     .use(remarkParse)
     //@ts-ignore
-    .use(remarkWikilink, options)
-    .use(remarkRehype)
+    .use(remarkWikilink)
+    .use(remarkRehype, { handlers: { wikilink: referenceHastHandler } })
     .use(rehypeStringify)
 
   const result = processor.processSync(markdown)
   return result.toString()
+}
+
+function linkDestinations(html: string): string[] {
+  const destinations: string[] = []
+  visit(fromHtml(html, { fragment: true }), 'element', node => {
+    if (node.tagName === 'a' && typeof node.properties.href === 'string')
+      destinations.push(node.properties.href)
+  })
+  return destinations
+}
+
+function renderedElements(markdown: string): Element[] {
+  const processor = unified()
+    .use(remarkParse)
+    .use(remarkWikilink)
+    .use(remarkRehype, { handlers: { wikilink: referenceHastHandler } })
+  const tree = processor.runSync(processor.parse(markdown))
+  const elements: Element[] = []
+  visit(tree, 'element', node => {
+    elements.push(node)
+  })
+  return elements
+}
+
+function transclude(markdown: string): Element {
+  const node = renderedElements(markdown).find(element => element.tagName === 'blockquote')
+  assert(node, 'Reference HAST handler must emit the transclusion host')
+  assert(node.data?.referenceRequest, 'Transclusion host retains its typed reference request')
+  return node
 }
 
 describe('remarkWikilink integration', () => {
@@ -47,7 +76,7 @@ describe('remarkWikilink integration', () => {
 
     test('converts wikilink with anchor', () => {
       const html = processToHTML('[[page#section]]')
-      assert(html.includes('<a href="page#section">page</a>'))
+      assert(html.includes('<a href="page#section">page > section</a>'))
     })
 
     test('converts wikilink with anchor and alias', () => {
@@ -64,7 +93,7 @@ describe('remarkWikilink integration', () => {
 
     test('preserves absolute path with anchor', () => {
       const html = processToHTML('[[/tags/ml#section]]')
-      assert(html.includes('<a href="/tags/ml#section">/tags/ml</a>'))
+      assert(html.includes('<a href="/tags/ml#section">/tags/ml > section</a>'))
     })
 
     test('preserves absolute path with alias', () => {
@@ -87,12 +116,12 @@ describe('remarkWikilink integration', () => {
   describe('same-file anchors', () => {
     test('handles same-file anchor with empty target', () => {
       const html = processToHTML('[[#heading]]')
-      assert(html.includes('<a href="#heading"></a>'))
+      assert(html.includes('<a href="#heading">heading</a>'))
     })
 
-    test('slugifies same-file anchor in obsidian mode', () => {
-      const html = processToHTML('[[#Section Title]]', { obsidian: true })
-      assert(html.includes('<a href="#section-title"></a>'))
+    test('slugifies same-file anchor during HAST conversion', () => {
+      const html = processToHTML('[[#Section Title]]')
+      assert(html.includes('<a href="#section-title">Section Title</a>'))
     })
 
     test('handles same-file anchor with alias', () => {
@@ -102,7 +131,7 @@ describe('remarkWikilink integration', () => {
 
     test('handles block reference', () => {
       const html = processToHTML('[[#^block-id]]')
-      assert(html.includes('<a href="#^block-id"></a>'))
+      assert(html.includes('<a href="#^block-id">block-id</a>'))
     })
   })
 
@@ -113,9 +142,11 @@ describe('remarkWikilink integration', () => {
       assert(html.includes('style="width:10rem"'))
       assert(html.includes('alt="Photo"'))
       assert(html.includes('width="160"'))
-      const parsed = parseWikilink(source)
-      assert.equal(parsed?.metadata, '{width:10rem}')
-      assert.equal(parsed?.alias, 'Photo|160')
+      const parsed = parseLiteralReference(source)
+      assert(parsed)
+      const fields = referenceFields(parsed)
+      assert.equal(fields.settings, '{width:10rem}')
+      assert.equal(fields.label, 'Photo|160')
     })
 
     test('applies raw CSS declarations without changing the image source, caption or dimensions', () => {
@@ -150,25 +181,30 @@ describe('remarkWikilink integration', () => {
       })
     })
 
-    test('keeps styles scoped to image embeds and retains existing metadata', () => {
-      const html = processToHTML(
+    test('keeps styles scoped to image embeds and retains typed settings', () => {
+      const nodes = renderedElements(
         '![[photo.webp#{float:right}]] ![[plain.webp]] [[page#{popover:false}]] ![[note#{collapsed:true}]]',
       )
-      const tree = fromHtml(html, { fragment: true })
-      visit(tree, 'element', node => {
+      for (const node of nodes) {
         if (node.properties.src === 'photo.webp') {
           assert.equal(node.properties.style, 'float:right')
-          assert.equal(node.properties.dataMetadata, '{float:right}')
-        } else {
-          assert.equal(node.properties.style, undefined)
-        }
+          assert.deepEqual(node.data?.referenceRequest?.resolvedSettings, {
+            kind: 'css',
+            raw: 'float:right',
+          })
+        } else assert.equal(node.properties.style, undefined)
         if (node.tagName === 'blockquote') {
-          assert.equal(node.properties.dataMetadata, '{"collapsed":true}')
+          const settings = node.data?.referenceRequest?.resolvedSettings
+          assert.equal(settings?.kind, 'object')
+          assert(settings?.kind === 'object')
+          assert.equal(settings.value.collapsed, true)
         }
         if (node.properties.href === 'page') {
-          assert.equal(node.properties.dataMetadata, '{"popover":false}')
+          const settings = node.data?.referenceRequest?.resolvedSettings
+          assert(settings?.kind === 'object')
+          assert.equal(settings.value.popover, false)
         }
-      })
+      }
     })
 
     test('leaves incomplete image settings literal and omits an empty style', () => {
@@ -285,213 +321,196 @@ describe('remarkWikilink integration', () => {
   })
 
   describe('block transcludes', () => {
-    test('converts transclude to blockquote', () => {
-      const html = processToHTML('![[notes]]')
-      assert(html.includes('<blockquote class="transclude"'))
-      assert(html.includes('data-url="notes"'))
-      assert(html.includes('data-block=""'))
+    test('converts transclude to blockquote with typed whole-document selection', () => {
+      const node = transclude('![[notes]]')
+      assert.deepEqual(node.data?.referenceRequest?.selector, { kind: 'whole' })
+      assert(linkDestinations(processToHTML('![[notes]]')).includes('notes'))
     })
 
     test('converts transclude with anchor', () => {
-      const html = processToHTML('![[notes#summary]]')
-      assert(html.includes('<blockquote class="transclude"'))
-      assert(html.includes('data-url="notes"'))
-      assert(html.includes('data-block="#summary"'))
-      assert(html.includes('<a href="notes#summary"'))
+      const node = transclude('![[notes#summary]]')
+      assert.equal(node.data?.referenceRequest?.route?.anchor, '#summary')
+      assert(linkDestinations(processToHTML('![[notes#summary]]')).includes('notes#summary'))
     })
 
-    test('preserves raw nested transclude anchors', () => {
-      const html = processToHTML('![[triathlon#2026-07-26#filter=19471122670&19476629599]]')
-      assert(
-        html.includes(
-          'data-anchor-path="[&#x22;2026-07-26&#x22;,&#x22;filter=19471122670&#x26;19476629599&#x22;]"',
-        ),
-      )
+    test('preserves raw nested triathlon transclude fragments', () => {
+      const node = transclude('![[triathlon#2026-07-26#filter=19471122670&19476629599]]')
+      assert.deepEqual(node.data?.referenceRequest?.fragments, [
+        '2026-07-26',
+        'filter=19471122670&19476629599',
+      ])
     })
 
-    test('preserves triathlon trace settings in nested transclude anchors', () => {
-      const html = processToHTML(
+    test('preserves triathlon trace settings in nested transclude fragments', () => {
+      const node = transclude(
         '![[triathlon#2026-08-10#cycling#settings=matched-rides:false&matched-runs:true]]',
       )
-      assert(
-        html.includes(
-          'data-anchor-path="[&#x22;2026-08-10&#x22;,&#x22;cycling&#x22;,&#x22;settings=matched-rides:false&#x26;matched-runs:true&#x22;]"',
-        ),
-      )
+      assert.deepEqual(node.data?.referenceRequest?.fragments, [
+        '2026-08-10',
+        'cycling',
+        'settings=matched-rides:false&matched-runs:true',
+      ])
     })
 
-    test('preserves analytics settings and sport filters in nested transclude anchors', () => {
-      const html = processToHTML(
-        [
-          '![[triathlon#2026-08-18#analytics#settings=display:simplified&expanded:true]]',
-          '![[triathlon#2026-08-16#analytics#cycling]]',
-        ].join('\n'),
+    test('preserves analytics settings and sport filters in nested transclude fragments', () => {
+      const analytics = transclude(
+        '![[triathlon#2026-08-18#analytics#settings=display:simplified&expanded:true]]',
       )
-      assert(
-        html.includes(
-          'data-anchor-path="[&#x22;2026-08-18&#x22;,&#x22;analytics&#x22;,&#x22;settings=display:simplified&#x26;expanded:true&#x22;]"',
-        ),
-      )
-      assert(
-        html.includes(
-          'data-anchor-path="[&#x22;2026-08-16&#x22;,&#x22;analytics&#x22;,&#x22;cycling&#x22;]"',
-        ),
-      )
+      const cycling = transclude('![[triathlon#2026-08-16#analytics#cycling]]')
+      assert.deepEqual(analytics.data?.referenceRequest?.fragments, [
+        '2026-08-18',
+        'analytics',
+        'settings=display:simplified&expanded:true',
+      ])
+      assert.deepEqual(cycling.data?.referenceRequest?.fragments, [
+        '2026-08-16',
+        'analytics',
+        'cycling',
+      ])
     })
 
     test('converts base view transclude', () => {
-      const html = processToHTML('![[data.base#editors]]')
-      assert(html.includes('<blockquote class="transclude"'))
-      assert(html.includes('data-url="data/editors"'))
-      assert(html.includes('data-block=""'))
-      assert(html.includes('<a href="data/editors"'))
+      const node = transclude('![[data.base#editors]]')
+      assert.equal(node.data?.referenceRequest?.route?.slug, 'data/editors')
+      assert(linkDestinations(processToHTML('![[data.base#editors]]')).includes('data/editors'))
     })
 
     test('converts transclude with block reference', () => {
-      const html = processToHTML('![[notes#^block-id]]')
-      assert(html.includes('<blockquote class="transclude"'))
-      assert(html.includes('data-block="#^block-id"'))
+      const node = transclude('![[notes#^block-id]]')
+      assert.equal(node.data?.referenceRequest?.route?.anchor, '#^block-id')
+      assert.deepEqual(node.data?.referenceRequest?.fragments, ['^block-id'])
     })
 
-    test('converts absolute transclude with block reference', () => {
-      const html = processToHTML('![[/quotes#^tommy|from tommy]]')
-      assert(html.includes('<blockquote class="transclude"'))
-      assert(html.includes('data-url="/quotes"'))
-      assert(html.includes('data-block="#^tommy"'))
-      assert(html.includes('data-embed-alias="from tommy"'))
+    test('converts absolute transclude with block reference and alias', () => {
+      const source = '![[/quotes#^tommy|from tommy]]'
+      const node = transclude(source)
+      assert.equal(node.data?.referenceRequest?.route?.anchor, '#^tommy')
+      assert.equal(node.data?.referenceRequest?.label, 'from tommy')
+      assert(linkDestinations(processToHTML(source)).includes('/quotes#^tommy'))
     })
 
-    test('converts notebook cell transclude anchor', () => {
-      const html = processToHTML('![[thoughts/Jax#code-cell-1|example]]')
-      assert(html.includes('<blockquote class="transclude"'))
-      assert(html.includes('data-url="thoughts/Jax"'))
-      assert(html.includes('data-block="#code-cell-1"'))
-      assert(html.includes('data-embed-alias="example"'))
+    test('converts notebook cell transclude anchor and alias', () => {
+      const node = transclude('![[thoughts/Jax#code-cell-1|example]]')
+      assert.equal(node.data?.referenceRequest?.route?.slug, 'thoughts/Jax')
+      assert.equal(node.data?.referenceRequest?.route?.anchor, '#code-cell-1')
+      assert.equal(node.data?.referenceRequest?.label, 'example')
     })
 
-    test('converts transclude metadata', () => {
-      const html = processToHTML('![[thoughts/Attention#{collapsed: true}]]')
-      assert(html.includes('<blockquote class="transclude"'))
-      assert(html.includes('data-url="thoughts/Attention"'))
-      assert(html.includes('data-metadata="{&#x22;collapsed&#x22;:true}"'))
+    test('converts transclude metadata into typed settings', () => {
+      const node = transclude('![[thoughts/Attention#{collapsed: true}]]')
+      const settings = node.data?.referenceRequest?.resolvedSettings
+      assert(settings?.kind === 'object')
+      assert.equal(settings.value.collapsed, true)
     })
 
     test('converts transclude with alias', () => {
-      const html = processToHTML('![[notes#summary|See notes]]')
-      assert(html.includes('<blockquote class="transclude"'))
-      assert(html.includes('data-embed-alias="See notes"'))
+      const node = transclude('![[notes#summary|See notes]]')
+      assert.equal(node.data?.referenceRequest?.label, 'See notes')
+      assert.equal(node.data?.referenceRequest?.route?.anchor, '#summary')
     })
   })
 
-  describe('stripExtensions option', () => {
+  describe('published route extensions', () => {
     test('strips .md extension from href by default', () => {
-      const html = processToHTML('[[notes.md]]', { obsidian: true })
+      const html = processToHTML('[[notes.md]]')
       // href should strip .md, but display text keeps it
       assert(html.includes('<a href="notes">notes.md</a>'))
     })
 
     test('strips .base extension from href by default', () => {
-      const html = processToHTML('[[data.base]]', { obsidian: true })
+      const html = processToHTML('[[data.base]]')
       // href should strip .base, but display text keeps it
       assert(html.includes('<a href="data">data.base</a>'))
     })
 
     test('maps base view anchors to view slugs', () => {
-      const html = processToHTML('[[data.base#editors]]', { obsidian: true })
+      const html = processToHTML('[[data.base#editors]]')
       assert(html.includes('<a href="data/editors">editors</a>'))
     })
 
     test('maps .fc deck links to the flashcards view slug', () => {
-      const html = processToHTML('[[thoughts/Sets.fc]]', { obsidian: true })
+      const html = processToHTML('[[thoughts/Sets.fc]]')
       assert(html.includes('<a href="thoughts/Sets/flashcards">thoughts/Sets.fc</a>'))
     })
 
     test('maps .flashcards deck links to the flashcards view slug', () => {
-      const html = processToHTML('[[thoughts/Sets.flashcards]]', { obsidian: true })
+      const html = processToHTML('[[thoughts/Sets.flashcards]]')
       assert(html.includes('<a href="thoughts/Sets/flashcards">thoughts/Sets.flashcards</a>'))
     })
 
     test('maps .fc deck transcludes to the flashcards view slug', () => {
-      const html = processToHTML('![[thoughts/Sets.fc]]', { obsidian: true })
-      assert(html.includes('data-url="thoughts/Sets/flashcards"'))
-      assert(html.includes('<a href="thoughts/Sets/flashcards"'))
+      const html = processToHTML('![[thoughts/Sets.fc]]')
+      assert.equal(
+        transclude('![[thoughts/Sets.fc]]').data?.referenceRequest?.route?.slug,
+        'thoughts/Sets/flashcards',
+      )
+      assert(linkDestinations(html).includes('thoughts/Sets/flashcards'))
     })
 
     test('maps .fc.md deck links to the flashcards view slug', () => {
-      const html = processToHTML('[[thoughts/Sets.fc.md]]', { obsidian: true })
+      const html = processToHTML('[[thoughts/Sets.fc.md]]')
       assert(html.includes('<a href="thoughts/Sets/flashcards">thoughts/Sets.fc.md</a>'))
     })
 
     test('maps .flashcards.md deck links to the flashcards view slug', () => {
-      const html = processToHTML('[[thoughts/Sets.flashcards.md]]', { obsidian: true })
+      const html = processToHTML('[[thoughts/Sets.flashcards.md]]')
       assert(html.includes('<a href="thoughts/Sets/flashcards">thoughts/Sets.flashcards.md</a>'))
     })
 
     test('maps absolute .fc deck links to the flashcards view slug', () => {
-      const html = processToHTML('[[/thoughts/Sets.fc]]', { obsidian: true })
+      const html = processToHTML('[[/thoughts/Sets.fc]]')
       assert(html.includes('href="/thoughts/Sets/flashcards"'))
     })
 
     test('maps absolute .fc.md deck links to the flashcards view slug', () => {
-      const html = processToHTML('[[/thoughts/Sets.fc.md]]', { obsidian: true })
+      const html = processToHTML('[[/thoughts/Sets.fc.md]]')
       assert(html.includes('href="/thoughts/Sets/flashcards"'))
     })
 
-    test('strips custom extensions from href', () => {
-      const html = processToHTML('[[notes.mdx]]', {
-        obsidian: true,
-        stripExtensions: ['.md', '.mdx', '.base'],
-      })
-      // NOTE: stripExtensions parameter is currently not fully implemented
-      // slugifyFilePath only handles built-in extensions (.md, .ipynb, .html, .base)
-      // custom extensions like .mdx are preserved in the href
-      assert(html.includes('<a href="notes">notes.mdx</a>'))
-    })
-
-    test('preserves extensions not in stripExtensions', () => {
-      const html = processToHTML('[[document.pdf]]', { obsidian: true, stripExtensions: ['.md'] })
-      // PDF has special handling - preserved in href
-      assert(html.includes('document'))
-      assert(html.includes('.pdf'))
+    test('preserves resource extensions in published links', () => {
+      const html = processToHTML('[[document.pdf]]')
+      assert(html.includes('document.pdf'))
     })
 
     test('case insensitive extension matching', () => {
-      const html = processToHTML('[[Notes.MD]]', { obsidian: true })
+      const html = processToHTML('[[Notes.MD]]')
       // slugifyFilePath doesn't lowercase - preserves "Notes.MD" as-is
       // but .MD extension is not in default strip list (lowercase .md is)
       assert(html.includes('<a href="Notes.MD">Notes.MD</a>'))
     })
   })
 
-  describe('obsidian mode features', () => {
-    test('slugifies file paths in obsidian mode', () => {
-      const html = processToHTML('[[File With Spaces]]', { obsidian: true })
+  describe('standalone target interpretation', () => {
+    test('slugifies file paths during HAST conversion', () => {
+      const html = processToHTML('[[File With Spaces]]')
       // sluggify replaces spaces with dashes but preserves case
       assert(html.includes('href="File-With-Spaces"'))
       assert(html.includes('>File With Spaces</a>'))
     })
 
     test('handles nested anchor segments', () => {
-      const html = processToHTML('[[file#Parent#Child]]', { obsidian: true })
+      const html = processToHTML('[[file#Parent#Child]]')
       assert(html.includes('href="file#child"'))
-      assert(html.includes('data-anchor-target="file"'))
-      assert(html.includes('parent'))
-      assert(html.includes('child'))
+      const node = renderedElements('[[file#Parent#Child]]').find(
+        element => element.tagName === 'a',
+      )
+      assert.deepEqual(node?.data?.referenceRequest?.fragments, ['Parent', 'Child'])
+      assert(html.includes('file > Parent > Child'))
     })
 
     test('slugifies anchor text', () => {
-      const html = processToHTML('[[file#Section Title]]', { obsidian: true })
+      const html = processToHTML('[[file#Section Title]]')
       // slugAnchor lowercases and replaces spaces with hyphens
-      assert(html.includes('<a href="file#section-title">file</a>'))
+      assert(html.includes('<a href="file#section-title">file > Section Title</a>'))
     })
 
     test('strips LaTeX from anchors', () => {
-      const html = processToHTML('[[file#$ mu$]]', { obsidian: true })
-      assert(html.includes('<a href="file#mu">file</a>'))
+      const html = processToHTML('[[file#$ mu$]]')
+      assert(html.includes('<a href="file#mu">file > $ mu$</a>'))
     })
 
     test('combines path slugification and anchor processing', () => {
-      const html = processToHTML('[[My Notes.md#Section Title|Custom]]', { obsidian: true })
+      const html = processToHTML('[[My Notes.md#Section Title|Custom]]')
       // sluggify preserves case for path, strips .md extension, slugAnchor lowercases anchor
       assert(html.includes('href="My-Notes#section-title"'))
       assert(html.includes('>Custom</a>'))

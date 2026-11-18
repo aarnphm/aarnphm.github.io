@@ -17,6 +17,5 @@ tags:
 title: Beauty and the Beast (1946)
 year: 1946
 runtime: 93
+external: https://en.wikipedia.org/wiki/Beauty_and_the_Beast_(1946_film)
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](<https://en.wikipedia.org/wiki/Beauty_and_the_Beast_(1946_film)>).

@@ -1,3 +1,4 @@
+import type { DailySleepSources } from '../../../util/daily-sleep-health'
 import { round } from '../strava'
 import {
   ACUTE_MIN,
@@ -29,6 +30,7 @@ export interface RecoveryDay {
   rhrBaseline: number | null
   rhrZ: number | null
   sleepS: number | null
+  sleepSources?: DailySleepSources
   sleepBaselineS: number | null
   sleepTargetS: number
   sleepScore: number | null
@@ -215,6 +217,9 @@ export function buildRecovery(daily: DailyPoint[], risk: RiskBlock): RecoveryBlo
       rhrBaseline: rhrBaseArr[i],
       rhrZ: rhrZArr[i],
       sleepS: d.sleepDurationS,
+      sleepSources: d.sleepSources
+        ? { sleepDurationS: d.sleepSources.sleepDurationS, sleepScore: d.sleepSources.sleepScore }
+        : undefined,
       sleepBaselineS: sleepBaseArr[i],
       sleepTargetS: t.sleepTargetS,
       sleepScore: d.sleepScore,

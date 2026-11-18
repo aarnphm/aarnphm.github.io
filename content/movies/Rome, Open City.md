@@ -17,6 +17,5 @@ tags:
 title: 'Rome, Open City'
 year: 1945
 runtime: 105
+external: https://en.wikipedia.org/wiki/Rome,_Open_City
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](https://en.wikipedia.org/wiki/Rome,_Open_City).

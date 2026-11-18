@@ -9,7 +9,6 @@ date: '2026-11-02'
 description: 'Cocktail bar and bottle shop in Bloordale Village.'
 id: 'Grey Tiger'
 modified: '2026-11-02'
-source: 'https://www.instagram.com/p/DfNZFAegXFC/'
 tags:
   - 'places'
 title: 'Grey Tiger'

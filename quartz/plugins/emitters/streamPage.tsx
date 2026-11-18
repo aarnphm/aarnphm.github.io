@@ -5,6 +5,7 @@ import { FullPageLayout } from '../../cfg'
 import HeaderConstructor from '../../components/Header'
 import StreamPageComponent from '../../components/pages/StreamPage'
 import { pageResources, renderPage } from '../../components/renderPage'
+import { prepareLatentEmbedsFor } from '../../components/renderPage/transclude-latent'
 import { isDraftEntry, isRestrictedEntry } from '../../components/stream/Entry'
 import StreamSearchComponent from '../../components/StreamSearch'
 import { QuartzComponentProps } from '../../types/component'
@@ -58,6 +59,13 @@ async function processStreamPage(
     allFiles,
   }
 
+  // latent embeds in entries need async work before the synchronous render
+  await prepareLatentEmbedsFor(
+    ctx,
+    allFiles,
+    (streamData?.entries ?? []).flatMap(entry => entry.content),
+    slug,
+  )
   const content = renderPage(ctx, slug, componentData, opts, externalResources, false)
   return write({ ctx, content, slug, ext: '.html' })
 }

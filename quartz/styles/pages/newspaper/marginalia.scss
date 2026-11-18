@@ -17,6 +17,14 @@ body:not(.stack-mode)[data-layout='newspaper'] #quartz-root > section.header {
   > .header-content {
     height: 0;
     padding: 0;
+    // a zero-height row centres its items on the page's top edge, which cut the phone's search
+    // and theme controls in half: they hang under the edge, on paper where they ride over text
+    align-items: flex-start;
+
+    > :is(.search, .darkmode) {
+      margin-top: 0.5rem;
+      background: var(--light);
+    }
   }
 }
 
@@ -51,10 +59,17 @@ body:not(.stack-mode)[data-layout='newspaper'] #quartz-root > section.header {
     hyphens: manual;
     break-inside: avoid;
 
+    // column.scss pins every article p to the body's 30px line (the initials' grid); a note keeps
+    // its own leading, or a footnote sets double-spaced beside a sidenote.
     p {
       margin: 0 0 0.35rem;
+      line-height: inherit;
       text-indent: 0;
       text-align: start;
+    }
+
+    li {
+      line-height: inherit;
     }
 
     ul,
@@ -90,7 +105,12 @@ body:not(.stack-mode)[data-layout='newspaper'] #quartz-root > section.header {
     }
   }
 
-  // Long notes (a recipe, a list) are a boxed aside in the body, never in the rail.
+  // A long note's toggle only has work in the rail; opened inline it reads in full.
+  .profile-note-more {
+    display: none;
+  }
+
+  // Notes with a table or figure are a boxed aside in the body, never in the rail.
   .profile-note.profile-note-boxed {
     margin: 1rem 0;
     padding: 0.6rem 0;
@@ -256,8 +276,17 @@ body:not(.stack-mode)[data-layout='newspaper'] #quartz-root > section.header {
     position: relative;
     padding-right: calc(var(--mag-rail) + var(--mag-gap));
 
-    section.collapsible-header {
+    // Neither a chapter nor the tldr box (positioned in dating.scss) may contain a note: every
+    // note measures its rail from the article.
+    section.collapsible-header,
+    #tldr {
       position: static;
+    }
+
+    // profile-notes.inline.ts sets the overhang of a rail note that runs past the chapter's end,
+    // so the next chapter's separator starts below it.
+    section.collapsible-header[data-level='2'] {
+      padding-bottom: var(--mag-note-clear, 0px);
     }
 
     // Profile emits the anchors: --cite on a word joiner at the citation, --prev on the note
@@ -274,7 +303,9 @@ body:not(.stack-mode)[data-layout='newspaper'] #quartz-root > section.header {
           calc(100% - var(--mag-rail))
         );
         width: var(--mag-rail);
-        margin: 0;
+        // Drop the note by half the leading difference so its first baseline sits on the
+        // citation's line, not 5px above it.
+        margin: calc((var(--mag-line) - 1lh) / 2) 0 0;
         padding: 0;
         border: 0;
 
@@ -314,14 +345,115 @@ body:not(.stack-mode)[data-layout='newspaper'] #quartz-root > section.header {
         visibility: visible;
       }
 
+      // The other end of the pair: a lit note (its mark hovered or focused, profile-notes.inline.ts)
+      // or a hovered one is boxed too. The offset puts the box's top edge on the hanging rule.
+      .profile-note:not(.profile-note-boxed) {
+        outline: 1px solid transparent;
+        outline-offset: calc(0.4rem - 1px);
+      }
+
+      .profile-note:not(.profile-note-boxed):is([data-lit], :hover, :focus-within) {
+        outline-color: var(--dark);
+      }
+
+      // A long note shows its first seven lines, fading out over the last two, until opened.
+      .profile-note-long:not([data-expanded]) > .profile-note-body {
+        max-height: calc(7 * 1lh);
+        overflow: clip;
+        mask-image: linear-gradient(to bottom, black calc(100% - 2lh), transparent);
+      }
+
+      // Opened, it runs to the end of the text beside it (--note-room from profile-notes.inline.ts,
+      // never shorter than the folded view) and scrolls inside. The fades follow the scroll: none at
+      // the top edge until the note has scrolled, none at the bottom once the end is reached. When
+      // the note fits, the scroll timeline is inactive and neither fade shows.
+      .profile-note-long[data-expanded] > .profile-note-body {
+        --note-fade-top: 0px;
+        --note-fade-bottom: 0px;
+        max-height: max(calc(7 * 1lh), var(--note-room, 100vh));
+        overflow-x: hidden;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        scrollbar-width: none;
+        mask-image: linear-gradient(
+          to bottom,
+          transparent,
+          black var(--note-fade-top),
+          black calc(100% - var(--note-fade-bottom)),
+          transparent
+        );
+        animation: note-scroll-fade linear both;
+        animation-timeline: scroll(self);
+
+        &::-webkit-scrollbar {
+          display: none;
+        }
+      }
+
+      .profile-note-more {
+        display: block;
+        margin: 0.2rem 0 0;
+        padding: 0;
+        border: 0;
+        background: none;
+        font-family: var(--codeFont);
+        font-size: 10px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--darkgray);
+        cursor: var(--cursor-pointer, pointer);
+
+        &::after {
+          content: ' \2193';
+        }
+
+        &[aria-expanded='true']::after {
+          content: ' \2191';
+        }
+
+        &:is(:hover, :focus-visible) {
+          color: var(--dark);
+          text-decoration: underline;
+        }
+      }
+
       #tldr > .profile-note,
       #tldr > .profile-note:first-of-type {
-        left: calc(100% + var(--mag-offset));
-        margin-top: 0;
+        margin-top: calc((var(--mag-line) - 1lh) / 2);
         padding-top: 0;
         border-top: 0;
       }
     }
+  }
+}
+
+@property --note-fade-top {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --note-fade-bottom {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@keyframes note-scroll-fade {
+  0% {
+    --note-fade-top: 0px;
+    --note-fade-bottom: 2.5rem;
+  }
+
+  8%,
+  92% {
+    --note-fade-top: 2.5rem;
+    --note-fade-bottom: 2.5rem;
+  }
+
+  100% {
+    --note-fade-top: 2.5rem;
+    --note-fade-bottom: 0px;
   }
 }
 

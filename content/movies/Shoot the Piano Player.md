@@ -17,6 +17,5 @@ tags:
 title: Shoot the Piano Player
 year: 1960
 runtime: 81
+external: https://en.wikipedia.org/wiki/Shoot_the_Piano_Player
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](https://en.wikipedia.org/wiki/Shoot_the_Piano_Player).

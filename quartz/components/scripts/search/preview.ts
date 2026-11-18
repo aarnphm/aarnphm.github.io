@@ -1,7 +1,9 @@
+import type { ContentDetails } from '../../../plugins'
 import { documentPreviewUrl, readDocumentPreview } from '../../../util/document-preview'
 import { fetchCanonical } from '../../../util/fetch-canonical'
 import { FullSlug, isFullSlug, normalizeRelativeURLs, resolveRelative } from '../../../util/path'
 import { tokenizeTerm } from '../../../util/search-text'
+import { tagLabel } from '../../../util/tags'
 import { codeMatchLabel, codeMatchLocation } from '../code-search-controls'
 import { renderCodeMatch } from '../code-search-preview'
 import { renderCoursePreview } from '../course-preview-card'
@@ -66,6 +68,39 @@ function highlightHTML(searchTerm: string, el: HTMLElement) {
   }
 
   return html.body
+}
+
+function fileExtension(fileName: string): string | null {
+  const name = fileName.split('/').at(-1) ?? fileName
+  const index = name.lastIndexOf('.')
+  if (index <= 0 || index === name.length - 1) {
+    return null
+  }
+
+  return name.slice(index).toLowerCase()
+}
+
+function isDirectContentFile(fileName: string): boolean {
+  const ext = fileExtension(fileName)
+  return (
+    ext !== null && ext !== '.canvas' && ext !== '.base' && ext !== '.bases' && ext !== '.ipynb'
+  )
+}
+
+/** Flags displayPreview reads to pick the base, canvas, file or redacted preview. */
+export function markPreviewKind(
+  s: SearchSession,
+  el: HTMLElement,
+  slug: string,
+  fileName?: string,
+  isProtected = s.data?.[slug]?.protected === true,
+) {
+  const resolvedFileName = (s.data?.[slug]?.fileName || fileName || slug || '').toLowerCase()
+  const extension = fileExtension(resolvedFileName)
+  if (extension === '.canvas') el.dataset.canvas = 'true'
+  if (extension === '.base' || extension === '.bases') el.dataset.bases = 'true'
+  if (isDirectContentFile(resolvedFileName)) el.dataset.directFile = 'true'
+  if (isProtected) el.dataset.protected = 'true'
 }
 
 export function clearPreview(s: SearchSession) {
@@ -142,6 +177,8 @@ export async function displayPreview(s: SearchSession, el: HTMLElement | null) {
   const codeMatch = s.codeMatches.get(el)
   const slug = el.dataset.codeOwner ?? el.id
   if (!slug || !isFullSlug(slug)) return
+  // Path-mode rows come from the shared path table, so they learn their preview kind here.
+  if (el.dataset.path !== undefined) markPreviewKind(s, el, slug)
   const previewKey = codeMatch
     ? `${slug}:${codeMatch.unit.id}:${codeMatch.ranges[codeMatch.selectedRange]?.start.offset}`
     : el.dataset.pdfPage
@@ -228,7 +265,7 @@ export async function displayPreview(s: SearchSession, el: HTMLElement | null) {
     }
 
     if (documentType || el.dataset.directFile === 'true') {
-      const fileData = requireData(s)[slug]
+      const fileData: ContentDetails | undefined = requireData(s)[slug]
       if (
         await renderFilePreview(
           resolveUrl(s, slug),
@@ -264,7 +301,7 @@ export async function displayPreview(s: SearchSession, el: HTMLElement | null) {
       }
 
       if (fileData?.tags && fileData.tags.length > 0) {
-        metadata('Tags', fileData.tags.join(', '))
+        metadata('Tags', fileData.tags.map(tag => tagLabel(tag, fileData)).join(', '))
       }
 
       previewInner.appendChild(metaContainer)

@@ -9,8 +9,10 @@ import type { QuartzPluginData } from '../vfile'
 import type { ContentLayout } from './contentIndex'
 import { sharedPageComponents, defaultContentPageLayout } from '../../../quartz.layout'
 import HeaderConstructor from '../../components/Header'
+import StreamGraphPageComponent from '../../components/pages/StreamGraphPage'
 import StreamPageComponent from '../../components/pages/StreamPage'
 import { pageResources, renderPage, renderPageWithMetadata } from '../../components/renderPage'
+import { prepareLatentEmbedsFor } from '../../components/renderPage/transclude-latent'
 import { renderProtectedEntryBody } from '../../components/stream/Entry'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
@@ -32,6 +34,11 @@ import {
   isRestrictedEntry,
 } from '../../util/stream'
 import { generateStreamAtomFeed } from '../../util/stream-feed'
+import {
+  buildStreamInquiryGraphs,
+  streamGraphSlug,
+  streamGraphsIndexSlug,
+} from '../../util/stream-graph'
 import { buildStreamManifestGroup } from '../../util/stream-manifest'
 import { buildStreamPageTree, rebaseStreamEntries } from '../../util/stream-route-tree'
 import { removeWritten, write } from './helpers'
@@ -170,6 +177,13 @@ async function* processStreamIndex(
     ext: '.xml',
     content: generateStreamAtomFeed(ctx, fileData),
   })
+  // latent embeds in entries need async work before the synchronous renders below
+  await prepareLatentEmbedsFor(
+    ctx,
+    allFiles,
+    (fileData.streamData?.entries ?? []).flatMap(entry => entry.content),
+    'stream',
+  )
 
   const filteredHeader = sharedPageComponents.header.filter(component => {
     const name = component.displayName || component.name || ''
@@ -340,6 +354,108 @@ async function* processStreamIndex(
     .map(group => JSON.stringify(group))
   yield write({ ctx, slug: 'streams' as FullSlug, ext: '.jsonl', content: lines.join('\n') })
 
+  const publishedForGraphs = visibleEntries.filter(entry => !isRestrictedEntry(entry))
+  const streamGraphs = buildStreamInquiryGraphs(publishedForGraphs)
+  const graphsIndexSlug = streamGraphsIndexSlug() as FullSlug
+  yield write({
+    ctx,
+    slug: graphsIndexSlug,
+    ext: '.json',
+    content: JSON.stringify({ ids: streamGraphs.map(graph => graph.id) }),
+  })
+
+  const graphBefore = filteredBefore.filter(
+    component => !componentSourceNames(component).includes('ArticleTitle'),
+  )
+  const graphsIndexLayout: FullPageLayout = {
+    ...sharedPageComponents,
+    ...defaultContentPageLayout,
+    header: filteredHeader,
+    beforeBody: filteredBefore,
+    afterBody: [],
+    pageBody: StreamGraphPageComponent(),
+  }
+  const graphPageLayout: FullPageLayout = {
+    ...sharedPageComponents,
+    ...defaultContentPageLayout,
+    header: filteredHeader,
+    beforeBody: graphBefore,
+    afterBody: [],
+    pageBody: StreamGraphPageComponent(),
+  }
+
+  const graphsIndexFileData: QuartzPluginData = {
+    ...archiveFileData(fileData, graphsIndexSlug, publishedForGraphs, {
+      title: 'stream / graphs',
+      streamCanonical: '/stream',
+      pageLayout: 'default',
+      streamGraphsIndex: true,
+    }),
+    streamData: { entries: publishedForGraphs },
+  }
+  socialPages.push(graphsIndexFileData)
+  const graphsIndexResources = pageResources(pathToRoot(graphsIndexSlug), resources, ctx)
+  yield write({
+    ctx,
+    slug: graphsIndexSlug,
+    ext: '.html',
+    content: renderPage(
+      ctx,
+      graphsIndexSlug,
+      {
+        ctx,
+        fileData: graphsIndexFileData,
+        externalResources: graphsIndexResources,
+        cfg: ctx.cfg.configuration,
+        children: [],
+        tree: { type: 'root', children: [] } as Root,
+        allFiles,
+      },
+      graphsIndexLayout,
+      graphsIndexResources,
+      false,
+    ),
+  })
+
+  for (const graph of streamGraphs) {
+    const graphSlug = streamGraphSlug(graph.id) as FullSlug
+    yield write({ ctx, slug: graphSlug, ext: '.json', content: JSON.stringify(graph.data) })
+
+    const graphFileData: QuartzPluginData = {
+      ...archiveFileData(fileData, graphSlug, publishedForGraphs, {
+        title: `stream / ${graph.id}`,
+        streamCanonical: '/stream',
+        pageLayout: 'default',
+        streamGraphId: graph.id,
+      }),
+      streamData: { entries: publishedForGraphs },
+    }
+    socialPages.push(graphFileData)
+    const graphResources = pageResources(pathToRoot(graphSlug), resources, ctx)
+    const graphComponentData: QuartzComponentProps = {
+      ctx,
+      fileData: graphFileData,
+      externalResources: graphResources,
+      cfg: ctx.cfg.configuration,
+      children: [],
+      tree: { type: 'root', children: [] } as Root,
+      allFiles,
+    }
+    yield write({
+      ctx,
+      slug: graphSlug,
+      ext: '.html',
+      content: renderPage(
+        ctx,
+        graphSlug,
+        graphComponentData,
+        graphPageLayout,
+        graphResources,
+        false,
+      ),
+    })
+  }
+
   for (const result of groupFiles) {
     if (result) yield result.file
   }
@@ -354,6 +470,8 @@ async function* processStreamIndex(
   const nextRoutes = new Set([
     ...routeData.map(route => route.slug),
     ...groupFiles.flatMap(result => (result ? [result.slug] : [])),
+    graphsIndexSlug,
+    ...streamGraphs.map(graph => streamGraphSlug(graph.id) as FullSlug),
   ])
   for (const slug of emittedRoutes) {
     if (!nextRoutes.has(slug)) await removeWritten(ctx, slug, '.html')
@@ -392,6 +510,7 @@ export const StreamIndex: QuartzEmitterPlugin = () => {
         ...layout.afterBody,
         ...layout.sidebar,
         layout.footer,
+        StreamGraphPageComponent(),
       ]
     },
     async *emit(ctx, content, resources) {

@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'flame-broiled burger restaurant on The Queensway'
 id: "Elijah's Automatic"
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/Dd7kqfJpljI/'
 tags:
   - 'places'
 title: "Elijah's Automatic"

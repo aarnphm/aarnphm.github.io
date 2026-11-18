@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Chinese-Canadian buffet restaurant on The Queensway in Etobicoke.'
 id: 'Mandarin Queensway'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/reel/DcZuYT6hkC9/'
 tags:
   - 'places'
 title: 'Mandarin Queensway'

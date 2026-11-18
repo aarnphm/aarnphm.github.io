@@ -20,7 +20,7 @@ from urllib.request import urlopen
 import portalocker
 import pymupdf
 
-from scope import queued_pdfs
+from scope import page_numbers, queued_pdfs
 from cache import canonical, ExtractionSpec, PageCache
 from contract import OCR_MODELS
 
@@ -187,15 +187,16 @@ class Runner:
         if document.get('sourceSha256') == sha
         else []
       )
-      available = len(set(pages) & set(range(1, count + 1)))
+      requested = set(page_numbers(sha, count))
+      available = len(set(pages) & requested)
       if spec:
         cache = PageCache(self.args.cache, sha, spec)
-        cached += sum(
-          cache.read(number) is not None for number in range(1, count + 1)
-        )
-      total += count
+        cached += sum(cache.read(number) is not None for number in requested)
+      total += len(requested)
       indexed += available
-      complete += available == count and not document.get('partialPages')
+      complete += available == len(requested) and not (
+        set(document.get('partialPages', [])) & requested
+      )
     return {
       'documents': len(sources),
       'totalPages': total,

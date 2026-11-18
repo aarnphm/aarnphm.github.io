@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'Japanese home-style cooking and sharing plates on Dundas Street West'
 id: 'Imanishi Japanese Kitchen'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/Dd7kqfJpljI/'
 tags:
   - 'places'
 title: 'Imanishi Japanese Kitchen'

@@ -16,8 +16,6 @@ tags:
   - science fiction
 title: Metropolis
 year: 1927
+external: https://en.wikipedia.org/wiki/Metropolis_(1927_film)
+details: runtime varies by restoration; the original German release ran 153 minutes.
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](<https://en.wikipedia.org/wiki/Metropolis_(1927_film)>).
-
-runtime varies by restoration; the original German release ran 153 minutes.

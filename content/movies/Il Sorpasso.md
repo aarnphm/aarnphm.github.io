@@ -20,6 +20,5 @@ tags:
 title: Il Sorpasso
 year: 1962
 runtime: 108
+external: https://en.wikipedia.org/wiki/Il_Sorpasso
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](https://en.wikipedia.org/wiki/Il_Sorpasso).

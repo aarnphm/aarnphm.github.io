@@ -20,6 +20,5 @@ tags:
 title: The Enigma of Kaspar Hauser
 year: 1974
 runtime: 109
+external: https://en.wikipedia.org/wiki/The_Enigma_of_Kaspar_Hauser
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](https://en.wikipedia.org/wiki/The_Enigma_of_Kaspar_Hauser).

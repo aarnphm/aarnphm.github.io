@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Queen West restaurant and cocktail bar from the 416 Snack Bar team, serving internationally inspired comfort food.'
 id: 'Short Turn'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/reel/Dct2BtxPmua/'
 tags:
   - 'places'
 title: 'Short Turn'

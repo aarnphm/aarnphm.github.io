@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Asian fusion restaurant and bar at 1261 Bloor Street West.'
 id: 'Shaker’s Club'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DeIMQ4jFNoF/'
 tags:
   - 'places'
 title: 'Shaker’s Club'

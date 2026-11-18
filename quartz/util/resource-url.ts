@@ -25,8 +25,9 @@ export function transformResourceUrl(
     return value
   }
 
+  if (isExplicitRelativeUrl(value)) return value
+
   if (pathExtension(value) === '.pdf') {
-    if (isExplicitRelativeUrl(value)) return value
     return `/${value}`
   }
 

@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'Neighbourhood bar serving Buffalo wings on The Queensway in Etobicoke.'
 id: 'The Elmwood'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/Dc1vJkCp-Je/'
 tags:
   - 'places'
 title: 'The Elmwood'
@@ -18,5 +17,3 @@ type:
   - 'restaurant'
 url: 'https://theelmwoodbar.com/'
 ---
-
-Recommendation from [the reel](https://www.instagram.com/reel/Dc1vJkCp-Je/): Buffalo wings.

@@ -149,7 +149,7 @@ const filesToCopy = async (ctx: BuildCtx): Promise<FilePath[]> => {
     patterns.push('**.ddl', '**.mat')
   }
 
-  const allFiles = await glob('**', argv.directory, patterns)
+  const allFiles = await glob('**', argv.directory, patterns, argv.gitignore)
   const fps = await contentAssetFilesFrom(ctx, allFiles)
   logBuildSpan(argv, 'assets:glob', `${fps.length} files`, perf.elapsedMs())
   return fps

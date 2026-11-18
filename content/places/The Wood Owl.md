@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Neighbourhood restaurant and wine bar on Danforth Avenue.'
 id: 'The Wood Owl'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DfDUc1yoNEc/'
 tags:
   - 'places'
 title: 'The Wood Owl'

@@ -1,0 +1,38 @@
+---
+date: '2026-11-11'
+id: PRs-new-architectures-README
+modified: 2026-11-11 21:36:23 GMT-05:00
+tags:
+  - vllm
+  - source-inventory
+title: 'New architectures: overview PR inventory'
+---
+
+[[hinterland/papers/maps/architectures\|New architectures]] · [[hinterland/papers/index\|source library]]
+
+PRs cited by [[thoughts/inference/architectures\|architecture overview]]. Each row retains all citing notes.
+
+| PR                                            | cited by                                                                                                                                                                                                                                                 |
+| --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [[thoughts/inference/vllm-prs/42082\|#42082]] | [[thoughts/inference/kv-layout\|KV layout reading map]], [[thoughts/inference/architectures\|architecture overview]], [[thoughts/papers/qiu2026designqwen38nextarchitectureevaluation\|Qwen3.8-Next]]                                                    |
+| [[thoughts/inference/vllm-prs/48018\|#48018]] | [[thoughts/inference/architectures\|architecture overview]], [[thoughts/papers/deepseekai2026deepseekv41flashpushinglimitskv\|DeepSeek V4.1]], [[thoughts/inference/replayssm\|ReplaySSM]]                                                               |
+| [[thoughts/inference/vllm-prs/51855\|#51855]] | [[thoughts/inference/architectures\|architecture overview]], [[thoughts/papers/kimiteam2026kimik3openfrontier\|Kimi K3]], [[thoughts/inference/replayssm\|ReplaySSM]]                                                                                    |
+| [[thoughts/inference/vllm-prs/52506\|#52506]] | [[thoughts/inference/architectures\|architecture overview]], [[thoughts/papers/deepseekai2026deepseekv41flashpushinglimitskv\|DeepSeek V4.1]], [[thoughts/papers/kimiteam2026kimik3openfrontier\|Kimi K3]], [[thoughts/inference/replayssm\|ReplaySSM]]  |
+| [[thoughts/inference/vllm-prs/52928\|#52928]] | [[thoughts/inference/architectures\|architecture overview]], [[thoughts/papers/deepseekai2026deepseekv41flashpushinglimitskv\|DeepSeek V4.1]], [[thoughts/papers/kimiteam2026kimik3openfrontier\|Kimi K3]], [[thoughts/inference/replayssm\|ReplaySSM]]  |
+| [[thoughts/inference/vllm-prs/53614\|#53614]] | [[thoughts/inference/architectures\|architecture overview]], [[thoughts/papers/kimiteam2026kimik3openfrontier\|Kimi K3]]                                                                                                                                 |
+| [[thoughts/inference/vllm-prs/53781\|#53781]] | [[thoughts/inference/architectures\|architecture overview]]                                                                                                                                                                                              |
+| [[thoughts/inference/vllm-prs/53896\|#53896]] | [[thoughts/inference/architectures\|architecture overview]], [[thoughts/papers/qiu2026designqwen38nextarchitectureevaluation\|Qwen3.8-Next]]                                                                                                             |
+| [[thoughts/inference/vllm-prs/56061\|#56061]] | [[thoughts/inference/architectures\|architecture overview]]                                                                                                                                                                                              |
+| [[thoughts/inference/vllm-prs/56227\|#56227]] | [[thoughts/inference/architectures\|architecture overview]], [[thoughts/papers/deepseekai2026deepseekv41flashpushinglimitskv\|DeepSeek V4.1]], [[thoughts/inference/replayssm\|ReplaySSM]]                                                               |
+| [[thoughts/inference/vllm-prs/56228\|#56228]] | [[thoughts/inference/architectures\|architecture overview]], [[thoughts/papers/deepseekai2026deepseekv41flashpushinglimitskv\|DeepSeek V4.1]]                                                                                                            |
+| [[thoughts/inference/vllm-prs/56629\|#56629]] | [[thoughts/inference/architectures\|architecture overview]]                                                                                                                                                                                              |
+| [[thoughts/inference/vllm-prs/56794\|#56794]] | [[thoughts/inference/architectures\|architecture overview]], [[thoughts/papers/kimiteam2026kimik3openfrontier\|Kimi K3]]                                                                                                                                 |
+| [[thoughts/inference/vllm-prs/58132\|#58132]] | [[thoughts/inference/architectures\|architecture overview]], [[thoughts/papers/deepseekai2026deepseekv41flashpushinglimitskv\|DeepSeek V4.1]], [[thoughts/inference/replayssm\|ReplaySSM]]                                                               |
+| [[thoughts/inference/vllm-prs/58560\|#58560]] | [[thoughts/inference/architectures\|architecture overview]], [[thoughts/papers/deepseekai2026deepseekv41flashpushinglimitskv\|DeepSeek V4.1]], [[thoughts/inference/architecture-review\|review questions]]                                              |
+| [[thoughts/inference/vllm-prs/59197\|#59197]] | [[thoughts/inference/architectures\|architecture overview]], [[thoughts/papers/deepseekai2026deepseekv41flashpushinglimitskv\|DeepSeek V4.1]], [[thoughts/inference/replayssm\|ReplaySSM]]                                                               |
+| [[thoughts/inference/vllm-prs/59528\|#59528]] | [[thoughts/inference/architectures\|architecture overview]], [[thoughts/papers/qiu2026designqwen38nextarchitectureevaluation\|Qwen3.8-Next]]                                                                                                             |
+| [[thoughts/inference/vllm-prs/59532\|#59532]] | [[thoughts/inference/architectures\|architecture overview]], [[thoughts/papers/deepseekai2026deepseekv41flashpushinglimitskv\|DeepSeek V4.1]], [[thoughts/inference/replayssm\|ReplaySSM]]                                                               |
+| [[thoughts/inference/vllm-prs/59733\|#59733]] | [[thoughts/inference/architectures\|architecture overview]], [[thoughts/papers/kimiteam2026kimik3openfrontier\|Kimi K3]]                                                                                                                                 |
+| [[thoughts/inference/vllm-prs/59894\|#59894]] | [[thoughts/inference/architectures\|architecture overview]], [[thoughts/papers/deepseekai2026deepseekv41flashpushinglimitskv\|DeepSeek V4.1]], [[thoughts/inference/architecture-review\|review questions]], [[thoughts/inference/replayssm\|ReplaySSM]] |
+| [[thoughts/inference/vllm-prs/59997\|#59997]] | [[thoughts/inference/architectures\|architecture overview]], [[thoughts/inference/architecture-review\|review questions]], [[thoughts/papers/qiu2026designqwen38nextarchitectureevaluation\|Qwen3.8-Next]]                                               |
+| [[thoughts/inference/vllm-prs/61012\|#61012]] | [[thoughts/inference/architectures\|architecture overview]], [[thoughts/inference/replayssm\|ReplaySSM]]                                                                                                                                                 |

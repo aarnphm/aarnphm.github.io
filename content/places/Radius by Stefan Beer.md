@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Fine dining restaurant serving regional Swiss cuisine at the Victoria-Jungfrau Grand Hotel & Spa in Interlaken.'
 id: 'Radius by Stefan Beer'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/reel/DfKgmebMnRG/'
 tags:
   - 'places'
 title: 'Radius by Stefan Beer'

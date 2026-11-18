@@ -7,6 +7,7 @@ import { annotateChunk } from './features-reasoning'
 import { applySteer } from './features-steering'
 import { type FeatureState, type FeatureDict } from './features-types'
 import { type Runtime, metaOf } from './runtime'
+import { filterMask, renderLinks } from './search'
 
 const states = new WeakMap<Runtime, FeatureState>()
 
@@ -74,41 +75,68 @@ async function pinFeature(
         }
   }
   const label = withCluster ? `# ${featureName(row)} + cluster` : `feature · ${featureName(row)}`
-  await pinLinks(rt, label, rows)
+  await st.pin(label, rows)
 }
 
 // ---- wiring --------------------------------------------------------------------------------
 
+/**
+ * A latent embed's features column (latent-embed.client.ts): its own panel and results band,
+ * seeded from the view the build rendered, so mounting fetches nothing until the reader steers.
+ */
+export interface EmbedFeatures {
+  panel: HTMLElement
+  pin: FeatureState['pin']
+  unpin(): void
+  seed: SharedFeatures | null
+  /** the rows the build listed for the view, so "reasoning" explains them */
+  pinned: number[] | null
+  /** caches shared by every embed of one sidecar on the page */
+  dicts: FeatureState['dicts']
+  channels: FeatureState['channels']
+}
+
 /** Hydrate the features tab when the sidecar carries dictionaries; a no-op otherwise. */
-export function bindFeatures(rt: Runtime): void {
-  const panel = rt.probe.querySelector<HTMLElement>('.lat-panel[data-panel="features"]')
+export function bindFeatures(rt: Runtime, embed?: EmbedFeatures): FeatureState | null {
+  const panel =
+    embed?.panel ?? rt.probe.querySelector<HTMLElement>('.lat-panel[data-panel="features"]')
   const names = (rt.root.dataset.latentFeatures ?? '').split(',').filter(Boolean)
-  if (!panel || names.length === 0) return
+  if (!panel || names.length === 0) return null
+  const seed = embed?.seed
   const st: FeatureState = {
     refresh: () => {
       void renderPanel(rt, st)
     },
-    pin: (label, rows) => pinLinks(rt, label, rows),
+    pin: embed?.pin ?? ((label, rows) => pinLinks(rt, label, rows)),
+    unpin:
+      embed?.unpin ??
+      (() => {
+        rt.query = null
+        delete rt.links.dataset.query
+        void renderLinks(rt, rt.focus)
+      }),
+    mask: () => filterMask(rt),
     names,
-    dicts: new Map(),
+    dicts: embed?.dicts ?? new Map(),
     tags: null,
-    selected: null,
+    selected: seed?.selected ? { ...seed.selected } : null,
     query: null,
     needle: '',
-    steer: new Map(),
+    steer: new Map((seed?.steer ?? []).map(([key, w]) => [key, termOf(key, w)])),
     steerSeq: 0,
     tables: null,
     tablesNow: null,
     words: null,
-    channels: new Set(),
-    explain: true,
+    channels: embed?.channels ?? new Set(),
+    explain: seed?.explain ?? true,
     whyReady: false,
     renderSeq: 0,
     whyCache: new Map(),
     whyKey: '',
-    pinned: null,
+    pinned: embed?.pinned ?? null,
     dragFrame: null,
     panel,
+    ...(embed ? { embed: true } : {}),
   }
   states.set(rt, st)
   const open = () => !panel.hidden
@@ -161,6 +189,8 @@ export function bindFeatures(rt: Runtime): void {
         void applySteer(rt, st)
         return
       }
+      // a bridge chip in a card belongs to the selection tab (gemma.ts), not to the card
+      if (target.closest('.lat-gm-bridge, [data-open-text]')) return
       const item = target.closest<HTMLElement>('[data-dict][data-f]')
       if (!item || !panel.contains(item)) return
       event.preventDefault()
@@ -262,6 +292,19 @@ export function bindFeatures(rt: Runtime): void {
   const input = rt.links.querySelector<HTMLInputElement>('form.lat-search input')
   const tab = rt.probe.querySelector<HTMLButtonElement>('.lat-tab[data-tab="features"]')
   let timer: number | null = null
+  // the panel re-renders once typing pauses, not on every key: a render rewrites the panel, and
+  // the site's :has() rules restyle the whole page for it
+  let typing: number | null = null
+  const refreshSoon = () => {
+    if (typing !== null) window.clearTimeout(typing)
+    typing = window.setTimeout(() => {
+      typing = null
+      refresh()
+    }, 90)
+  }
+  rt.signal.addEventListener('abort', () => typing !== null && window.clearTimeout(typing), {
+    once: true,
+  })
   const commit = async () => {
     timer = null
     if (!st.needle) return
@@ -289,7 +332,7 @@ export function bindFeatures(rt: Runtime): void {
       }
       // a bench showing features keeps the probe: the match lands on it as heat or a ring
       if (!open() && rt.probe.dataset.benchFeats === undefined) tab?.click()
-      else refresh()
+      else refreshSoon()
       timer = window.setTimeout(() => void commit(), 350)
     },
     { signal: rt.signal },
@@ -303,6 +346,7 @@ export function bindFeatures(rt: Runtime): void {
     },
     { signal: rt.signal },
   )
+  return st
 }
 
 /** The owning controller exposes values, keeping worker channels and caches private. */

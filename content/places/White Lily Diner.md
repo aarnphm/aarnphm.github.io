@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'diner on Queen Street East serving breakfast, comfort food and house-made doughnuts'
 id: 'White Lily Diner'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/DdpjBtqJlMt/'
 tags:
   - 'places'
 title: 'White Lily Diner'

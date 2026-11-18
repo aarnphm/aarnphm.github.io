@@ -18,6 +18,7 @@ import style from '../styles/triathlon.scss'
 import { TRI_ANALYTICS_BOOT_SCRIPT } from '../triathlon/analytics/boot'
 import { SeasonSummary } from '../triathlon/SeasonSummary'
 import { ShortcutHint } from '../triathlon/shell/ShortcutHint'
+import { TRI_TAP_QUEUE_SCRIPT } from '../triathlon/shell/tap-queue'
 import { PacePanel } from '../triathlon/tools/PaceChart'
 import {
   AnalyticsPanel,
@@ -317,6 +318,10 @@ export default (() => {
               <span data-i18n="calculator">calculator</span>
               <ShortcutHint>g c</ShortcutHint>
             </button>
+            <a class="tri-fun-link tri-key-anchor internal" href="/triathlon/fun">
+              <span data-i18n="fun">fun</span>
+              <ShortcutHint>g u</ShortcutHint>
+            </a>
             <a
               class="tri-credit"
               href="https://rauno.me/run"
@@ -337,7 +342,7 @@ export default (() => {
   }
 
   TriathlonPage.css = style
-  TriathlonPage.beforeDOMLoaded = TRI_ANALYTICS_BOOT_SCRIPT
+  TriathlonPage.beforeDOMLoaded = `${TRI_ANALYTICS_BOOT_SCRIPT};${TRI_TAP_QUEUE_SCRIPT}`
   TriathlonPage.afterDOMLoaded = script
 
   return TriathlonPage

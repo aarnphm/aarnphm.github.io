@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Wine bar and eatery on Møntergade in central Copenhagen.'
 id: 'Bar Vitrine'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DeHJKzan8S2/'
 tags:
   - 'places'
 title: 'Bar Vitrine'

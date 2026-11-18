@@ -9,6 +9,8 @@ import {
   type ExtractedAsset,
 } from '../../util/notebook/extract-assets'
 import { FilePath, FullSlug, joinSegments, QUARTZ } from '../../util/path'
+import { updateReferenceCatalog } from '../../util/references/context'
+import { referenceResolutionSignature } from '../../util/references/markdown'
 import { isRecord } from '../../util/type-guards'
 import { ProcessedContent, QuartzPluginData } from '../vfile'
 import { notebookCacheReceipt } from './notebook-cache-receipts'
@@ -51,6 +53,80 @@ function isExtractedAsset(value: unknown): value is ExtractedAsset {
   )
 }
 
+const notebookCacheSourcePaths = [
+  'quartz/plugins/transformers/code-search-blocks.ts',
+  'quartz/plugins/transformers/code-search.ts',
+  'quartz/util/notebook-preview.ts',
+  'quartz/util/notebook/cell-html.ts',
+  'quartz/util/notebook/code-language.ts',
+  'quartz/util/notebook/extract-assets.ts',
+  'quartz/util/notebook/inline-svg.ts',
+  'quartz/util/notebook/markdown.ts',
+  'quartz/util/notebook/parse.ts',
+  'quartz/util/notebook/render/icons.ts',
+  'quartz/plugins/emitters/notebook.ts',
+  'quartz/plugins/emitters/notebook-markdown.ts',
+  'quartz/plugins/emitters/notebook-page-cache.ts',
+  'quartz/processors/markdown-processors.ts',
+  'quartz/extensions/micromark-extension-ofm-wikilinks/index.ts',
+  'quartz/extensions/micromark-extension-ofm-wikilinks/node.ts',
+  'quartz/extensions/micromark-extension-ofm-wikilinks/syntax.ts',
+  'quartz/extensions/micromark-extension-ofm-wikilinks/fromMarkdown.ts',
+  'quartz/util/references/catalog.ts',
+  'quartz/util/references/catalog-types.ts',
+  'quartz/util/references/context.ts',
+  'quartz/util/references/dependencies.ts',
+  'quartz/util/references/document.ts',
+  'quartz/util/references/hast.ts',
+  'quartz/util/references/label.ts',
+  'quartz/util/references/literal.ts',
+  'quartz/util/references/request.ts',
+  'quartz/util/references/render.ts',
+  'quartz/util/references/render-media.ts',
+  'quartz/util/references/lexer.ts',
+  'quartz/util/references/markdown.ts',
+  'quartz/util/references/model.ts',
+  'quartz/util/references/route.ts',
+  'quartz/util/references/scan.ts',
+  'quartz/util/references/syntax.ts',
+  'quartz/util/references/target.ts',
+]
+
+export async function notebookPageCacheSalt(ctx: BuildCtx): Promise<string | undefined> {
+  if (ctx.argv.force) return undefined
+  const source = await Promise.all(
+    notebookCacheSourcePaths.map(async file => {
+      try {
+        const stat = await fs.stat(file)
+        return `${file}:${stat.mtimeMs}:${stat.size}`
+      } catch {
+        return `${file}:missing`
+      }
+    }),
+  )
+  return [
+    'reference-records-v1',
+    JSON.stringify(ctx.cfg.plugins.transformers.map(plugin => [plugin.name, plugin.cacheKey])),
+    ...source,
+  ].join('|')
+}
+
+export function notebookReferenceCacheValid(ctx: BuildCtx, data: QuartzPluginData): boolean {
+  if (
+    !Array.isArray(data.referenceDependencies) ||
+    typeof data.referenceResolutionSignature !== 'string'
+  )
+    return false
+  if (data.referenceCatalogInput) updateReferenceCatalog(ctx, [data])
+  const file = new VFile()
+  file.data = data
+  try {
+    return referenceResolutionSignature(ctx, file) === data.referenceResolutionSignature
+  } catch {
+    return false
+  }
+}
+
 export function compactNotebookPluginData(data: QuartzPluginData): QuartzPluginData {
   return {
     filePath: data.filePath,
@@ -61,6 +137,11 @@ export function compactNotebookPluginData(data: QuartzPluginData): QuartzPluginD
     links: data.links,
     dates: data.dates,
     codeSearchBlocks: data.codeSearchBlocks,
+    referenceDependencies: data.referenceDependencies,
+    referenceResolutionSignature: data.referenceResolutionSignature,
+    referenceCatalogInput: data.referenceCatalogInput,
+    embeddedSearchQueries: data.embeddedSearchQueries,
+    codeDependencies: data.codeDependencies,
   }
 }
 
@@ -210,6 +291,10 @@ export async function readNotebookPageBlob(
   }
   if (!isNotebookPageBlob(decoded)) {
     notebookCacheReceipt(ctx, fp, 'restore', 'miss', 'blob-invalid')
+    return undefined
+  }
+  if (!notebookReferenceCacheValid(ctx, decoded.data)) {
+    notebookCacheReceipt(ctx, fp, 'restore', 'miss', 'reference-resolution-changed')
     return undefined
   }
   const extractedAssets = entry.extractedAssets ?? decoded.extractedAssets ?? []

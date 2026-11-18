@@ -1,3 +1,4 @@
+import { tagMatches } from '../../tags'
 import {
   BOOKCASE_DEFAULTS,
   COS30,
@@ -120,8 +121,7 @@ export function hasTopicTag(tags: unknown, topic: string): boolean {
   if (!Array.isArray(tags)) return false
   return tags.some(tag => {
     if (typeof tag !== 'string') return false
-    const bare = tag.replace(/^#/, '')
-    return bare === topic || bare.startsWith(`${topic}/`)
+    return tagMatches(tag, topic)
   })
 }
 

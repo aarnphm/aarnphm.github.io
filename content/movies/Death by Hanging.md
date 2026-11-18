@@ -19,6 +19,5 @@ tags:
 title: Death by Hanging
 year: 1968
 runtime: 118
+external: https://en.wikipedia.org/wiki/Death_by_Hanging
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](https://en.wikipedia.org/wiki/Death_by_Hanging).

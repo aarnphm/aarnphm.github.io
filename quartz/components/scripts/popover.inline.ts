@@ -15,6 +15,7 @@ import {
   cleanArxivIdentifier,
   createPdfEmbed,
   PDF_SIDE_PANEL_OPTIONS,
+  pdfPageFromHash,
   pdfTitleFromUrl,
   isPdfUrl,
   mountPdfPreviews,
@@ -171,11 +172,10 @@ async function mouseClickHandler(evt: MouseEvent, link: HTMLAnchorElement) {
       fetchUrl.search = ''
 
       if (isPdfUrl(fetchUrl)) {
-        const pdf = createPdfEmbed(
-          fetchUrl.toString(),
-          pdfTitleFromUrl(fetchUrl.toString()),
-          PDF_SIDE_PANEL_OPTIONS,
-        )
+        const pdf = createPdfEmbed(fetchUrl.toString(), pdfTitleFromUrl(fetchUrl.toString()), {
+          ...PDF_SIDE_PANEL_OPTIONS,
+          page: pdfPageFromHash(hash),
+        })
         const sideInner = activeRequest.mount(slug, pdf)
         if (!sideInner) return
         mountPdfPreviews(sideInner)

@@ -1,8 +1,17 @@
 build:
     ./scripts/build.sh
 
+icons:
+    pnpm exec tsx scripts/build-icon.ts
+
 run: build
     open "dist/Audio Output.app"
+
+install: build
+    swift scripts/install.swift
+    /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f "dist/Audio Output.app"
+    mdimport "dist/Audio Output.app"
+    mdimport "/Applications/Audio Output.app"
 
 check:
     swift build

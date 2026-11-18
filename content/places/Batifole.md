@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'French bistro on Gerrard Street East.'
 id: 'Batifole'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/DdaGREXJ5Pb/'
 tags:
   - 'places'
 title: 'Batifole'

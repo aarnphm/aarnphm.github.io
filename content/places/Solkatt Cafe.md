@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Cafe serving sandwiches and brunch on Lansdowne Avenue.'
 id: 'Solkatt Cafe'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DeIMQ4jFNoF/'
 tags:
   - 'places'
 title: 'Solkatt Cafe'

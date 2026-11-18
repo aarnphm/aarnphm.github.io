@@ -9,7 +9,6 @@ date: '2026-11-05'
 description: 'Wine bar and café in Saint-Henri serving Italian-inspired pastries, pasta and antipasti.'
 id: 'BarBara'
 modified: '2026-11-05'
-source: 'https://www.instagram.com/reel/DfIa3Essz-_/'
 tags:
   - 'places'
 title: 'BarBara'

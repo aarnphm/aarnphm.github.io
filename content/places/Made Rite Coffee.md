@@ -9,7 +9,6 @@ date: '2026-10-29'
 description: Kensington Market coffee shop serving breakfast sandwiches, lunch, and banana bread
 id: Made Rite Coffee
 modified: 2026-10-29
-source: https://www.instagram.com/reel/DfDXzo3BDEg/
 tags:
   - places
 title: Made Rite Coffee

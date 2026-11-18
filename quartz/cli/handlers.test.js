@@ -109,12 +109,12 @@ const parseGraphMetafile = {
     'quartz/plugins/transformers/ofm.ts': {
       bytes: 1,
       imports: [
-        { path: 'quartz/util/wikilinks.ts' },
+        { path: 'quartz/util/references/literal.ts' },
         { path: 'remark-parse', external: true },
         { path: 'quartz/util/absent.ts' },
       ],
     },
-    'quartz/util/wikilinks.ts': { bytes: 1, imports: [{ path: 'quartz/util/path.ts' }] },
+    'quartz/util/references/literal.ts': { bytes: 1, imports: [{ path: 'quartz/util/path.ts' }] },
     'quartz/util/path.ts': { bytes: 1, imports: [] },
     'quartz/plugins/emitters/assets.ts': { bytes: 1, imports: [] },
     'quartz/components/Head.tsx': { bytes: 1, imports: [] },
@@ -124,7 +124,7 @@ const parseGraphMetafile = {
 
 test('parse source closure follows transformer imports transitively', () => {
   const closure = parseSourceInputs(parseGraphMetafile)
-  assert.equal(closure.includes('quartz/util/wikilinks.ts'), true)
+  assert.equal(closure.includes('quartz/util/references/literal.ts'), true)
   assert.equal(closure.includes('quartz/util/path.ts'), true)
 })
 

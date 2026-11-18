@@ -1,9 +1,4 @@
 interface CanvasResolvedWikilink {
-  raw: string
-  target?: string
-  anchor?: string
-  alias?: string
-  embed?: boolean
   resolvedSlug?: string
   resolvedHref?: string
   missing?: boolean

@@ -52,7 +52,24 @@ export const dayAnalyticsHourTicks = (
   return ticks
 }
 
-export const DAY_ANALYTICS_SLEEP_LANES = ['awake', 'rem', 'light', 'deep'] as const
+export const daySleepNativeTicks = (startMinute: number, seconds: number): AxisXTick[] => {
+  const endMinute = startMinute + seconds / 60
+  if (seconds === 0) return [{ label: dayAnalyticsWallClock(startMinute), pct: 0 }]
+  if (seconds < 7200)
+    return [
+      { label: dayAnalyticsWallClock(startMinute), pct: 0, cls: 'tri-cax-xt--first' },
+      { label: dayAnalyticsWallClock(endMinute), pct: 100, cls: 'tri-cax-xt--last' },
+    ]
+  const ticks: AxisXTick[] = []
+  for (let minute = (Math.floor(startMinute / 120) + 1) * 120; minute <= endMinute; minute += 120)
+    ticks.push({
+      label: dayAnalyticsWallClock(minute),
+      pct: ((minute - startMinute) * 6000) / seconds,
+    })
+  return ticks
+}
+
+export const DAY_ANALYTICS_SLEEP_LANES = ['awake', 'rem', 'light', 'deep', 'unmeasurable'] as const
 
 export const DAY_ANALYTICS_SLEEP_LANE_BY_CODE: Record<string, number> = {
   '4': 0,
@@ -118,8 +135,3 @@ export const dayAnalyticsSeriesPaths = (
   flush()
   return paths
 }
-
-export type SleepChartSeries = { startTs: string; items: (number | null)[] } & (
-  | { intervalS: number }
-  | { offsetsS: number[] }
-)

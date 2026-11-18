@@ -9,13 +9,12 @@ date: '2026-11-02'
 description: 'Live music venue on Broadview Avenue in Toronto.'
 id: "Hugh's Room Live"
 modified: '2026-11-02'
-source: 'https://www.instagram.com/p/DfNZFAegXFC/'
 tags:
   - 'places'
 title: "Hugh's Room Live"
 type:
   - 'live music'
 url: 'https://hughsroomlive.com/'
+external: https://soundstreams.ca/events/td-encounters-violins-unbound-2/
+details: Venue for the Violins Unbound concert. Soundstreams event page, checked November 2, 2026.
 ---
-
-Venue for the November guide’s Violins Unbound concert. [Soundstreams event page](https://soundstreams.ca/events/td-encounters-violins-unbound-2/), checked November 2, 2026.

@@ -288,13 +288,13 @@ views:
       - formula.2022
       - formula.2021
     sort:
+      - property: formula.2026
+        direction: DESC
       - property: finished
         direction: DESC
       - property: date
         direction: DESC
       - property: tags
-        direction: DESC
-      - property: formula.2026
         direction: DESC
       - property: formula.2025
         direction: DESC

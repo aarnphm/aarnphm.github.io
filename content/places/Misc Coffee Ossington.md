@@ -9,7 +9,6 @@ date: '2026-10-29'
 description: specialty coffee shop on Ossington Avenue serving espresso drinks and pandan lattes
 id: Misc Coffee Ossington
 modified: 2026-10-29
-source: https://www.instagram.com/reel/DfDXzo3BDEg/
 tags:
   - places
 title: Misc Coffee Ossington

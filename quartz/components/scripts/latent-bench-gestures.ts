@@ -22,6 +22,8 @@ export type BenchHost = {
   redraw(): void
   /** follow the hovered point */
   open(): void
+  /** the view a double click on empty space restores; the opening view when absent */
+  home?(): Partial<BenchView>
 }
 
 /**
@@ -131,7 +133,7 @@ export function bindBenchGestures(
     () => {
       const bench = host.view()
       if (!bench || host.hovering()) return
-      Object.assign(bench, BENCH_VIEW)
+      Object.assign(bench, host.home?.() ?? BENCH_VIEW)
       host.redraw()
     },
     { signal },

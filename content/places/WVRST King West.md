@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Beer hall on King Street West serving sausages and duck-fat fries.'
 id: 'WVRST King West'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DfIzlB_lF0Z/'
 tags:
   - 'places'
 title: 'WVRST King West'

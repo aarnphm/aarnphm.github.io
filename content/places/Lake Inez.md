@@ -8,9 +8,8 @@ coordinates:
 date: '2025-11-22'
 description: pan-asian small plates over japanese charcoal, fusion of filipino, malaysian, and japanese
 id: Lake Inez
-modified: '2026-11-01'
+modified: '2026-11-08'
 rating: 4
-source: 'https://www.instagram.com/p/DfDUc1yoNEc/'
 tags:
   - places
 title: Lake Inez

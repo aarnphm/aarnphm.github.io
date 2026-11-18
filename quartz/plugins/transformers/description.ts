@@ -1,12 +1,16 @@
 import type { Root as HTMLRoot, RootContent } from 'hast'
 import readingTime, { ReadTimeResults } from 'reading-time'
+import type { ReferenceCatalog } from '../../util/references/catalog'
 import { QuartzTransformerPlugin } from '../../types/plugin'
 import { renderDescriptionHtml, resolveManifestDescription } from '../../util/description'
 import { descriptionManifestPath, loadDescriptionManifest } from '../../util/description-manifest'
 import { escapeHTML } from '../../util/escape'
-import { releasedOnReload } from '../../util/module-caches'
+import { ReloadableWeakMap } from '../../util/module-caches'
 import { simplifySlug, type FullSlug, type SimpleSlug } from '../../util/path'
-import { extractWikilinks, resolveWikilinkTarget } from '../../util/wikilinks'
+import { referenceCatalogFor, referenceSourcePath } from '../../util/references/context'
+import { extractLiteralReferences, resolveLiteralReference } from '../../util/references/literal'
+import { recordReferenceDependency } from '../../util/references/markdown'
+import { referenceRequest } from '../../util/references/request'
 
 export interface Options {
   descriptionLength: number
@@ -40,9 +44,8 @@ function readableText(node: HTMLRoot | RootContent): string {
 }
 
 const MAX_TEXT_CACHE_ENTRIES = 512
-const textCache = releasedOnReload(
-  new Map<string, { text: string; readingTime: ReadTimeResults }>(),
-)
+type TextCache = Map<string, { text: string; readingTime: ReadTimeResults }>
+const textCaches = new ReloadableWeakMap<ReferenceCatalog, TextCache>()
 
 function markdownBody(source: string): string {
   const frontmatter = /^---\r?\n[\s\S]*?\r?\n---\r?\n?/.exec(source)
@@ -64,7 +67,11 @@ function textCacheKey(fileValue: unknown, slug: FullSlug): string | undefined {
   return source ? `${slug}:${sourceFingerprint(source)}` : undefined
 }
 
-function setTextCache(key: string, value: { text: string; readingTime: ReadTimeResults }): void {
+function setTextCache(
+  textCache: TextCache,
+  key: string,
+  value: { text: string; readingTime: ReadTimeResults },
+): void {
   textCache.set(key, value)
   if (textCache.size <= MAX_TEXT_CACHE_ENTRIES) return
   const first = textCache.keys().next().value
@@ -88,6 +95,13 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = userOpts =
         () => {
           return async (tree: HTMLRoot, file) => {
             const currentSlug = file.data.slug as FullSlug
+            const catalog = referenceCatalogFor(ctx)
+            const referenceOptions = { catalog, origin: referenceSourcePath(file.data) }
+            let textCache = textCaches.get(catalog)
+            if (!textCache) {
+              textCache = new Map()
+              textCaches.set(catalog, textCache)
+            }
             const descriptionLinks: Set<SimpleSlug> = new Set()
 
             const rawFrontMatterDescription =
@@ -95,8 +109,11 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = userOpts =
               file.data.frontmatter.description.trim().length > 0
                 ? file.data.frontmatter.description
                 : undefined
+            // a protected page is encrypted on the site, so neither the generated summary nor a body
+            // excerpt may describe it (meta tags, og images, contentIndex); only an authored one does
+            const isProtected = Boolean(file.data.frontmatter?.protected)
             const manifestDescription =
-              rawFrontMatterDescription === undefined
+              rawFrontMatterDescription === undefined && !isProtected
                 ? resolveManifestDescription(
                     await loadDescriptionManifest(ctx),
                     currentSlug,
@@ -111,9 +128,14 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = userOpts =
 
             // Extract and track wikilinks from authored description
             if (typeof authoredDescription === 'string') {
-              const wikilinks = extractWikilinks(authoredDescription)
+              const wikilinks = extractLiteralReferences(authoredDescription)
               for (const link of wikilinks) {
-                const resolved = resolveWikilinkTarget(link, currentSlug)
+                recordReferenceDependency(
+                  ctx,
+                  file,
+                  referenceRequest(link, referenceOptions.origin),
+                )
+                const resolved = resolveLiteralReference(link, currentSlug, referenceOptions)
                 if (resolved) {
                   descriptionLinks.add(simplifySlug(resolved.slug))
                 }
@@ -148,7 +170,7 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = userOpts =
             }
 
             const processedAuthoredDesc = authoredDescription
-              ? renderDescriptionHtml(authoredDescription, currentSlug)
+              ? renderDescriptionHtml(authoredDescription, currentSlug, referenceOptions)
               : undefined
 
             const isStructuredDocument = Boolean(file.data.bases || file.data.jsonCanvas)
@@ -171,12 +193,13 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = userOpts =
               }
               textReadingTime = readingTime(text)
               if (cacheKey) {
-                setTextCache(cacheKey, { text, readingTime: textReadingTime })
+                setTextCache(textCache, cacheKey, { text, readingTime: textReadingTime })
               }
             }
 
             // Authored descriptions stay intact; length limits apply to generated body excerpts.
-            const processedPlainDesc = isStructuredDocument ? '' : processDescription(text)
+            const processedPlainDesc =
+              isStructuredDocument || isProtected ? '' : processDescription(text)
 
             file.data.description = processedAuthoredDesc || processedPlainDesc || ''
             file.data.rawDescription = authoredDescription || processedPlainDesc || ''
@@ -185,14 +208,19 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = userOpts =
             let abstractText = file.data.frontmatter?.abstract
             if (abstractText) {
               // Extract and track wikilinks from abstract
-              const abstractWikilinks = extractWikilinks(abstractText)
+              const abstractWikilinks = extractLiteralReferences(abstractText)
               for (const link of abstractWikilinks) {
-                const resolved = resolveWikilinkTarget(link, currentSlug)
+                recordReferenceDependency(
+                  ctx,
+                  file,
+                  referenceRequest(link, referenceOptions.origin),
+                )
+                const resolved = resolveLiteralReference(link, currentSlug, referenceOptions)
                 if (resolved) {
                   descriptionLinks.add(simplifySlug(resolved.slug))
                 }
               }
-              abstractText = renderDescriptionHtml(abstractText, currentSlug)
+              abstractText = renderDescriptionHtml(abstractText, currentSlug, referenceOptions)
             }
 
             file.data.abstract = abstractText ?? processedPlainDesc

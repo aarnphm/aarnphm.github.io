@@ -94,7 +94,7 @@ function buildTableCell(
     if (entries.length === 0) {
       return h('td', {})
     }
-    const nodes = renderBacklinkNodes(entries, currentSlug, allFiles)
+    const nodes = renderBacklinkNodes(entries, currentSlug, allFiles, file)
     return wrapTableCellContent(nodes)
   }
 
@@ -125,7 +125,7 @@ function buildTableCell(
           parts.push(renderIconNode(cleaned))
         }
       } else if (typeof item === 'string') {
-        parts.push(...renderInlineString(item, currentSlug, allFiles))
+        parts.push(...renderInlineString(item, currentSlug, allFiles, file))
       } else {
         parts.push(String(item))
       }
@@ -141,7 +141,7 @@ function buildTableCell(
   }
 
   if (typeof value === 'string') {
-    const rendered = renderInlineString(value, currentSlug, allFiles)
+    const rendered = renderInlineString(value, currentSlug, allFiles, file)
     return wrapTableCellContent(rendered)
   }
 

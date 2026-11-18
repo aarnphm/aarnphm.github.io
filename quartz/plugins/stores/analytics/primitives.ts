@@ -1,3 +1,4 @@
+import type { DailySleepSources } from '../../../util/daily-sleep-health'
 import type { SleepMetrics } from '../../../util/sleep-metrics'
 import type { WeeklyTargetRange } from '../../../util/weekly-target-range'
 import type { GarminHealthDay } from '../garmin-health'
@@ -58,6 +59,7 @@ export interface DailyPoint {
   rhr: number | null
   sleepScore: number | null
   sleepDurationS: number | null
+  sleepSources?: DailySleepSources
   napDurationS?: number | null
   napCount?: number | null
   garminHealth?: GarminHealthDay | null
@@ -323,7 +325,7 @@ export const ATHLETE = {
   bornAnchor: '2001-03-01',
   hrMax: 200 as number | null,
   vo2max: 47.8 as number | null,
-  ftp: 231 as number | null,
+  ftp: 255 as number | null,
   lt: 174 as number | null,
   goalWeightLb: 170 as number | null,
   goalFTP: 368 as number | null,

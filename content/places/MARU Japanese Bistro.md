@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Japanese bistro serving sushi and other Japanese dishes on Queen Street East.'
 id: 'MARU Japanese Bistro'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DfDUc1yoNEc/'
 tags:
   - 'places'
 title: 'MARU Japanese Bistro'

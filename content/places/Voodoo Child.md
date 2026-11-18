@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'College Street café and cocktail bar serving coffee by day and drinks into the evening'
 id: 'Voodoo Child'
 modified: 2026-10-30
-source: https://www.instagram.com/reel/DfDq5exJTTN/
 tags:
   - places
 title: 'Voodoo Child'

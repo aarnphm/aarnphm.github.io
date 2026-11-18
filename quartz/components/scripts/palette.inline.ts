@@ -16,6 +16,7 @@ import {
 } from './palette/actions'
 import { connectorActions } from './palette/connectors'
 import { fetchContent } from './palette/format'
+import { parseIntelligenceQuery } from './palette/intelligence'
 import { completeFocusedPath } from './palette/paths'
 import { displayNearbyNotes, displayQuickOpenResults, querySearch } from './palette/search'
 import {
@@ -252,6 +253,8 @@ async function onType(s: PaletteState, e: HTMLElementEventMap['input']) {
   s.codeSearch.cancelPending()
   s.codePreview?.abort()
   s.quickOpenSemantic?.cancel()
+  s.intelligence?.abort()
+  s.intelligence = null
   s.queryGeneration += 1
   const value = (e.target as HTMLInputElement).value
   const commandMode = value.trimStart().startsWith('>')
@@ -273,6 +276,11 @@ async function onType(s: PaletteState, e: HTMLElementEventMap['input']) {
   }
   paletteMode.currentSearchTerm =
     paletteMode.actionType === 'command' ? commandSearchTerm(value) : value
+  // `?` leads an intelligence query: the semantic search runs on the rest, then Gemma reads it.
+  const intelligence =
+    paletteMode.actionType === 'quick_open' ? parseIntelligenceQuery(value) : null
+  paletteMode.intelligence = intelligence !== null
+  if (intelligence !== null) paletteMode.currentSearchTerm = intelligence
   window.clearTimeout(s.quickOpenTimer)
   if (s.completions.update()) {
     s.output.replaceChildren()
@@ -291,7 +299,13 @@ async function onType(s: PaletteState, e: HTMLElementEventMap['input']) {
       return
     }
     const cached = s.quickOpenSemantic?.cached(query, s.quickOpenSemantic.index.ids.length)
-    if (!parseCodeQuery(rawQuery) && query && scope === 'notes' && cached !== undefined) {
+    if (
+      !paletteMode.intelligence &&
+      !parseCodeQuery(rawQuery) &&
+      query &&
+      scope === 'notes' &&
+      cached !== undefined
+    ) {
       displayQuickOpenResults(s, cached, query, scope)
       return
     }
@@ -355,6 +369,7 @@ document.addEventListener('nav', () => {
     s.codeSearch.cancel()
     s.codePreview?.abort()
     s.quickOpenSemantic?.cancel()
+    s.intelligence?.abort()
   })
 
   const progress = createSearchProgress(bar)
@@ -392,6 +407,7 @@ document.addEventListener('nav', () => {
     quickOpenSemantic: null,
     quickOpenTimer: 0,
     measuredPaletteWidth: 0,
+    intelligence: null,
   }
   s.commandActs = commandActions(s)
   quickOpenProgress(s, false)

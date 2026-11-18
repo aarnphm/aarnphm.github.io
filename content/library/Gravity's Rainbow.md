@@ -10,6 +10,6 @@ posters: '[[library/posters/gravitys-rainbow.jpg|gravitys-rainbow.jpg]]'
 status: to read
 title: Gravity's Rainbow
 year: 1973
+external: https://www.penguinrandomhouse.com/books/299800/gravitys-rainbow-classics-deluxe-edition-by-thomas-pynchon/9780143039945/
+details: Penguin Classics Deluxe Edition, ISBN 9780143039945. cover sourced from the publisher.
 ---
-
-[publisher edition](https://www.penguinrandomhouse.com/books/299800/gravitys-rainbow-classics-deluxe-edition-by-thomas-pynchon/9780143039945/), Penguin Classics Deluxe Edition, ISBN 9780143039945. cover sourced from the publisher.

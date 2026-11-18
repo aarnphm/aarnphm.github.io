@@ -62,7 +62,7 @@ final class RouterModel: ObservableObject {
             outputs = try Hardware.outputs()
             let defaultID = try Hardware.scalar(Hardware.system, kAudioHardwarePropertyDefaultOutputDevice, initial: AudioObjectID(0))
             defaultOutputID = defaultID
-            master.configure(device: outputs.first { $0.id == defaultID }, paused: paused)
+            master.configure(outputs: outputs, defaultID: defaultID, paused: paused)
             defaultOutputName = outputs.first { $0.id == defaultID }?.name ?? "Unavailable"
             for site in SiteRouting.load().sites where !siteRules.contains(where: { $0.id == site.id }) {
                 siteRules.append(site)

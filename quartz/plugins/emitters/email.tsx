@@ -6,7 +6,7 @@ import sharp from 'sharp'
 import { visit } from 'unist-util-visit'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { contentDataFor } from '../../util/ctx'
-import { FullSlug, QUARTZ } from '../../util/path'
+import { QUARTZ } from '../../util/path'
 import { getFontSpecificationName } from '../../util/theme'
 import { QuartzPluginData } from '../vfile'
 import {
@@ -135,6 +135,7 @@ export const EmailEmitter: QuartzEmitterPlugin = () => {
         const renderedRoot = await renderEmail(ctx, tree, fileData, allFiles, resources)
         const root = extractEmailRoot(renderedRoot)
         stripEmailNodes(root)
+        const text = formatPlainText(root, slug, baseUrl)
         applySignatureStyles(root, colors.dark)
         const attachments: EmailAttachment[] = []
         attachSignatureImage(root, slug, readEmailSignatureAsset(fileData), attachments)
@@ -266,16 +267,6 @@ export const EmailEmitter: QuartzEmitterPlugin = () => {
         const normalized = raw.replace(/\r\n/g, '\n')
         const marker = '\n---\n'
         const endIndex = normalized.indexOf(marker, 4)
-        const body = endIndex === -1 ? normalized : normalized.slice(endIndex + marker.length)
-        let text = body
-          .replace(/```[^\n]*\n([\s\S]*?)```/g, '$1')
-          .replace(/\n{3,}/g, '\n\n')
-          .trim()
-        text = formatPlainText(text, slug as FullSlug, baseUrl)
-        text = text.replace(/!\[[^\]]*\]\(([^)]+)\)/g, (_match, target) => {
-          const cleaned = String(target).split(/[?#]/)[0] ?? ''
-          return `[image: ${path.basename(cleaned)}]`
-        })
 
         const endpoint =
           process.env.EMAIL_EMITTER_ENDPOINT ?? `https://${baseUrl}/internal/email/emit`

@@ -1,4 +1,5 @@
 import path from 'path'
+import type { ReferenceCatalog } from '../../util/references/catalog'
 import { GlobalConfiguration } from '../../cfg'
 import { i18n } from '../../i18n'
 import { QuartzPluginData } from '../../plugins/vfile'
@@ -9,25 +10,12 @@ import {
 } from '../../types/component'
 import { inheritComponentSourceNames } from '../../util/component-source'
 import { courseDirOf } from '../../util/course'
-import { BuildCtx } from '../../util/ctx'
-import { FileTrieNode } from '../../util/fileTrie'
-import { isFlashcardPath } from '../../util/flashcards-path'
-import { folderPageSourceSlug, isFolderPageSourcePath } from '../../util/folder-page'
 import { htmlToJsx } from '../../util/jsx'
-import {
-  stripSlashes,
-  simplifySlug,
-  joinSegments,
-  FullSlug,
-  slugifyFilePath,
-  FilePath,
-  SimpleSlug,
-  sluggify,
-} from '../../util/path'
-import { pdfTitlesFor } from '../../util/pdf-titles'
+import { stripSlashes, simplifySlug, joinSegments, FullSlug, SimpleSlug } from '../../util/path'
+import { referenceCatalogFor, referenceSourcePath } from '../../util/references/context'
+import { parseLiteralReference, resolveLiteralReference } from '../../util/references/literal'
 import { concatenateResources } from '../../util/resources'
 import { universityPlaceOf } from '../../util/university'
-import { parseWikilink } from '../../util/wikilinks'
 import { CourseCalendar, courseCalendarScript } from '../CourseCalendar'
 import CourseHomeConstructor from '../CourseHome'
 import CourseResourceConstructor, { CoursePageHead, coursePageOf } from '../CourseResource'
@@ -47,6 +35,7 @@ import SeeAlsoComponent from '../SeeAlso'
 import style from '../styles/listPage.scss'
 import UniversityCourseConstructor from '../UniversityCourse'
 import UniversityIndexConstructor from '../UniversityIndex'
+import { buildFolderContentIndex } from './folder-content'
 
 interface FolderContentOptions {
   /**
@@ -94,10 +83,6 @@ const defaultOptions: FolderContentOptions = {
   lg: [],
   sm: [],
   tags: [],
-}
-
-const slugForDirectoryEntry = (fp: FilePath): string => {
-  return stripSlashes(slugifyFilePath(fp, path.extname(fp) === '.ipynb'))
 }
 
 const Layout = {
@@ -162,186 +147,30 @@ const sortForFolderMode = (mode: FolderSortMode, cfg: GlobalConfiguration): Sort
   }
 }
 
-/**
- * Normalize path entries to slugs, supporting both plain paths and wikilink syntax
- * Examples:
- *   - "thoughts/love" -> "thoughts/love"
- *   - "thoughts/mechanistic interpretability" -> "thoughts/mechanistic-interpretability"
- *   - "[[thoughts/love]]" -> "thoughts/love"
- *   - "[[thoughts/love|Love]]" -> "thoughts/love"
- *   - "[[thoughts/love#section]]" -> "thoughts/love"
- */
-const normalizePath = (pathEntry: string): SimpleSlug => {
-  const trimmed = pathEntry.trim()
-
-  // Try parsing as wikilink first
-  const parsed = parseWikilink(trimmed)
-  if (parsed && parsed.target) {
-    // Use the target, ignore anchor and alias
-    // Slugify to convert spaces to dashes
-    const slugified = sluggify(parsed.target)
-    return simplifySlug(stripSlashes(slugified) as FullSlug)
-  }
-
-  // Fall back to treating as plain path
-  // Slugify to convert spaces to dashes (e.g., "mechanistic interpretability" -> "mechanistic-interpretability")
-  const slugified = sluggify(trimmed)
-  return simplifySlug(stripSlashes(slugified) as FullSlug)
-}
-
-type FolderContentIndex = {
-  allFiles: QuartzPluginData[]
-  allPaths: FilePath[]
-  aliases: Set<string>
-  descendantsByFolder: Map<string, QuartzPluginData[]>
-  firstDescendantByFolderBase: Map<string, QuartzPluginData>
-  firstDescendantByFolder: Map<string, QuartzPluginData>
-  fullTrie: FileTrieNode<{ slug: string; title: string; filePath: string }>
-  immediateMarkdownByFolder: Map<string, QuartzPluginData[]>
-  mdBySlug: Map<string, QuartzPluginData>
-  navigableFolders: Set<string>
-  pdfTitles: Map<string, string>
-}
-
-function pushMapArray<K, V>(map: Map<K, V[]>, key: K, value: V): void {
-  const values = map.get(key)
-  if (values) {
-    values.push(value)
-  } else {
-    map.set(key, [value])
-  }
-}
-
-function parentFolders(slug: string): string[] {
-  const folders: string[] = []
-  let folder = path.posix.dirname(slug)
-  while (folder !== '.') {
-    folders.push(folder)
-    folder = path.posix.dirname(folder)
-  }
-  return folders
-}
-
-function folderPageAncestors(slug: string): string[] {
-  const folders: string[] = []
-  let folder = path.posix.dirname(slug)
-  while (folder !== '.' && folder !== '/') {
-    const simple = stripSlashes(simplifySlug(folder as FullSlug))
-    if (simple !== 'tags') folders.push(simple)
-    folder = path.posix.dirname(folder)
-  }
-  return folders
-}
-
-function folderBaseKey(folder: string, base: string): string {
-  return `${folder}\u0000${base}`
-}
-
-function firstByDate(
-  files: QuartzPluginData[],
-  cfg: GlobalConfiguration,
-): QuartzPluginData | undefined {
-  return files.length > 0 ? [...files].sort(byDateAndAlphabetical(cfg))[0] : undefined
-}
-
-function buildFolderContentIndex(
-  ctx: BuildCtx,
-  allFiles: QuartzPluginData[],
-  cfg: GlobalConfiguration,
-): FolderContentIndex {
-  const mdBySlug = new Map<string, QuartzPluginData>()
-  const descendantsByFolder = new Map<string, QuartzPluginData[]>()
-  const descendantsByFolderBase = new Map<string, QuartzPluginData[]>()
-  const immediateMarkdownByFolder = new Map<string, QuartzPluginData[]>()
-  const aliases = new Set<string>()
-  const navigableFolders = new Set<string>()
-  const pdfTitles = pdfTitlesFor(allFiles)
-
-  for (const file of allFiles) {
-    const slug = file.slug
-    if (!slug) continue
-    for (const folder of folderPageAncestors(slug)) {
-      navigableFolders.add(folder)
-    }
-    const simple = stripSlashes(simplifySlug(slug))
-    mdBySlug.set(simple, file)
-
-    const immediateFolder = path.posix.dirname(simple)
-    if (immediateFolder !== '.') {
-      pushMapArray(immediateMarkdownByFolder, immediateFolder, file)
-    }
-    const base = path.posix.basename(simple, path.posix.extname(simple))
-    for (const folder of parentFolders(simple)) {
-      pushMapArray(descendantsByFolder, folder, file)
-      pushMapArray(descendantsByFolderBase, folderBaseKey(folder, base), file)
-    }
-
-    for (const alias of file.aliases ?? []) {
-      aliases.add(stripSlashes(simplifySlug(alias)))
-    }
-  }
-
-  const firstDescendantByFolder = new Map<string, QuartzPluginData>()
-  for (const [folder, files] of descendantsByFolder) {
-    const first = firstByDate(files, cfg)
-    if (first) firstDescendantByFolder.set(folder, first)
-  }
-  const firstDescendantByFolderBase = new Map<string, QuartzPluginData>()
-  for (const [key, files] of descendantsByFolderBase) {
-    const first = firstByDate(files, cfg)
-    if (first) firstDescendantByFolderBase.set(key, first)
-  }
-
-  const fullTrie = new FileTrieNode<{ slug: string; title: string; filePath: string }>([])
-  for (const fp of ctx.allFiles) {
-    if (isFlashcardPath(fp)) continue
-    if (isFolderPageSourcePath(fp)) {
-      for (const folder of folderPageAncestors(folderPageSourceSlug(fp))) {
-        navigableFolders.add(folder)
-      }
-    }
-    const fileSlug = slugForDirectoryEntry(fp)
-    const ext = path.extname(fp)
-    const base = path.basename(fp, ext)
-    const md = mdBySlug.get(fileSlug)
-    fullTrie.add({
-      slug: fileSlug,
-      title: md?.frontmatter?.title ?? pdfTitles.get(fileSlug) ?? base,
-      filePath: fp,
-    })
-  }
-
-  return {
-    allFiles,
-    allPaths: ctx.allFiles,
-    aliases,
-    descendantsByFolder,
-    firstDescendantByFolderBase,
-    firstDescendantByFolder,
-    fullTrie,
-    immediateMarkdownByFolder,
-    mdBySlug,
-    navigableFolders,
-    pdfTitles,
-  }
+function normalizePath(
+  pathEntry: string,
+  currentSlug: FullSlug,
+  catalog: ReferenceCatalog,
+  origin: string,
+): SimpleSlug[] {
+  const raw = pathEntry.trim()
+  const link = parseLiteralReference(raw) ?? parseLiteralReference(`[[${raw}]]`)
+  if (!link) return []
+  const resolved = resolveLiteralReference(link, currentSlug, { catalog, origin })
+  return resolved ? [simplifySlug(resolved.slug)] : []
 }
 
 export default ((opts?: Partial<FolderContentOptions>) => {
   const options: FolderContentOptions = { ...defaultOptions, ...opts }
 
-  let folderContentIndex: FolderContentIndex | undefined
+  let folderContentIndex: ReturnType<typeof buildFolderContentIndex> | undefined
 
   const shouldIncludeFile = extensionFilterFn(options)
 
-  // NOTE: we will always add the generated tags "folder" for better distinction
-  // Normalize lg/sm paths to support both plain paths and wikilink syntax
   const { tags } = options
-  const lg = options.lg.map(normalizePath)
-  const sm = options.sm.map(normalizePath)
 
   const PageList = PageListConstructor({ highlightTags: tags })
-  const Evergreen = EvergreenConstructor({ lg, sm, tags })
-  const PermanentNotes = EvergreenPermanentNotes({ lg, sm, tags })
+  const Evergreen = EvergreenConstructor({ lg: [], sm: [], tags })
   const PageListSearch = PageListSearchConstructor()
   const SeeAlso = SeeAlsoComponent()
   const CourseHome = CourseHomeConstructor()
@@ -355,6 +184,17 @@ export default ((opts?: Partial<FolderContentOptions>) => {
 
   const FolderContent: QuartzComponent = (props: QuartzComponentProps) => {
     const { tree, fileData, allFiles, ctx, cfg } = props
+    if (!fileData.slug) return null
+    const catalog = referenceCatalogFor(ctx)
+    const origin = referenceSourcePath(fileData)
+    const currentSlug = fileData.slug
+    const curated = {
+      lg: options.lg.flatMap(entry => normalizePath(entry, currentSlug, catalog, origin)),
+      sm: options.sm.flatMap(entry => normalizePath(entry, currentSlug, catalog, origin)),
+      tags,
+    }
+    const CuratedEvergreen = EvergreenConstructor(curated)
+    const PermanentNotes = EvergreenPermanentNotes(curated)
     if (
       !folderContentIndex ||
       folderContentIndex.allFiles !== allFiles ||
@@ -365,7 +205,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     const {
       aliases,
       descendantsByFolder,
-      firstDescendantByFolderBase,
+      firstDescendantWithBasename,
       firstDescendantByFolder,
       fullTrie,
       immediateMarkdownByFolder,
@@ -414,9 +254,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
       }
 
       // Pull dates (prefer markdown companion if present), else fallback to current folder date
-      const associatedFirst = firstDescendantByFolderBase.get(
-        folderBaseKey(folderSlug, baseFileName),
-      )
+      const associatedFirst = firstDescendantWithBasename(folderSlug, baseFileName)
 
       const dates =
         ext.toLowerCase() === '.pdf'
@@ -639,7 +477,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
                 <PageList {...listProps} />
               </section>
               <aside class="notes-evergreen">
-                <Evergreen {...listProps} />
+                <CuratedEvergreen {...listProps} />
               </aside>
             </>
           )
@@ -671,7 +509,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
               <PageList {...listProps} />
             </section>
             <aside class="notes-evergreen">
-              <Evergreen {...listProps} />
+              <CuratedEvergreen {...listProps} />
             </aside>
           </>
         )

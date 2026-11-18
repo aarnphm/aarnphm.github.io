@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-10-23 09:10:10 GMT-04:00
+modified: 2026-11-17 09:59:27 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -82,6 +82,31 @@ title: are.na
 
 ## discourse
 
+- https://x.com/DarioAmodei/status/2112732230124818891 -- Dario Amodei responds to Nathan Calvin on Anthropic’s safety strategy
+  - [meta]:
+    - date: 11/17/2026
+    - tags: [ai governance, corporate accountability]
+    - later: true
+- https://x.com/joannejang/status/2112639489009127935 -- Joanne Jang on Core Automation’s agent-run businesses
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [agent organizations, entrepreneurship]
+    - later: true
+- https://www.lesswrong.com/posts/pY76hHbdD4jduX3YH/wah-wah-wah-wah-do-more-ai-r-and-d -- Wah wah wah wah do more AI R&D
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [ai governance, capabilities research]
+    - later: true
+- https://nothinghuman.substack.com/p/anthropic-are-the-good-guys -- Anthropic are the Good Guys
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [ai governance, institutional culture]
+    - later: true
+- https://theabundantfuture.substack.com/p/why-young-people-are-organizing-around -- Why Young People Are Organizing Around Abundance
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [abundance agenda, political organizing]
+    - later: true
 - https://x.com/nabeelqu/status/2107528380623319262 -- Nabeel Qureshi recommends Seb Krier's twenty takes on AI
   - [meta]:
     - date: 10/23/2026
@@ -833,6 +858,47 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/noampomsky/status/2112715759176786200 -- Ava shares a reading of Elizabeth Holmes in You Can See Everything
+  - [meta]:
+    - date: 11/17/2026
+    - tags: [documentary criticism, psychoanalysis]
+    - later: true
+- https://x.com/marinolinich/status/2112769091001835991 -- Marino Linich on rumination and defining problems
+  - [meta]:
+    - date: 11/17/2026
+    - tags: [rumination, problem solving]
+    - later: true
+- https://x.com/brian_lovin/status/2112932731793363055 -- Brian Lovin recommends Macrofying
+  - [meta]:
+    - date: 11/17/2026
+    - tags: [macro photography, printing]
+    - later: true
+- https://x.com/kasratweets/status/2112637236340736042 -- Kasra on stepping away from self-help Substacks
+  - [meta]:
+    - date: 11/12/2026
+    - tags: [self-help, online reading]
+    - later: true
+- https://x.com/QiaochuYuan/status/2112613711601078349 -- Qiaochu Yuan shares a psychoanalytic reading of Elizabeth Holmes
+  - [meta]:
+    - date: 11/12/2026
+    - tags: [psychoanalysis, elizabeth holmes]
+    - later: true
+- https://x.com/0xadvit/status/2114210602570969163 -- Advit reacts to Qwen neuron steering
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [activation steering, qwen]
+    - later: true
+- https://x.com/QiaochuYuan/status/2114408694113017963 -- Qiaochu Yuan recommends Wilhelm Reich’s Wikipedia article
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [wilhelm reich, psychoanalysis]
+    - later: true
+- https://x.com/noampomsky/status/2118438333978394887 -- Ava on preserving clarity and examining your motives
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [psychology, self-knowledge]
+    - later: true
+  - Record what becomes clear so you can revisit it when you lose sight of it. For emotional and relational decisions, write down your immediate reason, the reason behind it, and a possible unflattering motive. Consider the criticism that makes you most defensive.
 - https://x.com/WillManidis/status/2107558351383253000 -- Will Manidis on inflation from billion-dollar to trillion-dollar PDFs
   - [meta]:
     - date: 10/23/2026
@@ -4032,6 +4098,31 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://en.wikipedia.org/wiki/Jay_Cooke -- Jay Cooke
+  - [meta]:
+    - date: 11/13/2026
+    - tags: [banking history, civil war finance]
+    - later: true
+- https://en.wikipedia.org/wiki/James_C._Bennett -- James C. Bennett
+  - [meta]:
+    - date: 11/13/2026
+    - tags: [space entrepreneurship, anglosphere]
+    - later: true
+- https://en.wikipedia.org/wiki/Wilhelm_Reich -- Wilhelm Reich
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [psychoanalysis, intellectual history]
+    - later: true
+- https://en.wikipedia.org/wiki/Jeff_Buckley -- Jeff Buckley
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [music, singer-songwriters]
+    - later: true
+- https://en.wikipedia.org/wiki/Guy_Debord -- Guy Debord
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [situationism, social theory]
+    - later: true
 - https://bcho.me -- Brandon Cho
   - [meta]:
     - date: 10/22/2026
@@ -5390,6 +5481,2986 @@ title: are.na
 
 ## places
 
+- https://www.google.com/maps?cid=2113971200120967555 -- Electric Cinema Portobello
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [theatre]
+    - coord: [51.5155712, -0.2048903]
+    - address: 191 Portobello Road, London W11 2ED, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=10263193166944068953 -- Electric Cinema White City
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [theatre]
+    - coord: [51.5106918, -0.2254695]
+    - address: 2 Television Centre, 101 Wood Lane, London W12 7FR, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=3109534013655747415 -- Jolene Newington Green
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [bakery]
+    - coord: [51.5513088, -0.0844365]
+    - address: 21 Newington Green, London N16 9PU, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=9206509722502664640 -- Jolene Redchurch Street
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [bakery]
+    - coord: [51.5245578, -0.0743051]
+    - address: 67 Redchurch Street, London E2 7DJ, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=515504801004057583 -- Jolene Colebrooke Row
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [bakery]
+    - coord: [51.5365247, -0.101368]
+    - address: 16 Essex Road, London N1 8AA, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=18436294301344514145 -- Jolene Hornsey Road
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [bakery]
+    - coord: [51.563197, -0.1178204]
+    - address: 324 Hornsey Road, London N7 7HE, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=12771305776160956426 -- Buster’s Sea Cove St Lawrence Market
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [restaurant]
+    - coord: [43.64825, -79.3714802]
+    - address: 93 Front Street E, Toronto, ON, Canada
+    - later: true
+
+- https://www.google.com/maps?cid=14555428674680637767 -- Buster’s Sea Cove Commerce Court
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [restaurant]
+    - coord: [43.6481326, -79.37950889999999]
+    - address: 199 Bay Street Suite C-150, Toronto, ON, Canada
+    - later: true
+
+- https://www.google.com/maps?cid=351349559713701153 -- Market Street Catch Market Street
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [restaurant]
+    - coord: [43.6484979, -79.3720712]
+    - address: 14 Market Street, Toronto, ON, Canada
+    - later: true
+
+- https://www.google.com/maps?cid=16878008692737382048 -- Market Street Catch Scotia Plaza
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [restaurant]
+    - coord: [43.64975159999999, -79.3785138]
+    - address: 100 Yonge Street, Toronto, ON, Canada
+    - later: true
+
+- https://www.google.com/maps?cid=10774081194776304760 -- Dover Street Counter
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [restaurant]
+    - coord: [51.5090504, -0.143097]
+    - address: 31 Dover St, London W1S 4ND, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=15833224257972022099 -- Columbia Road Flower Market
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [market]
+    - coord: [51.529134, -0.06982569999999999]
+    - address: Columbia Road, London E2, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=619313186053167294 -- Regent’s Park
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [park]
+    - coord: [51.533313, -0.1557646]
+    - address: Regent’s Park, London, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=2992483195778010107 -- Rodney’s Oyster House Toronto
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [restaurant]
+    - coord: [43.6449661, -79.3969109]
+    - address: 469 King St W, Toronto, ON, Canada
+    - later: true
+
+- https://www.google.com/maps?cid=13158325078975758141 -- Pearl Diver Toronto
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [restaurant]
+    - coord: [43.65160239999999, -79.3737975]
+    - address: 100 Adelaide St E, Toronto, ON M5C 1K9, Canada
+    - later: true
+
+- https://www.google.com/maps?cid=747214917343899482 -- Oyster Boy
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [restaurant]
+    - coord: [43.6452239, -79.4143797]
+    - address: 872 Queen St W, Toronto, ON M6J 1G3, Canada
+    - later: true
+
+- https://www.google.com/maps?cid=1109216939073132934 -- Lobster Burger Bar Toronto
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [restaurant]
+    - coord: [43.6473945, -79.38678019999999]
+    - address: 214 King St W Suite 100, Toronto, ON M5H 3S6, Canada
+    - later: true
+
+- https://www.google.com/maps?cid=11191753888490978486 -- The Fish Store and YuNes’ Sandwiches
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [restaurant]
+    - coord: [43.6549208, -79.4162656]
+    - address: 657 College St, Toronto, ON, Canada
+    - later: true
+
+- https://www.google.com/maps?cid=2396591726821818907 -- Sea Witch Fish and Chips
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [restaurant]
+    - coord: [43.6822143, -79.4240009]
+    - address: 636 St Clair Ave W, Toronto, ON M6C 1A9, Canada
+    - later: true
+
+- https://www.google.com/maps?cid=9467858993782844996 -- Clemente Bar
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [bar]
+    - coord: [40.7416326, -73.9870711]
+    - address: 11 Madison Ave, New York, NY 10010, United States
+    - later: true
+
+- https://www.google.com/maps?cid=5558744589559778882 -- Sloane’s SoHo
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [bar]
+    - coord: [40.7239796, -74.00311789999999]
+    - address: 58 Thompson St, New York, NY 10012, United States
+    - later: true
+
+- https://www.google.com/maps?cid=11998428881072543167 -- Bar CC Chelsea
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [bar]
+    - coord: [40.7431145, -74.0077052]
+    - address: 85 10th Ave, New York, NY 10011, United States
+    - later: true
+
+- https://www.google.com/maps?cid=13781580769764531441 -- Sip at Sip and Guzzle
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [bar]
+    - coord: [40.7314775, -74.0024921]
+    - address: 29 Cornelia St, New York, NY 10014, United States
+    - later: true
+
+- https://www.google.com/maps?cid=4410576522016346468 -- Bar Rêve Cobble Hill
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [bar]
+    - coord: [40.6840953, -73.9924355]
+    - address: 222 Smith St, Brooklyn, NY 11231, United States
+    - later: true
+
+- https://www.google.com/maps?cid=16830612838037221482 -- St Clement London
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [hotel]
+    - coord: [51.511202, -0.1146207]
+    - address: 180 The Thames, London WC2R 2NF, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=5465583344063692624 -- Toum Mayfair
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [51.5133137, -0.1419977]
+    - address: 18a Maddox Street, London W1S 1PL, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=8104948195608948830 -- Kismet Borough Market
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [51.5054783, -0.08989219999999999]
+    - address: 8 Bedale Street, London SE1 9AL, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=13116415333809689326 -- Sessions Arts Club
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [51.5226427, -0.1060103]
+    - address: 24 Clerkenwell Green, London EC1R 0NA, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=8605481131035212650 -- Crispin Spitalfields
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [51.5183098, -0.0760406]
+    - address: White’s Row, London E1 7NF, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=9546964277304626785 -- Project 44 Shoreditch
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop, bar]
+    - coord: [51.5260399, -0.0810892]
+    - address: 44 Rivington Street, London EC2A 3QP, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=7330322076876945572 -- Redchurch Townhouse
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [hotel]
+    - coord: [51.524151, -0.07443899999999999]
+    - address: 25–27 Whitby Street, London E1 6JU, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=3514113171774969310 -- Nina Marylebone
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [51.5171482, -0.1515263]
+    - address: 18 Thayer Street, London W1U 3JY, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=5990004441403614789 -- Hawksmoor Martini Bar St Pancras
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bar]
+    - coord: [51.5296393, -0.1260918]
+    - address: St Pancras London, Euston Road, London NW1 2AR, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=16771760064322610541 -- Tatar Bunar Shoreditch
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [51.5268939, -0.08015309999999999]
+    - address: 152 Curtain Road, London EC2A 3AT, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=15781307181754000481 -- Sir Devonshire Square
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [hotel]
+    - coord: [51.51641069999999, -0.0778552]
+    - address: 5 Devonshire Square, London EC2M 4YE, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=1879245097555194260 -- Café 1001 Brick Lane
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop, bar]
+    - coord: [51.5209341, -0.0719882]
+    - address: 91 Brick Lane, London E1 6QL, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=11394571745074556113 -- Brutto Farringdon
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [51.5198142, -0.102394]
+    - address: 35–37 Greenhill Rents, London EC1M 6BN, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=9759060330689362089 -- Dan’s Dalston
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bar]
+    - coord: [51.5451914, -0.0763589]
+    - address: 2–4 Tottenham Road, London N1 4BZ, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=2475987911548006616 -- Lagana Shoreditch
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [51.5252276, -0.0823184]
+    - address: 19 Willow Street, London EC2A 3HU, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=6413044158276329641 -- Abuelo Marylebone
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop]
+    - coord: [51.5171108, -0.1435053]
+    - address: 7–11 Cavendish Place, London W1G 0QD, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=10600745809345511899 -- Carmela’s Pizzeria Islington
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [51.5401429, -0.1027873]
+    - address: 149A Upper Street, London N1 1RA, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=1445846711456998484 -- Söderberg The Meadows
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bakery, coffee shop]
+    - coord: [55.94358889999999, -3.1918361]
+    - address: 27 Simpson Loan, Edinburgh EH3 9GG, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=9873491510138249808 -- Söderberg Morningside
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bakery, coffee shop]
+    - coord: [55.92770429999999, -3.2095036]
+    - address: 310 Morningside Road, Edinburgh EH10 4QQ, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=11342268795940054176 -- Söderberg Stockbridge
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bakery, coffee shop]
+    - coord: [55.9582314, -3.2090518]
+    - address: 3 Deanhaugh St, Edinburgh EH4 1LU, United Kingdom
+    - later: true
+
+- https://www.openstreetmap.org/node/2335634468 -- Söderberg Quartermile Bakery Shop
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bakery, coffee shop]
+    - coord: [55.9437031, -3.1924053]
+    - address: 33 Simpson Loan, Edinburgh EH3 9GG, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=12698465574194431675 -- Söderberg Broughton Street
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bakery, coffee shop]
+    - coord: [55.9575501, -3.1883962]
+    - address: 45 Broughton St, Edinburgh EH1 3JU, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=2615078818675237013 -- Söderberg Pavilion
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bakery, coffee shop]
+    - coord: [55.9439643, -3.1938768]
+    - address: 1 Lister Sq, Edinburgh EH3 9GL, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=14578422336031702892 -- Söderberg West End
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bakery, coffee shop]
+    - coord: [55.9510375, -3.2098247]
+    - address: 31a Queensferry St, Edinburgh EH2 4QS, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=8072964476255417571 -- Knoops Edinburgh New Town
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop]
+    - coord: [55.9522659, -3.203672]
+    - address: 106 George St, Edinburgh EH2 3HT, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=15913120939362356431 -- Knoops Edinburgh Old Town
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop]
+    - coord: [55.9486321, -3.1933861]
+    - address: 11-15 Victoria St, Edinburgh EH1 2HE, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=9389720346333370962 -- Cairngorm Coffee West End
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop]
+    - coord: [55.9512015, -3.2110444]
+    - address: 1 Melville Pl, Edinburgh EH3 7PR, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=2637132008616362922 -- Cairngorm Coffee South Side
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop]
+    - coord: [55.9396717, -3.2043871]
+    - address: 49 Barclay Pl, Edinburgh EH10 4HW, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=3331370254158188095 -- The Milkman 7 Cockburn Street
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop]
+    - coord: [55.9506877, -3.1909208]
+    - address: 7 Cockburn St, Edinburgh EH1 1BP, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=15118379116364263230 -- The Milkman 52 Cockburn Street
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop]
+    - coord: [55.9504116, -3.1885376]
+    - address: 52 Cockburn St, Edinburgh EH1 1PB, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=17644846766673943420 -- Rocksalt Café Leith
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop]
+    - coord: [55.97487659999999, -3.1673541]
+    - address: 46 Constitution St, Leith, Edinburgh EH6 6RS, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=11965481792205085693 -- Rocksalt Café Jeffrey Street
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop]
+    - coord: [55.95093499999999, -3.184114]
+    - address: 12-14 Jeffrey St, Edinburgh EH1 1DT, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=16868402635900102686 -- Rocksalt Café Merchiston
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop]
+    - coord: [55.93581349999999, -3.210333]
+    - address: 1 Merchiston Pl, Edinburgh EH10 4NP, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=1717147457582806025 -- Curiouser & Curiouser Broughton Street
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [shop]
+    - coord: [55.958606, -3.18986]
+    - address: 93 Broughton St, Edinburgh EH1 3RZ, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=17678332236464863895 -- Curiouser & Curiouser Bruntsfield
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [shop]
+    - coord: [55.9371555, -3.2072139]
+    - address: 106 Bruntsfield Pl, Edinburgh EH10 4ES, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=10572691095556452293 -- Waterstones Edinburgh West End
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bookstore]
+    - coord: [55.9507848, -3.2047522]
+    - address: 128 Princes St., Edinburgh EH2 4AD, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=17629446972866505038 -- Waterstones Edinburgh Cameron Toll
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bookstore]
+    - coord: [55.9273778, -3.164334]
+    - address: Cameron Toll Shopping Centre, 6 Lady Road, Edinburgh EH16 5PB, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=17539287599200172532 -- Waterstones Edinburgh Fort Kinnaird
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bookstore]
+    - coord: [55.9340267, -3.1041117]
+    - address: 31B Newcraighall Rd, Edinburgh EH15 3RD, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=13697116072172094057 -- Waterstones Edinburgh Gyle
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bookstore]
+    - coord: [55.9387117, -3.3131636]
+    - address: Gyle Shopping Centre, Edinburgh EH12 9JY, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=10983175634298761299 -- Casa Laveni
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [hotel]
+    - coord: [45.467246, 9.1861635]
+    - address: Via dei Bossi, 5, 20121 Milano MI, Italy
+    - later: true
+  - A base for exploring central Milan.
+
+- https://www.google.com/maps?cid=2341079721160933295 -- Marchesi 1824 Santa Maria alla Porta
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bakery, coffee shop]
+    - coord: [45.4655917, 9.1806772]
+    - address: Via Santa Maria alla Porta, 11/a, 20123 Milano MI, Italy
+    - later: true
+  - Stop for coffee and a pastry.
+
+- https://www.google.com/maps?cid=6037823531583582260 -- Villa Necchi Campiglio
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [museum]
+    - coord: [45.4683715, 9.201793499999999]
+    - address: Via Mozart, 14, 20122 Milano MI, Italy
+    - later: true
+  - Prioritise the house tour.
+
+- https://www.google.com/maps?cid=4461719690872413869 -- Dimoregallery San Vittore al Teatro
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [art gallery]
+    - coord: [45.4650725, 9.1824423]
+    - address: Via S. Vittore Al Teatro, 1/3, 20123 Milano MI, Italy
+    - later: true
+  - The gallery moved to Via San Vittore al Teatro in April 2026.
+
+- https://www.google.com/maps?cid=16373198739810112245 -- Vincenzo De Cotiis Gallery
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [art gallery]
+    - coord: [45.4698701, 9.1906501]
+    - address: Via Privata Fratelli Gabba, 1a, 20121 Milano MI, Italy
+    - later: true
+  - Visits are by appointment.
+
+- https://www.google.com/maps?cid=4795855511704575676 -- Casa Museo Boschi Di Stefano
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [museum, art gallery]
+    - coord: [45.4789013, 9.211463799999999]
+    - address: Via Giorgio Jan, 15, 20129 Milano MI, Italy
+    - later: true
+  - Explore the apartment collection, including works by Lucio Fontana.
+
+- https://www.google.com/maps?cid=1532867229801060255 -- Fondazione Prada Milano
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [museum, art gallery]
+    - coord: [45.44435559999999, 9.2052072]
+    - address: L.go Isarco, 2, 20139 Milano MI, Italy
+    - later: true
+  - Allow a couple of hours to explore.
+
+- https://www.google.com/maps?cid=1837730608790956679 -- Antica Trattoria della Pesa
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [45.4817604, 9.1840235]
+    - address: Viale Pasubio, 10, 20154 Milano MI, Italy
+    - later: true
+  - A dinner stop for Milanese cooking.
+
+- https://www.google.com/maps?cid=8035631314609604084 -- The Marshmallow Lady
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [shop]
+    - coord: [55.9623459, -3.196237]
+    - address: 14 Rodney St, Edinburgh EH7 4EA, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=334323560635741319 -- Preacher's Patisserie
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bakery]
+    - coord: [55.9462571, -3.2013604]
+    - address: 24-26 Lady Lawson St, Edinburgh EH3 9DS, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=16740106641585824848 -- Sloe Lane Bakery
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bakery]
+    - coord: [55.968766, -3.1736202]
+    - address: 106 Leith Walk, Edinburgh EH6 5DT, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=5531720433983707057 -- Peregrine Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bakery]
+    - coord: [55.9441582, -3.181147]
+    - address: 207 Pleasance, Edinburgh EH8 9RU, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=15825322403691524082 -- Lannan Bakery
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bakery]
+    - coord: [55.9597946, -3.2067364]
+    - address: 29-35 Hamilton Pl, Edinburgh EH3 5BA, United Kingdom
+    - later: true
+  - Order ahead for pick-up.
+
+- https://www.google.com/maps?cid=8844054657941122568 -- Meh. Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop]
+    - coord: [55.9514659, -3.2117233]
+    - address: 2 Drumsheugh Pl, Edinburgh EH3 7PT, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=8539614604227008667 -- Cappuccino Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop]
+    - coord: [55.9511919, -3.1848541]
+    - address: 25 Jeffrey St, Edinburgh EH1 1DH, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=14995211837570530799 -- Room & Rumours Coffee
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop]
+    - coord: [55.95141049999999, -3.1852007]
+    - address: Arch 13, 25 East Market Street, Edinburgh EH8 8FS, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=2227018744195978325 -- Uplands Roast
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop]
+    - coord: [55.9425143, -3.1900303]
+    - address: George Square Lane, Edinburgh EH8 9LD, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=3104562764715722173 -- Kate's Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop]
+    - coord: [55.9372324, -3.1807696]
+    - address: 116 Causewayside, Edinburgh EH9 1PU, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=10523229449021435389 -- Singapore Coffee House
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [coffee shop]
+    - coord: [55.9624422, -3.1976218]
+    - address: 5 Canonmills, Edinburgh EH3 5HA, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=7090040034919870534 -- Pie in the Sky Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [shop]
+    - coord: [55.9506859, -3.1893225]
+    - address: 47 Cockburn St, Edinburgh EH1 1BS, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=17924259040498244617 -- Eden Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [shop]
+    - coord: [55.9506907, -3.1896732]
+    - address: 37 Cockburn St, Edinburgh EH1 1BP, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=18406754362360659644 -- MYSA Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [shop]
+    - coord: [55.9506969, -3.1898631]
+    - address: 31 Cockburn St, Edinburgh EH1, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=698664251293274647 -- Tron Kirk Market
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [market]
+    - coord: [55.9500329, -3.1877519]
+    - address: 122 High St, Edinburgh EH1 1SG, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=6376270800495975513 -- Isle of Skye Candle Company Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [shop]
+    - coord: [55.9482882, -3.1947272]
+    - address: 93 W Bow, Edinburgh EH1 2JP, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=14679084332569047863 -- The Red Door Gallery
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [art gallery, shop]
+    - coord: [55.9484949, -3.1945707]
+    - address: 42 Victoria St, Edinburgh EH1 2JW, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=2952265587815706075 -- Royal Mile Silver
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [shop]
+    - coord: [55.95093749999999, -3.1845293]
+    - address: 11 Jeffrey St, Edinburgh EH1 1DR, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=17085450634059838164 -- Baa Baa Sheep Shop
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [shop]
+    - coord: [55.9463357, -3.1911982]
+    - address: 7 Forrest Rd, Edinburgh EH1 2QH, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=8042403217446419876 -- Dick's Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [shop]
+    - coord: [55.9572316, -3.2057838]
+    - address: 3 N W Circus Pl, Edinburgh EH3 6ST, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=4007724905207112098 -- treen Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [shop]
+    - coord: [55.95796799999999, -3.206901]
+    - address: 2-4 St Stephen Pl, Edinburgh EH3 5AJ, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=323697655479562391 -- Ragamuffin Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [shop]
+    - coord: [55.950588, -3.183917]
+    - address: 278 Canongate, Edinburgh EH8 8AA, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=17758925056844443785 -- Epitome Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [shop]
+    - coord: [55.9575488, -3.1990937]
+    - address: 35 Dundas St, Edinburgh EH3 6QQ, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=1927932193158249761 -- TBCo Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [shop]
+    - coord: [55.973671, -3.1765732]
+    - address: 170B Great Jct St, Leith, Edinburgh EH6 5LJ, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=4847698521767125290 -- The Gently Mad Book Shop
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bookstore]
+    - coord: [55.96388779999999, -3.2020844]
+    - address: 2 Summer Pl, Edinburgh EH3 5NR, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=5574449848698430304 -- House of MinaLima Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bookstore, art gallery]
+    - coord: [55.950488, -3.189024]
+    - address: 42-44 Cockburn St, Edinburgh EH1 1PB, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=2393324949889174536 -- Topping & Company Booksellers Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bookstore]
+    - coord: [55.9577085, -3.1842625]
+    - address: 2 Blenheim Pl, Edinburgh EH7 5JH, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=12693524302604863410 -- Armchair Books
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bookstore]
+    - coord: [55.946324, -3.200031]
+    - address: 72-74 West Port, Edinburgh EH1 2LE, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=12358747185456917131 -- Golden Hare Books
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bookstore]
+    - coord: [55.9579189, -3.2063217]
+    - address: 68 St Stephen St, Edinburgh EH3 5AQ, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=8888371797248612689 -- Dirty Dick's Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bar]
+    - coord: [55.95149989999999, -3.2049386]
+    - address: 159 Rose St, Edinburgh EH2 4LS, United Kingdom
+    - later: true
+  - Try the fish and chips.
+
+- https://www.google.com/maps?cid=18017570805387147439 -- The Albanach
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bar]
+    - coord: [55.95023029999999, -3.1884714]
+    - address: 197 High St, Edinburgh EH1 1PE, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=1785447317681425331 -- Department of Magic
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bar]
+    - coord: [55.949372, -3.187936]
+    - address: 9 Blair St, Edinburgh EH1 1QR, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=13025917565775643706 -- Whirlybird Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [55.9485833, -3.1943472]
+    - address: 36-38 Victoria St, Edinburgh EH1 2JW, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=6776744500552872568 -- Tatties Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [55.9578614, -3.1855382]
+    - address: 5A Union St, Edinburgh EH1 3LT, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=9311045433251712252 -- Bariuma Ramen Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [55.95071129999999, -3.1895601]
+    - address: 41 Cockburn St, Edinburgh EH1 1BS, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=7426957343911531522 -- MUMS Great Comfort Food
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [55.9460389, -3.1908806]
+    - address: 4A Forrest Rd, Edinburgh EH1 2QN, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=50632986633958228 -- Makars Mash Bar Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [55.9499436, -3.1930825]
+    - address: 9-12 Bank St, Edinburgh EH1 2LN, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=673516727182173068 -- Pomelo Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [55.9379849, -3.1856579]
+    - address: 27 Sciennes Rd, Edinburgh EH9 1NX, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=16700476054733089348 -- Little Capo
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [55.95617, -3.20255]
+    - address: 18 Howe St, Edinburgh EH3 6TG, United Kingdom
+    - later: true
+  - For solo dining, book a seat at the bar.
+
+- https://www.google.com/maps?cid=12807116292195762213 -- The Vennel Viewpoint
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [architecture]
+    - coord: [55.946443, -3.197256]
+    - address: The Vennel, Edinburgh EH1 2HU, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=7450226718289166337 -- Ross Fountain
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [architecture, park]
+    - coord: [55.9500754, -3.2030618]
+    - address: Princes St., Edinburgh EH1 2EU, United Kingdom
+    - later: true
+
+- https://deanvillage.org/ -- Dean Village
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [destination]
+    - coord: [55.9524, -3.2181]
+    - address: Dean Path, Edinburgh, Scotland, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=3595043015906314883 -- Old College Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [architecture]
+    - coord: [55.9474302, -3.1872571]
+    - address: South Bridge, Edinburgh EH8 9YL, United Kingdom
+    - later: true
+
+- https://greyfriarskirk.com/visit/kirkyard/ -- Greyfriars Kirkyard
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [architecture]
+    - coord: [55.9468, -3.191666]
+    - address: Candlemaker Row, Edinburgh EH1 2QQ, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=9041591883893928563 -- Victoria Street Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [destination]
+    - coord: [55.9487342, -3.1931981]
+    - address: Victoria Street, Edinburgh, Scotland, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=3303816593117531315 -- The News Steps
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [architecture]
+    - coord: [55.9504374, -3.1919835]
+    - address: The News Steps, Edinburgh, Scotland, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=2416821580808277232 -- Arthur's Seat
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [park]
+    - coord: [55.9440825, -3.1618324]
+    - address: Edinburgh EH15 3PY, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=3162451449492144006 -- Scottish National Portrait Gallery
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [museum, art gallery]
+    - coord: [55.9554998, -3.1935213]
+    - address: 1 Queen St, Edinburgh EH2 1JD, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=9857296582318142915 -- National Museum of Scotland
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [museum]
+    - coord: [55.9469995, -3.1905666]
+    - address: Chambers St, Edinburgh EH1 1JF, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=2858612425985882582 -- Palace of Holyroodhouse
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [museum, architecture]
+    - coord: [55.9527138, -3.1722724]
+    - address: Canongate, Edinburgh EH8 8DX, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=5087412727581510232 -- Edinburgh Castle
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [museum, architecture]
+    - coord: [55.9485947, -3.1999135]
+    - address: Castlehill, Edinburgh EH1 2NG, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=17290890716660613492 -- The Royal Yacht Britannia
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [museum]
+    - coord: [55.9821554, -3.1772521]
+    - address: Ocean Dr, Leith, Edinburgh EH6 6JJ, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=12232038376625013381 -- The Scotsman Picturehouse
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [theatre]
+    - coord: [55.9511558, -3.1885035]
+    - address: 20 North Bridge, Edinburgh EH1 1TR, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=1009652670105360225 -- Alpine Coaster Hillend
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [destination]
+    - coord: [55.8878883, -3.2090009]
+    - address: Midlothian Snowsports Centre, Biggar Rd, Hillend, Edinburgh EH10 7DU, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=8153989602170455712 -- Swanston Farm
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [destination, restaurant]
+    - coord: [55.893624, -3.2172629]
+    - address: 111 Swanston Rd, Edinburgh EH10 7DS, United Kingdom
+    - later: true
+
+- https://www.google.com/maps?cid=11888867742839471077 -- Stills Edinburgh
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [art gallery]
+    - coord: [55.950679, -3.190253]
+    - address: 23 Cockburn St, Edinburgh EH1 1BP, United Kingdom
+    - later: true
+
+- https://www.awong.co.uk/ -- A. Wong Pimlico
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [51.4929859, -0.1405401]
+    - address: 70 Wilton Road, Pimlico, London SW1V 1DE, United Kingdom
+    - later: true
+  - Try the dim sum lunch and the mahjong-tile dessert.
+
+- https://www.thehartw1.com/ -- The Hart Marylebone
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bar, restaurant]
+    - coord: [51.5184177, -0.1547919]
+    - address: 56 Blandford Street, Marylebone, London W1U 7JA, United Kingdom
+    - later: true
+  - Try the mince roll.
+
+- https://leswine.co.uk/ -- Le Swine East Sheen
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [51.4652164, -0.2622431]
+    - address: 170 Upper Richmond Road West, East Sheen, London SW14 8AW, United Kingdom
+    - later: true
+  - Go for the bacon sandwich.
+
+- https://www.imperialchinalondon.com/ -- Imperial China Leicester Square
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [51.5117384, -0.1299295]
+    - address: White Bear Yard, 25a Lisle Street, London WC2H 7BA, United Kingdom
+    - later: true
+  - A no-frills option for dim sum with family.
+
+- https://www.equalpartslondon.com/ -- Equal Parts Hackney Road
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [bar]
+    - coord: [51.53114859999999, -0.0694854]
+    - address: 245 Hackney Road, London E2 8NA, United Kingdom
+    - later: true
+  - Go for cocktails and vinyl.
+
+- https://blanchettesoho.co.uk/ -- Blanchette Soho
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [51.5146838, -0.1360685]
+    - address: 9 D’Arblay Street, Soho, London W1F 8DR, United Kingdom
+    - later: true
+  - A solo-dining option. Sit at the bar with olives and saucisse sèche.
+
+- https://www.sushisumi.com/notting-hill/ -- SUMI Notting Hill
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [51.514804, -0.1963739]
+    - address: 157 Westbourne Grove, Notting Hill, London W11 2RS, United Kingdom
+    - later: true
+  - A relaxed option for date night.
+
+- https://dumplingshack.co.uk/ -- Dumpling Shack Spitalfields
+  - [meta]:
+    - date: 11/15/2026
+    - tags: [restaurant]
+    - coord: [51.5197916, -0.0751714]
+    - address: The Kitchens, Old Spitalfields Market, 16 Horner Square, London E1 6EW, United Kingdom
+    - later: true
+  - Go for the soup dumplings.
+
+- https://www.fourhorsemenbk.com/ -- The Four Horsemen
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [restaurant, bar]
+    - coord: [40.7130584, -73.9573216]
+    - address: 295 Grand St, Brooklyn, NY 11211, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfrsHY7FeGp/
+
+- https://www.pocketbookhudson.com/dining -- Ambos at Pocketbook Hudson
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [restaurant, bar]
+    - coord: [42.250705, -73.78158739999999]
+    - address: 549 Washington St, Hudson, NY 12534, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfrsHY7FeGp/
+
+- https://chezmatantebk.com/ -- Chez Ma Tante
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [restaurant]
+    - coord: [40.7269477, -73.9573774]
+    - address: 90 Calyer St, Brooklyn, NY 11222, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfrsHY7FeGp/
+
+- https://www.elevenmadisonpark.com/ -- Eleven Madison Park
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [restaurant]
+    - coord: [40.7416519, -73.98723529999999]
+    - address: 11 Madison Ave, New York, NY 10010, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfrsHY7FeGp/
+
+- https://www.peoplesny.com/ -- People's
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [bar, art gallery]
+    - coord: [40.7371023, -73.99790729999999]
+    - address: 113 W 13th St, New York, NY 10011, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfrsHY7FeGp/
+
+- https://www.theodeonrestaurant.com/ -- The Odeon
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [restaurant, bar]
+    - coord: [40.71697899999999, -74.007834]
+    - address: 145 W Broadway, New York, NY 10013, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfrsHY7FeGp/
+
+- https://www.seedlibrarynyc.com/ -- Seed Library NYC
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [bar]
+    - coord: [40.7447717, -73.98341359999999]
+    - address: 51 E 30th St, New York, NY 10016, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfrsHY7FeGp/
+
+- https://altbaubakery.com/ -- Altbau Bakery
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [bakery, coffee shop]
+    - coord: [40.717749, -73.9565509]
+    - address: 184 N 8th St, Brooklyn, NY 11211, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfrsHY7FeGp/
+
+- https://viacassiahudson.com/ -- Via Cassia Hudson
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [restaurant]
+    - coord: [42.2542641, -73.7926848]
+    - address: 214 Warren St, Hudson, NY 12534, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfrsHY7FeGp/
+
+- https://maps.google.com/?cid=248358157349903034 -- Sonny's Corner
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [bar]
+    - coord: [40.7297628, -73.95737149999999]
+    - address: 142 Franklin St, Brooklyn, NY 11222, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfrsHY7FeGp/
+
+- https://maps.google.com/?cid=12566489811653729144 -- Gigi's Greenpoint
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [restaurant, bar]
+    - coord: [40.7296258, -73.9573587]
+    - address: 138 Franklin St, Brooklyn, NY 11222, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfrsHY7FeGp/
+
+- https://estelanyc.com/ -- Estela
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [restaurant]
+    - coord: [40.72464129999999, -73.994739]
+    - address: 47 E Houston St 1st floor, New York, NY 10012, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfrsHY7FeGp/
+
+- https://maps.google.com/?cid=11424553985271574110 -- Bamonte's
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [restaurant]
+    - coord: [40.7166048, -73.95123889999999]
+    - address: 32 Withers St, Brooklyn, NY 11211, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfrsHY7FeGp/
+
+- https://www.capitainenyc.com/ -- Capitaine
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [restaurant, bar]
+    - coord: [40.7329643, -74.00766449999999]
+    - address: 684 Greenwich St, New York, NY 10014, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfrsHY7FeGp/
+
+- https://www.melthebakery.com/ -- Mel The Bakery Hudson
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [bakery]
+    - coord: [42.2526707, -73.79002849999999]
+    - address: 324 Warren St, Hudson, NY 12534, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfrsHY7FeGp/
+
+- https://maps.google.com/?cid=10945302152528205037 -- Balera
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [restaurant]
+    - coord: [40.7182797, -73.94464599999999]
+    - address: 442 Graham Ave, Brooklyn, NY 11211, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfrsHY7FeGp/
+
+- https://oddfellowsicecream.com/chelsea -- OddFellows Ice Cream Chelsea
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [deserts]
+    - coord: [40.7416658, -74.00138199999999]
+    - address: 141 8th Avenue, New York, NY 10011, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfsr_bIn-9h/
+
+- https://oddfellowsicecream.com/dumbo -- OddFellows Ice Cream DUMBO
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [deserts]
+    - coord: [40.703285, -73.99223929999999]
+    - address: 44 Water Street, Brooklyn, NY 11201, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfsr_bIn-9h/
+
+- https://oddfellowsicecream.com/bbp -- OddFellows Ice Cream Brooklyn Bridge Park
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [deserts]
+    - coord: [40.6945341, -74.0006015]
+    - address: 334 Furman Street, Brooklyn, NY 11201, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfsr_bIn-9h/
+
+- https://stayfor.co/ -- Stayfor Chelsea
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [workshops]
+    - coord: [40.7463258, -73.99363889999999]
+    - address: 297 7th Avenue, Floor 3, New York, NY 10001, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfsr_bIn-9h/
+
+- https://uncommonsnyc.com/ -- The Uncommons
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [coffee shop, bar]
+    - coord: [40.7294104, -73.9987065]
+    - address: 230 Thompson Street, New York, NY 10012, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfsr_bIn-9h/
+
+- https://rooftopcinemaclub.com/us/new-york/midtown -- Rooftop Cinema Club Midtown
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [theatre]
+    - coord: [40.751177, -73.9859209]
+    - address: 60 West 37th Street, 3rd Floor, New York, NY 10018, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfsr_bIn-9h/
+
+- https://feroxathletics.com/ninja-park/ -- Ferox Ninja Park Greenpoint
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [park]
+    - coord: [40.7281153, -73.9578051]
+    - address: 72 Noble Street, Brooklyn, NY 11222, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfsr_bIn-9h/
+
+- https://metrocinema.com/ -- Metro Private Cinema Chelsea
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [theatre, restaurant]
+    - coord: [40.7414267, -74.001693]
+    - address: 131 8th Avenue, New York, NY 10011, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfsr_bIn-9h/
+
+- https://nytrolleyco.com/ -- New York Trolley Company
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [destination]
+    - later: true
+    - source: https://www.instagram.com/p/Dfsr_bIn-9h/
+
+- https://www.happy-medium.co/locations/00000000-0000-0000-0000-000000000001 -- Happy Medium Two Bridges
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [coffee shop, workshops]
+    - coord: [40.7119003, -73.9945523]
+    - address: 49 Market Street, New York, NY 10002, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfsr_bIn-9h/
+
+- https://www.happy-medium.co/locations/00000000-0000-0000-0000-000000000002 -- Happy Medium Greenpoint
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [coffee shop, workshops]
+    - coord: [40.73333, -73.9580393]
+    - address: 224 Franklin Street, Brooklyn, NY 11222, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfsr_bIn-9h/
+
+- https://www.69atlantic.com/ -- 69 Atlantic
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [theatre]
+    - coord: [40.6914734, -73.9980412]
+    - address: 69 Atlantic Avenue, Brooklyn, NY 11201, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfsr_bIn-9h/
+
+- https://www.ciaociaodisco.com/ -- Ciao Ciao Disco
+  - [meta]:
+    - date: 11/13/2026
+    - tags: [bar]
+    - coord: [40.721049, -73.9581196]
+    - address: 97 North 10th Street, Brooklyn, NY 11249, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfnnyftDMjt/
+
+- https://www.jeans.nyc/ -- Jean's
+  - [meta]:
+    - date: 11/13/2026
+    - tags: [restaurant, bar]
+    - coord: [40.7285389, -73.99211649999999]
+    - address: 415 Lafayette Street, New York, NY 10003, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfnnyftDMjt/
+
+- https://www.gabriela.nyc/ -- Gabriela
+  - [meta]:
+    - date: 11/13/2026
+    - tags: [bar]
+    - coord: [40.721792, -73.9583887]
+    - address: 90 Wythe Avenue, Brooklyn, NY 11249, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfnnyftDMjt/
+
+- https://www.acmenyc.com/ -- ACME
+  - [meta]:
+    - date: 11/13/2026
+    - tags: [bar]
+    - coord: [40.72721809999999, -73.9940625]
+    - address: 9 Great Jones Street, New York, NY 10012, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfnnyftDMjt/
+
+- https://www.vonbar.com/home -- Von
+  - [meta]:
+    - date: 11/13/2026
+    - tags: [bar]
+    - coord: [40.7254775, -73.99261109999999]
+    - address: 3 Bleecker Street, New York, NY 10012, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfnnyftDMjt/
+
+- https://www.lebainnewyork.com/rooftop -- Le Bain
+  - [meta]:
+    - date: 11/13/2026
+    - tags: [bar]
+    - coord: [40.7410806, -74.00817309999999]
+    - address: 444 West 13th Street, New York, NY 10014, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfnnyftDMjt/
+
+- https://www.graciesny.com/ -- Gracie's Luncheonette
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [restaurant, bakery]
+    - coord: [42.253562, -73.8947084]
+    - address: 969 Main Street, Leeds, NY 12451, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfk-PGSFcyB/
+
+- https://www.stissinghouse.com/ -- Stissing House
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [restaurant]
+    - coord: [41.9795121, -73.6564422]
+    - address: 7801 South Main Street, Pine Plains, NY 12567, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfk-PGSFcyB/
+
+- https://www.urbancowboy.com/catskills/ -- Urban Cowboy Lodge
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [hotel, restaurant, bar]
+    - coord: [42.052525, -74.45846999999999]
+    - address: 37 Alpine Road, Big Indian, NY 12410, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfk-PGSFcyB/
+
+- https://www.bovinafarmfermentory.com/ -- Bovina Farm & Fermentory
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [restaurant, hotel]
+    - coord: [42.3006557, -74.7666921]
+    - address: 2951 County Road 5, Bovina Center, NY 13740, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfk-PGSFcyB/
+
+- https://phoeniciadiner.com/ -- Phoenicia Diner
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [restaurant]
+    - coord: [42.0710505, -74.3077531]
+    - address: 5681 State Route 28, Phoenicia, NY 12464, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfk-PGSFcyB/
+
+- https://www.themaker.com/ -- The Maker Hotel
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [hotel, restaurant, bar]
+    - coord: [42.253036, -73.7908903]
+    - address: 302 Warren Street, Hudson, NY 12534, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfk-PGSFcyB/
+
+- https://www.rosehillferments.com/ -- Rose Hill Farm
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [bar]
+    - coord: [42.0093311, -73.84949139999999]
+    - address: 19 Rose Hill, Red Hook, NY 12571, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfk-PGSFcyB/
+
+- https://www.cafemutton.com/ -- Cafe Mutton
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [restaurant]
+    - coord: [42.2471202, -73.78039749999999]
+    - address: 757 Columbia Street, Hudson, NY 12534, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfk-PGSFcyB/
+
+- https://auberge.com/wildflower-farms/ -- Wildflower Farms
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [hotel]
+    - coord: [41.6860566, -74.1820163]
+    - address: 2702 Main Street, Gardiner, NY 12525, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfk-PGSFcyB/
+
+- https://www.eastwindhotels.com/oliverea-valley -- Eastwind Oliverea Valley
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [hotel, restaurant]
+    - coord: [42.0713691, -74.47403709999999]
+    - address: 212-220 McKenley Hollow Road, Big Indian, NY 12410, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfk-PGSFcyB/
+
+- https://www.feastandfloret.com/ -- Feast & Floret
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [restaurant]
+    - coord: [42.2527188, -73.7918413]
+    - address: 13 South 3rd Street, Hudson, NY 12534, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfk-PGSFcyB/
+
+- https://www.deermountaininn.com/ -- Deer Mountain Inn
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [hotel, restaurant]
+    - coord: [42.2207973, -74.1193351]
+    - address: 790 County Route 25, Tannersville, NY 12485, United States
+    - later: true
+    - source: https://www.instagram.com/p/Dfk-PGSFcyB/
+
+- https://www.royalmansour.com/en/marrakech/ -- Royal Mansour Marrakech
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [hotel]
+    - coord: [31.6251861, -7.9983783]
+    - address: Rue Abou El Abbas Sebti, 40000 Marrakech, Morocco
+    - later: true
+    - source: https://www.instagram.com/reel/DbWZKJ0oDJu/
+  - Amanda Wakeley interview: The guest praises its local craftsmanship, private riads and discreet butler service, describing her arrival as breathtaking.
+- https://mamounia.com/en/ -- La Mamounia Marrakech
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [hotel]
+    - coord: [31.6215239, -7.997488]
+    - address: Avenue Bab Jdid, 40040 Marrakech-Medina, Morocco
+    - later: true
+    - source: https://www.instagram.com/reel/DbWZKJ0oDJu/
+  - Amanda Wakeley interview: Mentioned in passing as a hotel the guest’s mother had visited before their stay at Royal Mansour.
+- https://www.villafeltrinelli.com/en/ -- Villa Feltrinelli
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [hotel]
+    - coord: [45.69381, 10.6703873]
+    - address: Via Rimembranza 38-40, 25084 Gargnano BS, Italy
+    - later: true
+    - source: https://www.instagram.com/reel/DbWZKJ0oDJu/
+  - Amanda Wakeley interview: The guest strongly recommends it and recounts Michael Winner calling it his favourite hotel after a stay.
+- https://www.la-colombe-dor.com/ -- La Colombe d'Or Saint-Paul-de-Vence
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [hotel]
+    - coord: [43.6987531, 7.1219831]
+    - address: 1 Place du Général de Gaulle, 06570 Saint-Paul-de-Vence, France
+    - later: true
+    - source: https://www.instagram.com/reel/DbWZKJ0oDJu/
+  - Amanda Wakeley interview: The guest’s own holiday choice, praised for its art collection, intimate bar and enduring atmosphere.
+- https://turismo.gov.st/en -- São Tomé and Príncipe
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [destination]
+    - address: São Tomé and Príncipe
+    - later: true
+    - source: https://www.instagram.com/reel/DdbKY5Xo7Y-/
+  - The Stanza reel: The guest recommends it as an overlooked travel destination.
+- https://www.casapolanco.com/ -- Casa Polanco
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [hotel]
+    - coord: [19.4291182, -99.19775799999999]
+    - address: Luis G. Urbina 84, Polanco, Miguel Hidalgo, 11560 Ciudad de México, Mexico
+    - later: true
+    - source: https://www.instagram.com/reel/DdbKY5Xo7Y-/
+  - The Stanza reel: The guest names Casa Polanco as her most underrated hotel.
+- https://singita.com/lodge/singita-kataza-house/ -- Singita Kataza House
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [hotel]
+    - coord: [-1.5007223, 29.6325193]
+    - address: Singita Volcanoes National Park, Nyange Sector, Kinigi, Musanze, Rwanda
+    - later: true
+    - source: https://www.instagram.com/reel/DdbKY5Xo7Y-/
+  - The Stanza reel: The guest singles out Kataza House as a recent stay she enjoyed.
+- https://capellahotels.com/en/capella-taipei -- Capella Taipei
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [hotel]
+    - coord: [25.0532393, 121.549923]
+    - address: No. 139 Dunhua North Road, Songshan District, Taipei 105021, Taiwan
+    - later: true
+    - source: https://www.instagram.com/reel/DdbKY5Xo7Y-/
+  - The Stanza reel: The guest recommends Capella Taipei when asked about a recent suite she enjoyed.
+- https://www.oetkerhotels.com/hotels/eden-rock-st-barths/ -- Eden Rock St Barths
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [hotel]
+    - coord: [17.9034357, -62.836107]
+    - address: Baie de St Jean, 97133 Saint-Barthélemy, French West Indies
+    - later: true
+    - source: https://www.instagram.com/reel/DdbKY5Xo7Y-/
+  - The Stanza reel: The guest lists it among SmartFlyer’s three most-booked hotels in 2025.
+- https://borgosantandrea.it/ -- Borgo Santandrea
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [hotel]
+    - coord: [40.6189891, 14.5765026]
+    - address: Via Giovanni Augustariccio 33, 84011 Amalfi SA, Italy
+    - later: true
+    - source: https://www.instagram.com/reel/DdbKY5Xo7Y-/
+  - The Stanza reel: The guest lists it among SmartFlyer’s three most-booked hotels in 2025.
+- https://www.fourseasons.com/paris/ -- Four Seasons Hotel George V Paris
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [hotel]
+    - coord: [48.8688005, 2.3008313]
+    - address: 31 avenue George V, 75008 Paris, France
+    - later: true
+    - source: https://www.instagram.com/reel/DdbKY5Xo7Y-/
+  - The Stanza reel: The guest lists it among SmartFlyer’s three most-booked hotels in 2025.
+- https://loulou-ramatuelle.com/ -- Loulou Ramatuelle
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [restaurant, bar]
+    - coord: [43.2394803, 6.6626813]
+    - address: 962 Chemin des Tamaris, 83350 Ramatuelle, France
+    - later: true
+    - source: https://www.instagram.com/reel/DcELev6PF2E/
+  - Creator rating: 8/10 (@spiritual.materialist). A singles scene, especially recommended to men looking to meet women.
+- https://bagatelle.com/venues/st-tropez/ -- Bagatelle Saint-Tropez
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [restaurant, bar]
+    - coord: [43.2348605, 6.662128999999999]
+    - address: Les Tamaris, Chemin de la Matarane, 83350 Ramatuelle, France
+    - later: true
+    - source: https://www.instagram.com/reel/DcELev6PF2E/
+  - Creator rating: 6/10 (@spiritual.materialist). Loud, American-style partying that the creator finds tacky and very fun.
+- https://casaamor.fr/ -- Casa Amor Saint-Tropez
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [restaurant, bar]
+    - coord: [43.23463479999999, 6.661876299999999]
+    - address: Chemin de Matarane, 83350 Ramatuelle, France
+    - later: true
+    - source: https://www.instagram.com/reel/DcELev6PF2E/
+  - Creator rating: 9/10 (@spiritual.materialist). Fun and classy, with a balanced crowd.
+- https://shellona.com/en/home-st-tropez/ -- Shellona Saint-Tropez
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [restaurant, bar]
+    - coord: [43.2375775, 6.6627021]
+    - address: 1010 Chemin des Tamaris, 83350 Ramatuelle, France
+    - later: true
+    - source: https://www.instagram.com/reel/DcELev6PF2E/
+  - Creator rating: 5/10 (@spiritual.materialist). A wealthy crowd the creator sees as preoccupied with status and approval.
+- https://gigi-restaurant.com/saint-tropez/ -- Gigi Ramatuelle
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [restaurant, bar]
+    - coord: [43.2219847, 6.6605231]
+    - address: 1050 Chemin des Barraques, 83350 Ramatuelle, France
+    - later: true
+    - source: https://www.instagram.com/reel/DcELev6PF2E/
+  - Creator rating: 7/10 (@spiritual.materialist). An older, affluent crowd with polished style and expensive handbags.
+- https://www.club55.fr/ -- Le Club 55
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [restaurant, bar]
+    - coord: [43.2275238, 6.661304299999999]
+    - address: 43 Boulevard Patch, 83350 Ramatuelle, France
+    - later: true
+    - source: https://www.instagram.com/reel/DcELev6PF2E/
+  - Creator rating: 8.5/10 (@spiritual.materialist). Relaxed clientele, though the creator thinks they tolerate being overcharged.
+- https://www.indiegroup.fr/en/indiebeach/ -- Indie Beach Ramatuelle
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [restaurant, bar]
+    - coord: [43.2135391, 6.6628694]
+    - address: Route de Bonne Terrasse, 83350 Ramatuelle, France
+    - later: true
+    - source: https://www.instagram.com/reel/DcELev6PF2E/
+  - Creator rating: 7/10 (@spiritual.materialist). A pleasant, down-to-earth crowd.
+- https://yeeels.com/en/services/verdebeach -- Verde Beach Saint-Tropez
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [restaurant, bar]
+    - coord: [43.2211202, 6.6620013]
+    - address: 1149 Chemin de l’Épi, 83350 Ramatuelle, France
+    - later: true
+    - source: https://www.instagram.com/reel/DcELev6PF2E/
+  - Creator rating: 5.5/10 (@spiritual.materialist). The creator finds the crowd forgettable and boring.
+- https://www.kalamatabeach.com/en -- Kalamata Beach Saint-Tropez
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [restaurant, bar]
+    - coord: [43.2392863, 6.6630812]
+    - address: 1095 Chemin des Tamaris, 83350 Ramatuelle, France
+    - later: true
+    - source: https://www.instagram.com/reel/DcELev6PF2E/
+  - Creator rating: 4.5/10 (@spiritual.materialist). The creator considers the crowd young or childish.
+- https://www.google.com/maps?cid=1047354685528464138 -- Salto Ramatuelle
+  - [meta]:
+    - date: 11/11/2026
+    - tags: [restaurant, bar]
+    - coord: [43.2124585, 6.6637371]
+    - address: 471 Chemin Garonne, access via Route de Bonne Terrasse, 83350 Ramatuelle, France
+    - later: true
+    - source: https://www.instagram.com/reel/DcELev6PF2E/
+  - Creator rating: 10/10 (@spiritual.materialist). The creator’s favourite, with an affluent, unpretentious crowd.
+- https://www.google.com/maps?cid=6089939336588562412 -- Asters Patisserie Lake Shore
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [bakery]
+    - coord: [43.6166231, -79.48806829999999]
+    - address: 2340 Lake Shore Blvd W, Etobicoke, ON M8V 1B6, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.google.com/maps?cid=14955891741252735362 -- Asters Patisserie Brookfield Place
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [bakery]
+    - coord: [43.6467484, -79.3785852]
+    - address: 181 Bay St, Unit C370, Toronto, ON M5J 2T3, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.google.com/maps?cid=12718061841617362281 -- Matcha Matcha Church Street
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [coffee shop]
+    - coord: [43.6623054, -79.37926019999999]
+    - address: 407 Church St, Toronto, ON M5B 1J2, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.google.com/maps?cid=16775605942358152543 -- Matcha Matcha Markham Lab
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [coffee shop]
+    - coord: [43.8217771, -79.344633]
+    - address: 200 Steelcase Rd E, Unit 5, Markham, ON L3R 1G2, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.google.com/maps?cid=6383950637601079542 -- Matcha Matcha Markham Studio
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [coffee shop]
+    - coord: [43.8477764, -79.3487871]
+    - address: 11 Fairburn Dr Unit 8, Markham, ON L6G 0A4, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.google.com/maps?cid=16178833691107815840 -- Andrea's Cookies Bloor West
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [bakery]
+    - coord: [43.6557504, -79.4561578]
+    - address: 1632 Bloor St W, Toronto, ON M6P 1A7, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.google.com/maps?cid=8073623855946966913 -- Andrea's Cookies Ossington
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [bakery]
+    - coord: [43.6479274, -79.4204848]
+    - address: 166 Ossington Ave, Toronto, ON M6J 2Z7, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.google.com/maps?cid=11930073260659268820 -- Andrea's Cookies Midtown
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [bakery]
+    - coord: [43.7150291, -79.4003889]
+    - address: 2614 Yonge St, Toronto, ON M4P 2J4, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.google.com/maps?cid=9746043470302101679 -- Andrea's Cookies Oakville
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [bakery]
+    - coord: [43.4469964, -79.66670289999999]
+    - address: 270 Lakeshore Rd E, Oakville, ON L6J 1J1, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.google.com/maps?cid=8438111103222065220 -- nutbar Yorkville
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [coffee shop]
+    - coord: [43.66959869999999, -79.3918249]
+    - address: 102 Bloor St W Unit 4, Toronto, ON M5S 1M8, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://g.co/kgs/rg3dW5m -- nutbar Midtown
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [coffee shop]
+    - coord: [43.714634245, -79.40031965]
+    - address: 2592 Yonge St, Toronto, ON M4P 2J4, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.google.com/maps?cid=15396067068323346433 -- nutbar Summerhill
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [coffee shop]
+    - coord: [43.6829246, -79.39228539999999]
+    - address: 1240 Yonge St, Toronto, ON M4T 1W5, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.google.com/maps?cid=16864735026558959763 -- nutbar Leslieville
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [coffee shop]
+    - coord: [43.6605751, -79.3417134]
+    - address: 905 Queen St E, Toronto, ON M4M 1J4, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.google.com/maps?cid=13293596554439861274 -- nutbar Adelaide
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [coffee shop]
+    - coord: [43.6460984, -79.39774059999999]
+    - address: 425 Adelaide St W Ste 101, Toronto, ON M5V 3C1, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.google.com/maps?cid=4752440046136642502 -- nutbar Ossington Pop-Up
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [coffee shop]
+    - coord: [43.6470739, -79.4196508]
+    - address: 127 Ossington Ave, Toronto, ON M6J 2Z6, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://tinymarketco.com/ -- Tiny Market Co.
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [market, restaurant]
+    - coord: [43.6691176, -79.4129306]
+    - address: 938 Bathurst St, Toronto, ON M5R 3G4, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DejhK8HuY3A/
+- https://order.incentivio.com/c/rosiesburgers/locations/firstcanadianplace/menu -- Rosie's Burgers First Canadian Place
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [restaurant]
+    - coord: [43.6492335, -79.3814503]
+    - address: Mezzanine Level Food Court, 100 King St W, Toronto, ON M5X 1C0, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://order.incentivio.com/c/rosiesburgers/locations/queenwest/menu -- Rosie's Burgers Queen West
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [restaurant]
+    - coord: [43.6476774, -79.4010423]
+    - address: 573 Queen St W, Toronto, ON M5V 2B6, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://order.incentivio.com/c/rosiesburgers/locations/thewell/menu -- Rosie's Burgers The Well
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [restaurant]
+    - coord: [43.64255, -79.39614949999999]
+    - address: The Well, 486 Front St W, Toronto, ON M5V 0V2, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://order.incentivio.com/c/rosiesburgers/locations/avenuerd/menu -- Rosie's Burgers Avenue Road
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [restaurant]
+    - coord: [43.7230837, -79.4162398]
+    - address: 1542 Avenue Rd, Toronto, ON M5M 3X5, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://order.incentivio.com/c/rosiesburgers/locations/donmills/menu -- Rosie's Burgers Don Mills
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [restaurant]
+    - coord: [43.7342452, -79.3436734]
+    - address: 49 Clock Tower Rd, North York, ON M3C 0G4, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://order.incentivio.com/c/rosiesburgers/locations/portcredit/menu -- Rosie's Burgers Port Credit
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [restaurant]
+    - coord: [43.5524166, -79.58449399999999]
+    - address: 61 Lakeshore Rd E, Mississauga, ON L5G 1C9, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://order.incentivio.com/c/rosiesburgers/locations/appleby/menu -- Rosie's Burgers Appleby
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [restaurant]
+    - coord: [43.40542629999999, -79.80810699999999]
+    - address: 2500 Appleby Line, Burlington, ON L7L 0A2, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://order.incentivio.com/c/rosiesburgers/locations/whitby/menu -- Rosie's Burgers Whitby
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [restaurant]
+    - coord: [43.8857809, -78.91492869999999]
+    - address: 1525 Dundas St E Unit 4, Whitby, ON L1N 2K6, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.google.com/maps?cid=4389737039265115169 -- Easterbrook's Hotdog Stand
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [restaurant]
+    - coord: [43.289076, -79.874785]
+    - address: 694 Spring Gardens Rd, Burlington, ON L7T 1J3, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.phancybodega.com/ -- Phancy's Bodega
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [sandwich shop, market]
+    - coord: [43.6597176, -79.453807]
+    - address: 2473 Dundas St W, Toronto, ON M6P 1X3, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.instagram.com/molacafe.to/ -- Mola Cafe Market
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [coffee shop]
+    - coord: [43.6518575, -79.4092287]
+    - address: 822 Dundas St W, Toronto, ON M6J 1V3, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://harbordbakery.ca/ -- Harbord Bakery
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [bakery]
+    - coord: [43.6624483, -79.4044268]
+    - address: 115 Harbord St, Toronto, ON M5S 1G7, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.google.com/maps?cid=4427152423491785569 -- Kajiken North York
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [restaurant]
+    - coord: [43.7625578, -79.4115791]
+    - address: 4850 Yonge St, North York, ON M2N 5N2, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.instagram.com/sleepypetes/ -- Sleepy Pete's
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [sandwich shop]
+    - coord: [43.65440419999999, -79.4004856]
+    - address: 69 Kensington Ave, Toronto, ON M5T 2K2, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfiwUD_HATy/
+- https://www.chezroselondon.com/ -- Chez Rose
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [restaurant]
+    - coord: [51.5135423, -0.1422513]
+    - address: 5 Pollen St, London W1S 1NE, United Kingdom
+    - later: true
+    - source: https://www.instagram.com/reel/DfjknjwsOJ3/
+- https://www.instagram.com/adelaides.kitchen/ -- Adelaide's Kitchen
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [coffee shop]
+    - coord: [-33.8864496, 151.2280982]
+    - address: 9 Regent St, Paddington NSW 2021, Australia
+    - later: true
+    - source: https://www.instagram.com/p/De_OKI_E42N/
+- https://le-baus.com/pages/store -- Lè Baus
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [shop, coffee shop]
+    - coord: [-33.8867191, 151.230513]
+    - address: 3A Victoria St, Paddington NSW 2021, Australia
+    - later: true
+    - source: https://www.instagram.com/p/De_OKI_E42N/
+- https://www.sondercafe.com.au/ -- Sonder Café Paddington
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [coffee shop, restaurant]
+    - coord: [-33.8823314, 151.2280535]
+    - address: 227 Glenmore Rd, Paddington NSW 2021, Australia
+    - later: true
+    - source: https://www.instagram.com/p/De_OKI_E42N/
+- https://25hours-hotels.com/sydney/the-olympia/restaurants-bars/jacob-the-angel/ -- Jacob the Angel Sydney
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [coffee shop]
+    - coord: [-33.8820993, 151.2194193]
+    - address: 5 Oxford St, Paddington NSW 2021, Australia
+    - later: true
+    - source: https://www.instagram.com/p/De_OKI_E42N/
+- https://www.ampersandcafe.com.au/contact -- Ampersand Cafe & Bookstore
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [bookstore, coffee shop]
+    - coord: [-33.8831036, 151.2209812]
+    - address: 78 Oxford St, Paddington NSW 2021, Australia
+    - later: true
+    - source: https://www.instagram.com/p/De_OKI_E42N/
+- https://www.mecca.coffee/pages/mecca-coffee-glenmore-road-paddington -- Mecca Coffee Paddington
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [coffee shop]
+    - coord: [-33.8835254, 151.2223744]
+    - address: Shop 4/2-16 Glenmore Rd, Paddington NSW 2021, Australia
+    - later: true
+    - source: https://www.instagram.com/p/De_OKI_E42N/
+- https://www.thedirtttylaundry.com/ -- The Dirty Laundry
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [bar]
+    - coord: [43.6428351, -79.4261564]
+    - address: 1186 Queen St W, Toronto, ON M6J 1J6, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DffUh7gFte2/
+- https://oddseoul.ca/ -- Odd Seoul
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [bar]
+    - coord: [43.6462334, -79.4197137]
+    - address: 90 Ossington Ave, Toronto, ON M6J 2Z4, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DffUh7gFte2/
+- https://simplthings.ca/ -- Simpl Things
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [bar]
+    - coord: [43.6408208, -79.43425449999999]
+    - address: 269 Dunn Ave, Toronto, ON M6K 1L8, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DffUh7gFte2/
+- https://www.google.com/maps?cid=11879702498095890221 -- Lonely Diner
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [bar]
+    - coord: [43.6567645, -79.40719849999999]
+    - address: 432 College St, Toronto, ON M5T 1T3, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DffUh7gFte2/
+- https://www.google.com/maps?cid=11832970971817157215 -- Chez Wa
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [bar]
+    - coord: [43.65488089999999, -79.4146848]
+    - address: 617 College St, Toronto, ON M6G 1B5, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DffUh7gFte2/
+- https://goodnightcocktailclub.com/ -- Goodnight Cocktail Club
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [bar]
+    - coord: [43.6434486, -79.39842019999999]
+    - address: 488 Wellington St W, Toronto, ON M5V 1E3, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DffUh7gFte2/
+- https://www.zigzagoyster.com/ -- Zig Zag Oyster Bar
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar, restaurant]
+    - coord: [40.6762851, -73.9631007]
+    - address: 406 Prospect Pl, Brooklyn, NY 11238, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfUolsrFLXe/
+- https://www.google.com/maps?cid=9705930316328574808 -- Only Child
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar]
+    - coord: [40.685171, -73.935322]
+    - address: 567 Jefferson Ave, Brooklyn, NY 11221, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfUolsrFLXe/
+- https://929nyc.com/ -- 929
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar]
+    - coord: [40.7516756, -73.97893499999999]
+    - address: 56 E 41st St 2nd Floor, New York, NY 10017, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfUolsrFLXe/
+- https://www.bodeganightsbk.com/ -- Bodega Nights
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar]
+    - coord: [40.7072933, -73.9223306]
+    - address: 425 Troutman St, Brooklyn, NY 11237, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfUolsrFLXe/
+- https://www.google.com/maps?cid=1316569012726055038 -- Peek Inn
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar]
+    - coord: [40.7236043, -73.9405058]
+    - address: 38 Driggs Ave, Brooklyn, NY 11222, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfUolsrFLXe/
+- https://www.chinupbarnyc.com/ -- Chin Up Bar
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar]
+    - coord: [40.7208685, -73.99275919999999]
+    - address: 171 Chrystie St, New York, NY 10002, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfUolsrFLXe/
+- https://www.google.com/maps?cid=6228310723446904495 -- Bar Chucho
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar, restaurant]
+    - coord: [40.7124073, -73.99464159999999]
+    - address: 37 Market St, New York, NY 10002, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfUolsrFLXe/
+- https://tenderbar.nyc/ -- Tender Bar
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar]
+    - coord: [40.7475891, -73.986913]
+    - address: 22 W 32nd St, 16th Floor, New York, NY 10001, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfUolsrFLXe/
+- https://www.google.com/maps?cid=424110142974442480 -- Thone
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar, coffee shop]
+    - coord: [40.7254163, -73.9835739]
+    - address: 501 E 6th St, New York, NY 10009, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfUolsrFLXe/
+- https://lovethyneighbornyc.com/ -- Love Thy Neighbor
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar]
+    - coord: [40.7338064, -74.0022506]
+    - address: 55 Christopher St, New York, NY 10014, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfUolsrFLXe/
+- https://desertvintage.com/pages/locations -- Desert Vintage
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [shop]
+    - coord: [40.7157464, -73.9912903]
+    - address: 34 Orchard St, New York, NY 10002, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://danafoleynyc.com/ -- Dana Foley NYC
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [shop]
+    - coord: [40.72159569999999, -73.9873527]
+    - address: 174 Ludlow St, New York, NY 10002, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.assemblynewyork.com/ -- Assembly New York
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [shop]
+    - coord: [40.7214982, -73.98753409999999]
+    - address: 170 Ludlow St, New York, NY 10002, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.thereformation.com/stores/lower-east-side.html -- Reformation Lower East Side
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [shop]
+    - coord: [40.720933, -73.9877954]
+    - address: 156 Ludlow St, New York, NY 10002, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.google.com/maps?cid=8842247816402036280 -- Ludlow Coffee Supply
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [coffee shop]
+    - coord: [40.7216825, -73.9873972]
+    - address: 176 Ludlow St, New York, NY 10002, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.newmuseum.org/ -- New Museum
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [museum]
+    - coord: [40.7223376, -73.9928905]
+    - address: 235 Bowery, New York, NY 10002, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.icp.org/ -- International Center of Photography
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [museum]
+    - coord: [40.71822969999999, -73.989171]
+    - address: 84 Ludlow St, New York, NY 10002, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://cornerbarnyc.com/ -- Corner Bar at Nine Orchard
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant, bar]
+    - coord: [40.7145844, -73.9924952]
+    - address: 60 Canal St, New York, NY 10002, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.ledivenyc.com/ -- Le Dive
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant, bar]
+    - coord: [40.71476, -73.99094339999999]
+    - address: 37 Canal St, New York, NY 10002, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.outerheaven.nyc/ -- Outer Heaven
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar, nightclub]
+    - coord: [40.7220384, -73.9924255]
+    - address: 191 Chrystie St, New York, NY 10002, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.rhythmzero.nyc/ -- Rhythm Zero West Village
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [coffee shop]
+    - coord: [40.7332926, -74.0043956]
+    - address: 326-328 Bleecker St, New York, NY 10014, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://whitney.org/ -- Whitney Museum of American Art
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [museum]
+    - coord: [40.7395877, -74.0088629]
+    - address: 99 Gansevoort St, New York, NY 10014, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.thehighline.org/visit/ -- The High Line Gansevoort Entrance
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [park]
+    - coord: [40.7394043, -74.00806229999999]
+    - address: Gansevoort Street and Washington Street, New York, NY 10014, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.thecommerceinn.com/ -- The Commerce Inn
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [40.7313538, -74.0057057]
+    - address: 50 Commerce St, New York, NY 10014, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.viacarota.com/ -- Via Carota
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [40.7331959, -74.0036494]
+    - address: 51 Grove St, New York, NY 10014, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://barpisellino.com/ -- Bar Pisellino
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar]
+    - coord: [40.7329348, -74.0034603]
+    - address: 52 Grove St, New York, NY 10014, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.nycprimerib.com/ -- 4 Charles Prime Rib
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [40.7351398, -74.0006547]
+    - address: 4 Charles St, New York, NY 10014, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.cafecharmantnyc.com/ -- Café Charmant
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [40.7337397, -74.0047008]
+    - address: 340 Bleecker St, New York, NY 10014, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.the86.nyc/ -- The Eighty Six
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [40.7320801, -74.0051089]
+    - address: 86 Bedford St, New York, NY 10014, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.dandelionnewyork.com/ -- Dandelion
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar]
+    - coord: [40.7334062, -74.00543569999999]
+    - address: 115 Christopher St, New York, NY 10014, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.paulscasablanca.com/ -- Paul's Casablanca
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [nightclub, bar]
+    - coord: [40.7261541, -74.00835959999999]
+    - address: 305 Spring St, New York, NY 10013, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://us.lacabra.com/pages/soho -- La Cabra SoHo
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [coffee shop]
+    - coord: [40.72431, -73.9962]
+    - address: 284 Lafayette St, New York, NY 10012, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://stallestudios.com/ -- Ställe Studios
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [spa]
+    - coord: [40.7203677, -74.0020433]
+    - address: 54 Howard St 5th Floor, New York, NY 10013, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.spencers.spa/soho -- Spencer's Spa SoHo
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [spa]
+    - coord: [40.72356569999999, -73.99802509999999]
+    - address: 550 Broadway, 2nd and 4th floors, New York, NY 10012, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.davidzwirner.com/galleries/new-york/tribeca -- David Zwirner Tribeca
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [art gallery]
+    - coord: [40.7191723, -74.0032562]
+    - address: 52 Walker St, New York, NY 10013, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.santambroeus.com/pages/location-soho -- Sant Ambroeus SoHo
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant, coffee shop]
+    - coord: [40.72334619999999, -73.99652569999999]
+    - address: 265 Lafayette St, New York, NY 10012, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.lamercerieny.com/ -- La Mercerie
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [40.7201478, -74.0021708]
+    - address: 53 Howard St, New York, NY 10013, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://balthazarny.com/ -- Balthazar
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [40.722668, -73.99822979999999]
+    - address: 80 Spring St, New York, NY 10012, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+  - https://www.instagram.com/p/DfrsHY7FeGp/ -- @vibrantvaleria’s New York fall guide
+- https://www.oresh.com/ -- Or'esh
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [40.7260011, -74.0008797]
+    - address: 450 W Broadway, New York, NY 10012, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.thecornerstoresoho.com/ -- The Corner Store
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [40.726568, -73.99983499999999]
+    - address: 475 W Broadway, New York, NY 10012, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.templebar.co/ -- Temple Bar
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar]
+    - coord: [40.7258921, -73.9949405]
+    - address: 332 Lafayette St, New York, NY 10012, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.themulberrybar.com/ -- The Mulberry
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar]
+    - coord: [40.7228238, -73.99573409999999]
+    - address: 240 Mulberry St, Lower Level, New York, NY 10012, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.ninesnyc.com/ -- The Nines
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar]
+    - coord: [40.7272376, -73.9940491]
+    - address: 9 Great Jones St, New York, NY 10012, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.clubroomnyc.com/ -- Club Room at Soho Grand
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar, nightclub]
+    - coord: [40.7221457, -74.0046268]
+    - address: 310 W Broadway, New York, NY 10013, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://zerobondny.com/ -- Zero Bond
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar, nightclub]
+    - coord: [40.72704359999999, -73.9947447]
+    - address: 0 Bond St, New York, NY 10012, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.google.com/maps?cid=10672522444434965572 -- Ralph's Coffee Madison Avenue
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [coffee shop]
+    - coord: [40.77165859999999, -73.9657658]
+    - address: 888 Madison Ave, New York, NY 10021, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.santambroeus.com/pages/location-madison-avenue -- Sant Ambroeus Madison Avenue
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [coffee shop, restaurant]
+    - coord: [40.7754159, -73.9629886]
+    - address: 1000 Madison Ave, New York, NY 10075, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://salon94.com/ -- Salon 94
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [art gallery]
+    - coord: [40.783428, -73.958326]
+    - address: 3 E 89th St, New York, NY 10128, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.guggenheim.org/ -- Solomon R. Guggenheim Museum
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [museum]
+    - coord: [40.7829796, -73.9589706]
+    - address: 1071 5th Ave, New York, NY 10128, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.metmuseum.org/plan-your-visit -- The Met Fifth Avenue
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [museum]
+    - coord: [40.7794366, -73.963244]
+    - address: 1000 5th Ave, New York, NY 10028, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.neuegalerie.org/visit -- Neue Galerie New York
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [museum]
+    - coord: [40.781264, -73.9603267]
+    - address: 1048 5th Ave, New York, NY 10028, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.levygorvydayan.com/locations -- Lévy Gorvy Dayan
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [art gallery]
+    - coord: [40.767004, -73.96939689999999]
+    - address: 19 E 64th St, New York, NY 10065, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.centralparknyc.org/ -- Central Park
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [park]
+    - coord: [40.7825547, -73.9655834]
+    - address: Central Park, Manhattan, New York, NY, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.casatualife.com/Newyork.html -- Casa Tua at The Surrey
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [40.7743678, -73.9640378]
+    - address: 20 E 76th St, New York, NY 10021, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.lowellhotel.com/restaurants-and-bar/majorelle/57-1/ -- Majorelle at The Lowell
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [40.7657388, -73.9692216]
+    - address: 28 E 63rd St, New York, NY 10065, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.casacruz.nyc/ -- Casa Cruz New York
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [40.7643816, -73.9700009]
+    - address: 36 E 61st St, New York, NY 10065, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.rosewoodhotels.com/en/the-carlyle-new-york/dining/bemelmans-bar -- Bemelmans Bar
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar]
+    - coord: [40.7744215, -73.963171]
+    - address: 35 E 76th St, New York, NY 10021, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.chezfifinyc.com/ -- Chez Fifi
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant, bar]
+    - coord: [40.7716972, -73.9615623]
+    - address: 140 E 74th St, New York, NY 10021, United States
+    - later: true
+    - source: https://www.instagram.com/p/DfPpNHKlqQj/
+- https://www.thebutcherchef.com/ -- The Butcher Chef
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [43.6427331, -79.37629319999999]
+    - address: 8 Harbour St, Toronto, ON M5J 3B1, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfP2kJvAOFM/
+- https://www.aburihana.com/ -- Aburi Hana
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [43.6710006, -79.39259609999999]
+    - address: 102 Yorkville Ave, Unit 4 Lower Level, Toronto, ON M5R 1B9, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfP2kJvAOFM/
+- https://www.1hotels.com/toronto/taste/casa-madera -- Casa Madera Toronto
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [43.6429827, -79.4014722]
+    - address: 550 Wellington St W Ground Floor, Toronto, ON M5V 2V4, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfP2kJvAOFM/
+- https://www.google.com/maps?cid=18293267462603793419 -- Maha's Cafe
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [coffee shop, restaurant]
+    - coord: [43.6612911, -79.3398411]
+    - address: 978 Queen St E (entrance from Carlaw Ave), Toronto, ON M4M 1K1, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfP2kJvAOFM/
+- https://tonobyakirabacktoronto.com/ -- TONO by Akira Back Toronto
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [43.670874, -79.38459379999999]
+    - address: 90 Bloor St E, Toronto, ON M4W 1A7, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfP2kJvAOFM/
+- https://www.anajakthai.com/ -- Anajak Thai
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [34.1515121, -118.4533788]
+    - address: 14704 Ventura Blvd, Sherman Oaks, CA 91403, United States
+    - later: true
+    - source: https://www.instagram.com/reel/DfecCAtJSBS/
+- https://magiccastle.com/ -- The Magic Castle
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [bar, theatre]
+    - coord: [34.104557, -118.3417885]
+    - address: 7001 Franklin Ave, Los Angeles, CA 90028, United States
+    - later: true
+    - source: https://www.instagram.com/reel/DfecCAtJSBS/
+- https://locations.in-n-out.com/85 -- In-N-Out Burger Sherman Oaks
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [34.1521128, -118.4483241]
+    - address: 4444 Van Nuys Blvd, Sherman Oaks, CA 91403, United States
+    - later: true
+    - source: https://www.instagram.com/reel/DfecCAtJSBS/
+- https://locations.tacobell.com/ca/sherman-oaks/14115-ventura-blvd.html -- Taco Bell Sherman Oaks
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [34.1498379, -118.4406274]
+    - address: 14115 Ventura Blvd, Sherman Oaks, CA 91423, United States
+    - later: true
+    - source: https://www.instagram.com/reel/DfecCAtJSBS/
+- https://figarobistrotla.com/ -- Figaro Bistrot
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [34.10377709999999, -118.2916356]
+    - address: 1802 N Vermont Ave, Los Angeles, CA 90027, United States
+    - later: true
+    - source: https://www.instagram.com/reel/DfecCAtJSBS/
+- https://www.google.com/maps?cid=17518144273148941094 -- Oakobing Koreatown
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [deserts]
+    - coord: [34.0633848, -118.2945921]
+    - address: 3300 W 6th St unit 2, Los Angeles, CA 90020, United States
+    - later: true
+    - source: https://www.instagram.com/reel/DfecCAtJSBS/
+- https://mussoandfrank.com/ -- Musso & Frank Grill
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant, bar]
+    - coord: [34.1017527, -118.335361]
+    - address: 6667 Hollywood Blvd, Hollywood, CA 90028, United States
+    - later: true
+    - source: https://www.instagram.com/reel/DfecCAtJSBS/
+- https://www.noburestaurants.com/malibu/ -- Nobu Malibu
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [34.0390391, -118.6696477]
+    - address: 22706 Pacific Coast Hwy, Malibu, CA 90265, United States
+    - later: true
+    - source: https://www.instagram.com/reel/DfecCAtJSBS/
+- https://www.camillerestaurant.co.uk/ -- Camille Borough Market
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [51.5050373, -0.09080819999999999]
+    - address: 2-3 Stoney Street, Borough Market, London SE1 9AA, United Kingdom
+    - later: true
+    - source: https://www.instagram.com/reel/DeyjHEesYK-/
+- https://www.themorgan.org/ -- The Morgan Library & Museum
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [museum]
+    - coord: [40.7492258, -73.9813971]
+    - address: 225 Madison Ave, New York, NY 10016, United States
+    - later: true
+    - source: https://www.instagram.com/reel/DclWzVNMqJq/
+- https://gulbenkian.pt/museu/ -- Calouste Gulbenkian Museum
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [museum]
+    - coord: [38.7378124, -9.1535455]
+    - address: Av. de Berna 45A, 1067-001 Lisboa, Portugal
+    - later: true
+    - source: https://www.instagram.com/reel/DclWzVNMqJq/
+- https://www.frick.org/ -- The Frick Collection
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [museum]
+    - coord: [40.7710857, -73.9673861]
+    - address: 1 E 70th St, New York, NY 10021, United States
+    - later: true
+    - source: https://www.instagram.com/reel/DclWzVNMqJq/
+- https://www.museothyssen.org/ -- Thyssen-Bornemisza National Museum
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [museum]
+    - coord: [40.4160406, -3.6949254]
+    - address: P.º del Prado, 8, Centro, 28014 Madrid, Spain
+    - later: true
+    - source: https://www.instagram.com/reel/DclWzVNMqJq/
+- https://www.thebroad.org/ -- The Broad
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [museum]
+    - coord: [34.0545021, -118.2501802]
+    - address: 221 S Grand Ave, Los Angeles, CA 90012, United States
+    - later: true
+    - source: https://www.instagram.com/reel/DclWzVNMqJq/
+- https://hearstcastle.org/ -- Hearst Castle
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [museum]
+    - coord: [35.6849825, -121.1699716]
+    - address: 750 Hearst Castle Rd, San Simeon, CA 93452, United States
+    - later: true
+    - source: https://www.instagram.com/reel/DclWzVNMqJq/
+- https://www.getty.edu/visit/center/ -- Getty Center
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [museum]
+    - coord: [34.0773438, -118.4732648]
+    - address: 1200 Getty Center Dr, Los Angeles, CA 90049, United States
+    - later: true
+    - source: https://www.instagram.com/reel/DclWzVNMqJq/
+- https://www.seokrestaurant.com/ -- SEOK by Mingoo Kang
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [restaurant]
+    - coord: [48.8689056, 2.3301781]
+    - address: Park Hyatt Paris-Vendôme, 5 Rue de la Paix, 75002 Paris, France
+    - later: true
+    - source: https://www.instagram.com/p/DeWZlMQiVVS/
+- https://lepompon-restaurant.com/ -- Le Pompon
+  - [meta]:
+    - date: 11/07/2026
+    - tags: [restaurant, bar]
+    - coord: [48.868911, 2.3410577]
+    - address: Palais Brongniart, 25 Place de la Bourse, 75002 Paris, France
+    - later: true
+    - source: https://www.instagram.com/p/DfaVwwZEcix/
+- https://www.lepoissonvolant.paris/ -- Le Poisson Volant
+  - [meta]:
+    - date: 11/07/2026
+    - tags: [restaurant, bar, nightclub]
+    - coord: [48.86669999999999, 2.3794086]
+    - address: 5-7 Rue Marguerite Moret, 75011 Paris, France
+    - later: true
+    - source: https://www.instagram.com/p/DfaVwwZEcix/
+- https://www.pamela.paris/ -- Pamela
+  - [meta]:
+    - date: 11/07/2026
+    - tags: [nightclub, bar]
+    - coord: [48.8545626, 2.3379249]
+    - address: 62 Rue Mazarine, 75006 Paris, France
+    - later: true
+    - source: https://www.instagram.com/p/DfaVwwZEcix/
+- https://www.le-carmen.fr/ -- Le Carmen
+  - [meta]:
+    - date: 11/07/2026
+    - tags: [bar, nightclub]
+    - coord: [48.8820846, 2.3342194]
+    - address: 34 Rue Duperré, 75009 Paris, France
+    - later: true
+    - source: https://www.instagram.com/p/DfaVwwZEcix/
+- https://www.instagram.com/envolemoiparis/ -- Envole Moi
+  - [meta]:
+    - date: 11/07/2026
+    - tags: [bar, nightclub]
+    - coord: [48.8710463, 2.3431029]
+    - address: 176 Rue Montmartre, 75002 Paris, France
+    - later: true
+    - source: https://www.instagram.com/p/DfaVwwZEcix/
+- https://www.instagram.com/cavecanaille/ -- Cave Canaille
+  - [meta]:
+    - date: 11/07/2026
+    - tags: [bar, shop]
+    - coord: [48.86784979999999, 2.3784288]
+    - address: 100 Rue Jean-Pierre Timbaud, 75011 Paris, France
+    - later: true
+    - source: https://www.instagram.com/p/DfaVwwZEcix/
+- https://early-june.fr/ -- Early June
+  - [meta]:
+    - date: 11/06/2026
+    - tags: [restaurant, bar]
+    - coord: [48.8729647, 2.3632777]
+    - address: 19 Rue Jean Poulmarch, 75010 Paris, France
+    - later: true
+    - source: https://www.instagram.com/reel/DfSpXP4Rk9g/
+- http://www.4850.nl/ -- 4850
+  - [meta]:
+    - date: 11/06/2026
+    - tags: [coffee shop, bar]
+    - coord: [52.35779369999999, 4.913378]
+    - address: Camperstraat 48-50, Amsterdam, Netherlands
+    - later: true
+    - source: https://www.instagram.com/p/DfVI-FdEVbz/
+- https://www.antiekcentrumamsterdam.nl/ -- Antiekcentrum Amsterdam
+  - [meta]:
+    - date: 11/06/2026
+    - tags: [market, shop]
+    - coord: [52.36880739999999, 4.8788256]
+    - address: Elandsgracht 109, 1016 TT Amsterdam, Netherlands
+    - later: true
+    - source: https://www.instagram.com/p/DfVI-FdEVbz/
+- https://restobarmassalia.nl/ -- Restobar Massalia
+  - [meta]:
+    - date: 11/06/2026
+    - tags: [restaurant, bar]
+    - coord: [52.3571928, 4.9184186]
+    - address: Beukenplein 21, Amsterdam, Netherlands
+    - later: true
+    - source: https://www.instagram.com/p/DfVI-FdEVbz/
+- https://www.noordermarkt-amsterdam.nl/ -- Noordermarkt
+  - [meta]:
+    - date: 11/06/2026
+    - tags: [market]
+    - coord: [52.3795998, 4.886963199999999]
+    - address: Noordermarkt, Amsterdam, Netherlands
+    - later: true
+    - source: https://www.instagram.com/p/DfVI-FdEVbz/
+- https://www.bunbun.amsterdam/ -- BunBun
+  - [meta]:
+    - date: 11/06/2026
+    - tags: [bakery]
+    - coord: [52.3788371, 4.886504]
+    - address: Prinsengracht 16, 1015 DV Amsterdam, Netherlands
+    - later: true
+    - source: https://www.instagram.com/p/DfVI-FdEVbz/
+- https://www.rijksmuseum.nl/en -- Rijksmuseum
+  - [meta]:
+    - date: 11/06/2026
+    - tags: [museum]
+    - coord: [52.3599976, 4.8852188]
+    - address: Museumstraat 1, 1071 XX Amsterdam, Netherlands
+    - later: true
+    - source: https://www.instagram.com/p/DfVI-FdEVbz/
+- https://papeneiland.nl/ -- Café 't Papeneiland
+  - [meta]:
+    - date: 11/06/2026
+    - tags: [bar]
+    - coord: [52.3804627, 4.887970399999999]
+    - address: Prinsengracht 2, 1015 DV Amsterdam, Netherlands
+    - later: true
+    - source: https://www.instagram.com/p/DfVI-FdEVbz/
+- https://www.pathe.nl/nl/bioscopen/koninklijk-theater-tuschinski -- Pathé Tuschinski
+  - [meta]:
+    - date: 11/06/2026
+    - tags: [theatre, architecture]
+    - coord: [52.3665424, 4.894633799999999]
+    - address: Reguliersbreestraat 26-34, 1017 CN Amsterdam, Netherlands
+    - later: true
+    - source: https://www.instagram.com/p/DfVI-FdEVbz/
+- https://www.nwediep.nl/ -- Distilleerderij 't Nieuwe Diep
+  - [meta]:
+    - date: 11/06/2026
+    - tags: [bar]
+    - coord: [52.3620528, 4.9501333]
+    - address: Flevopark 13, Amsterdam, Netherlands
+    - later: true
+    - source: https://www.instagram.com/p/DfVI-FdEVbz/
+- https://www.vangoghmuseum.nl/en -- Van Gogh Museum
+  - [meta]:
+    - date: 11/06/2026
+    - tags: [museum]
+    - coord: [52.3580757, 4.8812053]
+    - address: Museumplein 6, 1071 DJ Amsterdam, Netherlands
+    - later: true
+    - source: https://www.instagram.com/p/DfVI-FdEVbz/
+- https://sluyswacht.nl/ -- Café de Sluyswacht
+  - [meta]:
+    - date: 11/06/2026
+    - tags: [bar]
+    - coord: [52.3698667, 4.9017167]
+    - address: Jodenbreestraat 1, 1011 NG Amsterdam, Netherlands
+    - later: true
+    - source: https://www.instagram.com/p/DfVI-FdEVbz/
+- https://www.25king.ca/the-history -- Commerce Court North Banking Hall
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [architecture]
+    - coord: [43.6486448, -79.3790475]
+    - address: 25 King St W, Toronto, ON, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfXBMD3IYp1/
+- https://www.canadianstage.com/plan-your-visit/venues-directions/winter-garden -- Elgin and Winter Garden Theatres
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [theatre, architecture]
+    - coord: [43.6530164, -79.3793958]
+    - address: 189 Yonge St, Toronto, ON M5B 1M4, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfXBMD3IYp1/
+- https://lso.ca/about-lso/osgoode-hall-and-ontario-legal-heritage/osgoode-hall -- Osgoode Hall Great Library
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [architecture]
+    - coord: [43.652027, -79.3857558]
+    - address: 130 Queen St W, Toronto, ON, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfXBMD3IYp1/
+- https://www.omnihotels.com/hotels/toronto-king-edward -- Omni King Edward Hotel Lobby
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [architecture]
+    - coord: [43.649245, -79.37604689999999]
+    - address: 37 King St E, Toronto, ON M5C 1E9, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfXBMD3IYp1/
+- https://www.toronto.ca/services-payments/water-environment/tap-water-in-toronto/fast-facts-about-the-citys-water-treatment-plants/ -- R.C. Harris Water Treatment Plant
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [architecture]
+    - coord: [43.67340739999999, -79.27891819999999]
+    - address: 2701 Queen St E, Toronto, ON, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfXBMD3IYp1/
+- https://harthouse.ca/spaces/venue/great-hall -- Hart House Great Hall
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [architecture]
+    - coord: [43.6640136, -79.3943321]
+    - address: 7 Hart House Circle, First Floor, Room 1022, Toronto, ON M5S 3H3, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfXBMD3IYp1/
+- https://torontounion.ca/visit/ -- Union Station Great Hall
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [architecture]
+    - coord: [43.6454842, -79.3808301]
+    - address: 65 Front St W, Toronto, ON, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfXBMD3IYp1/
+- https://library.utoronto.ca/library/fisher-library -- Thomas Fisher Rare Book Library
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [architecture]
+    - coord: [43.66407359999999, -79.3989838]
+    - address: 120 St George St, Toronto, ON M5S 0C1, Canada
+    - later: true
+    - source: https://www.instagram.com/p/DfXBMD3IYp1/
+- https://speducci.com/ -- Speducci Mercatto
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [restaurant, market]
+    - coord: [43.7048583, -79.47280549999999]
+    - address: 46 Milford Ave, North York, ON M6M 2V8, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/DfYUze2BO_3/
+- https://www.shunoko.ca/ -- Shunoko
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [restaurant]
+    - coord: [43.7287711, -79.4034466]
+    - address: 3220 Yonge St, Toronto, ON M4N 2L2, Canada
+    - rating: 5
+    - later: false
+- https://yakitorimomiji.ca/ -- Yakitori Momiji
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [restaurant]
+    - coord: [43.669943, -79.3933113]
+    - address: 156 Cumberland St, 2nd Floor, Toronto, ON M5R 1A8, Canada
+    - later: true
+    - source: https://www.instagram.com/reel/De2_huFMXS-/
+- https://www.lillebakery.com/ -- Lille Bakery
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [bakery, coffee shop]
+    - coord: [55.6900548, 12.6133271]
+    - address: Refshalevej 213B, 1432 København K, Denmark
+    - later: true
+    - source: https://www.instagram.com/reel/DfXQsREIuoY/
+- https://nomaprojects.com/pages/contact -- Noma Projects Shop
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [coffee shop]
+    - coord: [55.68331269999999, 12.6105955]
+    - address: Refshalevej 96, 1432 København K, Denmark
+    - later: true
+    - source: https://www.instagram.com/reel/DfXQsREIuoY/
+- https://www.google.com/maps?cid=18071264027986571557 -- A Matcha Space
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [coffee shop]
+    - coord: [55.6847631, 12.5882415]
+    - address: Store Kongensgade 74, st. 2, 1264 København K, Denmark
+    - later: true
+    - source: https://www.instagram.com/reel/DfXQsREIuoY/
+- https://lacabra.com/pages/nordhavn -- La Cabra Nordhavn
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [coffee shop]
+    - coord: [55.70716299999999, 12.5920549]
+    - address: Århusgade 118X, 2150 Nordhavn, Denmark
+    - later: true
+    - source: https://www.instagram.com/reel/DfXQsREIuoY/
+- https://komunacoffee.com/pages/faq -- Komuna Coffee Silent Club
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [coffee shop]
+    - coord: [55.687011, 12.5923799]
+    - address: Bredgade 73, 1260 København K, Denmark
+    - later: true
+    - source: https://www.instagram.com/reel/DfXQsREIuoY/
+- https://cafeatelierseptember.com/pages/kronprinsessegade -- Atelier September Kronprinsessegade
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [coffee shop, restaurant]
+    - coord: [55.6873916, 12.5849268]
+    - address: Kronprinsessegade 62, 1306 København K, Denmark
+    - later: true
+    - source: https://www.instagram.com/reel/DfXQsREIuoY/
+- https://cabincph.dk/ -- Cabin Copenhagen
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [coffee shop]
+    - coord: [55.6824735, 12.5863843]
+    - address: Store Kongensgade 32, 1264 København K, Denmark
+    - later: true
+    - source: https://www.instagram.com/reel/DfXQsREIuoY/
+- https://louise-roe.com/pages/the-roe-bar-1 -- The Roe Bar
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [coffee shop]
+    - coord: [55.6822458, 12.5784749]
+    - address: Vognmagergade 9, 1120 København K, Denmark
+    - later: true
+    - source: https://www.instagram.com/reel/DfXQsREIuoY/
 - https://www.leserpent.ca/ -- Le Serpent
   - [meta]:
     - date: 11/05/2026
@@ -7094,9 +10165,10 @@ title: are.na
     - date: 10/30/2026
     - tags: [restaurant]
     - coord: [43.6630633, -79.4033017]
-    - address: 96 Harbord Street, Toronto, ON, Canada
+    - address: 96 Harbord Street, Toronto, ON M5S 1G6, Canada
     - later: true
     - source: https://www.instagram.com/reel/De-bxAeNwZA/
+  - https://dreyfustoronto.com/ -- official website
 - https://www.casapaco.ca/ -- Casa Paco
   - [meta]:
     - date: 10/30/2026
@@ -7585,7 +10657,9 @@ title: are.na
   - [meta]:
     - date: 11/22/2025
     - tags: [restaurant]
-    - coord: [43.6489495, -79.4216355]
+    - coord: [43.6496, -79.4230583]
+    - address: 2 Lakeview Ave, Toronto, ON M6J 3B1, Canada
+    - source: https://www.instagram.com/p/DfP2kJvAOFM/
 - https://maps.app.goo.gl/BdnNkGtSwhyxvPgk6 -- Bang Bang Ice Cream
   - [meta]:
     - date: 11/22/2025
@@ -7810,6 +10884,7 @@ title: are.na
     - date: 10/27/2025
     - tags: [diner]
     - coord: [43.6554828, -79.4115051]
+    - address: 539 College St, Toronto, ON M6G 1A9, Canada
 - https://maps.app.goo.gl/mvVfWEPSqNNUsjVN7 -- La Plume
   - [meta]:
     - date: 12/22/2025
@@ -7822,6 +10897,101 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://nayafia.substack.com/p/im-back-sort-of -- 26: I'm back, sort of
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [public writing, creative practice]
+    - later: true
+- https://juliawillemyns.substack.com/p/notes-from-dorset -- Notes from Dorset
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [ultrarunning, jurassic coast]
+    - later: true
+- https://vishalblog.substack.com/p/netwar-with-jane-and-jeredino -- NETWAR! with jane and jeredino
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [personal essay, social status]
+    - later: true
+- https://louishiltonstories.substack.com/p/nothing-about-the-midwests-struggles -- The Midwest’s Struggles Were By Design.
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [detroit, corporate power]
+    - later: true
+- https://heelsoff.substack.com/p/goodbye-mckinsey -- Goodbye, McKinsey.
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [consulting, career transitions]
+    - later: true
+- https://thatvastvariety.substack.com/p/top-performers-are-pathologically -- Top Performers are Pathologically Ambitious
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [ambition, career development]
+    - later: true
+- https://erifili.substack.com/p/life-begins-and-ends-with-attention -- life begins and ends with attention
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [attention, awe]
+    - later: true
+- https://rentherapy.substack.com/p/your-partner-isnt-the-enemy-unpacking -- Your Partner Isn't the Enemy: Unpacking Relationship Rage
+  - [meta]:
+    - date: 11/06/2026
+    - tags: [relationships, anger]
+    - later: true
+- https://rentherapy.substack.com/p/15-ways-to-build-an-emotionally-mature -- 15 Ways to Build an Emotionally Mature Relationship
+  - [meta]:
+    - date: 11/06/2026
+    - tags: [relationships, emotional-maturity]
+    - later: true
+- https://rentherapy.substack.com/p/how-do-i-know-whether-im-loving-openly -- How do I know whether I’m loving openly, or carrying the relationship?
+  - [meta]:
+    - date: 11/06/2026
+    - tags: [relationships, reciprocity]
+    - later: true
+- https://rentherapy.substack.com/p/i-know-i-deserve-more-why-is-this -- I Know I Deserve More. Why Is This Still So Hard? (Relationship Conflict)
+  - [meta]:
+    - date: 11/06/2026
+    - tags: [relationships, communication]
+    - later: true
+- https://wethedeepfeelers.substack.com/p/i-smoke-a-cigarette-after-i-meditate -- i smoke a cigarette after i meditate
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [self-knowledge, identity]
+    - later: true
+- https://wethedeepfeelers.substack.com/p/the-problem-with-not-saying-how-you -- the problem with not saying how you feel
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [relationships, communication]
+    - later: true
+- https://wethedeepfeelers.substack.com/p/drunk-kissing-with-god -- drunk kissing with god
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [happiness, desire]
+    - later: true
+- https://wethedeepfeelers.substack.com/p/i-can-only-create-from-the-depths -- i can only create from the depths of my experiences
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [creativity, art]
+    - later: true
+- https://wethedeepfeelers.substack.com/p/i-travel-for-a-living-i-promise-you -- i travel for a living. i promise you can't run from yourself.
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [travel, self-knowledge]
+    - later: true
+- https://wethedeepfeelers.substack.com/p/sometimes-i-feel-like-nothing-scares -- sometimes i feel like nothing scares me anymore
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [fear, attachment]
+    - later: true
+- https://wethedeepfeelers.substack.com/p/i-cry-every-birthday-and-i-think -- i cry every birthday. and i think i always will.
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [birthdays, coming of age]
+    - later: true
+- https://wethedeepfeelers.substack.com/p/inside-the-mind-of-a-full-time-solo -- the decision to leave everything to solo travel
+  - [meta]:
+    - date: 11/05/2026
+    - tags: [solo travel, backpacking]
+    - later: true
 - https://kwokchain.com/2026/10/09/abstract-warfare-how-tsmc-made-its-own-market -- Abstract Warfare: How TSMC Made Its Own Market
   - [meta]:
     - date: 10/22/2026
@@ -11691,6 +14861,96 @@ title: are.na
   - view: list
   - json: true
 
+- https://x.com/livgorton/status/2112756891122360498 -- Liv Gorton’s response to Neural Networks Are Already Clean
+  - [meta]:
+    - date: 11/17/2026
+    - tags: [mechanistic interpretability, research replication]
+    - later: true
+- https://x.com/furongh/status/2112884723663917240 -- Furong Huang introduces ICA Lens
+  - [meta]:
+    - date: 11/17/2026
+    - tags: [mechanistic interpretability, independent component analysis]
+    - later: true
+- https://x.com/heyyalexwang/status/2111158818730397932 -- Alex Wang on deriving transformer layers from memory
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [transformers, neural memory]
+    - later: true
+- https://x.com/jankulveit/status/2112613048552677739 -- Jan Kulveit on language model psychology
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [model behavior, language model psychology]
+    - later: true
+- https://x.com/GradiumAI/status/2112563128487514512 -- Gradium introduces Phonon for on-device speech synthesis
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [text to speech, on-device inference]
+    - later: true
+- https://x.com/eliebakouch/status/2112952247789269449 -- Elie Bakouch on Mirendil’s code-only pretraining results
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [language model pretraining, code models]
+    - later: true
+- https://x.com/justinmast/status/2112583500008403437 -- Bombadil: a model for plant electrical signals
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [plant electrophysiology, foundation models]
+    - later: true
+- https://alphaxiv.org/pdf/2605.29713 -- The Little Book of Generative AI Foundations: An Intuitive Mathematical Primer
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [generative models, mathematical foundations]
+    - later: true
+- https://x.com/AlexRoseJo/status/2114202656994713690 -- CroissAttn: a zero-sum fix for the FlashAttention backward pass
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [attention kernels, fp4 training]
+    - later: true
+- https://x.com/xdotli/status/2114306522520117275 -- Xiangyi Li on token pressure and reasoning legibility
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [reasoning models, reinforcement learning]
+    - later: true
+- https://x.com/cHHillee/status/2114070883799327084 -- Horace He’s list of model parallelism schemes
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [distributed training, parallelism]
+    - later: true
+- https://x.com/_lyraaaa_/status/2114211024962498831 -- Lyra demonstrates how to find a neuron-steering recipe
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [activation steering, interpretability]
+    - later: true
+- https://x.com/jon_barron/status/2113707875290042665 -- Jon Barron on numerical bugs in softmax and cross-entropy
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [numerical stability, grokking]
+    - later: true
+- https://x.com/_lyraaaa_/status/2113833330429083662 -- Lyra’s neuron-steering recipe for Qwen3.5 4B
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [activation steering, qwen]
+    - later: true
+- https://github.com/anthropics/mythos-5-incident-transcript/blob/main/README.md -- Mythos 5 Transcript Release
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [agent security, evaluation incidents]
+    - later: true
+- https://www.lesswrong.com/posts/R5g8YT25G9DXJJ48n/glm-5-3-sometimes-considers-how-train-time-actions-shape -- GLM-5.3 Sometimes Considers How Train-Time Actions Shape Future Behavior
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [update-aware reasoning, alignment faking]
+    - later: true
+- https://www.lesswrong.com/posts/wCSEpT3dTGz4N86Wi/even-illegible-mythos-reasoning-traces-seem-pretty-legible -- Even "illegible" Mythos reasoning traces seem pretty legible
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [chain of thought, monitorability]
+    - later: true
+- https://cameronrwolfe.substack.com/p/subjective-evals -- Evaluating Agents on Highly Subjective Tasks
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [agent evaluation, subjective evaluation]
+    - later: true
 - https://x.com/xeophon/status/2106723814335996151 -- Florian Brand on chain-of-thought monitoring and action obfuscation
   - [meta]:
     - date: 10/23/2026
@@ -15461,6 +18721,21 @@ title: are.na
 
 ## opinions
 
+- https://emjsmith.substack.com/p/seeing-myself-in-elizabeth-holmes -- Seeing Myself In Elizabeth Holmes
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [documentary criticism, startup culture]
+    - later: true
+- https://x.com/noampomsky/status/2112321680563683483 -- Ava on warmth and self-interest in You Can See Everything
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [documentary criticism, interpersonal trust]
+    - later: true
+- https://notmickey1.substack.com/p/i-watched-the-elizabeth-holmes-doc -- Watching the Elizabeth Holmes doc with her Fiance
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [documentary criticism, theranos]
+    - later: true
 - https://x.com/chrislakin/status/2103620465029943764 -- Chris Lakin: Addictions are anesthesia
   - [meta]:
     - date: 10/22/2026
@@ -16076,6 +19351,41 @@ title: are.na
 
 ## life is literature
 
+- https://en.wikipedia.org/wiki/I_Who_Have_Never_Known_Men -- I Who Have Never Known Men
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [dystopian fiction, jacqueline harpman]
+    - later: true
+- https://en.wikipedia.org/wiki/Novacene -- Novacene: The Coming Age of Hyperintelligence
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [superintelligence, environmentalism]
+    - later: true
+- https://x.com/kpaxs/status/2107307376340828662 -- Kpaxs’s book recommendations for business operators
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [book recommendations, business operations]
+    - later: true
+- https://x.com/jonathanbfine/status/2112350472619368691 -- Jonathan Fine’s takedown of In Search of Lost Time
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [marcel proust, literary criticism]
+    - later: true
+- https://tianlezhang.substack.com/p/what-does-the-chinese-internet-think-133 -- What does the Chinese Internet think about Sally Rooney's novels?
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [literary reception, translation]
+    - later: true
+- https://viverricious.substack.com/p/my-husband-left-me-6-weeks-postpartum -- My husband left me 6 weeks postpartum and all I got was this pretty cool baby
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [personal essays, parenthood]
+    - later: true
+- https://writesjosephine.substack.com/p/writing-in-a-notebook -- Writing In A Notebook
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [writing practice, articulation]
+    - later: true
 - https://x.com/SchrodingrsBrat/status/2107560613459140937 -- Sherry on fiction as a confession of imagination
   - [meta]:
     - date: 10/23/2026
@@ -17060,6 +20370,26 @@ title: are.na
   - view: list
   - json: true
 
+- https://x.com/poteto/status/2112736749281759566 -- Lauren Tan on statecharts and formal verification with pstack
+  - [meta]:
+    - date: 11/17/2026
+    - tags: [statecharts, formal verification]
+    - later: true
+- https://en.wikipedia.org/wiki/Mersenne_Twister -- Mersenne Twister
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [pseudorandom numbers, algorithms]
+    - later: true
+- https://en.wikipedia.org/wiki/Temporal_logic_of_actions -- Temporal logic of actions
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [formal methods, temporal logic]
+    - later: true
+- https://x.com/hillelogram/status/2113646046840558000 -- Hillel Wayne on Anthropic’s formal verification work
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [formal verification, proof assumptions]
+    - later: true
 - https://dakshitakhurana.substack.com/p/classical-at-heart -- Classical at Heart
   - [meta]:
     - date: 10/21/2026
@@ -18056,6 +21386,31 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://slatestarcodex.com/2014/07/30/meditations-on-moloch/ -- Meditations On Moloch
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [coordination failures, game theory]
+    - later: true
+- https://en.wikipedia.org/wiki/Epistemological_particularism -- Epistemological particularism
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [epistemology, problem of the criterion]
+    - later: true
+- https://x.com/praxiss/status/2114362896428003835 -- Praxis on Borges, Ramon Llull, and thinking machines
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [borges, philosophy of mind]
+    - later: true
+- https://x.com/owenbroadcast/status/2112571423231442951 -- Owen Cyclops on skill beyond conscious deliberation
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [implicit knowledge, philosophy of mind]
+    - later: true
+- https://www.lesswrong.com/posts/pK4HTxuv6mftHXWC3/prolegomena-to-a-theory-of-fun -- Prolegomena to a Theory of Fun
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [fun theory, hedonic psychology]
+    - later: true
 - https://philosophy.lander.edu/intro/articles/jameslife-a.pdf -- Is Life Worth Living?
   - [meta]:
     - date: 10/22/2026
@@ -19962,6 +23317,16 @@ title: are.na
 
 ## finances
 
+- https://x.com/JesusFerna7026/status/2112519061800128883 -- Saving for the Machines: AI and capital accumulation
+  - [meta]:
+    - date: 11/12/2026
+    - tags: [capital accumulation, economics of ai]
+    - later: true
+- https://substack.com/home/post/p-220232175?selection=a783b057-708b-4062-bb16-15888967c973#:~:text=Enormous%20profits%20require%20paying%20no%20people%20for%20anything%2C%20just%20selling%20the%20products%2C%20seemingly%20to%20other%20makers%20of%20machines%2C%20who%20also%20seek%20enormous%20profits -- The Shrugflation Triangle: How AI, Oil, and Treasuries are Impacting the Economy
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [inflation, ai investment, treasuries]
+    - later: true
 - https://www.pm.gc.ca/en/news/news-releases/2026/09/15/prime-minister-carney-introduces-new-productivity-mega-deduction -- Prime Minister Carney introduces new Productivity Mega Deduction
   - [meta]:
     - date: 09/21/2026
@@ -20235,6 +23600,26 @@ title: are.na
 
 ## design
 
+- https://x.com/raunofreiberg/status/2112875577388712123 -- Rauno Freiberg recommends og:video
+  - [meta]:
+    - date: 11/17/2026
+    - tags: [open graph, link previews]
+    - later: true
+- https://x.com/yangyou/status/2112904728132936155 -- See the whole picture: A brand campaign built with Parallel
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [brand campaigns, out-of-home advertising]
+    - later: true
+- https://x.com/texturesdev/status/2115805869917315570 -- Textures: a brand-texture library for agents
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [brand textures, creative coding]
+    - later: true
+- https://x.com/jakubkrehel/status/2114379959263502712 -- Jakub Krehel’s teardown illustration skill
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [technical illustration, agent skills]
+    - later: true
 - https://x.com/ryolu_/status/2106337039201505453 -- Ryo Lu: convergence to the mean
   - [meta]:
     - date: 10/23/2026
@@ -20932,6 +24317,61 @@ title: are.na
 
 ## video
 
+- https://x.com/NHLFlames/status/2112019723177140640 -- Devin Cooley postgame interview against Anaheim
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [nhl, postgame interview]
+    - later: true
+- https://www.youtube.com/watch?v=RDgw6ydB6lU -- An Introduction to Philosophy - Isaiah Berlin & Bryan Magee (1977)
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [history of philosophy, interview]
+    - later: true
+- https://www.youtube.com/watch?v=RYshA7ZcATo -- wearing uggs, making movies | oct in nyc
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [new york city, filmmaking]
+    - later: true
+- https://en.wikipedia.org/wiki/Ken_Burns_effect -- Ken Burns effect
+  - [meta]:
+    - date: 11/13/2026
+    - tags: [film editing, documentary technique]
+    - later: true
+- https://www.youtube.com/watch?v=LewVEF2B_pM -- Strandbeest Evolution 2017
+  - [meta]:
+    - date: 11/12/2026
+    - tags: [kinetic sculpture, wind power]
+    - later: true
+- https://www.youtube.com/watch?v=1e1eLe1ihT0 -- Collider by Les Horribles Cernettes
+  - [meta]:
+    - date: 11/12/2026
+    - tags: [music video, particle physics]
+    - later: true
+- https://www.youtube.com/watch?v=f0J_EeW42Lo -- What Robert Caro learned about power after studying it for 50 years
+  - [meta]:
+    - date: 11/12/2026
+    - tags: [political biography, research methods]
+    - later: true
+- https://www.youtube.com/watch?v=AyuPvUvaOBw -- maybe you don't need to book a flight
+  - [meta]:
+    - date: 11/12/2026
+    - tags: [local travel, outdoor adventure]
+    - later: true
+- https://www.youtube.com/watch?v=TMlHr_MAPWU -- Mima’s skincare routine
+  - [meta]:
+    - date: 11/12/2026
+    - tags: [skincare, personal routines]
+    - later: true
+- https://www.youtube.com/watch?v=euporvWd6C4 -- woman discusses men on the internet
+  - [meta]:
+    - date: 11/12/2026
+    - tags: [looksmaxxing, beauty standards]
+    - later: true
+- https://en.wikipedia.org/wiki/Into_the_Wild_(film) -- Into the Wild (film)
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [film, literary adaptations]
+    - later: true
 - https://www.youtube.com/watch?v=4Bh4YgzyrQg -- Timothée Chalamet, Austin Butler, Léa Seydoux... racontent le tournage époustouflant de Dune 2 !
   - [meta]:
     - date: 10/11/2026
@@ -21677,6 +25117,21 @@ title: are.na
 
 ## tools
 
+- https://x.com/lvwerra/status/2112556991482610014 -- Agent Manager for coordinating coding agents on Hugging Face Spaces
+  - [meta]:
+    - date: 11/12/2026
+    - tags: [coding agents, agent orchestration]
+    - later: true
+- https://en.wikipedia.org/wiki/Nawmal -- Nawmal
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [animation, text to speech]
+    - later: true
+- https://x.com/kepano/status/2113990622168367440 -- Pele adds math resolvers and diagram rendering improvements
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [diagram rendering, obsidian]
+    - later: true
 - https://obry.app -- Obry for Mac
   - [meta]:
     - date: 10/22/2026
@@ -21977,6 +25432,11 @@ title: are.na
 
 ## arts
 
+- https://en.wikipedia.org/wiki/Obelisk -- Obelisk
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [monuments, architecture]
+    - later: true
 - https://albertomielgo.blogspot.com/2009/12/cosmo-02_11.html -- Alberto Mielgo: COSMO 02
   - [meta]:
     - date: 10/22/2026
@@ -24578,6 +28038,11 @@ title: are.na
 
 ## lecture
 
+- https://www.youtube.com/watch?v=AXlif6z9a2A&t=1022s -- Terence Tao: Reflections on the Foundations of Interpretability workshop
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [interpretability, workshop reflections]
+    - later: true
 - https://www.youtube.com/watch?v=0Ge3jKLDJaA -- Grant Sanderson: The collie and the pug (HackMIT keynote 2026)
   - [meta]:
     - date: 10/23/2026
@@ -24710,6 +28175,41 @@ title: are.na
   - view: list
   - json: true
 
+- https://github.com/Microsoft/ms-tpm-20-ref -- Official TPM 2.0 Reference Implementation
+  - [meta]:
+    - date: 11/13/2026
+    - tags: [trusted platform module, reference implementation]
+    - later: true
+- https://github.com/jackyzha0/eg-strider -- eg-strider: an Eg-walker-inspired collaborative text algorithm
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [collaborative editing, crdt]
+    - later: true
+- https://github.com/enesozturk/dimensional-drawing -- Dimensional Drawing: technical drawings for UI components
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [design documentation, agent skills]
+    - later: true
+- https://github.com/humanlayer/humanlayer -- HumanLayer: coordinating coding agents across machines
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [coding agents, agent orchestration]
+    - later: true
+- https://github.com/josephg/egwalker-paper -- Eg-walker paper: experiments, benchmarks, and editing traces
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [collaborative editing, reproducibility]
+    - later: true
+- https://github.com/jessfraz/beep-boop -- Beep Boop: persistent agent conversations and Rex workers
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [agent harnesses, durable workflows]
+    - later: true
+- https://github.com/mainplane-ai/mainplane -- Mainplane: a self-hosted agent harness
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [agent harnesses, self-hosting]
+    - later: true
 - https://github.com/tomjohndesign/what-the-port -- WhatThePort
   - [meta]:
     - date: 10/20/2026
@@ -26169,6 +29669,41 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://x.com/xhfloz/status/2112906382697500735 -- XH’s setup notes for everyday agent workflows
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [agent workflows, voice interfaces]
+    - later: true
+- https://en.wikipedia.org/wiki/Reynolds_number -- Reynolds number
+  - [meta]:
+    - date: 11/13/2026
+    - tags: [fluid dynamics, turbulence]
+    - later: true
+- https://engineeringx.substack.com/p/the-principle-of-applied-laziness -- The Principle of Applied Laziness
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [problem solving, research strategy]
+    - later: true
+- https://x.com/thorstenball/status/2114386050638336082 -- How I work with Agents
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [coding agents, software delivery]
+    - later: true
+- https://x.com/rahulgs/status/2112643415313907722 -- Ramp’s Laminar agent harness
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [agent harnesses, durable workflows]
+    - later: true
+- https://forum.effectivealtruism.org/posts/8rwLroRx5bcCcshzG/information-security-become-a-hacker-not-a-consultant -- Information security: Become a hacker, not a consultant
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [information security, career development]
+    - later: true
+- https://taekim.substack.com/p/an-interview-with-openais-richard -- An Interview with OpenAI's Richard Ho on Why Jalapeño Is a Groundbreaking AI Chip
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [ai accelerators, inference hardware]
+    - later: true
 - https://x.com/ekzhang1/status/2106839589721632831 -- Eric Zhang: What is a NIC?
   - [meta]:
     - date: 10/23/2026
@@ -27385,6 +30920,44 @@ title: are.na
     - tags: [engineering, compilers]
   - see also [[thoughts/pdfs/Efficient Implementation of the Smalltalk-80 System.pdf|Efficient Implementation of the Smalltalk-80 System.pdf]]
 
+## fashion
+
+- https://anotherbrowsertab.substack.com/p/self-actualizing-through-birkenstock -- Self-actualizing through Birkenstock clogs
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [footwear, consumer signaling]
+    - later: true
+- https://www.instagram.com/quida._/ -- Ida
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [fashion, style]
+    - later: true
+    - source: https://www.instagram.com/reel/DfXZtNOxJde/
+- https://www.instagram.com/laylavandenbergh/ -- Layla Vanden Bergh
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [fashion, style]
+    - later: true
+    - source: https://www.instagram.com/reel/DfXZtNOxJde/
+- https://www.instagram.com/eugeniamcquarrie/ -- Eugenia McQuarrie
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [fashion, style]
+    - later: true
+    - source: https://www.instagram.com/reel/DfXZtNOxJde/
+- https://www.instagram.com/sannakatano/ -- Sanna
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [fashion, style]
+    - later: true
+    - source: https://www.instagram.com/reel/DfXZtNOxJde/
+- https://www.instagram.com/evameloche/ -- Eva Meloche
+  - [meta]:
+    - date: 11/08/2026
+    - tags: [fashion, style]
+    - later: true
+    - source: https://www.instagram.com/reel/DfXZtNOxJde/
+
 ## watches
 
 - [meta]:
@@ -27448,6 +31021,11 @@ title: are.na
 
 ## organizations
 
+- https://x.com/ohabryka/status/2080365171420332117 -- Oliver Habryka announces Lightcone Commons
+  - [meta]:
+    - date: 11/16/2026
+    - tags: [philanthropy, grantmaking]
+    - later: true
 - https://ai.google -- Google AI
   - [meta]:
     - date: 10/30/2026
@@ -28286,6 +31864,16 @@ title: are.na
   - view: list
   - json: true
 
+- https://en.wikipedia.org/wiki/Fractional_Brownian_motion -- Fractional Brownian motion
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [stochastic processes, hurst exponent]
+    - later: true
+- https://en.wikipedia.org/wiki/Conditional_entropy -- Conditional entropy
+  - [meta]:
+    - date: 11/10/2026
+    - tags: [information theory, entropy]
+    - later: true
 - https://en.wikipedia.org/wiki/Kolakoski_sequence -- Kolakoski sequence
   - [meta]:
     - date: 10/21/2026
@@ -29237,6 +32825,71 @@ title: are.na
   - view: list
   - json: true
 
+- https://alphaxiv.org/pdf/2611.14467.pdf -- A Theory of Policy Optimization in Post-Training: Coverage Collapse and Reference Resets
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [policy optimization, coverage collapse]
+    - later: true
+- https://alphaxiv.org/pdf/2605.29707 -- Domino: Decoupling Causal Modeling from Autoregressive Drafting in Speculative Decoding
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [speculative decoding, parallel drafting]
+    - later: true
+- https://alphaxiv.org/pdf/2507.11851 -- Your LLM Knows the Future: Uncovering Its Multi-Token Prediction Potential
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [multi-token prediction, inference acceleration]
+    - later: true
+- https://alphaxiv.org/pdf/2607.24653 -- Kimi K3: Open Frontier Intelligence
+  - [meta]:
+    - date: 11/14/2026
+    - tags: [mixture of experts, long-context models]
+    - later: true
+- https://alphaxiv.org/abs/2603.03251 -- Speculative Speculative Decoding
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [speculative decoding, llm inference]
+    - later: true
+- https://alphaxiv.org/pdf/2110.01111 -- Is this the simplest (and most surprising) sorting algorithm ever?
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [sorting, algorithms]
+    - later: true
+- https://alphaxiv.org/abs/2501.12084 -- Dissecting the NVIDIA Hopper Architecture through Microbenchmarking and Multiple Level Analysis
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [gpu architecture, microbenchmarking]
+    - later: true
+- https://alphaxiv.org/abs/2401.17975 -- Understanding polysemanticity in neural networks through coding theory
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [polysemanticity, coding theory]
+    - later: true
+- https://alphaxiv.org/abs/2601.17952 -- A Monosemantic Attribution Framework for Stable Interpretability in Clinical Neuroscience Transformer-Based Language Models
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [monosemanticity, feature attribution]
+    - later: true
+- https://alphaxiv.org/abs/2605.08218 -- Deep Dreams Are Made of This: Visualizing Monosemantic Features in Diffusion Models
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [diffusion models, feature visualization]
+    - later: true
+- https://alphaxiv.org/abs/2602.12403 -- MonoLoss: A Training Objective for Interpretable Monosemantic Representations
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [sparse autoencoders, monosemanticity]
+    - later: true
+- https://alphaxiv.org/pdf/1912.01588 -- Leveraging Procedural Generation to Benchmark Reinforcement Learning
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [reinforcement learning, procedural generation]
+    - later: true
+- https://alphaxiv.org/pdf/2609.35525 -- Deep Epistemic Value Functions for Optimistic Exploration
+  - [meta]:
+    - date: 11/09/2026
+    - tags: [reinforcement learning, epistemic uncertainty]
+    - later: true
 - https://advanced.onlinelibrary.wiley.com/doi/10.1002/aisy.202401034 -- Artificial Intelligences: A Bridge Toward Diverse Intelligence and Humanity's Future
   - [meta]:
     - date: 10/22/2026

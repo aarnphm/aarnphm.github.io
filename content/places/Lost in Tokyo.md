@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Japanese cafe on Queen Street West serving parfaits, puddings and drinks.'
 id: 'Lost in Tokyo'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DeuVzOlIC6l/'
 tags:
   - 'places'
 title: 'Lost in Tokyo'

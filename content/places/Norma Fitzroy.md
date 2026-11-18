@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'French Mediterranean restaurant on Smith Street in Fitzroy, Melbourne.'
 id: 'Norma Fitzroy'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/reel/DcNvDCByhO3/'
 tags:
   - 'places'
 title: 'Norma Fitzroy'

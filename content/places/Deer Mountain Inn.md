@@ -1,0 +1,20 @@
+---
+address: '790 County Route 25, Tannersville, NY 12485, United States'
+category:
+  - '[[places to go]]'
+coordinates:
+  - '42.2207973'
+  - '-74.1193351'
+date: '2026-11-11'
+description: 'Catskills inn with cabins and a restaurant in Tannersville.'
+id: 'Deer Mountain Inn'
+later: true
+modified: '2026-11-11'
+tags:
+  - 'places'
+title: 'Deer Mountain Inn'
+type:
+  - 'hotel'
+  - 'restaurant'
+url: 'https://www.deermountaininn.com/'
+---

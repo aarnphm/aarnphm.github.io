@@ -1,4 +1,5 @@
 import { trailRandom } from '../random'
+import { leafClumps } from './leaf-clumps'
 import {
   cellKey,
   type Point,
@@ -29,6 +30,9 @@ type GrownTree = {
   buds: Set<number>
 }
 
+// Where an evergreen's trunk is cut for the wind, as shares of the tree's height.
+const stemBands = [0.3, 0.475, 0.65, 0.825]
+
 export function dressTree(grown: GrownTree) {
   const {
     kind,
@@ -47,19 +51,21 @@ export function dressTree(grown: GrownTree) {
     limbs,
     buds,
   } = grown
-  const paths: Record<'trunk' | 'bark', string[]> = { trunk: [], bark: [] }
   let crownTop = 0
   let trunkRadius = 1
-  const woodySnow: string[] = []
+  const woody: { x: number; y: number; tone: 'trunk' | 'bark'; snow: boolean }[] = []
   const foliage = { left: Infinity, right: -Infinity, top: Infinity, bottom: -Infinity }
   for (const { x, y, tone } of cells.values()) {
     crownTop = Math.min(crownTop, y)
     if ((tone === 'trunk' || tone === 'bark') && y >= -pixel * 2)
       trunkRadius = Math.max(trunkRadius, Math.abs(x), Math.abs(x + pixel))
     if (tone === 'trunk' || tone === 'bark') {
-      paths[tone].push(`M${x} ${y}h${pixel}v${pixel}h${-pixel}Z`)
-      if (y < -height * size * 0.3 && !cells.has(cellKey(x / pixel, y / pixel - 1)))
-        woodySnow.push(`M${x} ${y}h${pixel}v${Math.max(1, Math.floor(pixel / 2))}h${-pixel}Z`)
+      woody.push({
+        x,
+        y,
+        tone,
+        snow: y < -height * size * 0.3 && !cells.has(cellKey(x / pixel, y / pixel - 1)),
+      })
       continue
     }
     foliage.left = Math.min(foliage.left, x)
@@ -145,8 +151,9 @@ export function dressTree(grown: GrownTree) {
     const crest = leader.at(-1) ?? { x: 0, y: foliage.bottom }
     grow(crest.x, crest.y, -Math.PI / 2 + (bare() - 0.5) * 0.3, height * 0.4, 1)
   }
-  // Wind moves leaves and twigs; the trunk and limbs stay put. The canopy splits into a 3 × 3 grid
-  // of clusters, each shifting by whole cells, so a gust can cross the crown one cluster at a time.
+  // Wind moves leaves and twigs; the trunk and limbs stay put. A broadleaf canopy splits into leaf
+  // clumps around its highlights and a conifer into tiers. Each shifts by whole cells, so a gust
+  // can cross the crown one clump at a time.
   type Cluster = {
     marks: Record<Exclude<Tone, 'trunk' | 'bark'>, string[]>
     snow: string[]
@@ -154,17 +161,17 @@ export function dressTree(grown: GrownTree) {
     sprout: string[]
   }
   const clusters = new Map<number, Cluster>()
+  const leafy = [...cells.values()].filter(({ tone }) => tone !== 'trunk' && tone !== 'bark')
+  const tiered = habit.crown === 'cone' || habit.crown === 'spire' || habit.crown === 'tier'
+  const plan = leafClumps(leafy, pixel, tiered)
   // A still copy of the crown in its shade tone sits under the clusters, so a cluster that shifts
   // uncovers shaded leaves rather than the paper, at the seams and along the silhouette alike. The
   // gaps in a sparse crown are not on it and stay open.
   const hollow: string[] = []
-  const binWidth = Math.max(pixel, (foliage.right - foliage.left) / 3)
-  const binHeight = Math.max(pixel, (foliage.bottom - foliage.top) / 3)
-  for (const { x, y, tone } of cells.values()) {
-    if (tone === 'trunk' || tone === 'bark') continue
-    const column = Math.min(2, Math.floor((x - foliage.left) / binWidth))
-    const row = Math.min(2, Math.floor((y - foliage.top) / binHeight))
-    const key = row * 3 + column
+  for (let index = 0; index < leafy.length; index++) {
+    const { x, y } = leafy[index]
+    const tone = leafy[index].tone as Exclude<Tone, 'trunk' | 'bark'>
+    const key = plan.owner[index]
     let cluster = clusters.get(key)
     if (!cluster) {
       cluster = {
@@ -193,15 +200,50 @@ export function dressTree(grown: GrownTree) {
       cluster.sprout.push(cell)
   }
   const extent = Math.max(1, -crownTop)
+  // An evergreen's trunk bends with its crown. Above the foot it is cut into bands, and each band
+  // slides by whole cells with the square of its height, like the tiers that hang from it.
+  const bands = habit.needles && !deciduous ? stemBands.length : 0
+  const stems = Array.from({ length: bands + 1 }, () => ({
+    trunk: [] as string[],
+    bark: [] as string[],
+    snow: [] as string[],
+    cells: 0,
+  }))
+  const bandOf = (y: number) => {
+    const up = -(y + pixel / 2) / extent
+    let band = 0
+    while (band < bands && up >= stemBands[band]) band++
+    return band
+  }
+  for (const { y } of woody) stems[bandOf(y)].cells++
+  for (const { x, y, tone, snow } of woody) {
+    // A band of a cell or two stays with the foot.
+    const band = bandOf(y)
+    const stem = stems[stems[band].cells < 3 ? 0 : band]
+    stem[tone].push(`M${x} ${y}h${pixel}v${pixel}h${-pixel}Z`)
+    if (snow) stem.snow.push(`M${x} ${y}h${pixel}v${Math.max(1, Math.floor(pixel / 2))}h${-pixel}Z`)
+  }
+  const stemPaths = (stem: (typeof stems)[number]) =>
+    (['trunk', 'bark'] as const)
+      .map(tone => `<path class="trail-tree-${tone}" d="${stem[tone].join('')}"/>`)
+      .join('') + `<path class="trail-tree-snow" d="${stem.snow.join('')}"/>`
+  const stemMarkup = stems
+    .slice(1)
+    .map((stem, index) => {
+      if (!stem.trunk.length && !stem.bark.length) return ''
+      const up = (stemBands[index] + (stemBands[index + 1] ?? 1)) / 2
+      return `<g class="trail-tree-stem" data-leaf-x="0" data-leaf-y="${(-up * extent).toFixed(1)}" data-leaf-lift="${(up * up).toFixed(2)}" data-leaf-loose="0" data-leaf-cell="${pixel}">${stemPaths(stem)}</g>`
+    })
+    .join('')
   const canopy = [...clusters.entries()]
     .sort(([a], [b]) => a - b)
     .map(([key, cluster]) => {
-      const centreX = foliage.left + ((key % 3) + 0.5) * binWidth
-      const centreY = foliage.top + (Math.floor(key / 3) + 0.5) * binHeight
-      // Displacement grows toward the crown top, like a cantilever loaded along its length.
-      const lift = Math.max(0.15, Math.min(1, -centreY / extent)) ** 1.5
+      const { x: centreX, y: centreY, loose } = plan.clumps[key]
+      // Displacement grows toward the crown top, like a cantilever loaded along its length. A
+      // conifer's tiers ride the trunk's bend, which grows with the square of the height.
+      const lift = Math.max(0.15, Math.min(1, -centreY / extent)) ** (tiered ? 2 : 1.5)
       return (
-        `<g class="trail-tree-leaves" data-leaf-x="${centreX.toFixed(1)}" data-leaf-y="${centreY.toFixed(1)}" data-leaf-lift="${lift.toFixed(2)}" data-leaf-cell="${pixel}">` +
+        `<g class="trail-tree-leaves" data-leaf-x="${centreX.toFixed(1)}" data-leaf-y="${centreY.toFixed(1)}" data-leaf-lift="${lift.toFixed(2)}" data-leaf-loose="${loose.toFixed(2)}" data-leaf-cell="${pixel}">` +
         (['light', 'crown', 'dark', 'gold'] as const)
           .filter(tone => cluster.marks[tone].length)
           .map(tone => `<path class="trail-tree-${tone}" d="${cluster.marks[tone].join('')}"/>`)
@@ -251,12 +293,10 @@ export function dressTree(grown: GrownTree) {
     markup:
       `<path class="trail-tree-shadow" data-shadow-radius="${shadow}" d="M${-shadow} 0h${shadow * 2}v2h-3v2h${-shadow * 2 + 6}V2h-3Z"/>` +
       '<g class="trail-tree-motion">' +
-      (['trunk', 'bark'] as const)
-        .map(tone => `<path class="trail-tree-${tone}" d="${paths[tone].join('')}"/>`)
-        .join('') +
-      `<path class="trail-tree-snow" d="${woodySnow.join('')}"/>` +
+      stemPaths(stems[0]) +
+      stemMarkup +
       limbMarkup +
-      `<g class="trail-tree-canopy"><path class="trail-tree-hollow" d="${hollow.join('')}"/>${canopy}</g>` +
+      `<g class="trail-tree-canopy" data-leaf-span="${Math.max(0, foliage.right - foliage.left).toFixed(0)}"><path class="trail-tree-hollow" d="${hollow.join('')}"/>${canopy}</g>` +
       '</g>',
   }
 }

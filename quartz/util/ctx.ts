@@ -2,6 +2,7 @@ import path from 'path'
 import type { FrontmatterLink } from '../plugins/transformers/frontmatter'
 import type { AssetManifest } from './asset-manifest'
 import type { OutputAssetClaim, OutputAssetManifest } from './output-assets'
+import type { ReferenceCatalogInput } from './references/catalog-types'
 import type { StaticResources } from './resources'
 import { QuartzConfig } from '../cfg'
 import { ProcessedContent, QuartzPluginData } from '../plugins/vfile'
@@ -12,6 +13,8 @@ export interface Argv {
   directory: string
   verbose: boolean
   output: string
+  outputAssetManifest?: string
+  gitignore?: boolean
   serve: boolean
   watch: boolean
   port: number
@@ -27,6 +30,7 @@ export type BuildTimeTrieData = QuartzPluginData & { slug: string; title: string
 
 export type RenderData = {
   source: QuartzPluginData[]
+  references?: BuildCtx['referenceContent']
   bySlug: Map<FullSlug, QuartzPluginData>
   baseFiles: QuartzPluginData[]
   backlinksBySlug: Map<SimpleSlug, QuartzPluginData[]>
@@ -40,6 +44,11 @@ export interface BuildCtx {
   cfg: QuartzConfig
   allSlugs: FullSlug[]
   allFiles: FilePath[]
+  referenceCatalogInputs?: readonly ReferenceCatalogInput[]
+  /** Demand-prepared emitter pages, available to renderers without becoming ContentPage inputs. */
+  referenceContent?: ReadonlyMap<FilePath, ProcessedContent>
+  referencePreparationBuildId?: string
+  previousReferenceContent?: ReadonlyMap<FilePath, ProcessedContent>
   trie?: FileTrieNode<BuildTimeTrieData>
   incremental: boolean
   /** Complete output ownership for a source emission transaction, relative to argv.output. */
@@ -106,9 +115,9 @@ export function trieFromAllFiles(allFiles: QuartzPluginData[]): FileTrieNode<Bui
 
 export function renderDataFor(ctx: BuildCtx, allFiles: QuartzPluginData[]): RenderData {
   const cached = ctx.renderData
-  if (cached?.source === allFiles) return cached
+  if (cached?.source === allFiles && cached.references === ctx.referenceContent) return cached
   const weakCached = renderDataCache.get(allFiles)
-  if (weakCached) {
+  if (weakCached && weakCached.references === ctx.referenceContent) {
     ctx.renderData = weakCached
     return weakCached
   }
@@ -147,10 +156,14 @@ export function renderDataFor(ctx: BuildCtx, allFiles: QuartzPluginData[]): Rend
       byKey.set(slug, links)
     }
   }
+  for (const [tree, file] of ctx.referenceContent?.values() ?? []) {
+    if (file.data.slug) bySlug.set(file.data.slug, { ...file.data, htmlAst: tree })
+  }
   baseFiles.sort((a, b) => (b.slug?.length ?? 0) - (a.slug?.length ?? 0))
 
   const renderData = {
     source: allFiles,
+    references: ctx.referenceContent,
     bySlug,
     baseFiles,
     backlinksBySlug,
@@ -162,7 +175,10 @@ export function renderDataFor(ctx: BuildCtx, allFiles: QuartzPluginData[]): Rend
   return renderData
 }
 
-export type WorkerSerializableBuildCtx = Omit<BuildCtx, 'cfg' | 'trie' | 'renderData'>
+export type WorkerSerializableBuildCtx = Omit<
+  BuildCtx,
+  'cfg' | 'trie' | 'renderData' | 'referenceContent' | 'previousReferenceContent'
+>
 
 const contentDataCache = new ReloadableWeakMap<ProcessedContent[], QuartzPluginData[]>()
 

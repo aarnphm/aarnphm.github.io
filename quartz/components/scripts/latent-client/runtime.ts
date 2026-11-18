@@ -1,6 +1,10 @@
 import type { LinkItem } from '../../../util/latent/markup'
 import type { RailLayout } from '../../../util/latent/rail'
-import type { LatentWorkerRequest, LatentWorkerResponse } from '../../../workers/latent.worker'
+import type {
+  LatentWorkerRequest,
+  LatentWorkerResponse,
+  VectorEngine,
+} from '../../../util/latent/vectors'
 import type { ToastHandle } from '../toast'
 import type { Atlas } from './bench-feats'
 import type { BenchLinks } from './bench-links'
@@ -18,6 +22,15 @@ import {
   type LatentTextPart,
   type LatentTrackDoc,
 } from '../../../util/latent/types'
+
+/**
+ * Where the sidecar's files come from: `fetch` in the browser, the content folder at build time
+ * (latent embeds render their features column with these same builders, util/latent/embed/).
+ */
+export interface LatentSource {
+  json<T>(url: string): Promise<T>
+  bytes(url: string): Promise<ArrayBuffer>
+}
 
 export interface Runtime {
   root: HTMLElement
@@ -48,6 +61,12 @@ export interface Runtime {
   bench: Bench | null
   /** the vectors worker, shared by the bench and the query */
   vec: { worker: Worker; seq: number } | null
+  /** files from somewhere other than `fetch` (the build) */
+  source?: LatentSource
+  /** the vector math in this thread instead of the worker (the build) */
+  engine?: VectorEngine
+  /** 'embed': a latent embed in a note (latent-embed.client.ts), which never moves the focus */
+  mode?: 'page' | 'embed'
   semantic: Worker | null
   model: string
   /** a typed query pins the links pane to its hits until cleared */
@@ -64,7 +83,13 @@ export interface Runtime {
    * the box's `filter:` kinds (null keeps every kind); `mask` is one byte per row, built on the
    * first worker query that needs it (search.ts filterMask)
    */
-  filter?: { kinds: LatentKind[]; mask: Uint8Array | null } | null
+  filter?: { kinds: LatentKind[]; mask: Uint8Array | null; typed?: boolean } | null
+  /**
+   * the kinds the explorer shows (the toggles under the sources, view.ts): the links, the reader's
+   * neighbours in time and the rail's band skip the rest. Unset (an embed) shows every kind;
+   * `filter` is these unless the box names its own (`typed`)
+   */
+  view?: LatentKind[]
 }
 
 export interface Bench {
@@ -108,19 +133,34 @@ export interface Bench {
   heatKey: string
   frame: number
   hover: number
+  /**
+   * a latent embed's bench (latent-embed.client.ts), drawn from the build's coordinates asset
+   * with no atlas or documents loaded: the ring, the feature's edges and the Matryoshka levels
+   * come with the figure, and the hover line names a point through `name`
+   */
+  embed?: {
+    mark: number
+    edges: { near: number[]; parent: number; children: number[] } | null
+    lvl: Uint8Array | null
+    name(i: number): string
+  }
   // canvas size in css px; the backing store is w·dpr × h·dpr so points and labels stay sharp
   w: number
   h: number
   dpr: number
 }
 
-export async function fetchJson<T>(rt: Pick<Runtime, 'signal'>, url: string): Promise<T> {
+type Fetcher = Pick<Runtime, 'signal' | 'source'>
+
+export async function fetchJson<T>(rt: Fetcher, url: string): Promise<T> {
+  if (rt.source) return rt.source.json<T>(url)
   const response = await fetch(url, { signal: rt.signal })
   if (!response.ok) throw new Error(`${response.status} ${url}`)
   return (await response.json()) as T
 }
 
-export async function fetchBytes(rt: Pick<Runtime, 'signal'>, url: string): Promise<ArrayBuffer> {
+export async function fetchBytes(rt: Fetcher, url: string): Promise<ArrayBuffer> {
+  if (rt.source) return rt.source.bytes(url)
   const response = await fetch(url, { signal: rt.signal })
   if (!response.ok) throw new Error(`${response.status} ${url}`)
   return response.arrayBuffer()
@@ -198,6 +238,11 @@ export function requestVec(
   message: VecMessage,
   transfer: Transferable[] = [],
 ): Promise<LatentWorkerResponse> {
+  if (rt.engine)
+    return rt.engine.handle({ ...message, seq: 0 } as LatentWorkerRequest).then(({ response }) => {
+      if (response.type === 'error') throw new Error(response.message)
+      return response
+    })
   const vec = vecWorker(rt)
   const seq = ++vec.seq
   return new Promise((resolve, reject) => {

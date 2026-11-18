@@ -1,0 +1,526 @@
+@use './foundations' as *;
+
+// A ride's drop-down on the High Park page: laps compared side by side, through the lap, and as
+// a table. Markup in pages/triathlon-panels/high-park-laps.tsx; picking and the hover readout in
+// triathlon/fun/high-park/lap-select.ts.
+//
+// Colour says who: coral is the fastest lap (as everywhere on the page), each picked lap holds
+// one of four slots, ink is the lap under the pointer and the average lap.
+.tri-hp-lapview {
+  --hp-pick-0: #a0af54;
+  --hp-pick-1: #66a0c8;
+  --hp-pick-2: #a699d0;
+  --hp-pick-3: #dfb431;
+  display: grid;
+  gap: 1.75rem;
+  padding: 0 0 1.5rem;
+  border-top: 1px dashed var(--ledger-line);
+
+  [data-who='best'] {
+    --who: var(--hp-best);
+  }
+  [data-who='0'] {
+    --who: var(--hp-pick-0);
+  }
+  [data-who='1'] {
+    --who: var(--hp-pick-1);
+  }
+  [data-who='2'] {
+    --who: var(--hp-pick-2);
+  }
+  [data-who='3'] {
+    --who: var(--hp-pick-3);
+  }
+  [data-who='hover'] {
+    --who: var(--darkgray);
+  }
+  [data-who='base'] {
+    --who: var(--dark);
+  }
+
+  h3 {
+    margin: 0 0 0.6rem;
+    color: var(--dark);
+    font: 400 0.68rem/1 var(--codeFont);
+  }
+
+  figure {
+    margin: 0;
+  }
+
+  figcaption {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.3rem 0.5rem;
+    margin-bottom: 0.35rem;
+    color: var(--gray);
+    font: 0.62rem/1.2 var(--codeFont);
+    font-variant-numeric: tabular-nums;
+
+    > span:first-child {
+      overflow: hidden;
+      color: var(--darkgray);
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .tri-hp-lapname {
+    margin-left: 0.9rem;
+    color: var(--gray);
+    font-variant-numeric: tabular-nums;
+  }
+
+  svg {
+    display: block;
+    width: 100%;
+    overflow: visible;
+
+    path {
+      fill: none;
+      vector-effect: non-scaling-stroke;
+    }
+  }
+
+  button {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: 2px;
+    }
+  }
+}
+
+// One line: the activity, who is picked, the baseline switch. It rides along while the
+// drop-down scrolls, so the colours keep their names.
+.tri-hp-bar {
+  position: sticky;
+  // The panel's top padding is part of its scrollport: pull the bar up through it.
+  top: -1.75rem;
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem 1.5rem;
+  margin-bottom: -0.5rem;
+  padding: 0.8rem 0 0.6rem;
+  border-bottom: 1px solid var(--ledger-line);
+  background: var(--light);
+  color: var(--gray);
+  font: 0.68rem/1.3 var(--codeFont);
+  font-variant-numeric: tabular-nums;
+}
+
+.tri-hp-picks {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.3rem 1rem;
+}
+
+// A swatch, then the lap's number.
+.tri-hp-pick,
+.tri-hp-val {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  white-space: nowrap;
+
+  i {
+    flex: none;
+    width: 0.45rem;
+    height: 0.45rem;
+    background: var(--who);
+  }
+
+  // The hovered lap is an outline, the average lap a rule: neither is a pick.
+  &[data-who='hover'] i {
+    box-sizing: border-box;
+    border: 1px solid var(--who);
+    background: none;
+  }
+
+  &[data-who='base'] i {
+    width: 0.7rem;
+    height: 2px;
+    transform: translateY(-0.2em);
+  }
+}
+
+.tri-hp-lapview button.tri-hp-pick {
+  color: var(--dark);
+
+  &::after {
+    content: '×';
+    color: var(--gray);
+  }
+
+  &:hover::after {
+    color: var(--dark);
+  }
+}
+
+// After the picks, whatever their order.
+.tri-hp-clear {
+  order: 9;
+}
+
+.tri-hp-lapview .tri-hp-clear {
+  text-decoration: underline dotted color-mix(in srgb, var(--gray) 60%, transparent);
+  text-underline-offset: 3px;
+
+  &:hover {
+    color: var(--dark);
+  }
+}
+
+// The baseline switch: an outlined square off, filled on, like the row's own open mark.
+.tri-hp-lapview .tri-hp-mode {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  margin-left: auto;
+  color: var(--darkgray);
+
+  &::before {
+    content: '';
+    box-sizing: border-box;
+    width: 0.5rem;
+    height: 0.5rem;
+    border: 1px solid var(--gray);
+  }
+
+  &[aria-pressed='true'] {
+    color: var(--dark);
+
+    &::before {
+      border-color: var(--dark);
+      background: var(--dark);
+    }
+  }
+
+  &:hover {
+    color: var(--dark);
+  }
+}
+
+.tri-hp-lapcharts > div {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  gap: 1rem 1.5rem;
+}
+
+.tri-hp-lapchart svg {
+  height: 3.4rem;
+  cursor: pointer;
+}
+
+.tri-hp-range {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.tri-hp-lapchart-mean {
+  stroke: var(--ledger-line);
+  stroke-dasharray: 2 3;
+}
+
+.tri-hp-lapchart-line {
+  stroke: var(--hp-ink);
+  stroke-opacity: 0.45;
+  stroke-width: 1;
+}
+
+.tri-hp-lapchart-marks {
+  stroke: var(--hp-ink);
+  stroke-width: 4;
+  stroke-linecap: square;
+}
+
+.tri-hp-lapchart .is-right {
+  .tri-hp-lapchart-line {
+    stroke-dasharray: 3 2;
+  }
+
+  .tri-hp-lapchart-marks {
+    stroke-opacity: 0.45;
+  }
+}
+
+.tri-hp-lapchart-best {
+  stroke: var(--hp-best);
+  stroke-width: 6;
+  stroke-linecap: square;
+}
+
+.tri-hp-plot {
+  position: relative;
+}
+
+// A picked lap's position (sparklines) and the readout's points (profiles), in the slot's colour.
+// HTML squares placed in percent of the plot box, centred on the point.
+.tri-hp-pin,
+.tri-hp-dot {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  background: var(--who);
+  pointer-events: none;
+}
+
+.tri-hp-cursor {
+  stroke: var(--dark);
+  stroke-width: 1;
+  stroke-opacity: 0.45;
+}
+
+.tri-hp-profiles > div {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem 1.5rem;
+}
+
+// Under the chart's name: where in the lap, then each lap's value and its distance from the
+// reference. One line is always held, so a hover moves nothing.
+.tri-hp-readout {
+  display: flex;
+  flex-wrap: wrap;
+  grid-column: 1 / -1;
+  gap: 0.15rem 1.1rem;
+  min-height: 1.2em;
+}
+
+.tri-hp-at {
+  min-width: 3.6rem;
+  color: var(--gray);
+}
+
+.tri-hp-val {
+  b {
+    color: var(--gray);
+    font-weight: 400;
+  }
+
+  span {
+    color: var(--dark);
+  }
+
+  em {
+    color: var(--darkgray);
+    font-style: normal;
+
+    &:empty {
+      display: none;
+    }
+  }
+}
+
+.tri-hp-profile {
+  .tri-cax-frame {
+    grid-template-columns: 2rem minmax(0, 1fr);
+  }
+
+  svg {
+    height: 9rem;
+    cursor: crosshair;
+  }
+
+  path {
+    stroke-linejoin: round;
+  }
+
+  .tri-hp-ground {
+    fill: color-mix(in srgb, var(--gray) 22%, transparent);
+    stroke: none;
+  }
+
+  .tri-hp-grid-line {
+    stroke: var(--ledger-line);
+    stroke-width: 0.5;
+  }
+
+  // Every lap, as texture.
+  .tri-hp-laplines path {
+    stroke: var(--hp-ink);
+    stroke-opacity: 0.18;
+    stroke-width: 1;
+  }
+
+  .tri-hp-fastest {
+    stroke: var(--hp-best);
+    stroke-width: 1.75;
+  }
+
+  .tri-hp-band {
+    display: none;
+    fill: color-mix(in srgb, var(--hp-ink) 14%, transparent);
+    stroke: none;
+  }
+
+  .tri-hp-base {
+    display: none;
+    stroke: var(--dark);
+    stroke-width: 1.75;
+  }
+
+  .tri-hp-pickline {
+    stroke: var(--who);
+    stroke-width: 2;
+  }
+
+  .tri-hp-hoverline {
+    stroke: var(--darkgray);
+    stroke-width: 1;
+  }
+
+  .tri-hp-dot[data-who='hover'],
+  .tri-hp-dot[data-who='base'] {
+    width: 5px;
+    height: 5px;
+    margin: -2.5px 0 0 -2.5px;
+  }
+}
+
+// With laps picked, the rest recede; the fastest stays as a thin benchmark.
+.tri-hp-lapview[data-picked] {
+  .tri-hp-laplines {
+    opacity: 0.55;
+  }
+
+  .tri-hp-fastest {
+    stroke-opacity: 0.55;
+    stroke-width: 1.25;
+  }
+}
+
+// Baseline on: the average lap and its spread stand in for the single laps.
+.tri-hp-lapview[data-even] {
+  .tri-hp-laplines {
+    opacity: 0.25;
+  }
+
+  // The hill steps back so the spread band reads.
+  .tri-hp-ground {
+    fill: color-mix(in srgb, var(--gray) 10%, transparent);
+  }
+
+  .tri-hp-fastest {
+    stroke-opacity: 0.55;
+    stroke-width: 1.25;
+  }
+
+  .tri-hp-band,
+  .tri-hp-base {
+    display: inline;
+  }
+}
+
+// Scrolls inside itself: the header row and lap column stay put.
+.tri-hp-lapgrid {
+  max-height: 20rem;
+  overflow: auto;
+  border: 1px solid var(--ledger-line);
+  @include thin-scrollbar;
+
+  table {
+    display: table;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+    font: 0.68rem/1.4 var(--codeFont);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  th,
+  td {
+    padding: 0.3rem 0.7rem;
+    white-space: nowrap;
+    border: 0;
+    border-bottom: 1px solid var(--ledger-line);
+    text-align: right;
+  }
+
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--light);
+    color: var(--gray);
+    font-weight: 400;
+  }
+
+  tbody th {
+    position: sticky;
+    left: 0;
+    background: var(--light);
+    color: var(--gray);
+    font-weight: 400;
+  }
+
+  thead th:first-child {
+    left: 0;
+    z-index: 2;
+  }
+
+  tbody tr {
+    cursor: pointer;
+  }
+
+  td {
+    color: var(--dark);
+  }
+
+  tr.is-best td,
+  tr.is-best th {
+    color: var(--hp-best);
+  }
+
+  // The box's own border closes the table; a last-row rule would double it.
+  tbody tr:last-child th,
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  // A picked lap: its slot's colour down the left edge and as a wash.
+  tr[data-who] th,
+  tr[data-who] td {
+    background: color-mix(in srgb, var(--who) 16%, var(--light));
+  }
+
+  tr[data-who] th {
+    box-shadow: inset 3px 0 var(--who);
+    color: var(--dark);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tri-hp-lapgrid tbody tr:not([data-who]):hover :is(th, td) {
+    background: var(--ledger-surface);
+  }
+}
+
+@media all and (max-width: 48rem) {
+  // The page scrolls here, under the site's own header: the bar stays in the flow.
+  .tri-hp-bar {
+    position: static;
+  }
+
+  .tri-hp-profiles > div {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tri-hp-lapcharts > div {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem 1rem;
+  }
+}

@@ -33,7 +33,7 @@ import { ChangeEvent } from './types/plugin'
 import { Argv, BuildCtx } from './util/ctx'
 import { emitQuartzDevEvent } from './util/dev-events'
 import { glob } from './util/glob'
-import { readOutputAssetManifest } from './util/output-assets'
+import { outputAssetManifestPath, readOutputAssetManifest } from './util/output-assets'
 import { FilePath, joinSegments } from './util/path'
 import { logBuildStage, PerfTimer } from './util/perf'
 import {
@@ -113,7 +113,12 @@ export async function buildQuartz(
     if (argv.watch) watching = await startWatching(ctx, mut, clientRefresh, initialContent)
     logBuildStage(argv, ctx.buildId, 'build.watchers', perf.elapsedMs('watchers'))
     perf.addEvent('glob')
-    const discovered = await glob('**', argv.directory, config.configuration.ignorePatterns)
+    const discovered = await glob(
+      '**',
+      argv.directory,
+      config.configuration.ignorePatterns,
+      argv.gitignore,
+    )
     const allFiles = omitDisabledCourseContent(argv, discovered)
     if (reason === 'initial' && allFiles.length !== discovered.length) {
       console.log(
@@ -140,7 +145,7 @@ export async function buildQuartz(
       for (const [fp, content] of indexContent(restoredProcessedContent(filePaths))) {
         if (published.has(fp)) initialContent.set(fp, content)
       }
-      ctx.outputAssetManifest = await readOutputAssetManifest()
+      ctx.outputAssetManifest = await readOutputAssetManifest(outputAssetManifestPath(ctx))
       ctx.incremental = true
       if (watching) watching.ready = true
       console.log(
@@ -262,7 +267,7 @@ export async function buildSourceResources(
       ctx,
       omitDisabledCourseContent(
         argv,
-        await glob('**', argv.directory, cfg.configuration.ignorePatterns),
+        await glob('**', argv.directory, cfg.configuration.ignorePatterns, argv.gitignore),
       ),
     )
     const persistentInputs = await captureBuildInputs(ctx)

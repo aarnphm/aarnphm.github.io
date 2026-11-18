@@ -2,9 +2,61 @@
 @use '../mixin.scss' as *;
 @use './latent-reader' as latent-reader;
 
+// a source toggle: mono micro words, gray, a swatch in the kind's colour that fills when on.
+// The bench's sources and the links pane's kinds share it
+@mixin kind-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  width: auto;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--lat-mono);
+  font-size: var(--lat-micro);
+  font-weight: 400;
+  line-height: inherit;
+  color: var(--gray);
+  cursor: pointer;
+
+  &::before {
+    content: '';
+    width: 0.5em;
+    height: 0.5em;
+    outline: 1px solid var(--lat-swatch, var(--dark));
+    outline-offset: -1px;
+  }
+
+  &[data-kind='pdf'] {
+    --lat-swatch: var(--lat-pdf);
+  }
+
+  &[data-kind='image'] {
+    --lat-swatch: var(--lat-image);
+  }
+
+  &[data-kind='base'] {
+    --lat-swatch: var(--gray);
+  }
+
+  &[aria-pressed='true'] {
+    color: var(--dark);
+
+    &::before {
+      background: var(--lat-swatch, var(--dark));
+    }
+  }
+
+  &:focus-visible {
+    outline: 1px solid var(--dark);
+    outline-offset: 2px;
+  }
+}
+
 // `layout: latent`: rail | reader | links | probe. Markup from quartz/util/latent/markup.ts.
 // Popovers mount on <body>, so every rule hangs off the page root through :where.
-[data-layout='latent'] :where(#quartz-root) {
+:is([data-layout='latent'] :where(#quartz-root), .latent-embed) {
   --lat-pdf: #fdb2a2;
   --lat-image: #cdd597;
   // a picked feature's rows on the 3-d bench (Flexoki orange, themed)
@@ -175,7 +227,7 @@
   }
 }
 
-[data-layout='latent'] :where(#quartz-root) {
+:is([data-layout='latent'] :where(#quartz-root), .latent-embed) {
   // the global `header` rule (document-defaults.scss) pads the element and pushes its
   // second-last child right, which shoved each pane label against its count
   .lat-pane-head,
@@ -579,6 +631,11 @@
       background: var(--light);
       box-shadow: 0 0.4rem 1.2rem color-mix(in srgb, var(--dark) 18%, transparent);
       opacity: 0;
+
+      // same lift as .lat-chunk-preview: no pale halo in dark mode
+      :root[saved-theme='dark'] & {
+        box-shadow: none;
+      }
       visibility: hidden;
       cursor: pointer;
       // the hide waits long enough for the pointer to cross from the title to the card
@@ -827,7 +884,7 @@
     }
 
     // both ends on one grid: column b starts on the histogram's zero, and the two ends share
-    // row lines (subgrid), so a term list that wraps on one side moves both lists together
+    // row lines (subgrid), so a pole name that wraps on one side moves both lists together
     .lat-poles {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -855,12 +912,14 @@
       color: var(--dark);
     }
 
+    // one line; words past the column end in an ellipsis and scroll into view on hover
+    // (latent-client/marquee.ts)
     .lat-pole-terms {
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 2;
-      line-clamp: 2;
+      display: block;
+      min-width: 0;
       overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
       font-style: italic;
       color: var(--darkgray);
       font-size: var(--text-meta);
@@ -1062,53 +1121,7 @@
 
     // set like the levels; the swatch is the point colour, so the row is also the legend
     .lat-bench-source {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3em;
-      width: auto;
-      min-width: 0;
-      padding: 0;
-      border: 0;
-      background: none;
-      font-family: var(--lat-mono);
-      font-size: var(--lat-micro);
-      font-weight: 400;
-      line-height: inherit;
-      color: var(--gray);
-      cursor: pointer;
-
-      &::before {
-        content: '';
-        width: 0.5em;
-        height: 0.5em;
-        outline: 1px solid var(--lat-swatch, var(--dark));
-        outline-offset: -1px;
-      }
-
-      &[data-kind='pdf'] {
-        --lat-swatch: var(--lat-pdf);
-      }
-
-      &[data-kind='image'] {
-        --lat-swatch: var(--lat-image);
-      }
-
-      &[data-kind='base'] {
-        --lat-swatch: var(--gray);
-      }
-
-      &[aria-pressed='true'] {
-        color: var(--dark);
-
-        &::before {
-          background: var(--lat-swatch, var(--dark));
-        }
-      }
-
-      &:focus-visible {
-        outline: 1px solid var(--dark);
-        outline-offset: 2px;
-      }
+      @include kind-toggle;
     }
 
     .lat-bench-canvas {
@@ -1433,22 +1446,36 @@
     }
   }
 
-  // garden components in note passages: a ```quotes block's last paragraph is its attribution,
-  // verse keeps its line breaks, an sms reads as one message
-  .lat-cite {
-    font-family: var(--lat-mono);
-    font-size: var(--text-meta);
-    color: var(--gray);
+  // the Aarnphm transformer's fences keep the site's markup and styles (quotes.scss
+  // blockquote.quotes, article-chrome.scss pre.poetry and p.text); the passage only spaces them
+  & > :is(blockquote.quotes, pre.poetry, p.text) {
+    margin-bottom: 0;
   }
 
-  .lat-verse {
-    & > p {
-      margin: 0;
-      white-space: pre-wrap;
-    }
+  // embeds (md.ts `![[…]]`): images as the note page sets them, at most the column's width; a
+  // note's transclusion is the page's blockquote.transclude, copied in by latent-client/figures.ts
+  // (until then, or when the page has none, a link to it)
+  & > * + figure {
+    margin-top: 0.75em;
+  }
 
-    & > p + p {
-      margin-top: 0.8em;
+  :is(figure, .lat-embed-media) > :is(img, video) {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .lat-embed > blockquote.transclude {
+    margin: 0;
+  }
+
+  // `[^sign]`: the page's drawing is copied in when the passage nears the screen
+  // (latent-client/figures.ts); the line keeps its height meanwhile, a page without one drops it
+  .lat-signature {
+    min-height: 51px;
+
+    &[data-state='none'] {
+      display: none;
     }
   }
 
@@ -1465,22 +1492,6 @@
       height: auto;
       margin-inline: auto;
       overflow: visible;
-    }
-  }
-
-  .lat-sms {
-    width: fit-content;
-    max-width: min(34rem, 100%);
-    padding: 0.45em 0.8em;
-    border: 1px solid var(--lat-hair);
-    border-radius: 0.9em;
-
-    & > p {
-      margin: 0;
-    }
-
-    & > p + p {
-      margin-top: 0.5em;
     }
   }
 
@@ -1526,5 +1537,39 @@ html:has(> body[data-layout='latent']) {
   80%,
   100% {
     transform: translateX(var(--lat-shift, 0));
+  }
+}
+
+// under the sources: which kinds the explorer shows (search.ts bindKinds), set like the bench's
+// sources; then the models, one line each: the encoder, then the transcoders
+[data-layout='latent'] :where(#quartz-root) .lat-ledger {
+  .lat-kinds {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.375rem 0.75rem;
+    border-top: 1px solid var(--lat-hair);
+    font-family: var(--lat-mono);
+    font-size: var(--lat-micro);
+    line-height: 1.5;
+  }
+
+  .lat-kinds-label {
+    margin-right: auto;
+    color: var(--gray);
+  }
+
+  .lat-kind {
+    @include kind-toggle;
+  }
+
+  // the box's `filter:` named these kinds; a toggle rewrites it
+  .lat-kinds[data-typed] .lat-kinds-label {
+    color: var(--secondary);
+  }
+
+  .lat-ledger-note + .lat-ledger-note {
+    border-top: 0;
+    padding-top: 0;
   }
 }

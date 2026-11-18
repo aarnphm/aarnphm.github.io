@@ -331,13 +331,30 @@
     }
   }
 
-  .stream-entry-share {
+  .stream-entry-actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    align-items: center;
+    column-gap: 0;
+    row-gap: 0.35rem;
     font-size: 0.85rem;
 
-    button {
+    .stream-entry-graphs {
+      margin-top: 0;
+    }
+
+    .stream-entry-graph {
+      border: 0;
+    }
+
+    .stream-entry-share {
+      display: inline-flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .stream-entry-share button {
       appearance: none;
       display: inline;
       width: fit-content;
@@ -359,6 +376,12 @@
         outline: 2px solid var(--secondary);
         outline-offset: 2px;
       }
+    }
+
+    .stream-entry-graphs + .stream-entry-share {
+      margin-inline-start: 0.5rem;
+      padding-inline-start: 0.5rem;
+      border-inline-start: 1px solid var(--darkgray);
     }
   }
 
@@ -769,7 +792,7 @@
     }
 
     .stream-entry-socials,
-    .stream-entry-share,
+    .stream-entry-actions,
     .stream-entry-importance {
       order: 5;
     }

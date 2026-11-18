@@ -1,3 +1,4 @@
+import type { GemmaEnv } from '../gemma'
 import type { TrainingCalendarEnv } from '../training-calendar'
 
 export type Env = {
@@ -8,4 +9,5 @@ export type Env = {
   LEAN_VERIFY_TOKEN?: string
   MCP_RATE_LIMITER: RateLimit
 } & Cloudflare.Env &
-  TrainingCalendarEnv
+  TrainingCalendarEnv &
+  GemmaEnv

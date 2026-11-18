@@ -29,3 +29,28 @@ for (const headingToggle of [false, true, undefined]) {
     }
   })
 }
+
+test('collapsible sections retain the canonical heading id once', () => {
+  const [section] = processHeaders([
+    h('h2#local-marker', ['Local marker', h('a', { href: '#local-marker' }, '#')]),
+    h('p', 'Body'),
+  ])
+  assert.equal(section.type, 'element')
+  if (section.type !== 'element') return
+
+  const ids: string[] = []
+  const collectIds = (node: typeof section): void => {
+    if (typeof node.properties.id === 'string') ids.push(node.properties.id)
+    for (const child of node.children) {
+      if (child.type === 'element') collectIds(child)
+    }
+  }
+  collectIds(section)
+  const html = toHtml({ type: 'root', children: [section] })
+
+  assert.equal(ids.filter(id => id === 'local-marker').length, 1)
+  assert.match(html, /<h2 id="local-marker"/)
+  assert.match(html, /href="#local-marker"/)
+  assert.equal(section.properties.id, 'collapsible-header-local-marker')
+  assert.equal(section.properties.dataHeadingAnchor, 'local-marker')
+})

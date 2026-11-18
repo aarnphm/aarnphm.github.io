@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Neighbourhood bar in a former bodega, serving cocktails and whisky alongside billiards.'
 id: 'Gensyn Frederiksberg'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DeHJKzan8S2/'
 tags:
   - 'places'
 title: 'Gensyn Frederiksberg'

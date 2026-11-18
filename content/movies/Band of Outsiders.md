@@ -19,6 +19,5 @@ tags:
 title: Band of Outsiders
 year: 1964
 runtime: 97
+external: https://en.wikipedia.org/wiki/Bande_à_part_(film)
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](<https://en.wikipedia.org/wiki/Bande_à_part_(film)>).

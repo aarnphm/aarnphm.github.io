@@ -241,6 +241,9 @@ content/arena_hast.json
 .pre-commit-config.yaml
 Thumbs.db
 dev
+!quartz/scripts/dev/
+!quartz/scripts/dev/wrangler-recovery.ts
+!quartz/scripts/dev/wrangler-recovery.test.ts
 go.sum
 quartz/styles/themes
 are.na-meta.json
@@ -296,3 +299,4 @@ docs/
 /content/thoughts/images/instagram/**/*.json
 /content/thoughts/images/instagram/**/*.txt
 !/content/thoughts/images/instagram/attribution.json
+/.build

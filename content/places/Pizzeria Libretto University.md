@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'University Avenue location of Pizzeria Libretto serving Neapolitan pizza.'
 id: 'Pizzeria Libretto University'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/De9nxxGlQvi/'
 tags:
   - 'places'
 title: 'Pizzeria Libretto University'

@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Italian trattoria serving pasta and wine on Queen Street East.'
 id: 'Fangio Trattoria'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DfDUc1yoNEc/'
 tags:
   - 'places'
 title: 'Fangio Trattoria'

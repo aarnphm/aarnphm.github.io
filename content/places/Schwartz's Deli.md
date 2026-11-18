@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'smoked-meat deli on boulevard Saint-Laurent in Montréal'
 id: "Schwartz's Deli"
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/DdpjBtqJlMt/'
 tags:
   - 'places'
 title: "Schwartz's Deli"

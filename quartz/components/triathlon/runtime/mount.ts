@@ -14,6 +14,8 @@ import { setupActivityWorkspace } from '../activity/workspace'
 import { setupAnalytics } from '../analytics/controller'
 import { setupCalendars } from '../calendar/controller'
 import { setupCalendarPanel } from '../calendar/panel'
+import { setupHighParkHover } from '../fun/high-park'
+import { setupHighParkTerrain } from '../fun/high-park-terrain'
 import { setupMap } from '../maps/controller'
 import { setupAxisLabels } from '../shell/axis-labels'
 import { setupCommandPalette } from '../shell/command-palette'
@@ -27,6 +29,7 @@ import {
   setupSeasonSummary,
 } from '../shell/presentation'
 import { setupShortcuts } from '../shell/shortcuts'
+import { releaseQueuedTap } from '../shell/tap-queue'
 import { setup } from '../shell/timeline'
 import { setupCalc } from '../tools/calculator-controller'
 import { setupCalculatorTabs } from '../tools/calculator-tabs'
@@ -36,7 +39,7 @@ import { setupPaceForecast } from '../tools/pace-forecast'
 import { setupTirePressure } from '../tools/tire-pressure'
 import { setupToolsTabs } from '../tools/tools-tabs'
 import { createTriathlonContext } from './context'
-import { readTriPanelsFullscreen } from './preferences'
+import { readTriPanelsFullscreen, toggleTriUnit } from './preferences'
 
 export interface MountedTriathlon {
   cleanup(): void
@@ -86,6 +89,15 @@ export const mountTriathlon = (signal: AbortSignal): MountedTriathlon => {
     addCleanup(setupMap(root, context))
     addCleanup(setupAxisLabels(root))
     addCleanup(setupShortcuts(root))
+    addCleanup(
+      setupHighParkHover(root, {
+        imperial: () => context.presentation.distance === 'imperial',
+        toggle: () => toggleTriUnit(context.preferences),
+      }),
+    )
+    addCleanup(
+      setupHighParkTerrain(root, () => context.presentation.distance === 'imperial', signal),
+    )
     const hashDate = /^#(\d{4}-\d{2}-\d{2})$/.exec(window.location.hash)?.[1]
     if (hashDate)
       window.dispatchEvent(new CustomEvent('tri:focus-day', { detail: { date: hashDate } }))
@@ -102,6 +114,8 @@ export const mountTriathlon = (signal: AbortSignal): MountedTriathlon => {
   }
   if (root) addCleanup(setupCalendarPanel(root))
   addCleanup(setupCalendars(context))
+  // last: every control is listening before a tap held from before the mount is replayed
+  if (root) addCleanup(releaseQueuedTap(root))
   let active = true
   const cleanup = (): void => {
     if (!active) return

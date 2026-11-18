@@ -13,7 +13,6 @@ import {
 } from './features-markup'
 import { type FeatureState, type SteerTerm, type FeatureDict, type TermHit } from './features-types'
 import { type Runtime, requestVec, metaOf } from './runtime'
-import { filterMask, renderLinks } from './search'
 
 /** The worker's channel for a term, computed on first use. Returns its key. */
 async function ensureChannel(
@@ -117,18 +116,19 @@ async function baseChannel(
   })
 }
 
-export async function applySteer(rt: Runtime, st: FeatureState, drag = false, retry = true) {
-  const seq = ++st.steerSeq
+/**
+ * The steered links: the fused top-k for the steering set (and the typed query), with the label
+ * the links pane heads them with. Null when nothing steers. The build runs this too, for latent
+ * embeds (util/latent/embed/), with the vector math in-process, so an embed's list is the list
+ * /embeddings shows for the same view.
+ */
+export async function steeredRows(
+  rt: Runtime,
+  st: FeatureState,
+  retry = true,
+): Promise<{ rows: [number, number][]; label: string } | null> {
   const live = [...st.steer.values()].filter(t => t.w !== 0)
-  if (live.length === 0 && !st.query) {
-    // nothing left to steer: back to the focus's own links (a query re-scores unsteered below)
-    st.pinned = null
-    if (!drag) st.refresh()
-    rt.query = null
-    delete rt.links.dataset.query
-    void renderLinks(rt, rt.focus)
-    return
-  }
+  if (live.length === 0 && !st.query) return null
   const meta = await metaOf(rt)
   const url = `${rt.base}/vec/rows-256-int8.bin`
   await requestVec(rt, { type: 'load', url, rows: meta.rows, dims: 256 })
@@ -136,7 +136,7 @@ export async function applySteer(rt: Runtime, st: FeatureState, drag = false, re
   let result
   try {
     const base = await baseChannel(rt, st, url, meta.scale)
-    if (!base) return
+    if (!base) return null
     const terms = [{ key: base, weight: 1 }]
     for (const term of live) {
       const key = await termChannel(rt, st, url, meta.scale, term)
@@ -155,15 +155,15 @@ export async function applySteer(rt: Runtime, st: FeatureState, drag = false, re
       report: base,
       skip: st.query ? [] : [rt.focus],
       k: rt.k,
-      only: await filterMask(rt),
+      only: await st.mask?.(),
     })
   } catch (error) {
     // the worker dropped a channel (its cache is bounded): rebuild them once
     if (!retry) throw error
     st.channels.clear()
-    return applySteer(rt, st, drag, false)
+    return steeredRows(rt, st, false)
   }
-  if (result.type !== 'fused' || rt.signal.aborted || seq !== st.steerSeq) return
+  if (result.type !== 'fused') return null
   const rows: [number, number][] = []
   result.hits.forEach((r, i) => rows.push([r, Math.round(Math.max(0, result.scores[i]) * 255)]))
   const dicts = new Map(
@@ -172,9 +172,23 @@ export async function applySteer(rt: Runtime, st: FeatureState, drag = false, re
   const label = live.length
     ? `${st.query ? 'query' : 'focus'} ${await steerLabel(rt, st, dicts)}`
     : st.query!.text
-  if (seq !== st.steerSeq) return
-  st.pinned = rows.map(([r]) => r)
-  await st.pin(label, rows)
+  return { rows, label }
+}
+
+export async function applySteer(rt: Runtime, st: FeatureState, drag = false) {
+  const seq = ++st.steerSeq
+  const live = [...st.steer.values()].some(t => t.w !== 0)
+  if (!live && !st.query) {
+    // nothing left to steer: back to the focus's own links (a query re-scores unsteered below)
+    st.pinned = null
+    if (!drag) st.refresh()
+    st.unpin()
+    return
+  }
+  const steered = await steeredRows(rt, st)
+  if (!steered || rt.signal.aborted || seq !== st.steerSeq) return
+  st.pinned = steered.rows.map(([r]) => r)
+  await st.pin(steered.label, steered.rows)
   // after the pin, so "reasoning" explains the steered list
   if (!drag) st.refresh()
 }
@@ -220,6 +234,7 @@ export async function steeringSection(
               value: String(term.w),
               ariaLabel: `strength of ${name}`,
               dataSteerRange: '',
+              disabled: st.inert || undefined,
             }),
             h('output', amount(term.w)),
           ]),
@@ -235,17 +250,19 @@ export async function steeringSection(
       )
     }),
   )
-  rows.push(
-    h('li.lat-steer-row.lat-steer-add', [
-      h('span.lat-steer-amount', { ariaHidden: 'true' }),
-      h('span.lat-steer-name', 'add: # a feature, tag or axis, or ± below'),
-      h(
-        'button',
-        { type: 'button', dataSteerAdd: '', title: 'search a feature, tag or axis to add' },
-        '+',
-      ),
-    ]),
-  )
+  // an embed quotes a view: its terms can be turned, not added to
+  if (!st.embed)
+    rows.push(
+      h('li.lat-steer-row.lat-steer-add', [
+        h('span.lat-steer-amount', { ariaHidden: 'true' }),
+        h('span.lat-steer-name', 'add: # a feature, tag or axis, or ± below'),
+        h(
+          'button',
+          { type: 'button', dataSteerAdd: '', title: 'search a feature, tag or axis to add' },
+          '+',
+        ),
+      ]),
+    )
   return h('section.lat-feat-group.lat-feat-steering', [
     h('header', [
       h('span.lat-feat-head', 'steering'),

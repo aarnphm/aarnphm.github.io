@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Japanese whisky and cocktail restaurant serving contemporary small plates on Adelaide Street West.'
 id: 'Mizunara'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/reel/DeFqQU1tTcT/'
 tags:
   - 'places'
 title: 'Mizunara'

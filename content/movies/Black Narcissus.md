@@ -12,5 +12,3 @@ tags:
 title: 'Black Narcissus'
 year: 1947
 ---
-
-Shown in the closing cinematographer montage of [ShotDeck’s ASC recommendations](https://www.instagram.com/reel/Db8PFLVp_XX/) at 75.5s.

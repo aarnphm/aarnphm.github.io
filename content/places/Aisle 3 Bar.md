@@ -9,7 +9,6 @@ date: '2026-11-02'
 description: 'Vietnamese restaurant and cocktail bar on Dundas Street West, serving small plates and street-food-inspired dishes.'
 id: 'Aisle 3 Bar'
 modified: '2026-11-02'
-source: 'https://www.instagram.com/reel/DfNXHdXtwDE/'
 tags:
   - 'places'
 title: 'Aisle 3 Bar'

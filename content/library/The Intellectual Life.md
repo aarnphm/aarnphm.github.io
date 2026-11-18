@@ -17,8 +17,11 @@ subcategory: education
 title: The Intellectual Life
 translator: Mary Ryan
 year: 1921
+reference_links:
+  - https://ccfr.bnf.fr/portailccfr/ark%3A/16871/0017519365
+  - https://utpdistribution.com/9780813206462/the-intellectual-life/
+details: |-
+  First published as _La Vie intellectuelle, son esprit, ses conditions, ses méthodes_ in 1921.
+
+  The cover is the Catholic University of America Press edition of Mary Ryan's English translation, ISBN 9780813206462.
 ---
-
-First published as _La Vie intellectuelle, son esprit, ses conditions, ses méthodes_ in 1921. [Original edition](https://ccfr.bnf.fr/portailccfr/ark%3A/16871/0017519365).
-
-The cover is the Catholic University of America Press edition of Mary Ryan's English translation, ISBN 9780813206462. [Edition details](https://utpdistribution.com/9780813206462/the-intellectual-life/).

@@ -1,5 +1,6 @@
 import type { MotionTuning } from './motion-tuning'
 import { trailRandom } from './random'
+import { sampleWind, windTables } from './wind-field'
 
 type Leaf = {
   x: number
@@ -150,12 +151,20 @@ export function mountLeafFall(scene: HTMLElement, signal: AbortSignal, tuning: M
       lagY: number('--trail-leaf-lag-y'),
     }
   }
-  // The same gust front the crowns lean to: it reaches a point after a lag set by its position.
-  const gustAt = (time: number, x: number, y: number, air: ReturnType<typeof wind>) => {
-    const phase =
-      (((time / 1000 - x * air.lagX - y * air.lagY) % air.period) + air.period) % air.period
-    const u = phase / air.period
-    return u < 0.35 ? Math.sin((Math.PI * u) / 0.35) : 0
+  // The same wind the crowns move to: it reaches a point after a lag set by its position. Gusts
+  // shake leaves loose, and the wider breeze around each gust carries them.
+  const gustAt = (
+    time: number,
+    x: number,
+    y: number,
+    air: ReturnType<typeof wind>,
+    carry = false,
+  ) => {
+    const tables = windTables(air.period)
+    return sampleWind(
+      carry ? tables.breeze : tables.gust,
+      (time / 1000 - x * air.lagX - y * air.lagY) / air.period,
+    )
   }
 
   const step = (time: number) => {
@@ -238,7 +247,7 @@ export function mountLeafFall(scene: HTMLElement, signal: AbortSignal, tuning: M
         }
         continue
       }
-      const gust = gustAt(time, leaf.x, leaf.y, air)
+      const gust = gustAt(time, leaf.x, leaf.y, air, true)
       const drift = (air.restX * 6 + air.pushX * gust * 40) * (0.6 + leaf.sway / 24)
       leaf.vx += (drift - leaf.vx) * Math.min(1, dt * 1.5)
       leaf.vy += (10 + leaf.sway - gust * air.gust * 14 - leaf.vy) * Math.min(1, dt * 1.2)

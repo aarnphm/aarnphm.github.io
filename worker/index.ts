@@ -29,6 +29,7 @@ import {
   normalizeAuthor,
   setGithubCommentAuthor,
 } from './comments'
+import { GEMMA_READ_PATH, handleGemmaRead } from './gemma'
 import {
   missingMarkdownResponse,
   TRIATHLON_MARKDOWN_PATH,
@@ -356,6 +357,8 @@ export default {
         headers: { 'Content-Type': 'application/json' },
       })
     }
+
+    if (url.pathname === GEMMA_READ_PATH) return handleGemmaRead(request, env)
 
     if (url.pathname.startsWith('/comments/')) {
       const id = env.MULTIPLAYER_COMMENTS.idFromName('global')

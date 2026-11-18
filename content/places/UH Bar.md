@@ -8,8 +8,7 @@ coordinates:
 date: '2026-10-30'
 description: 'basement cocktail bar beneath MSSM on Dundas Street West'
 id: 'UH Bar'
-modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/Dd7kqfJpljI/'
+modified: '2026-11-09'
 tags:
   - 'places'
 title: 'UH Bar'

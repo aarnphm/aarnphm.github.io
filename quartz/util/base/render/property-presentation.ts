@@ -1,16 +1,12 @@
+import { toString } from 'hast-util-to-string'
 import { h } from 'hastscript'
 import { QuartzPluginData } from '../../../plugins/vfile'
 import { ReloadableWeakMap } from '../../module-caches'
-import {
-  FilePath,
-  FullSlug,
-  isAbsoluteURL,
-  resolveRelative,
-  simplifySlug,
-  slugifyFilePath,
-} from '../../path'
-import { extractWikilinksWithPositions, resolveWikilinkTarget } from '../../wikilinks'
+import { FullSlug, isAbsoluteURL, resolveRelative, simplifySlug } from '../../path'
+import { referenceCatalogFromFiles, referenceSourcePath } from '../../references/context'
+import { parseLiteralReference, resolveLiteralReference } from '../../references/literal'
 import { PropertyConfig } from '../types'
+import { inlineReferenceNodes } from './inline-reference'
 
 export type RenderElement = ReturnType<typeof h>
 export type RenderNode = RenderElement | string
@@ -118,26 +114,6 @@ function findFileBySlug(
   return index.bySimple.get(targetSimple) ?? index.byExact.get(targetSlug)
 }
 
-function renderInternalLinkNode(
-  targetSlug: FullSlug,
-  currentSlug: FullSlug,
-  allFiles: QuartzPluginData[],
-  alias?: string,
-  anchor?: string,
-): RenderElement {
-  const targetFile = findFileBySlug(allFiles, targetSlug)
-  const displayText =
-    alias && alias.trim().length > 0
-      ? alias.trim()
-      : (getFileDisplayName(targetFile) ?? fallbackNameFromSlug(targetSlug))
-
-  const hrefBase = resolveRelative(currentSlug, targetSlug)
-  const href = anchor && anchor.length > 0 ? `${hrefBase}${anchor}` : hrefBase
-  const dataSlug = anchor && anchor.length > 0 ? `${targetSlug}${anchor}` : targetSlug
-
-  return h('a.internal', { href, 'data-slug': dataSlug }, displayText)
-}
-
 export function buildFileLinkNode(
   slug: FullSlug,
   currentSlug: FullSlug,
@@ -147,119 +123,38 @@ export function buildFileLinkNode(
   return h('a.internal', { href, 'data-slug': slug }, label)
 }
 
-function splitTargetAndAlias(raw: string): { target: string; alias?: string } {
-  let buffer = ''
-  let alias: string | undefined
-  let escaped = false
-  for (let i = 0; i < raw.length; i++) {
-    const ch = raw[i]
-    if (escaped) {
-      buffer += ch
-      escaped = false
-      continue
-    }
-    if (ch === '\\') {
-      escaped = true
-      continue
-    }
-    if (ch === '|' && alias === undefined) {
-      alias = raw.slice(i + 1)
-      break
-    }
-    buffer += ch
-  }
-
-  const target = buffer.replace(/\\\|/g, '|').trim()
-  const cleanedAlias = alias?.replace(/\\\|/g, '|').trim()
-  return { target, alias: cleanedAlias?.length ? cleanedAlias : undefined }
-}
-
-function normalizeTargetSlug(
-  target: string,
-  currentSlug: FullSlug,
-  anchor?: string,
-): { slug: FullSlug; anchor?: string } {
-  const trimmed = target.trim()
-  if (!trimmed) return { slug: currentSlug, anchor }
-  const slug = slugifyFilePath(trimmed as FilePath)
-  return { slug, anchor }
-}
-
 export function renderInlineString(
   value: string,
   currentSlug: FullSlug,
   allFiles: QuartzPluginData[],
+  sourceFile?: QuartzPluginData,
 ): RenderNode[] {
-  if (!value.includes('[[')) {
-    return [value]
-  }
-
-  const nodes: RenderNode[] = []
-  const ranges = extractWikilinksWithPositions(value)
-  let lastIndex = 0
-  for (const range of ranges) {
-    const start = range.start
-    if (start > lastIndex) nodes.push(value.slice(lastIndex, start))
-
-    const parsed = range.wikilink
-    const raw = value.slice(range.start, range.end)
-    if (parsed.embed) {
-      nodes.push(raw)
-      lastIndex = range.end
-      continue
-    }
-
-    const resolved = resolveWikilinkTarget(parsed, currentSlug)
-    if (!resolved) {
-      nodes.push(parsed.alias ?? parsed.target ?? raw)
-      lastIndex = range.end
-      continue
-    }
-
-    nodes.push(
-      renderInternalLinkNode(resolved.slug, currentSlug, allFiles, parsed.alias, resolved.anchor),
-    )
-    lastIndex = range.end
-  }
-
-  if (lastIndex < value.length) {
-    nodes.push(value.slice(lastIndex))
-  }
-
-  return nodes
+  if (!/[[\]<>*&_`\\]/.test(value)) return [value]
+  const originFile = sourceFile ?? findFileBySlug(allFiles, currentSlug)
+  const nodes = inlineReferenceNodes(value, currentSlug, {
+    catalog: referenceCatalogFromFiles(allFiles),
+    origin: originFile ? referenceSourcePath(originFile) : currentSlug,
+  })
+  return nodes.map(node => (node.type === 'text' ? node.value : node))
 }
 
 export function renderBacklinkNodes(
   backlinks: string[],
   currentSlug: FullSlug,
   allFiles: QuartzPluginData[],
+  sourceFile?: QuartzPluginData,
 ): RenderNode[] {
   const nodes: RenderNode[] = []
   for (const entry of backlinks) {
-    if (!entry) continue
-    let raw = entry.trim()
+    const raw = entry.trim().replace(/^!/, '')
     if (!raw) continue
-    let alias: string | undefined
-    if (raw.startsWith('!')) {
-      raw = raw.slice(1)
-    }
-    if (raw.startsWith('[[') && raw.endsWith(']]')) {
-      const inner = raw.slice(2, -2)
-      const parsed = splitTargetAndAlias(inner)
-      raw = parsed.target
-      alias = parsed.alias
-    }
-    const { slug: targetSlug, anchor } = normalizeTargetSlug(raw, currentSlug)
-    if (nodes.length > 0) {
-      nodes.push(', ')
-    }
+    if (nodes.length > 0) nodes.push(', ')
     nodes.push(
-      renderInternalLinkNode(
-        targetSlug,
+      ...renderInlineString(
+        parseLiteralReference(raw) ? raw : `[[${raw}]]`,
         currentSlug,
         allFiles,
-        alias,
-        anchor && anchor.length > 0 ? anchor : undefined,
+        sourceFile,
       ),
     )
   }
@@ -329,10 +224,7 @@ export function listValueToPlainText(value: unknown): string | undefined {
     return value.toISOString().split('T')[0]
   }
   if (typeof value === 'string') {
-    const cleaned = value
-      .replace(/\[\[([^\]|]+)\|([^\]]+)\]\]/g, '$2')
-      .replace(/\[\[([^\]]+)\]\]/g, '$1')
-      .trim()
+    const cleaned = plainTextDescription(value)
     return cleaned.length > 0 ? cleaned : undefined
   }
   const stringified = String(value).trim()
@@ -356,6 +248,7 @@ export function renderPropertyValueNodes(
   value: unknown,
   currentSlug: FullSlug,
   allFiles: QuartzPluginData[],
+  sourceFile?: QuartzPluginData,
 ): RenderNode[] {
   if (value === undefined || value === null) return []
   if (isIconToken(value)) {
@@ -366,7 +259,7 @@ export function renderPropertyValueNodes(
   if (Array.isArray(value)) {
     const nodes: RenderNode[] = []
     value.forEach((item, idx) => {
-      nodes.push(...renderPropertyValueNodes(item, currentSlug, allFiles))
+      nodes.push(...renderPropertyValueNodes(item, currentSlug, allFiles, sourceFile))
       if (idx < value.length - 1) {
         nodes.push(', ')
       }
@@ -377,7 +270,7 @@ export function renderPropertyValueNodes(
     return [value.toISOString().split('T')[0]]
   }
   if (typeof value === 'string') {
-    return renderInlineString(value, currentSlug, allFiles)
+    return renderInlineString(value, currentSlug, allFiles, sourceFile)
   }
   return [String(value)]
 }
@@ -385,6 +278,8 @@ export function renderPropertyValueNodes(
 export function resolveCardImage(
   imageValue: unknown,
   currentSlug: FullSlug,
+  allFiles: QuartzPluginData[],
+  sourceFile?: QuartzPluginData,
 ): { url: string; slug?: FullSlug } | undefined {
   const source =
     typeof imageValue === 'string'
@@ -398,17 +293,19 @@ export function resolveCardImage(
   const trimmed = source.trim()
   if (!trimmed) return undefined
 
-  const wl = trimmed.match(/^\[\[(.+?)\]\]$/)
-  if (wl) {
-    const inner = wl[1]
-    const { target } = splitTargetAndAlias(inner)
-    const { slug } = normalizeTargetSlug(target, currentSlug)
-    return { url: resolveRelative(currentSlug, slug), slug }
-  }
-
   if (isAbsoluteURL(trimmed)) return { url: trimmed }
-  const slug = slugifyFilePath(trimmed as FilePath)
-  return { url: resolveRelative(currentSlug, slug), slug }
+  const link = parseLiteralReference(trimmed) ?? parseLiteralReference(`[[${trimmed}]]`)
+  if (!link) return undefined
+  const originFile = sourceFile ?? findFileBySlug(allFiles, currentSlug)
+  const resolved = resolveLiteralReference(link, currentSlug, {
+    catalog: referenceCatalogFromFiles(allFiles),
+    origin: originFile ? referenceSourcePath(originFile) : currentSlug,
+  })
+  if (!resolved) return undefined
+  return {
+    url: `${resolveRelative(currentSlug, resolved.slug)}${resolved.anchor ?? ''}`,
+    slug: resolved.slug,
+  }
 }
 
 const mapLatexCommandText: Record<string, string> = {
@@ -451,24 +348,10 @@ function latexToPlainText(math: string): string {
     .trim()
 }
 
-export function plainTextDescription(
-  description: string | undefined,
-  currentSlug: FullSlug,
-): string {
+export function plainTextDescription(description: string | undefined): string {
   if (!description) return ''
+  if (!/[[\]$<>&*_`\\]/.test(description)) return description.replace(/\s+/g, ' ').trim()
   let text = description
-  if (text.includes('[[')) {
-    const ranges = extractWikilinksWithPositions(text)
-    for (let i = ranges.length - 1; i >= 0; i--) {
-      const { wikilink: link, start, end } = ranges[i]
-      const resolved = resolveWikilinkTarget(link, currentSlug)
-      const display = link.alias || link.anchorText || link.target || resolved?.slug || ''
-      text = text.slice(0, start) + display + text.slice(end)
-    }
-  }
-  if (text.includes('[')) {
-    text = text.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-  }
   if (text.includes('$')) {
     text = text
       .replace(/\$\$([\s\S]*?)\$\$/g, (_m, math: string) => latexToPlainText(math))
@@ -477,5 +360,9 @@ export function plainTextDescription(
   if (text.includes('<')) {
     text = text.replace(/<((?:https?:|mailto:)[^>]+)>/gi, '$1').replace(/<[^>]+>/g, '')
   }
-  return text.replace(/\s+/g, ' ').trim()
+  return inlineReferenceNodes(text, undefined, undefined, true)
+    .map(node => toString(node))
+    .join('')
+    .replace(/\s+/g, ' ')
+    .trim()
 }

@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Brewpub in the Meatpacking District serving craft beer and Texas barbecue.'
 id: 'Warpigs Copenhagen'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DeHJKzan8S2/'
 tags:
   - 'places'
 title: 'Warpigs Copenhagen'

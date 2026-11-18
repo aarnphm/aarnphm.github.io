@@ -17,3 +17,4 @@ The home page (`/`) carries two widgets that no other page renders, the weather 
 - No widget asks for browser permissions. Weather location comes from Cloudflare, rounded to a tenth of a degree. The shared trail stores only a position and a path name per browser.
 - Motion stops under `prefers-reduced-motion`: the sun's rays and float, the flame, embers, smoke and toast.
 - The trail's pixel art (trees, campers, fire) and the 404 page are the two places the site draws in pixels.
+- Christmas and Halloween dress the trail from the visitor's calendar: ornaments on the trees at Christmas, a Victorian graveyard register at Halloween. HomepageTrail lists the pieces.

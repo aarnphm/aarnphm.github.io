@@ -17,6 +17,5 @@ tags:
 title: Grand Illusion
 year: 1937
 runtime: 114
+external: https://en.wikipedia.org/wiki/La_Grande_Illusion
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](https://en.wikipedia.org/wiki/La_Grande_Illusion).

@@ -1,0 +1,297 @@
+{
+	"nodes": [
+		{
+			"id": "title",
+			"type": "text",
+			"text": "# spec decode",
+			"x": 0,
+			"y": -160,
+			"width": 420,
+			"height": 80
+		},
+		{
+			"id": "n-reading-map",
+			"type": "file",
+			"file": "thoughts/inference/speculative-drafting.md",
+			"x": 0,
+			"y": 0,
+			"width": 420,
+			"height": 520,
+			"color": "1"
+		},
+		{
+			"id": "p-2602.06036",
+			"type": "file",
+			"file": "thoughts/papers/chen2026dflashblockdiffusionflash.md",
+			"x": 540,
+			"y": 0,
+			"width": 360,
+			"height": 460
+		},
+		{
+			"id": "p-2605.29707",
+			"type": "file",
+			"file": "thoughts/papers/huang2026dominodecouplingcausalmodeling.md",
+			"x": 540,
+			"y": 520,
+			"width": 360,
+			"height": 460
+		},
+		{
+			"id": "p-2607.05147",
+			"type": "file",
+			"file": "thoughts/papers/cheng2026dsparkconfidencescheduledspeculativedecoding.md",
+			"x": 540,
+			"y": 1040,
+			"width": 360,
+			"height": 460
+		},
+		{
+			"id": "p-2608.20530",
+			"type": "file",
+			"file": "thoughts/papers/rusanovsky2026lilicorrlightweightlikelihoodcorrelation.md",
+			"x": 540,
+			"y": 1560,
+			"width": 360,
+			"height": 460
+		},
+		{
+			"id": "p-2608.02438",
+			"type": "file",
+			"file": "thoughts/papers/wang2026xpressparallelrefinementdiffusion.md",
+			"x": 540,
+			"y": 2080,
+			"width": 360,
+			"height": 460
+		},
+		{
+			"id": "p-2609.06498",
+			"type": "file",
+			"file": "thoughts/papers/zhang2026dflowenablingverifierinformation.md",
+			"x": 540,
+			"y": 2600,
+			"width": 360,
+			"height": 460
+		},
+		{
+			"id": "p-2512.17351",
+			"type": "file",
+			"file": "thoughts/papers/allenzhu2026physicslanguagemodels41.md",
+			"x": 540,
+			"y": 3120,
+			"width": 360,
+			"height": 460
+		},
+		{
+			"id": "p-2606.03825",
+			"type": "file",
+			"file": "thoughts/papers/sieberling2026dynamicshortconvolutionsimprove.md",
+			"x": 540,
+			"y": 3640,
+			"width": 360,
+			"height": 460
+		},
+		{
+			"id": "pr-54448",
+			"type": "file",
+			"file": "hinterland/papers/maps/prs/54448.md",
+			"x": 1020,
+			"y": 0,
+			"width": 300,
+			"height": 240
+		},
+		{
+			"id": "pr-52816",
+			"type": "file",
+			"file": "hinterland/papers/maps/prs/52816.md",
+			"x": 1020,
+			"y": 280,
+			"width": 300,
+			"height": 240
+		},
+		{
+			"id": "pr-53797",
+			"type": "file",
+			"file": "hinterland/papers/maps/prs/53797.md",
+			"x": 1020,
+			"y": 560,
+			"width": 300,
+			"height": 240
+		},
+		{
+			"id": "pr-55960",
+			"type": "file",
+			"file": "hinterland/papers/maps/prs/55960.md",
+			"x": 1020,
+			"y": 840,
+			"width": 300,
+			"height": 240
+		},
+		{
+			"id": "pr-56983",
+			"type": "file",
+			"file": "hinterland/papers/maps/prs/56983.md",
+			"x": 1020,
+			"y": 1120,
+			"width": 300,
+			"height": 240
+		},
+		{
+			"id": "pr-57934",
+			"type": "file",
+			"file": "hinterland/papers/maps/prs/57934.md",
+			"x": 1020,
+			"y": 1400,
+			"width": 300,
+			"height": 240
+		},
+		{
+			"id": "pr-57632",
+			"type": "file",
+			"file": "hinterland/papers/maps/prs/57632.md",
+			"x": 1020,
+			"y": 1680,
+			"width": 300,
+			"height": 240
+		},
+		{
+			"id": "pr-58065",
+			"type": "file",
+			"file": "hinterland/papers/maps/prs/58065.md",
+			"x": 1020,
+			"y": 1960,
+			"width": 300,
+			"height": 240
+		}
+	],
+	"edges": [
+		{
+			"id": "e-reading-map-p-2602.06036",
+			"fromNode": "n-reading-map",
+			"fromSide": "right",
+			"toNode": "p-2602.06036",
+			"toSide": "left",
+			"label": "\u00a71"
+		},
+		{
+			"id": "e-reading-map-p-2605.29707",
+			"fromNode": "n-reading-map",
+			"fromSide": "right",
+			"toNode": "p-2605.29707",
+			"toSide": "left",
+			"label": "\u00a71"
+		},
+		{
+			"id": "e-reading-map-p-2607.05147",
+			"fromNode": "n-reading-map",
+			"fromSide": "right",
+			"toNode": "p-2607.05147",
+			"toSide": "left",
+			"label": "\u00a71"
+		},
+		{
+			"id": "e-reading-map-p-2608.20530",
+			"fromNode": "n-reading-map",
+			"fromSide": "right",
+			"toNode": "p-2608.20530",
+			"toSide": "left",
+			"label": "\u00a71"
+		},
+		{
+			"id": "e-reading-map-p-2608.02438",
+			"fromNode": "n-reading-map",
+			"fromSide": "right",
+			"toNode": "p-2608.02438",
+			"toSide": "left",
+			"label": "\u00a71"
+		},
+		{
+			"id": "e-reading-map-p-2609.06498",
+			"fromNode": "n-reading-map",
+			"fromSide": "right",
+			"toNode": "p-2609.06498",
+			"toSide": "left",
+			"label": "\u00a71"
+		},
+		{
+			"id": "e-reading-map-p-2512.17351",
+			"fromNode": "n-reading-map",
+			"fromSide": "right",
+			"toNode": "p-2512.17351",
+			"toSide": "left",
+			"label": "\u00a72.2"
+		},
+		{
+			"id": "e-reading-map-p-2606.03825",
+			"fromNode": "n-reading-map",
+			"fromSide": "right",
+			"toNode": "p-2606.03825",
+			"toSide": "left",
+			"label": "\u00a72.2"
+		},
+		{
+			"id": "e-reading-map-pr-54448",
+			"fromNode": "n-reading-map",
+			"fromSide": "right",
+			"toNode": "pr-54448",
+			"toSide": "left",
+			"label": "\u00a71, \u00a72.4, \u00a73"
+		},
+		{
+			"id": "e-reading-map-pr-52816",
+			"fromNode": "n-reading-map",
+			"fromSide": "right",
+			"toNode": "pr-52816",
+			"toSide": "left",
+			"label": "\u00a72.2, \u00a73"
+		},
+		{
+			"id": "e-reading-map-pr-53797",
+			"fromNode": "n-reading-map",
+			"fromSide": "right",
+			"toNode": "pr-53797",
+			"toSide": "left",
+			"label": "\u00a72.2"
+		},
+		{
+			"id": "e-reading-map-pr-55960",
+			"fromNode": "n-reading-map",
+			"fromSide": "right",
+			"toNode": "pr-55960",
+			"toSide": "left",
+			"label": "\u00a72.2"
+		},
+		{
+			"id": "e-reading-map-pr-56983",
+			"fromNode": "n-reading-map",
+			"fromSide": "right",
+			"toNode": "pr-56983",
+			"toSide": "left",
+			"label": "\u00a72.2"
+		},
+		{
+			"id": "e-reading-map-pr-57934",
+			"fromNode": "n-reading-map",
+			"fromSide": "right",
+			"toNode": "pr-57934",
+			"toSide": "left",
+			"label": "\u00a72.3, \u00a73"
+		},
+		{
+			"id": "e-reading-map-pr-57632",
+			"fromNode": "n-reading-map",
+			"fromSide": "right",
+			"toNode": "pr-57632",
+			"toSide": "left",
+			"label": "\u00a73"
+		},
+		{
+			"id": "e-reading-map-pr-58065",
+			"fromNode": "n-reading-map",
+			"fromSide": "right",
+			"toNode": "pr-58065",
+			"toSide": "left",
+			"label": "\u00a73"
+		}
+	]
+}

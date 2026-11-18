@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Mexican restaurant serving tacos and other dishes on Gerrard Street East.'
 id: 'Santa Madre'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DfGFOhKGoEJ/'
 tags:
   - 'places'
 title: 'Santa Madre'

@@ -2,11 +2,11 @@ import { activityId } from './garmin-connect/activity'
 import { isRecord, type UnknownRecord } from './type-guards'
 export { garminConnectActivity, garminConnectActivityStartDate } from './garmin-connect/activity'
 export { garminConnectClimbSegments, garminConnectRunWalk } from './garmin-connect/splits'
+export { garminConnectSleep } from './garmin-connect/sleep'
 export { garminConnectStreams } from './garmin-connect/streams'
 export {
   garminConnectLactateThresholdHistory,
   garminConnectRunningLactateThreshold,
-  garminConnectSleep,
   garminConnectVo2,
 } from './garmin-connect/wellness'
 export { garminConnectWeightSamples } from './garmin-connect/weight'

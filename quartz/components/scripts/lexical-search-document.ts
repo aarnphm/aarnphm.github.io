@@ -1,6 +1,7 @@
 import type { ContentDetails } from '../../plugins'
 import type { LexicalDocument } from './lexical-search-types'
 import { pathSearchText } from '../../util/search-text'
+import { canonicalTag } from '../../util/tags'
 
 export function prepareLexicalDocument(
   id: number,
@@ -13,7 +14,7 @@ export function prepareLexicalDocument(
     title: fileData.title,
     fileName: pathSearchText(fileData.fileName),
     content: fileData.content ?? '',
-    tags: fileData.tags,
+    tags: [...new Set(fileData.tags.map(canonicalTag))],
     aliases: fileData.aliases,
     target: '',
     protected: fileData.protected === true,

@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'restaurant serving globally inspired sharing plates in Harbord Village'
 id: 'RASA'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/DeecXR8mFf7/'
 tags:
   - 'places'
 title: 'RASA'

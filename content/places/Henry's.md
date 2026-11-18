@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'Queen West restaurant and wine bar with an adjoining wine shop'
 id: "Henry's"
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/DeecXR8mFf7/'
 tags:
   - 'places'
 title: "Henry's"

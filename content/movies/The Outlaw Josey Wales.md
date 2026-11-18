@@ -11,5 +11,3 @@ tags:
 title: 'The Outlaw Josey Wales'
 year: 1976
 ---
-
-Recommended by Paul Daley in [ShotDeck’s ASC recommendations](https://www.instagram.com/reel/Db8PFLVp_XX/) at 47.5s.

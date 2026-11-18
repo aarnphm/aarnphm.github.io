@@ -22,10 +22,14 @@ export type QuartzTransformerPlugin<Options extends OptionType = undefined> = (
 ) => QuartzTransformerPluginInstance
 export type QuartzTransformerPluginInstance = {
   name: string
+  /** Syntax-affecting options that can change without a source-file edit. */
+  cacheKey?: string
   /** File inputs relative to cwd; omit file to enumerate the watch inputs. */
   fileDependencies?: (ctx: BuildCtx, file?: VFile) => string[]
   textTransform?: (ctx: BuildCtx, src: string) => string
   markdownPlugins?: (ctx: BuildCtx) => PluggableList
+  /** Transforms generated HAST while authored HTML remains raw and distinguishable. */
+  htmlSourcePlugins?: (ctx: BuildCtx) => PluggableList
   htmlPlugins?: (ctx: BuildCtx) => PluggableList
   externalResources?: ExternalResourcesFn
 }
@@ -50,6 +54,8 @@ export type QuartzEmitterPlugin<Options extends OptionType = undefined> = (
 ) => QuartzEmitterPluginInstance
 export type QuartzEmitterPluginInstance = {
   name: string
+  /** Prepare published reference targets before Markdown consumers resolve selectors. */
+  prepareReferences?: (ctx: BuildCtx, paths: FilePath[]) => Promise<ProcessedContent[]>
   emit: (
     ctx: BuildCtx,
     content: ProcessedContent[],

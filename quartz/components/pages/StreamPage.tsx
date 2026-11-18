@@ -27,6 +27,7 @@ import {
 import { StreamLockIcon } from '../stream/UnlockIcon'
 import StreamSearchConstructor from '../StreamSearch'
 import style from '../styles/stream.scss'
+import streamGraphStyle from '../styles/streamGraph.scss'
 
 type StreamView =
   | { kind: 'root' }
@@ -399,7 +400,7 @@ export default (() => {
     )
   }
 
-  StreamPage.css = style
+  StreamPage.css = [style, streamGraphStyle]
   StreamPage.afterDOMLoaded = script
 
   return StreamPage

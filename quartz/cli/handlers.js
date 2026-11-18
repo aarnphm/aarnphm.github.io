@@ -510,7 +510,8 @@ export async function handleBuild(argv) {
       if (argv.bundleInfo) {
         await printBundleInfo(result.metafile)
       }
-      return await import(`../../${cacheFile}?update=${randomUUID()}`)
+      const modulePath = `../../${cacheFile}?update=${randomUUID()}`
+      return await import(modulePath)
     } catch (err) {
       console.log(`${styleText('red', "Couldn't parse Quartz configuration:")} ${fp}`)
       console.log(`Reason: ${styleText('gray', formatErrorReason(err))}`)

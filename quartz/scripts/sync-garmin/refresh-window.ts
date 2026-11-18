@@ -4,6 +4,7 @@ import type {
   GarminCache,
   GarminRunningLactateThreshold,
 } from '../../plugins/stores/garmin'
+import type { GarminSleepDateRange } from '../../plugins/stores/garmin-sleep'
 import { localIsoDayOffset, shiftIsoDay } from '../../util/local-date'
 import { joinSegments, QUARTZ } from '../../util/path'
 import { isRecord, type UnknownRecord } from '../../util/type-guards'
@@ -116,11 +117,10 @@ export function garminSleepRefreshStart(
   const days = sortedIsoDays(previous?.sleep)
   if (!previous || (previous.version ?? 0) < CACHE_VERSION)
     return days[0] != null && days[0] < configuredStart ? days[0] : configuredStart
-  if (days.length === 0 && !previous.sleepLastSync) return configuredStart
+  const historyStart = days[0] != null && days[0] < configuredStart ? days[0] : configuredStart
+  if (!previous.sleepCoverage) return historyStart
   const windowStart = shiftIsoDay(end, -refreshWindowDays)
-  const anchorDay =
-    days[days.length - 1] ??
-    (previous.sleepLastSync ? localIsoDayOffset(0, previous.sleepLastSync) : end)
+  const anchorDay = previous.sleepCoverage.at(-1)?.end ?? days.at(-1) ?? end
   const overlapStart = shiftIsoDay(anchorDay, -refreshWindowDays)
   let start = overlapStart < windowStart ? overlapStart : windowStart
   if (sortedIsoDays(previous.health).length > 0) {
@@ -133,7 +133,40 @@ export function garminSleepRefreshStart(
     if (healthGapStart < start) start = healthGapStart
   }
   const bounded = start > configuredStart ? start : configuredStart
-  return bounded <= end ? bounded : end
+  const recentStart = bounded <= end ? bounded : end
+  let uncovered = historyStart
+  for (const range of previous.sleepCoverage) {
+    if (range.end < uncovered) continue
+    if (range.start > uncovered) break
+    uncovered = shiftIsoDay(range.end, 1)
+  }
+  return uncovered < recentStart ? uncovered : recentStart
+}
+
+export function replaceGarminSleepCoverage(
+  previous: readonly GarminSleepDateRange[],
+  fetched: readonly GarminSleepDateRange[],
+  start: string,
+  end: string,
+): GarminSleepDateRange[] {
+  const ranges = [...fetched]
+  for (const range of previous) {
+    if (range.end < start || range.start > end) ranges.push(range)
+    else {
+      if (range.start < start) ranges.push({ start: range.start, end: shiftIsoDay(start, -1) })
+      if (range.end > end) ranges.push({ start: shiftIsoDay(end, 1), end: range.end })
+    }
+  }
+  const merged: GarminSleepDateRange[] = []
+  for (const range of ranges.sort((left, right) => left.start.localeCompare(right.start))) {
+    const last = merged.at(-1)
+    if (last && range.start <= shiftIsoDay(last.end, 1)) {
+      if (range.end > last.end) last.end = range.end
+    } else {
+      merged.push({ ...range })
+    }
+  }
+  return merged
 }
 
 export function garminLactateThresholdRefreshStart(

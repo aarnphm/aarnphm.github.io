@@ -1,6 +1,7 @@
 import type { TriathlonDayAnalytics } from '../triathlon-day-analytics'
 import type { TriathlonPresentation } from '../triathlon-presentation'
 import type { TriNodeFactory } from './construction-contracts'
+import { sleepProviderLabel, type TriathlonDaySleep } from '../triathlon-day-sleep'
 import { triText } from '../triathlon-i18n'
 import { isImperial, LB_TO_KG } from './metric-text'
 
@@ -212,51 +213,89 @@ export const dayAnalyticsSleepMetrics = (
   const recovery = summary.recovery
   if (!sleep && !recovery && !summary.sleepMetrics) return []
   const metrics: DayAnalyticsMetric[] = []
-  const score = sleep?.sleepScore ?? null
-  if (score != null)
-    metrics.push({ label: 'sleep score', value: dayAnalyticsNumber(presentation, score) })
+  const add = (
+    label: string,
+    value: string,
+    field: keyof NonNullable<TriathlonDaySleep['fieldSources']>,
+  ): void => {
+    const source = sleep?.fieldSources?.[field]
+    const provider = source
+      ? sleepProviderLabel(source)
+      : field === 'restlessPeriods'
+        ? 'Oura'
+        : undefined
+    const qualifier =
+      field === 'sleepScore' && source === 'garmin'
+        ? summary.sleepMetrics?.garmin?.sleep?.sleepScoreQualifier
+        : null
+    const detail = qualifier
+      ? `Garmin\n${triText(presentation.locale, qualifier.replaceAll('_', ' ').toLowerCase())}`
+      : provider
+    metrics.push({ label, value, detail })
+  }
+  if (sleep?.sleepScore != null)
+    add('sleep score', dayAnalyticsNumber(presentation, sleep.sleepScore), 'sleepScore')
   if (sleep?.readinessScore != null)
-    metrics.push({
-      label: 'readiness',
-      value: dayAnalyticsNumber(presentation, sleep.readinessScore),
-    })
+    add('readiness', dayAnalyticsNumber(presentation, sleep.readinessScore), 'readinessScore')
   if (sleep?.bedtimeStart)
-    metrics.push({ label: 'bedtime', value: dayAnalyticsClock(presentation, sleep.bedtimeStart) })
+    add('bedtime', dayAnalyticsClock(presentation, sleep.bedtimeStart), 'bedtimeStart')
   if (sleep?.bedtimeEnd)
-    metrics.push({ label: 'wake-up', value: dayAnalyticsClock(presentation, sleep.bedtimeEnd) })
+    add('wake-up', dayAnalyticsClock(presentation, sleep.bedtimeEnd), 'bedtimeEnd')
   if (sleep?.timeInBedS != null)
-    metrics.push({ label: 'time in bed', value: dayAnalyticsDuration(sleep.timeInBedS) })
+    add('time in bed', dayAnalyticsDuration(sleep.timeInBedS), 'timeInBedS')
+  if (
+    sleep?.nightSource === 'garmin' &&
+    summary.sleepMetrics?.garmin?.sleep &&
+    sleep.bedtimeStart &&
+    sleep.bedtimeEnd
+  ) {
+    const seconds = (Date.parse(sleep.bedtimeEnd) - Date.parse(sleep.bedtimeStart)) / 1000
+    if (seconds > 0)
+      metrics.push({
+        label: 'sleep window',
+        value: dayAnalyticsDuration(seconds),
+        detail: `Garmin\n${triText(presentation.locale, 'elapsed time from bedtime to wake-up')}`,
+      })
+  }
   const totalSleep = sleep?.totalSleepS ?? recovery?.sleepDurationS
-  if (totalSleep != null)
-    metrics.push({ label: 'total sleep', value: dayAnalyticsDuration(totalSleep) })
+  if (totalSleep != null) add('total sleep', dayAnalyticsDuration(totalSleep), 'totalSleepS')
   if (sleep?.efficiency != null)
-    metrics.push({
-      label: 'efficiency',
-      value: `${dayAnalyticsNumber(presentation, sleep.efficiency)}%`,
-    })
-  if (sleep?.latencyS != null)
-    metrics.push({ label: 'latency', value: dayAnalyticsDuration(sleep.latencyS) })
+    add('efficiency', `${dayAnalyticsNumber(presentation, sleep.efficiency)}%`, 'efficiency')
+  if (sleep?.latencyS != null) add('latency', dayAnalyticsDuration(sleep.latencyS), 'latencyS')
   if (sleep?.averageHeartRate != null)
-    metrics.push({
-      label: 'average hr',
-      value: `${dayAnalyticsNumber(presentation, sleep.averageHeartRate, 1)} bpm`,
-    })
+    add(
+      'average hr',
+      `${dayAnalyticsNumber(presentation, sleep.averageHeartRate, 1)} bpm`,
+      'averageHeartRate',
+    )
   if (sleep?.lowestHeartRate != null)
-    metrics.push({
-      label: 'lowest hr',
-      value: `${dayAnalyticsNumber(presentation, sleep.lowestHeartRate)} bpm`,
-    })
+    add(
+      'lowest hr',
+      `${dayAnalyticsNumber(presentation, sleep.lowestHeartRate)} bpm`,
+      'lowestHeartRate',
+    )
+  if (sleep?.restingHeartRate != null)
+    add(
+      'resting heart rate',
+      `${dayAnalyticsNumber(presentation, sleep.restingHeartRate)} bpm`,
+      'restingHeartRate',
+    )
   if (sleep?.averageHrv != null)
-    metrics.push({
-      label: 'average hrv',
-      value: `${dayAnalyticsNumber(presentation, sleep.averageHrv)} ms`,
-    })
+    add('average hrv', `${dayAnalyticsNumber(presentation, sleep.averageHrv)} ms`, 'averageHrv')
+  if (sleep?.skinTemperatureDeviationC != null)
+    add(
+      'skin temperature deviation',
+      dayAnalyticsTemperature(presentation, sleep.skinTemperatureDeviationC, true),
+      'skinTemperatureDeviationC',
+    )
   if (sleep?.restlessPeriods != null)
-    metrics.push({
-      label: 'restless periods',
-      value: dayAnalyticsNumber(presentation, sleep.restlessPeriods),
-      detail: 'Oura',
-    })
+    add(
+      'restless periods',
+      dayAnalyticsNumber(presentation, sleep.restlessPeriods),
+      'restlessPeriods',
+    )
+  if (sleep?.awakeCount != null)
+    add('awake count', dayAnalyticsNumber(presentation, sleep.awakeCount), 'awakeCount')
   if (recovery?.sleepDebtS != null)
     metrics.push({ label: 'sleep debt', value: dayAnalyticsDuration(recovery.sleepDebtS) })
   if (recovery?.sleepBaselineS != null)

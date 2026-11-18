@@ -11,5 +11,3 @@ tags:
 title: 'The Insider'
 year: 1999
 ---
-
-Recommended by Igor Martinović in [ShotDeck’s ASC recommendations](https://www.instagram.com/reel/Db8PFLVp_XX/) at 14.5s.

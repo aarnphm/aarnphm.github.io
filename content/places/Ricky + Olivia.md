@@ -8,8 +8,7 @@ coordinates:
 date: '2026-11-01'
 description: 'Restaurant, lounge and Ontario bottle shop on Queen Street East.'
 id: 'Ricky + Olivia'
-modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DfDUc1yoNEc/'
+modified: '2026-11-10'
 tags:
   - 'places'
 title: 'Ricky + Olivia'

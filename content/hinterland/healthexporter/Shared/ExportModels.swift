@@ -439,8 +439,17 @@ struct AppleHealthWorkout: Codable, Equatable, Identifiable, Sendable {
   }
 }
 
+struct AppleHealthSleepSample: Codable, Equatable, Sendable {
+  let id: String
+  let start: String
+  let end: String
+  let value: String
+  let sourceName: String
+  let sourceBundleIdentifier: String
+}
+
 struct HealthExportDocument: Codable, Equatable, Sendable {
-  static let currentVersion = 10
+  static let currentVersion = 11
 
   let version: Int
   let generatedAt: String
@@ -448,6 +457,7 @@ struct HealthExportDocument: Codable, Equatable, Sendable {
   let days: [AppleHealthDay]
   let swims: [AppleHealthSwim]
   let workouts: [AppleHealthWorkout]
+  var sleepSamples: [AppleHealthSleepSample]? = nil
 
   func replacingRecent(
     with recent: HealthExportDocument,
@@ -462,7 +472,11 @@ struct HealthExportDocument: Codable, Equatable, Sendable {
       swims: (swims.filter { $0.date < dayCutoff } + recent.swims).sorted {
         ($0.start ?? $0.date, $0.id) < ($1.start ?? $1.date, $1.id)
       },
-      workouts: workouts.filter { $0.start < timestampCutoff } + recent.workouts
+      workouts: workouts.filter { $0.start < timestampCutoff } + recent.workouts,
+      sleepSamples: recent.sleepSamples.map { recentSamples in
+        ((sleepSamples ?? []).filter { $0.end < timestampCutoff } + recentSamples)
+          .sorted { ($0.start, $0.id) < ($1.start, $1.id) }
+      } ?? sleepSamples
     )
   }
 
@@ -472,6 +486,7 @@ struct HealthExportDocument: Codable, Equatable, Sendable {
       && days == other.days
       && swims == other.swims
       && workouts == other.workouts
+      && sleepSamples == other.sleepSamples
   }
 
   func preservingWorkoutGPXFiles(from previous: HealthExportDocument?) -> HealthExportDocument {
@@ -483,7 +498,8 @@ struct HealthExportDocument: Codable, Equatable, Sendable {
       timezone: timezone,
       days: days,
       swims: swims,
-      workouts: workouts.map { $0.preservingGPXFile(from: previousWorkouts[$0.id]) }
+      workouts: workouts.map { $0.preservingGPXFile(from: previousWorkouts[$0.id]) },
+      sleepSamples: sleepSamples
     )
   }
 }

@@ -25,8 +25,3 @@ subcategory:
 description: A reimagining of Jesus’s life that examines human desire, suffering, responsibility, and the purposes of divine power.
 external: https://www.josesaramago.org/en/product/the-gospel-according-to-jesus-christ-en/
 ---
-
-Source: [ribbonedby’s reading recommendations](https://www.instagram.com/reel/DfVM_QCohH6/), creator’s caption.
-
-Bibliography: [book reference](https://www.josesaramago.org/en/product/the-gospel-according-to-jesus-christ-en/).
-

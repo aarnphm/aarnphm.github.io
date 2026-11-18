@@ -2,10 +2,13 @@ import { RAIL_HEIGHT } from '../../util/latent/rail'
 import { decodeTrack, type LatentDoc, type LatentKind } from '../../util/latent/types'
 import { bindAxesCarousel } from './latent-client/axes-carousel'
 import { openBench } from './latent-client/bench'
+import { bindCircuit } from './latent-client/circuit'
 import { bindFeatures } from './latent-client/features'
 import { bindCallouts, claimTiles, renderFigures } from './latent-client/figures'
 import { bindFolios } from './latent-client/folio'
+import { bindGemma } from './latent-client/gemma'
 import { bindMarquee } from './latent-client/marquee'
+import { bindPanes } from './latent-client/panes'
 import { bindProbeShortcuts } from './latent-client/probe-shortcuts'
 import { bindRail } from './latent-client/rail'
 import { bindReader, chunkUnderLine, goTo, keepLine } from './latent-client/reader'
@@ -14,6 +17,7 @@ import { bindSearch } from './latent-client/search'
 import { bindSearchShortcutHint } from './latent-client/search-shortcut-hint'
 import { bindShare } from './latent-client/share'
 import { bindTips } from './latent-client/tips'
+import { loadView } from './latent-client/view'
 import { loadPageStyles } from './page-styles'
 import { rootNavSignal } from './root-lifecycle'
 
@@ -223,16 +227,20 @@ export function mountLatent(root: HTMLElement): void {
       const byRow: LatentDoc[] = Array.from({ length: Number(root.dataset.latentRows) })
       for (const doc of docs) for (let r = doc.r0; r < doc.r0 + doc.n; r++) byRow[r] = doc
       rt.docByRow = byRow
+      rt.view = loadView(rt.kinds)
       bindReader(rt)
       bindClicks(rt)
       bindSearch(rt)
       bindFeatures(rt)
+      bindGemma(rt)
+      bindCircuit(rt)
       bindSearchShortcutHint(rt)
       bindProbeShortcuts(rt)
       bindAxesCarousel(rt)
       bindMarquee(rt, rt.probe)
       bindTips(rt)
       bindRail(rt)
+      bindPanes(rt)
       const shared = await bindShare(rt)
       root.dataset.latentLive = ''
       if (shared || signal.aborted) return

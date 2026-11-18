@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'New York-style pizza by the slice and whole pie at Badiali’s original Dovercourt location'
 id: 'Pizzeria Badiali Dovercourt'
 modified: 2026-10-30
-source: https://www.instagram.com/reel/DfGYfWsRxzh/
 tags:
   - places
 title: 'Pizzeria Badiali Dovercourt'

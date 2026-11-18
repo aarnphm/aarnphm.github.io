@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'coffee shop on Palmerston Avenue with secondhand clothing and mugs'
 id: Yellow Flower
 modified: 2026-10-30
-source: https://www.instagram.com/reel/DeW_X7KRpR0/
 tags:
   - places
 title: Yellow Flower

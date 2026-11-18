@@ -16,6 +16,7 @@ import {
   isRestrictedEntry,
   truthyStreamFlag,
 } from '../../util/stream'
+import { streamEntryGraphIds, streamGraphHref } from '../../util/stream-graph'
 import { getStreamEntrySearchText, getStreamEntryWordCount } from '../../util/stream-manifest'
 import PressKitButtons from '../PressKitButtons'
 import { StreamUnlockIcon } from './UnlockIcon'
@@ -97,6 +98,7 @@ export const renderStreamEntry = (
   options: StreamEntryRenderOptions,
 ): ComponentChild => {
   const tags = Array.isArray(entry.metadata.tags) ? entry.metadata.tags : []
+  const graphIds = streamEntryGraphIds(entry)
   const socials =
     entry.metadata.socials && typeof entry.metadata.socials === 'object'
       ? (entry.metadata.socials as Record<string, unknown>)
@@ -257,13 +259,31 @@ export const renderStreamEntry = (
             })}
           </div>
         )}
-        {!protectedEntry && !privateEntry && (
-          <div class="stream-entry-share" role="group" aria-label="partager cette entrée">
-            <PressKitButtons
-              citation={false}
-              entryId={entry.id}
-              entryUrl={buildStreamEntryPathFromIso(resolvedIsoDate, entry.id) ?? undefined}
-            />
+        {(graphIds.length > 0 || (!protectedEntry && !privateEntry)) && (
+          <div class="stream-entry-actions">
+            {graphIds.length > 0 && (
+              <div class="stream-entry-graphs" role="group" aria-label="graphs">
+                {graphIds.map(id => (
+                  <a
+                    key={id}
+                    class="stream-entry-graph"
+                    href={streamGraphHref(id, entry.id)}
+                    data-no-popover
+                  >
+                    {id}
+                  </a>
+                ))}
+              </div>
+            )}
+            {!protectedEntry && !privateEntry && (
+              <div class="stream-entry-share" role="group" aria-label="partager cette entrée">
+                <PressKitButtons
+                  citation={false}
+                  entryId={entry.id}
+                  entryUrl={buildStreamEntryPathFromIso(resolvedIsoDate, entry.id) ?? undefined}
+                />
+              </div>
+            )}
           </div>
         )}
         {entry.importance !== undefined && (

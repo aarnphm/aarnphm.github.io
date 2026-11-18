@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'Japanese izakaya serving small plates and sake on Dundas Street West.'
 id: 'Sakai Bar'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/DdaGREXJ5Pb/'
 tags:
   - 'places'
 title: 'Sakai Bar'

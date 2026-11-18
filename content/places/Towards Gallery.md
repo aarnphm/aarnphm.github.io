@@ -9,7 +9,6 @@ date: '2026-11-02'
 description: 'Contemporary art gallery in the Sterling Road arts district.'
 id: 'Towards Gallery'
 modified: '2026-11-02'
-source: 'https://www.instagram.com/p/DfNZFAegXFC/'
 tags:
   - 'places'
 title: 'Towards Gallery'

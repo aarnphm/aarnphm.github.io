@@ -19,6 +19,5 @@ tags:
 title: High and Low
 year: 1963
 runtime: 143
+external: https://en.wikipedia.org/wiki/High_and_Low_(1963_film)
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](<https://en.wikipedia.org/wiki/High_and_Low_(1963_film)>).

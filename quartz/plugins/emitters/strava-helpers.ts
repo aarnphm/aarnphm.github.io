@@ -6,7 +6,15 @@ import type { QuartzPluginData } from '../vfile'
 import { joinSegments, QUARTZ } from '../../util/path'
 import { ATHLETE } from '../stores/analytics'
 
-export const TRI_SUBVIEWS: TriView[] = ['tools', 'calc', 'analytics', 'maps', 'calendar', 'on']
+export const TRI_SUBVIEWS: TriView[] = [
+  'tools',
+  'calc',
+  'analytics',
+  'maps',
+  'calendar',
+  'on',
+  'fun',
+]
 
 // The feed lives on /triathlon/on behind its log · feed switch; old feed links open it there.
 export const TRIATHLON_FEED_REDIRECT = `<!DOCTYPE html>
@@ -39,6 +47,8 @@ export const triathlonDescription = (
   scopePrefix = '',
 ): string => {
   switch (view) {
+    case 'fun':
+      return 'High Park main-road loops, tracked separately for cycling and running.'
     case 'tools':
       return 'Triathlon gear, fuel, pace conversions, and race-distance reference data.'
     case 'calc':

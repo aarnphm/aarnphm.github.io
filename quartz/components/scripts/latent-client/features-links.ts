@@ -18,6 +18,8 @@ export async function pinLinks(
   )
   // the pinned list survives focus changes, like a typed query; Escape in the box clears it
   rt.query = { text: label, items }
+  // the rail measures its pane, so it goes before the list's writes: one restyle, not two
+  renderRail(rt, items)
   renderDocumentLinks(
     rt,
     { r: -1, d: -1, s: 'note', t: label, c: 0, p: null, l: '', x: '' },
@@ -25,5 +27,4 @@ export async function pinLinks(
     label,
   )
   rt.links.dataset.query = label
-  renderRail(rt, items)
 }

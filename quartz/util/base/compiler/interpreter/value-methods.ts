@@ -1,3 +1,4 @@
+import { tagMatches } from '../../../tags'
 import {
   findFileByTarget,
   resolveLinkSlugFromText,
@@ -293,14 +294,13 @@ export const evalFileMethod = (
     return makeLink(slug, display)
   }
   if (method === 'hasTag') {
-    const tags = args.map(arg => valueToString(arg).replace(/^#/, ''))
+    const tags = args.map(valueToString)
     const rawTags = file.frontmatter?.tags
     const fileTags = Array.isArray(rawTags) ? rawTags : typeof rawTags === 'string' ? [rawTags] : []
     // Obsidian matches nested tags: hasTag("a") is true for a/b.
     return makeBoolean(
       fileTags.some(raw => {
-        const fileTag = String(raw).replace(/^#/, '')
-        return tags.some(tag => fileTag === tag || fileTag.startsWith(`${tag}/`))
+        return tags.some(tag => tagMatches(String(raw), tag))
       }),
     )
   }

@@ -287,24 +287,36 @@ export const Profile: QuartzTransformerPlugin = () => {
 const BLOCKS = new Set(['p', 'li', 'blockquote', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'dd', 'dt'])
 const classes = (node: Element) => (node.properties.className as string[] | undefined) ?? []
 
-// Long notes, lists and maths are boxed instead of using the 13rem rail.
-const BOXED_WORDS = 70
+// Tables and figures cannot fit the 13rem rail and stay boxed in the body. Long notes, lists and
+// maths go to the rail like any note, folded to a few lines behind a "more" toggle.
+const LONG_WORDS = 70
 
 function note(id: string, kind: 'footnote' | 'sidenote', mark: string, body: ElementContent[]) {
-  let boxed = toString({ type: 'root', children: body } as Root).split(/\s+/).length > BOXED_WORDS
+  let long = toString({ type: 'root', children: body } as Root).split(/\s+/).length > LONG_WORDS
+  let boxed = false
   visit({ type: 'root', children: body } as Root, 'element', el => {
-    if (['ul', 'ol', 'figure', 'table'].includes(el.tagName) || classes(el).includes('katex'))
-      boxed = true
+    if (['figure', 'table'].includes(el.tagName)) boxed = true
+    else if (['ul', 'ol'].includes(el.tagName) || classes(el).includes('katex')) long = true
   })
-  return h(
-    'aside',
-    {
-      id,
-      dataKind: kind,
-      className: boxed ? ['profile-note', 'profile-note-boxed'] : ['profile-note'],
-    },
-    [h('span.profile-note-mark', mark), ...body],
-  )
+  if (boxed)
+    return h('aside', { id, dataKind: kind, className: ['profile-note', 'profile-note-boxed'] }, [
+      h('span.profile-note-mark', mark),
+      ...body,
+    ])
+  if (!long)
+    return h('aside', { id, dataKind: kind, className: ['profile-note'] }, [
+      h('span.profile-note-mark', mark),
+      ...body,
+    ])
+  const bodyId = `${id}-body`
+  return h('aside', { id, dataKind: kind, className: ['profile-note', 'profile-note-long'] }, [
+    h('div.profile-note-body', { id: bodyId }, [h('span.profile-note-mark', mark), ...body]),
+    h(
+      'button.profile-note-more',
+      { type: 'button', ariaExpanded: 'false', ariaControls: bodyId },
+      'more',
+    ),
+  ])
 }
 
 /** Move notes after their citing block for CSS placement; keep them inline on narrow screens. */
@@ -438,8 +450,10 @@ function cite(aside: Element): Element {
  */
 function chain(tree: Root, marked: Set<string>) {
   const last = { any: '', left: '', right: '', box: '' }
+  const boxLast = { left: '', right: '' }
   let sections = false
   let alternate = 0
+  let boxAlternate = 0
   const link = (box: Element | null) => (el: Element) => {
     if (el.tagName === 'h2') sections = true
     if (el.properties.id === 'tldr' && el !== box) {
@@ -451,9 +465,14 @@ function chain(tree: Root, marked: Set<string>) {
     const vars = [`anchor-name:${name}`, `--cite:${name}-cite`]
     if (marked.has(String(el.properties.id))) vars.push(`--mark:${name}-mark`)
     if (box) {
-      if (last.box) vars.push(`--prev:${last.box}`, `--prev-side:${last.box}`)
-      // Right-rail notes after the box must still clear its notes.
-      last.box = last.any = last.right = name
+      // Box notes alternate rails as well: two citations on neighbouring lines (reliable,
+      // monogamy) then both sit level instead of the second hanging a note's height below.
+      const side = boxAlternate++ % 2 === 1 ? 'left' : 'right'
+      if (side === 'left') el.properties.dataSide = 'left'
+      if (last.box) vars.push(`--prev:${last.box}`)
+      if (boxLast[side]) vars.push(`--prev-side:${boxLast[side]}`)
+      // Notes after the box must still clear its notes on their own rail.
+      last.box = last.any = boxLast[side] = last[side] = name
     } else {
       const side = sections && alternate++ % 2 === 1 ? 'left' : 'right'
       if (side === 'left') el.properties.dataSide = 'left'

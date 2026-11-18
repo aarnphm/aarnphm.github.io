@@ -29,13 +29,16 @@ const finitePositive = (value: string | undefined): number | null => {
   return Number.isFinite(number) && number > 0 ? number : null
 }
 
-export const decodeDaySleepValues = (encoded: string): (number | null)[] | null => {
+export const decodeDaySleepValues = (
+  encoded: string,
+  minimumCount = 2,
+): (number | null)[] | null => {
   const values = encoded.split(',').map(value => {
     if (value === '') return null
     const number = Number(value)
     return Number.isFinite(number) ? number : undefined
   })
-  return values.length >= 2 && values.every(value => value !== undefined)
+  return values.length >= minimumCount && values.every(value => value !== undefined)
     ? values.map(value => value ?? null)
     : null
 }
@@ -55,9 +58,10 @@ export const daySleepReadout = (
 ): string => {
   const boundedIndex = Math.min(Math.max(Math.round(index), 0), values.length - 1)
   const minute = startMinute + (offsetsS?.[boundedIndex] ?? boundedIndex * intervalSeconds) / 60
-  const time = offsetsS
-    ? wallClock(Math.floor(minute))
-    : daySleepSampleClock(minute, intervalSeconds)
+  const time =
+    offsetsS && intervalSeconds === 0
+      ? wallClock(Math.floor(minute))
+      : daySleepSampleClock(minute, intervalSeconds)
   return `${time} · ${label(values[boundedIndex])}`
 }
 
@@ -76,7 +80,7 @@ export const daySleepTimeGeometry = (
   offsetsS: readonly number[],
   width: number,
 ): DaySleepGeometry => ({
-  x: index => (offsetsS[index] / offsetsS[offsetsS.length - 1]) * width,
+  x: index => (offsetsS[index] / Math.max(1, offsetsS[offsetsS.length - 1])) * width,
   indexAt: fraction => {
     const target = Math.min(Math.max(fraction, 0), 1) * offsetsS[offsetsS.length - 1]
     let low = 0
@@ -90,6 +94,27 @@ export const daySleepTimeGeometry = (
   },
 })
 
+export const daySleepBandGeometry = (
+  boundariesS: readonly number[],
+  width: number,
+): DaySleepGeometry => {
+  const duration = boundariesS[boundariesS.length - 1]
+  return {
+    x: index => ((boundariesS[index] + boundariesS[index + 1]) / 2 / duration) * width,
+    indexAt: fraction => {
+      const target = Math.min(Math.max(fraction, 0), 1) * duration
+      let low = 0
+      let high = boundariesS.length - 2
+      while (low < high) {
+        const middle = Math.floor((low + high + 1) / 2)
+        if (boundariesS[middle] <= target) low = middle
+        else high = middle - 1
+      }
+      return low
+    },
+  }
+}
+
 const pointGeometry = (count: number, width: number): DaySleepGeometry => ({
   x: index => (index / (count - 1)) * width,
   indexAt: fraction => Math.round(fraction * (count - 1)),
@@ -101,14 +126,22 @@ const bandGeometry = (count: number, width: number): DaySleepGeometry => ({
 })
 
 const seriesFromElement = (wrap: HTMLElement, locale: () => Locale): DaySleepSeries | null => {
+  const boundaryText = wrap.dataset.daySleepBoundaries
+  const timesText = wrap.dataset.daySleepTimes
   const values = wrap.dataset.daySleepValues
-    ? decodeDaySleepValues(wrap.dataset.daySleepValues)
+    ? decodeDaySleepValues(wrap.dataset.daySleepValues, boundaryText || timesText ? 1 : 2)
     : null
   const startTs = wrap.dataset.daySleepStart
-  const intervalSeconds = finitePositive(wrap.dataset.daySleepInterval)
-  const offsetsS =
-    wrap.dataset.daySleepTimes && values
-      ? decodeDaySleepTimes(wrap.dataset.daySleepTimes, values.length)
+  const boundariesS =
+    boundaryText && values ? decodeDaySleepTimes(boundaryText, values.length + 1) : undefined
+  const intervalSeconds =
+    boundariesS || wrap.dataset.daySleepPrecise !== undefined
+      ? 1
+      : finitePositive(wrap.dataset.daySleepInterval)
+  const offsetsS = boundariesS
+    ? boundariesS.slice(0, -1)
+    : timesText && values
+      ? decodeDaySleepTimes(timesText, values.length)
       : undefined
   const width = finitePositive(wrap.dataset.daySleepWidth)
   const startMinute = startTs
@@ -121,6 +154,7 @@ const seriesFromElement = (wrap: HTMLElement, locale: () => Locale): DaySleepSer
     !values ||
     !Number.isFinite(startMinute) ||
     offsetsS === null ||
+    boundariesS === null ||
     (intervalSeconds == null && !offsetsS) ||
     width == null
   )
@@ -139,8 +173,9 @@ const seriesFromElement = (wrap: HTMLElement, locale: () => Locale): DaySleepSer
       : movement
         ? value => daySleepMovementLabel(locale(), value)
         : daySleepUnitLabel(unit === 'ms' ? 'ms' : unit === 'brpm' ? 'brpm' : 'bpm'),
-    geometry:
-      stages || movement
+    geometry: boundariesS
+      ? daySleepBandGeometry(boundariesS, width)
+      : stages || movement
         ? bandGeometry(values.length, width)
         : offsetsS
           ? daySleepTimeGeometry(offsetsS, width)

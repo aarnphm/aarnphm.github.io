@@ -12,14 +12,18 @@ layer adds, through a sparse code, so every write to the residual stream becomes
 named features, which is what an attribution graph (step 3) traces. Per layer l, with x = the
 MLP input and y = the MLP write plus the PLE gate's write (acts.py, site `mlp`):
 
-    z = TopK_k(ReLU(W_enc x' + b_enc))         x' = x / sx
-    y' = W_dec z + W_skip x' + b_dec           y  = y' * sy
+    z = TopK_k(ReLU(W_enc (x' - b_pre) + b_enc))      x' = x / sx
+    y' = W_dec z + W_skip (x' - b_pre) + b_dec         y  = y' * sy
 
 The skip term (Paulo, Shabalin & Belrose 2025, "Transcoders beat sparse autoencoders") carries
 the linear part of the MLP so the code spends its k on what is not linear. TopK fixes L0 (no
 L1 to tune) and AuxK (Gao et al. 2024) revives latents that stop firing, as in features.py.
 sx and sy put each layer's input and target at unit RMS per dimension; they ride along with the
-weights.
+weights. The first --fit-tokens of each layer only gather moments: b_pre is the input mean (the
+encoder reads centred input, else the residual's outlier dimensions pick the same few latents
+for every token) and W_skip the ridge fit of y on x, both then fixed. A trained W_skip drifted:
+Adam moves every one of its d^2 entries by about the learning rate a step, and a notes pilot
+that trained it went past FVU 1 in the middle layers within 300 steps.
 
 Activations stream from acts.stream(): one Gemma forward feeds every layer in --layers, so a
 group of layers trains for the price of one pass. Memory sets the group: one layer at width M
@@ -27,7 +31,7 @@ holds 2 d M + d^2 parameters (48.5 M at M 8192), 16 bytes each with Adam, 0.78 G
 layers plus the 4-bit Gemma fit 32 GB. --cache trains on an acts.py cache instead (sweeps).
 
 Output, quartz/.quartz-cache/latent-plt/<sidecar[:8]>-w<M>-k<k>/:
-  L<ll>.safetensors  W_enc (d, M), b_enc (M), W_dec (M, d), W_skip (d, d), b_dec (d), sx, sy
+  L<ll>.safetensors  W_enc (d, M), b_enc (M), W_dec (M, d), W_skip (d, d), b_pre, b_dec (d), sx, sy
   L<ll>.json         step, tokens, fvu (moving), dead share, at
 A restart picks the weights up again (the Adam moments start over).
 """
@@ -80,43 +84,47 @@ class Transcoder:
       W_dec = rng.standard_normal((M, d)).astype(np.float32)
       W_dec /= np.linalg.norm(W_dec, axis=1, keepdims=True)
       init = dict(
-        W_enc=0.1
-        * W_dec.T,  # small codes at first: the skip term fits before the code does
+        W_enc=0.1 * W_dec.T,  # small codes at first
         b_enc=np.zeros(M, np.float32),
         W_dec=W_dec,
-        W_skip=np.zeros((d, d), np.float32),
         b_dec=np.zeros(d, np.float32),
       )
     self.p = {
-      n: mx.array(init[n])
-      for n in ('W_enc', 'b_enc', 'W_dec', 'W_skip', 'b_dec')
+      n: mx.array(init[n]) for n in ('W_enc', 'b_enc', 'W_dec', 'b_dec')
     }
+    # fixed after the fit phase: the input mean and the skip map (ridge of y on x)
+    self.W_skip = mx.array(init.get('W_skip', np.zeros((d, d), np.float32)))
+    self.b_pre = mx.array(init.get('b_pre', np.zeros(d, np.float32)))
     self.sx = float(init.get('sx', 0.0))
     self.sy = float(init.get('sy', 0.0))
+    self.fitted = bool(init.get('fitted', 'W_skip' in init))
+    self.stats: dict | None = None
     self.lr = LR
+    self.seed_dict = True
     self.opt = optim.Adam(learning_rate=LR)
     self.since = np.zeros(M, np.int64)
     self.step = int(init.get('step', 0))
+    self.fit_steps = int(init.get('fit_steps', 0))
     self.tokens = int(init.get('tokens', 0))
     self.fvu = float(init.get('fvu', 1.0))
     self.grad = mx.value_and_grad(self._loss)
 
-  def code(self, p: dict, x):
+  def code(self, p: dict, xc):
     import mlx.core as mx
 
-    pre = x @ p['W_enc'] + p['b_enc']
+    pre = xc @ p['W_enc'] + p['b_enc']
     thr = mx.stop_gradient(
       mx.topk(pre, self.k, axis=-1).min(axis=-1, keepdims=True)
     )
     z = mx.where(pre >= thr, mx.maximum(pre, 0), 0)
     return pre, z
 
-  def _loss(self, p: dict, x, y, dead, kk: int):
+  def _loss(self, p: dict, xc, r0, dead, kk: int):
+    """r0 = y - skip(x): what the sparse code and b_dec must explain."""
     import mlx.core as mx
 
-    pre, z = self.code(p, x)
-    yhat = z @ p['W_dec'] + x @ p['W_skip'] + p['b_dec']
-    e = yhat - y
+    pre, z = self.code(p, xc)
+    e = z @ p['W_dec'] + p['b_dec'] - r0
     loss = mx.mean(mx.sum(e * e, axis=-1))
     if kk:
       zd = mx.where(dead[None, :], pre, -1e9)
@@ -134,42 +142,100 @@ class Transcoder:
       )
     return loss, (z, e)
 
-  def update(self, x, y, total_steps: int, dead_after: int) -> None:
+  def fit(self, x, y, fit_tokens: int) -> None:
+    """Fit phase: accumulate first and second moments, then fix b_pre (the input mean), W_skip
+    (ridge of y on centred x; Adam would walk a d x d map off its least-squares optimum in a
+    few hundred steps) and start b_dec at the mean write."""
     import mlx.core as mx
 
-    first = not self.sx
-    if first:
+    if self.stats is None:
+      d = self.d
+      z = mx.zeros
+      self.stats = dict(
+        n=0, sx=z((d,)), sy=z((d,)), xx=z((d, d)), xy=z((d, d))
+      )
+    st = self.stats
+    st['n'] += x.shape[0]
+    st['sx'] = st['sx'] + x.sum(0)
+    st['sy'] = st['sy'] + y.sum(0)
+    st['xx'] = st['xx'] + x.T @ x
+    st['xy'] = st['xy'] + x.T @ y
+    # the last M tokens of the fit phase seed the dictionary
+    st.setdefault('seed', []).append((x, y))
+    while sum(a.shape[0] for a, _ in st['seed'][1:]) >= self.M:
+      st['seed'].pop(0)
+    mx.eval(st['sx'], st['sy'], st['xx'], st['xy'])
+    self.step += 1
+    self.fit_steps += 1
+    self.tokens += x.shape[0]
+    if st['n'] < fit_tokens:
+      return
+    n = st['n']
+    mu_x = np.array(st['sx'], np.float64) / n
+    mu_y = np.array(st['sy'], np.float64) / n
+    G = np.array(st['xx'], np.float64) / n - np.outer(mu_x, mu_x)
+    C = np.array(st['xy'], np.float64) / n - np.outer(mu_x, mu_y)
+    lam = 1e-2 * np.trace(G) / len(G)
+    W = np.linalg.solve(G + lam * np.eye(len(G)), C)
+    self.W_skip = mx.array(W.astype(np.float32))
+    self.b_pre = mx.array(mu_x.astype(np.float32))
+    self.p['b_dec'] = mx.array(mu_y.astype(np.float32))
+    if self.seed_dict:
+      # data init: latent i starts as token i of the seed set, reading its centred input and
+      # writing what the skip map leaves of its target. Random directions in a 2560-d space
+      # mostly never win a top-k; seeded ones start where the data is (dead share at layer 20
+      # was 69% from random init).
+      xs = mx.concatenate([a for a, _ in st['seed']])[-self.M :] - self.b_pre
+      ys = mx.concatenate([b for _, b in st['seed']])[-self.M :]
+      if xs.shape[0] == self.M:
+        r0 = ys - xs @ self.W_skip - self.p['b_dec']
+        self.p['W_dec'] = r0 / mx.linalg.norm(r0, axis=1, keepdims=True)
+        enc = xs / mx.linalg.norm(xs, axis=1, keepdims=True)
+        self.p['W_enc'] = 0.1 * enc.T
+    self.fitted, self.stats = True, None
+
+  def update(
+    self, x, y, total_steps: int, dead_after: int, fit_tokens: int = 65536
+  ) -> None:
+    import mlx.core as mx
+
+    out = self.step_lazy(x, y, total_steps, dead_after, fit_tokens)
+    if out is not None:
+      mx.eval(self.p, self.opt.state, out[:3])
+      self.finish(out)
+
+  def step_lazy(
+    self, x, y, total_steps: int, dead_after: int, fit_tokens: int = 65536
+  ):
+    """One optimiser step left unevaluated, so a caller can step every layer and then run a
+    single mx.eval (one GPU sync per step instead of one per layer: 41 -> 29 us/tok/layer at
+    width 4096 on an M1 Max). Returns what finish() needs, or None during the fit phase."""
+    import mlx.core as mx
+
+    if not self.sx:
       # unit RMS per dimension, fixed from the first batch
       self.sx = float(mx.sqrt(mx.mean(x.astype(mx.float32) ** 2)).item())
       self.sy = float(mx.sqrt(mx.mean(y.astype(mx.float32) ** 2)).item())
     x = x.astype(mx.float32) / self.sx
     y = y.astype(mx.float32) / self.sy
-    if first:
-      # start the skip term at the ridge fit of y on x, b_dec at the mean write
-      X, Y = np.array(x, np.float64), np.array(y, np.float64)
-      mu_x, mu_y = X.mean(0), Y.mean(0)
-      Xc = X - mu_x
-      G = Xc.T @ Xc
-      W = np.linalg.solve(
-        G + 0.1 * np.trace(G) / len(G) * np.eye(len(G)), Xc.T @ (Y - mu_y)
-      )
-      self.p['W_skip'] = mx.array(W.astype(np.float32))
-      self.p['b_dec'] = mx.array((mu_y - mu_x @ W).astype(np.float32))
+    if not self.fitted:
+      self.fit(x, y, fit_tokens)
+      return None
+    xc = x - self.b_pre
+    r0 = y - xc @ self.W_skip
     dead = self.since > dead_after
     kk = int(min(2 * self.k, dead.sum()))
-    (_, (z, e)), g = self.grad(self.p, x, y, mx.array(dead), kk)
+    (_, (z, e)), g = self.grad(self.p, xc, r0, mx.array(dead), kk)
     Wd = self.p['W_dec']
     g['W_dec'] = (
       g['W_dec'] - mx.sum(g['W_dec'] * Wd, axis=1, keepdims=True) * Wd
     )
     self.step += 1
     self.tokens += x.shape[0]
-    warm = min(1.0, self.step / max(1.0, min(500, 0.05 * total_steps)))
-    decay = (
-      1.0
-      if self.step < 0.8 * total_steps
-      else max(0.02, (total_steps - self.step) / (0.2 * total_steps))
-    )
+    t = self.step - self.fit_steps
+    span = max(1, total_steps - self.fit_steps)
+    warm = min(1.0, t / max(1.0, min(500, 0.05 * span)))
+    decay = 1.0 if t < 0.8 * span else max(0.02, (span - t) / (0.2 * span))
     self.opt.learning_rate = self.lr * warm * decay
     self.opt.update(self.p, g)
     self.p['W_dec'] = self.p['W_dec'] / mx.linalg.norm(
@@ -177,18 +243,28 @@ class Transcoder:
     )
     fired = mx.any(z > 0, axis=0)
     var = mx.sum((y - y.mean(axis=0)) ** 2)
-    mx.eval(self.p, self.opt.state, fired, e, var)
-    self.since += x.shape[0]
+    return fired, mx.sum(e * e), var, x.shape[0], t
+
+  def finish(self, out) -> None:
+    """Host-side bookkeeping for an evaluated step_lazy() result."""
+    fired, sse, var, n, t = out
+    self.since += n
     self.since[np.array(fired)] = 0
-    f = float(mx.sum(e * e).item() / max(var.item(), 1e-9))
-    self.fvu = f if self.step == 1 else 0.98 * self.fvu + 0.02 * f
+    f = float(sse.item() / max(var.item(), 1e-9))
+    self.fvu = f if t == 1 else 0.98 * self.fvu + 0.02 * f
 
   def save(self, path: Path, dead_after: int) -> None:
     import mlx.core as mx
 
     mx.save_safetensors(
       str(path.with_suffix('.safetensors')),
-      {**self.p, 'sx': mx.array([self.sx]), 'sy': mx.array([self.sy])},
+      {
+        **self.p,
+        'W_skip': self.W_skip,
+        'b_pre': self.b_pre,
+        'sx': mx.array([self.sx]),
+        'sy': mx.array([self.sy]),
+      },
     )
     path.with_suffix('.json').write_text(
       json.dumps(
@@ -197,6 +273,8 @@ class Transcoder:
           M=self.M,
           k=self.k,
           step=self.step,
+          fit_steps=self.fit_steps,
+          fitted=self.fitted,
           tokens=self.tokens,
           fvu=round(self.fvu, 4),
           dead=round(float((self.since > dead_after).mean()), 4),
@@ -274,6 +352,17 @@ def main() -> None:
     help='tokens per Gemma forward batch',
   )
   ap.add_argument('--lr', type=float, default=LR)
+  ap.add_argument(
+    '--random-init',
+    action='store_true',
+    help='random dictionary instead of seeding it from fit-phase tokens',
+  )
+  ap.add_argument(
+    '--fit-tokens',
+    type=int,
+    default=65536,
+    help='tokens per layer for the input mean and the ridge skip fit',
+  )
   ap.add_argument('--ctx', type=int, default=1024)
   ap.add_argument(
     '--keep',
@@ -297,6 +386,11 @@ def main() -> None:
   args = ap.parse_args()
 
   import mlx.core as mx
+
+  # freed activation buffers otherwise pile up in mlx's cache (8 GB within a minute of
+  # streaming), and the Mac starts compressing memory under the trainer
+  limit = getattr(mx, 'set_cache_limit', None) or mx.metal.set_cache_limit
+  limit(4 << 30)
 
   if args.cache:
     cache = Path(args.cache)
@@ -345,10 +439,11 @@ def main() -> None:
     else OUT / f'{digest[:8]}-w{args.width}-k{args.k}'
   )
   out.mkdir(parents=True, exist_ok=True)
-  total = int(args.tokens // args.batch)
+  # the fit phase comes on top of --tokens of training
+  total = int((args.tokens + args.fit_tokens) // args.batch)
   dead_after = (
-    50 * args.batch
-  )  # tokens without a fire before AuxK takes a latent on
+    20 * args.batch
+  )  # tokens without a fire before AuxK takes a latent
   tcs: dict[int, Transcoder] = {}
   for l in layers:
     f = out / f'L{l:02d}'
@@ -359,6 +454,7 @@ def main() -> None:
     )
   for tc in tcs.values():
     tc.lr = args.lr
+    tc.seed_dict = not args.random_init
   saved = {l: tcs[l].step for l in layers}
   todo = [l for l in layers if tcs[l].step < total]
   log(
@@ -377,15 +473,37 @@ def main() -> None:
     rows_ready = sum(x.shape[0] for x, _ in pending[todo[0]])
     if rows_ready < args.batch:
       continue
-    for l in list(todo):
-      x = mx.concatenate([a for a, _ in pending[l]])
-      y = mx.concatenate([b for _, b in pending[l]])
-      for a in range(0, x.shape[0] - args.batch + 1, args.batch):
-        tcs[l].update(
-          x[a : a + args.batch], y[a : a + args.batch], total, dead_after
+    xs = {l: mx.concatenate([a for a, _ in pending[l]]) for l in todo}
+    ys = {l: mx.concatenate([b for _, b in pending[l]]) for l in todo}
+    del got
+    pending.clear()  # drop the pieces now; only the concatenated copies stay alive
+    rows = xs[todo[0]].shape[0]
+    for a in range(0, rows - args.batch + 1, args.batch):
+      # every layer steps lazily, then one sync for all of them
+      live = [l for l in todo if tcs[l].step < total]
+      outs = {
+        l: tcs[l].step_lazy(
+          xs[l][a : a + args.batch],
+          ys[l][a : a + args.batch],
+          total,
+          dead_after,
+          args.fit_tokens,
         )
-      rest = x.shape[0] % args.batch
-      pending[l] = [(x[-rest:], y[-rest:])] if rest else []
+        for l in live
+      }
+      stepped = [l for l in live if outs[l] is not None]
+      mx.eval(
+        [tcs[l].p for l in stepped],
+        [tcs[l].opt.state for l in stepped],
+        [outs[l][:3] for l in stepped],
+      )
+      for l in stepped:
+        tcs[l].finish(outs[l])
+    rest = rows % args.batch
+    for l in list(todo):
+      pending[l] = [(xs[l][-rest:], ys[l][-rest:])] if rest else []
+      if rest:
+        mx.eval(pending[l])  # a slice keeps its parent alive until evaluated
       tc = tcs[l]
       if tc.step - saved[l] >= args.save_every or tc.step >= total:
         tc.save(out / f'L{l:02d}', dead_after)

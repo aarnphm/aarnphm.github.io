@@ -9,7 +9,6 @@ date: '2026-11-02'
 description: 'Contemporary arts organization and gallery at Youngplace on Shaw Street.'
 id: 'Koffler Arts'
 modified: '2026-11-02'
-source: 'https://www.instagram.com/p/DfNZFAegXFC/'
 tags:
   - 'places'
 title: 'Koffler Arts'

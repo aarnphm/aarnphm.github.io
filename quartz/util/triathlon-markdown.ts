@@ -2,6 +2,12 @@ import type { Analytics } from '../plugins/stores/analytics'
 import type { StravaActivityDetail, StravaPayload } from '../plugins/stores/strava'
 import type { FullSlug } from './path'
 import type { TriathlonEquipmentUsage } from './triathlon-equipment'
+import {
+  buildHighParkLoops,
+  HIGH_PARK_METHOD,
+  type HighParkLoops,
+  type HighParkVisit,
+} from './high-park-loops'
 import { TRI_RACE_DISTANCES } from './triathlon-calculator'
 import {
   calendarScheduleDates,
@@ -20,6 +26,7 @@ import {
 } from './triathlon-markdown-data'
 
 export type TriathlonMarkdownView =
+  | 'fun'
   | 'tools'
   | 'calc'
   | 'analytics'
@@ -37,6 +44,7 @@ export interface TriathlonMarkdownTools {
 }
 
 export interface TriathlonMarkdownOptions {
+  highParkLoops?: HighParkLoops
   view: TriathlonMarkdownView
   slug: FullSlug
   title: string
@@ -352,6 +360,7 @@ const toolsMarkdown = (opts: TriathlonMarkdownOptions): string => {
             ranges: maintenanceRangeText(entry.ranges),
             distanceMiles: entry.distanceMiles,
             reason: entry.reason,
+            id: entry.id ?? null,
           })),
           { title: 'maintenance.components', headingDepth: 3 },
         ),
@@ -363,6 +372,26 @@ const toolsMarkdown = (opts: TriathlonMarkdownOptions): string => {
             since: entry.since,
             distanceMiles: entry.distanceMiles,
             waxed: entry.waxed,
+            wax: entry.wax ?? null,
+            waxKit: entry.waxKit?.name ?? null,
+            waxKitUrl: entry.waxKit?.url ?? null,
+            status: entry.status ?? null,
+            chainring: entry.chainring ?? null,
+            ospw: entry.ospw ?? null,
+            ranges: entry.ranges ? maintenanceRangeText(entry.ranges) : null,
+            cycles:
+              entry.cycles
+                ?.map(cycle =>
+                  [
+                    cycle.start,
+                    cycle.end ?? 'current',
+                    cycle.distanceMiles === null ? null : `${cycle.distanceMiles} mi`,
+                    cycle.reasoning,
+                  ]
+                    .filter(value => value !== null)
+                    .join(' · '),
+                )
+                .join('; ') ?? null,
           })),
           { title: 'maintenance.chains', headingDepth: 3 },
         ),
@@ -419,8 +448,41 @@ const activityMarkdown = (opts: TriathlonMarkdownOptions): string =>
     includeRestDays: opts.view !== 'feed',
   })
 
+// The markdown twin keeps the numbers and drops the SVG path data drawn on the page.
+const highParkMarkdownData = ({ cycling, running }: HighParkLoops) => {
+  const ride = ({
+    trace: _trace,
+    glyph: _glyph,
+    lapsS: _laps,
+    lapDetail: _detail,
+    altitude: _altitude,
+    ...rest
+  }: HighParkVisit) => rest
+  const sport = (data: HighParkLoops['cycling']) => ({
+    laps: data.laps,
+    distanceKm: data.distanceKm,
+    estimatedLaps: data.estimatedLaps,
+    fastest: data.fastest && ride(data.fastest),
+    mostLaps: data.mostLaps && ride(data.mostLaps),
+    activities: data.activities.map(visit => ({ ...ride(visit), lapsS: visit.lapsS.join(' ') })),
+  })
+  return { cycling: sport(cycling), running: sport(running) }
+}
+
 export function buildTriathlonMarkdown(opts: TriathlonMarkdownOptions): string {
   switch (opts.view) {
+    case 'fun':
+      return document(
+        opts,
+        HIGH_PARK_METHOD +
+          '\n\n' +
+          renderTitledSections(
+            highParkMarkdownData(
+              opts.highParkLoops ?? buildHighParkLoops(Object.values(opts.payload.details)),
+            ),
+            { title: 'highParkLoops' },
+          ),
+      )
     case 'analytics':
       return analyticsMarkdown(opts)
     case 'maps':

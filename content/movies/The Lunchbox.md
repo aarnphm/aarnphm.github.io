@@ -8,6 +8,5 @@ posters: '[[movies/posters/the-lunchbox.jpg]]'
 status: to watch
 title: 'The Lunchbox'
 year: 2013
+external: https://en.wikipedia.org/wiki/The_Lunchbox
 ---
-
-From [Cinephile Club’s autumn film list](https://www.instagram.com/reel/DfHp1jVCX_8/). [Film details](https://en.wikipedia.org/wiki/The_Lunchbox).

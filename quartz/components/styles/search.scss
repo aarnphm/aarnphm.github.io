@@ -579,12 +579,6 @@
               font-family: var(--codeFont);
               font-size: var(--text-meta);
             }
-            tr.suggestion-path .suggestion-route-title {
-              min-width: 0;
-              overflow: hidden;
-              text-overflow: ellipsis;
-              color: var(--darkgray);
-            }
 
             td > span {
               display: block;

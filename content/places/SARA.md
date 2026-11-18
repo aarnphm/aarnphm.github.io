@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'restaurant on Portland Street serving a tasting menu'
 id: 'SARA'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/DeecXR8mFf7/'
 tags:
   - 'places'
 title: 'SARA'

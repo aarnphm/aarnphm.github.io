@@ -1,11 +1,18 @@
 import yaml from 'js-yaml'
 import type { QuartzPluginData } from '../../plugins/vfile'
+import type {
+  ReferenceCatalogInput,
+  ReferenceHeading,
+  ReferenceBaseView,
+} from '../references/catalog-types'
 import type { BaseFile } from './types'
 import { isFilePath, isFullSlug, isSimpleSlug, simplifySlug } from '../path'
 import { isJsonObject, isRecord, type JsonObject, type JsonValue } from '../type-guards'
 
 export const BASE_QUERY_DATA_SLUG = 'static/base-query'
 export const BASE_QUERY_DATA_PATH = `/${BASE_QUERY_DATA_SLUG}.json`
+
+export type BrowserReferenceIndex = Pick<ReferenceCatalogInput, 'headings' | 'blocks' | 'baseViews'>
 
 export interface BrowserBaseRecord {
   slug: string
@@ -16,6 +23,7 @@ export interface BrowserBaseRecord {
   links?: string[]
   embeds?: string[]
   size?: number
+  references?: BrowserReferenceIndex
 }
 
 export interface BaseQueryData {
@@ -120,6 +128,37 @@ function isSourcePath(value: unknown): value is string {
   )
 }
 
+function publicReferenceIndex(file: QuartzPluginData): BrowserReferenceIndex | undefined {
+  const input = file.referenceCatalogInput
+  const headings: readonly ReferenceHeading[] | undefined =
+    input?.headings ??
+    file.toc?.map(heading => ({ text: heading.text, anchor: heading.slug, depth: heading.depth }))
+  const blocks = input?.blocks ?? (file.blocks ? Object.keys(file.blocks) : undefined)
+  const baseViews = input?.baseViews ?? file.basesConfig?.views.map(view => ({ name: view.name }))
+  if (!headings?.length && !blocks?.length && !baseViews?.length) return undefined
+  return {
+    ...(headings?.length
+      ? {
+          headings: headings.map(heading => ({
+            text: heading.text,
+            anchor: heading.anchor,
+            ...(heading.depth !== undefined ? { depth: heading.depth } : {}),
+            ...(heading.path ? { path: [...heading.path] } : {}),
+          })),
+        }
+      : {}),
+    ...(blocks?.length ? { blocks: [...blocks] } : {}),
+    ...(baseViews?.length
+      ? {
+          baseViews: baseViews.map(view => ({
+            name: view.name,
+            ...('slug' in view && view.slug ? { slug: view.slug } : {}),
+          })),
+        }
+      : {}),
+  }
+}
+
 function serializeRecord(file: QuartzPluginData): BrowserBaseRecord | undefined {
   if (!file.slug || !isFullSlug(file.slug) || !isPublicBaseFile(file)) return undefined
   const datePaths: string[][] = []
@@ -137,6 +176,8 @@ function serializeRecord(file: QuartzPluginData): BrowserBaseRecord | undefined 
     ? file.embeds.filter((entry): entry is string => typeof entry === 'string')
     : []
   const record: BrowserBaseRecord = { slug: file.slug, frontmatter }
+  const references = publicReferenceIndex(file)
+  if (references) record.references = references
   if (resolvedPath !== `${file.slug}.md`) record.filePath = resolvedPath
   if (datePaths.length > 0) record.datePaths = datePaths
   if (validDates) {
@@ -203,6 +244,44 @@ const parsedDates = new ReloadableWeakMap<
 
 const EMPTY_STRINGS: never[] = []
 
+function isReferenceHeading(value: unknown): value is ReferenceHeading {
+  return (
+    isRecord(value) &&
+    typeof value.text === 'string' &&
+    typeof value.anchor === 'string' &&
+    (value.depth === undefined ||
+      (typeof value.depth === 'number' &&
+        Number.isInteger(value.depth) &&
+        value.depth >= 1 &&
+        value.depth <= 6)) &&
+    (value.path === undefined || strings(value.path))
+  )
+}
+
+function isReferenceView(value: unknown): value is ReferenceBaseView {
+  return (
+    isRecord(value) &&
+    typeof value.name === 'string' &&
+    (value.slug === undefined || (typeof value.slug === 'string' && isFullSlug(value.slug)))
+  )
+}
+
+function readReferenceIndex(value: unknown): BrowserReferenceIndex | undefined {
+  if (!isRecord(value)) return undefined
+  const { headings, blocks, baseViews } = value
+  if (
+    (headings !== undefined && (!Array.isArray(headings) || !headings.every(isReferenceHeading))) ||
+    (blocks !== undefined && !strings(blocks)) ||
+    (baseViews !== undefined && (!Array.isArray(baseViews) || !baseViews.every(isReferenceView)))
+  )
+    return undefined
+  return {
+    ...(headings ? { headings } : {}),
+    ...(blocks ? { blocks } : {}),
+    ...(baseViews ? { baseViews } : {}),
+  }
+}
+
 function readRecord(value: unknown): BrowserBaseRecord | undefined {
   if (
     !isRecord(value) ||
@@ -218,6 +297,9 @@ function readRecord(value: unknown): BrowserBaseRecord | undefined {
     (value.size !== undefined && (typeof value.size !== 'number' || !Number.isFinite(value.size)))
   )
     return undefined
+  const references =
+    value.references === undefined ? undefined : readReferenceIndex(value.references)
+  if (value.references !== undefined && references === undefined) return undefined
   const rawDates = value.dates
   let dates: BrowserBaseRecord['dates']
   if (rawDates !== undefined) {
@@ -258,6 +340,7 @@ function readRecord(value: unknown): BrowserBaseRecord | undefined {
     links: value.links,
     embeds: value.embeds,
     size: value.size,
+    references,
   }
 }
 
@@ -326,6 +409,16 @@ export function hydrateBaseQueryRecord(record: BrowserBaseRecord): QuartzPluginD
     links: record.links ? record.links.filter(isSimpleSlug) : EMPTY_STRINGS,
     embeds: record.embeds ?? EMPTY_STRINGS,
     size: record.size,
+    ...(record.references
+      ? {
+          referenceCatalogInput: {
+            path: filePath,
+            slug,
+            ...(strings(record.frontmatter.aliases) ? { aliases: record.frontmatter.aliases } : {}),
+            ...record.references,
+          },
+        }
+      : {}),
   }
 }
 

@@ -17,7 +17,8 @@ export function findClosestHeading(node: Node): string | null {
   let current: Node | null = node
   while (current) {
     if (current instanceof HTMLElement) {
-      const headingId = current.getAttribute('data-heading-id')
+      const headingId =
+        current.getAttribute('data-heading-id') ?? current.getAttribute('data-heading-anchor')
       if (headingId) return headingId
       if (current.classList.contains('collapsible-header')) {
         return current.id || null

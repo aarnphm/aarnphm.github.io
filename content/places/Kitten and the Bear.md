@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'small-batch preserves, buttermilk scones, and tea on Dundas Street West'
 id: 'Kitten and the Bear'
 modified: 2026-10-30
-source: https://www.instagram.com/reel/DfGYfWsRxzh/
 tags:
   - places
 title: 'Kitten and the Bear'

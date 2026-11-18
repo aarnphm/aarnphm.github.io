@@ -3,6 +3,7 @@ import type { LatentDoc, LatentText } from '../../../util/latent/types'
 import { chunkArticles, docHead, moreSentinel, readerDocument } from '../../../util/latent/markup'
 import { docOfRow, partOf, textOf, type Runtime } from './runtime'
 import { renderLinks } from './search'
+import { stepShown } from './view'
 
 /**
  * Hydration for `layout: latent`. The build rendered the first screen; this makes the reader a
@@ -252,11 +253,12 @@ function mountDocument(
       // replacing a tall stub would otherwise shrink the page above the reading line by more
       // than the scroll offset near the top, the correction would clamp at 0, and the reading
       // line would slide onto the document before, which then mounts in turn
-      if (d > 0 && d < rt.open && !rt.reader.querySelector(`.lat-doc[data-doc="${d - 1}"]`))
+      const before = stepShown(rt, d, -1)
+      if (before >= 0 && d < rt.open && !rt.reader.querySelector(`.lat-doc[data-doc="${before}"]`))
         prependDocument(
           rt,
           toHtml(
-            readerDocument(stubText(rt.docs[d - 1]), rt.docs[d - 1], -1, { stub: true }) as never,
+            readerDocument(stubText(rt.docs[before]), rt.docs[before], -1, { stub: true }) as never,
           ),
         )
     })
@@ -279,10 +281,13 @@ function ensureStubs(rt: Runtime): void {
     toHtml(readerDocument(stubText(rt.docs[d]), rt.docs[d], -1, { stub: true }) as never)
   // a stub added or a document dropped above the reading line must not move the text under it
   keepLine(chunkUnderLine(rt), () => {
-    if (lo > 0 && !rt.reader.querySelector(`.lat-doc[data-doc="${lo - 1}"]`))
-      prependDocument(rt, stubHtml(lo - 1))
-    if (hi + 1 < rt.docs.length && !rt.reader.querySelector(`.lat-doc[data-doc="${hi + 1}"]`))
-      rt.reader.insertAdjacentHTML('beforeend', stubHtml(hi + 1))
+    // the neighbours in time are the nearest documents of a shown kind (view.ts)
+    const before = stepShown(rt, lo, -1)
+    const after = stepShown(rt, hi, 1)
+    if (before >= 0 && !rt.reader.querySelector(`.lat-doc[data-doc="${before}"]`))
+      prependDocument(rt, stubHtml(before))
+    if (after >= 0 && !rt.reader.querySelector(`.lat-doc[data-doc="${after}"]`))
+      rt.reader.insertAdjacentHTML('beforeend', stubHtml(after))
     // unmount documents two away from the open one once they are well off screen: short
     // documents (an image, a two-row base) fit several to a viewport, and pruning by count
     // alone left the reader without page above it at the top of the scroll range
@@ -293,6 +298,21 @@ function ensureStubs(rt: Runtime): void {
       if (rect.bottom < -window.innerHeight || rect.top > 2 * window.innerHeight) el.remove()
     }
   })
+}
+
+/**
+ * The shown kinds changed: the open document stays where it is and the documents around it go,
+ * so the stubs come back from the kinds now shown (a hidden neighbour leaves, one of a kind just
+ * shown arrives). The open document stays even when its own kind is hidden: a link opened it.
+ */
+export function reframeReader(rt: Runtime): void {
+  const others = [...rt.reader.querySelectorAll<HTMLElement>(':scope > .lat-doc')].filter(
+    el => Number(el.dataset.doc) !== rt.open,
+  )
+  if (others.length === 0) return
+  keepLine(chunkUnderLine(rt), () => others.forEach(el => el.remove()))
+  ensureStubs(rt)
+  window.dispatchEvent(new Event('scroll'))
 }
 
 const navigation = new WeakMap<Runtime, object>()
@@ -311,8 +331,8 @@ export async function goTo(rt: Runtime, row: number): Promise<void> {
     const part = Math.floor((row - doc.r0) / Math.max(1, head.part))
     const html = await documentHtml(rt, doc.d, part, row)
     if (stale()) return
-    const prev = doc.d > 0 ? rt.docs[doc.d - 1] : null
-    const next = doc.d + 1 < rt.docs.length ? rt.docs[doc.d + 1] : null
+    const prev = rt.docs[stepShown(rt, doc.d, -1)] ?? null
+    const next = rt.docs[stepShown(rt, doc.d, 1)] ?? null
     const stub = (d: LatentDoc) =>
       toHtml(readerDocument(stubText(d), d, -1, { stub: true }) as never)
     const frozen = readerHead(rt)
@@ -330,6 +350,8 @@ export async function goTo(rt: Runtime, row: number): Promise<void> {
   const top = chunk.getBoundingClientRect().top + window.scrollY - readingLineY() + 8
   window.scrollTo({ top, behavior: 'instant' })
   anchorTo(chunk)
+  // a pane open over the reader (panes.ts) steps aside for the document it asked for
+  rt.root.dispatchEvent(new CustomEvent('latent:goto'))
   await setFocus(rt, row)
   // a scroll clamped at 0 fires no scroll event; let the reader look for stubs to mount anyway
   window.dispatchEvent(new Event('scroll'))

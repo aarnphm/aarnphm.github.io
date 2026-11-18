@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Irish pub and restaurant on Colborne Street in downtown Toronto.'
 id: "P.J. O'Brien Irish Pub and Restaurant"
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DfIzlB_lF0Z/'
 tags:
   - 'places'
 title: "P.J. O'Brien Irish Pub and Restaurant"

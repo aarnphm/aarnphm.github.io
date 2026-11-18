@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'College Street pizzeria serving slices, whole pizzas and pasta with garlic oil.'
 id: 'Fresca Pizza and Pasta'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/De9nxxGlQvi/'
 tags:
   - 'places'
 title: 'Fresca Pizza and Pasta'

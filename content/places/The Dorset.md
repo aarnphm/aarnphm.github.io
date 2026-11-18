@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'British restaurant and bar at The Well, with dishes inspired by the coast and countryside.'
 id: 'The Dorset'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DfIzlB_lF0Z/'
 tags:
   - 'places'
 title: 'The Dorset'

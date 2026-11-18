@@ -1,11 +1,14 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import type { QuartzPluginData } from '../vfile'
 import { backendFor } from '../../runtime/notebook/backend'
 import { ChangeEvent } from '../../types/plugin'
 import { BuildCtx } from '../../util/ctx'
 import { parseNotebookDoc } from '../../util/notebook/parse'
 import { isNotebookParseError } from '../../util/notebook/types'
 import { FilePath, joinSegments } from '../../util/path'
+import { referenceCatalogFor } from '../../util/references/context'
+import { notebookReferenceCacheValid } from './notebook-page-cache'
 
 type NotebookDependencies = { imports: Set<FilePath>; assets: Set<FilePath> }
 export type NotebookDependencyRecord = NotebookDependencies & { signature: string }
@@ -117,6 +120,7 @@ export async function affectedNotebookFiles(
   ctx: BuildCtx,
   fps: FilePath[],
   changeEvents: ChangeEvent[],
+  referencePages?: ReadonlyMap<FilePath, QuartzPluginData>,
 ): Promise<FilePath[]> {
   const available = new Set(fps)
   const changedPaths = new Set(changeEvents.map(event => event.path))
@@ -124,6 +128,37 @@ export async function affectedNotebookFiles(
     changeEvents.filter(event => isNotebookPath(event.path)).map(event => event.path),
   )
   const affected = new Set<FilePath>()
+  const changedSources = new Set(
+    changeEvents.map(event =>
+      path.isAbsolute(event.path)
+        ? path.relative(ctx.argv.directory, event.path).replaceAll('\\', '/')
+        : event.path,
+    ),
+  )
+  const contentChanged = changeEvents.some(event =>
+    ['.md', '.base', '.canvas', '.fc', '.flashcards', '.ipynb'].includes(path.extname(event.path)),
+  )
+  const membershipChanged = changeEvents.some(event => event.type !== 'change')
+  const catalog = referenceCatalogFor(ctx)
+  for (const fp of fps) {
+    const data = referencePages?.get(fp)
+    if (!data) {
+      if (contentChanged || membershipChanged) affected.add(fp)
+      continue
+    }
+    const embeds = data.referenceDependencies?.filter(request => request.embed) ?? []
+    const embedsBase = embeds.some(request => {
+      if (!request.resolvedPath) return false
+      const resolution = catalog.resolve(request.resolvedPath, request.origin)
+      return resolution.kind === 'found' && resolution.entry.kind === 'base'
+    })
+    if (
+      !notebookReferenceCacheValid(ctx, data) ||
+      embeds.some(request => request.resolvedPath && changedSources.has(request.resolvedPath)) ||
+      (contentChanged && (data.embeddedSearchQueries?.length || embedsBase))
+    )
+      affected.add(fp)
+  }
 
   for (const event of changeEvents) {
     if (isNotebookPath(event.path) && event.type !== 'delete' && available.has(event.path)) {

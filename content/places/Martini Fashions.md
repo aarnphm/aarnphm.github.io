@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'vintage clothing and accessories shop on Dundas Street West, formerly Good Habits'
 id: 'Martini Fashions'
 modified: 2026-10-30
-source: https://www.instagram.com/reel/DfGYfWsRxzh/
 tags:
   - places
 title: 'Martini Fashions'

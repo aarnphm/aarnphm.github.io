@@ -6,7 +6,11 @@ import type { TriathlonContext } from '../../runtime/context'
 import type { TriathlonFormatter } from '../../runtime/formatter'
 import { resolveSleepMetrics, type SleepMetrics } from '../../../../util/sleep-metrics'
 import { axisFrame, buildDaySleepAnalytics } from '../../../../util/triathlon-card'
-import { napSummaries, sleepSummary } from '../../../../util/triathlon-day-analytics'
+import {
+  napSummaries,
+  resolveSleepSummary,
+  type OuraDailySleep,
+} from '../../../../util/triathlon-day-sleep'
 import { createDomFactory } from '../../runtime/dom'
 import { el } from '../../runtime/dom'
 import { mathK } from '../../runtime/dom'
@@ -197,6 +201,7 @@ export const buildSleepDayDetail = (
   sleepMetrics: SleepMetrics | null,
   health: GarminHealthDay | null = null,
   restorationBaseline: OuraRestorationBaseline | null = null,
+  daily?: OuraDailySleep,
 ): HTMLElement => {
   const wrap = el('div', 'tri-sleep-day-body')
   const head = el('div', 'tri-sleep-day-head')
@@ -212,9 +217,11 @@ export const buildSleepDayDetail = (
   wrap.appendChild(head)
   const charts = buildDaySleepAnalytics(createDomFactory(formatter.presentation), {
     date,
-    sleep: sleepSummary(detail ?? undefined),
-    naps: napSummaries(detail ?? undefined),
-    sleepMetrics: detail ? resolveSleepMetrics(detail, sleepMetrics?.garmin) : sleepMetrics,
+    sleep: resolveSleepSummary(detail, sleepMetrics?.garmin, daily, sleepMetrics?.apple),
+    naps: napSummaries(detail, sleepMetrics?.garmin, sleepMetrics?.apple),
+    sleepMetrics: detail
+      ? resolveSleepMetrics(detail, sleepMetrics?.garmin, sleepMetrics?.apple)
+      : sleepMetrics,
     garminHealth: health,
     ouraHealth: detail?.health ?? null,
     restorationBaseline,

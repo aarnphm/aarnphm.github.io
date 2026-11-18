@@ -446,6 +446,10 @@
   fill: color-mix(in srgb, var(--gray) 35%, transparent);
 }
 
+.tri-hyp--unmeasurable {
+  fill: var(--gray);
+}
+
 .tri-ana-sleep .tri-sleep-day .tri-ana-cursor {
   opacity: 0;
 }

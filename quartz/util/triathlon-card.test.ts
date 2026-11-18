@@ -87,6 +87,7 @@ import {
   cyclingDynamicsIndexAtDistance,
   dominantTrainingEffectGroup,
   buildRoute,
+  buildRecovery,
   buildRunGroundContactTrace,
   buildRunStrideTrace,
   buildRunVerticalOscillationTrace,
@@ -132,7 +133,7 @@ import {
   type DetailCtx,
   type TriNodeFactory,
 } from './triathlon-card'
-import { buildTriathlonDailyAnalytics } from './triathlon-day-analytics'
+import { buildTriathlonDailyAnalytics, isTriathlonDailyAnalytics } from './triathlon-day-analytics'
 import {
   criticalPowerEvidenceText,
   criticalPowerSummaryText,
@@ -5625,6 +5626,89 @@ test('selects Strava metric or standard run splits from the active distance unit
   )
 })
 
+test('shows recovery source popovers only for individual Garmin fallback fields', () => {
+  const health = { ...emptyHealth(), sleepScore: 89, sleepDurationS: 33360 }
+  for (const sleepSources of [
+    undefined,
+    { sleepScore: 'oura', sleepDurationS: 'oura' },
+  ] satisfies Array<StravaActivityDetail['health']['sleepSources']>) {
+    const rendered = buildRecovery(factory, { ...health, sleepSources })
+    assert.ok(rendered)
+    assert.deepEqual(byClass(rendered, 'tri-act-stat-v').map(text), ['89', "9h16'"])
+    assert.equal(byClass(rendered, 'tri-act-source').length, 0)
+  }
+  for (const field of ['sleepScore', 'sleepDurationS'] satisfies Array<
+    keyof NonNullable<StravaActivityDetail['health']['sleepSources']>
+  >) {
+    const rendered = buildRecovery(factory, { ...health, sleepSources: { [field]: 'garmin' } })
+    assert.ok(rendered)
+    assert.deepEqual(byClass(rendered, 'tri-act-stat-v').map(text), ['89', "9h16'"])
+    const hints = byClass(rendered, 'tri-act-source')
+    assert.equal(hints.length, 1)
+    assert.equal(text(hints[0]), field === 'sleepScore' ? '89' : "9h16'")
+    assert.equal(hints[0].properties.dataGlossDef, 'Garmin')
+    assert.equal(hints[0].properties.tabIndex, 0)
+  }
+})
+
+test('uses mile splits for run workout bars only when recorded laps lack boundaries', () => {
+  const run = analysisDetail()
+  run.sport = 'run'
+  const recorded = run.analysisRanges.filter(range => range.kind === 'lap')
+  recorded.push({
+    ...recorded[0],
+    id: 'lap-3',
+    label: 'Lap 3',
+    startElapsedS: 2400,
+    endElapsedS: 3600,
+    startDistanceKm: 15,
+    endDistanceKm: 22.5,
+  })
+  run.runSplitsStandard = [
+    {
+      split: 1,
+      distanceKm: 1.609344,
+      elapsedTimeS: 490,
+      movingTimeS: 480,
+      averageSpeedKph: 12.07008,
+      elevationDifferenceM: 5,
+      paceZone: 2,
+    },
+    {
+      split: 2,
+      distanceKm: 0.804672,
+      elapsedTimeS: 280,
+      movingTimeS: 270,
+      averageSpeedKph: 10.72896,
+      elevationDifferenceM: -3,
+      paceZone: 3,
+    },
+  ]
+  const bars = () => byClass(buildActivity(factory, run, true), 'tri-run-workout-lap')
+  for (const count of [0, 1]) {
+    run.analysisRanges = recorded.slice(0, count)
+    assert.deepEqual(
+      bars().map(bar => bar.properties.dataRangeId),
+      ['split:standard:1', 'split:standard:2'],
+    )
+    assert.deepEqual(
+      bars().map(bar => bar.properties.dataDistanceKm),
+      ['1.609344', '0.804672'],
+    )
+  }
+  run.analysisRanges = recorded
+  assert.deepEqual(
+    bars().map(bar => bar.properties.dataRangeId),
+    recorded.map(lap => lap.id),
+  )
+  run.analysisRanges = recorded.slice(0, 1)
+  run.runSplitsStandard = []
+  assert.deepEqual(
+    bars().map(bar => bar.properties.dataRangeId),
+    [recorded[0].id],
+  )
+})
+
 test('reserves fixed segment and climb lanes when an activity only has laps', () => {
   const lapsOnly = analysisDetail()
   lapsOnly.analysisRanges = lapsOnly.analysisRanges.filter(range => range.kind === 'lap')
@@ -7461,6 +7545,168 @@ test('renders native sleep respiration with real time spacing, gaps, and Garmin 
       String(path.properties.d).endsWith('l0 0'),
     ),
   )
+})
+
+test('renders Garmin sleep on an Oura gap and preserves native stage and sample times', () => {
+  const date = '2026-09-08'
+  const bedtime = `${date}T00:00:00-04:00`
+  const start = Date.parse(bedtime)
+  const end = start + 300_000
+  const garmin: GarminSleepSummary = {
+    source: 'garmin',
+    date,
+    startTime: new Date(start).toISOString(),
+    endTime: new Date(end).toISOString(),
+    utcOffsetMinutes: -240,
+    averageBreathsPerMinute: 16,
+    lowestBreathsPerMinute: null,
+    highestBreathsPerMinute: null,
+    averageSpO2: 97,
+    lowestSpO2: null,
+    bodyBatteryStart: null,
+    bodyBatteryEnd: null,
+    bodyBatteryChange: null,
+    averageStress: 15,
+    restlessMoments: 0,
+    sleep: {
+      totalSleepS: 230,
+      deepS: 73,
+      lightS: 157,
+      remS: 0,
+      awakeS: 0,
+      unmeasurableS: 30,
+      awakeCount: 0,
+      sleepScore: 81,
+      sleepScoreQualifier: 'GOOD',
+      scoreFactors: { deepPercentage: { qualifier: 'GOOD', value: 31.7 } },
+      restingHeartRateBpm: 51,
+      averageHeartRateBpm: 58,
+      averageHrvMs: 70,
+      skinTempDeviationC: 0.2,
+      stages: [
+        { startTime: start, endTime: start + 73_000, stage: 'deep' },
+        { startTime: start + 113_000, endTime: end - 30_000, stage: 'light' },
+        { startTime: end - 30_000, endTime: end, stage: 'unmeasurable' },
+      ],
+      heartRate: [
+        { timestamp: start, bpm: 56 },
+        { timestamp: start + 65_000, bpm: null },
+        { timestamp: start + 129_000, bpm: 60 },
+      ],
+    },
+    naps: [
+      {
+        id: 'native-nap',
+        startTime: start + 49_800_000,
+        endTime: start + 51_600_000,
+        durationS: 1800,
+        startUtcOffsetMinutes: -180,
+        endUtcOffsetMinutes: -180,
+        providerSource: 1,
+        feedback: null,
+      },
+    ],
+  }
+  const analytics = buildAnalytics(
+    {
+      athleteId: '1',
+      auth: { refreshToken: '', obtainedAt: 0 },
+      lastSync: start,
+      lastActivityStart: start,
+      activities: {
+        1: {
+          id: '1',
+          name: 'Ride',
+          sportType: 'Ride',
+          distance: 5000,
+          movingTime: 900,
+          elapsedTime: 900,
+          averageSpeed: 5000 / 900,
+          totalElevationGain: 0,
+          startDate: `${date}T16:00:00Z`,
+          startDateLocal: `${date}T12:00:00Z`,
+        },
+      },
+    },
+    {
+      garmin: { lastSync: 0, activities: {}, sleep: { [date]: garmin } },
+      since: date,
+      timeZone: 'America/Toronto',
+    },
+  )
+  const summary = buildTriathlonDailyAnalytics(analytics)[date]
+  assert.ok(summary?.sleep)
+  assert.equal(summary.sleep.nightSource, 'garmin')
+  assert.equal(summary.sleep.fieldSources?.totalSleepS, 'garmin')
+  assert.equal(summary.sleep.fieldSources?.sleepScore, 'garmin')
+  assert.equal(summary.sleep.lowestHeartRate, null)
+  assert.equal(summary.sleep.readinessScore, null)
+  assert.equal(isTriathlonDailyAnalytics(JSON.parse(JSON.stringify({ [date]: summary }))), true)
+  assert.equal(
+    isTriathlonDailyAnalytics({
+      [date]: {
+        ...summary,
+        sleep: {
+          ...summary.sleep,
+          heartRate: { ...summary.sleep.heartRate, offsetsS: [0, 65, 60] },
+        },
+      },
+    }),
+    false,
+  )
+
+  const tree = buildDayAnalytics(factory, summary)
+  assert.match(text(tree), /sleep score81Garmin/)
+  assert.match(text(tree), /sleep window5mGarmin/)
+  assert.match(text(tree), /Garmin sleep score factors/)
+  assert.match(text(tree), /31\.7%/)
+  assert.match(text(tree), /bedtime12:00 amGarmin/)
+  assert.match(text(tree), /resting heart rate51 bpmGarmin/)
+  const stageChart = byClass(tree, 'tri-day-sleep-stages')[0]
+  assert.equal(stageChart.properties.dataDaySleepSource, 'Garmin')
+  assert.equal(stageChart.properties.dataDaySleepBoundaries, '0,73,113,270,300')
+  assert.equal(byClass(stageChart, 'tri-hyp--deep')[0].properties.width, 73)
+  assert.equal(byClass(stageChart, 'tri-hyp--light')[0].properties.x, 113)
+  assert.equal(byClass(stageChart, 'tri-hyp--unmeasurable')[0].properties.width, 30)
+  assert.equal(
+    byClass(stageChart, 'tri-day-sleep-stage-svg')[0].properties.ariaValueText,
+    '00:04:30 · unmeasurable',
+  )
+  const heartChart = byClass(tree, 'tri-day-sleep-series--heart-rate')[0]
+  assert.equal(heartChart.properties.dataDaySleepTimes, '0,65,129')
+  assert.equal(heartChart.properties.dataDaySleepSource, 'Garmin')
+  const nap = byClass(tree, 'tri-sleep-nap')[0]
+  assert.equal(nap.properties.dataNapId, 'native-nap')
+  assert.match(text(nap), /bedtime2:50 pmGarmin/)
+  assert.match(text(nap), /total sleep30mGarmin/)
+  assert.doesNotMatch(text(nap), /sleep score|sleep stress|Pulse Ox/)
+
+  const ouraDetails: Record<string, OuraDayDetail> = {}
+  applyOuraSleepRows(
+    [
+      {
+        type: 'long_sleep',
+        day: date,
+        bedtime_start: bedtime,
+        bedtime_end: `${date}T07:00:00-04:00`,
+        total_sleep_duration: 24_000,
+        sleep_phase_5_min: '423214',
+        average_hrv: 85,
+      },
+    ],
+    {},
+    ouraDetails,
+    date,
+    date,
+  )
+  const mixed = buildTriathlonDailyAnalytics(analytics, ouraDetails)[date]
+  assert.equal(mixed.sleep?.totalSleepS, 24_000)
+  assert.equal(mixed.sleep?.averageHrv, 85)
+  assert.equal(mixed.sleep?.fieldSources?.averageHrv, 'oura')
+  assert.equal(mixed.sleep?.fieldSources?.heartRate, 'garmin')
+  assert.equal(mixed.sleep?.deepS, null)
+  assert.equal(mixed.sleep?.stages, undefined)
+  assert.equal(mixed.sleep?.phase5Min, '423214')
 })
 
 test('day-card date renders as a month link only when extras provide an href', () => {

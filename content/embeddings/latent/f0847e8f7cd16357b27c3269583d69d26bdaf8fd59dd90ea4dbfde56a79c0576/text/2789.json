@@ -1,1 +1,1 @@
-{"d":2789,"id":"movies/posters/the-dark-knight-rises.jpg","store":"image","title":"the-dark-knight-rises.jpg","date":null,"prec":null,"total":1,"part":48,"chunks":[{"r":1278,"c":0,"text":""}]}
+{"d":2789,"id":"places/Bakery-Pompette","store":"base","title":"Bakery Pompette","date":"2026-10-30","prec":"day","total":1,"part":48,"chunks":[{"r":629,"c":0,"text":""}],"dateSource":"frontmatter:date"}

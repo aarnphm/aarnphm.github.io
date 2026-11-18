@@ -8,8 +8,7 @@ coordinates:
 date: '2026-11-01'
 description: 'Cocktail bar in Leslieville serving drinks and snacks.'
 id: 'Bar Mini'
-modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DfDUc1yoNEc/'
+modified: '2026-11-09'
 tags:
   - 'places'
 title: 'Bar Mini'

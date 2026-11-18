@@ -17,6 +17,5 @@ tags:
 title: Ugetsu
 year: 1953
 runtime: 96
+external: https://en.wikipedia.org/wiki/Ugetsu
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](https://en.wikipedia.org/wiki/Ugetsu).

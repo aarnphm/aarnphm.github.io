@@ -9,13 +9,11 @@ date: '2026-11-01'
 description: 'Ceramics museum with historical and contemporary collections on Queen’s Park.'
 id: 'Gardiner Museum'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/p/DfD11iIjhjS/'
 tags:
   - 'places'
 title: 'Gardiner Museum'
 type:
   - 'museum'
 url: 'https://www.gardinermuseum.on.ca/'
+details: 'Admission checked on 2026-11-01: Admission is free on Wednesdays after 4 pm. Advance registration is not required.'
 ---
-
-Admission checked on 2026-11-01: Admission is free on Wednesdays after 4 pm. Advance registration is not required. [Official admission details](https://www.gardinermuseum.on.ca/visit/hours-admission/).

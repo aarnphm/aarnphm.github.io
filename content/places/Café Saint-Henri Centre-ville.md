@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'specialty coffee counter in the lobby of 1001 Robert-Bourassa in downtown Montréal'
 id: 'Café Saint-Henri Centre-ville'
 modified: '2026-10-30'
-source: 'https://www.instagram.com/reel/DfDjo7boVwH/'
 tags:
   - 'places'
 title: 'Café Saint-Henri Centre-ville'

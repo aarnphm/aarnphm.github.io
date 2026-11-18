@@ -105,13 +105,7 @@ function pathRow(
   route.className = 'suggestion-route'
   appendHighlightedText(route, leaf, `/${entry.path}`)
   title.append(route)
-  const name = literal ? 'open this url' : entry.title
-  if (name && name !== entry.path) {
-    const label = document.createElement('span')
-    label.className = 'suggestion-route-title'
-    label.textContent = name
-    title.append(label)
-  }
+  if (!literal && entry.title && entry.title !== entry.path) content.title = entry.title
   content.append(title)
 
   const aux = document.createElement('div')

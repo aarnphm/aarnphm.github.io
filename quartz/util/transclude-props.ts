@@ -1,5 +1,7 @@
 import type { Element, RootContent } from 'hast'
 import { headingRank } from 'hast-util-heading-rank'
+import type { ReferenceSelector } from './references/catalog-types'
+import type { ReferenceDependency } from './references/dependencies'
 import { FullSlug, isFullSlug } from './path'
 
 export type TranscludeTarget = {
@@ -7,9 +9,11 @@ export type TranscludeTarget = {
   targetSlug: FullSlug
   url: string
   alias: string
-  anchorPath?: string
   blockRef?: string
-  rawMetadata?: string
+  request: ReferenceDependency
+  selector: ReferenceSelector
+  fragments: readonly string[]
+  metadata?: Readonly<Record<string, unknown>>
 }
 
 export type HeadingSectionBounds = { startIdx: number; endIdx?: number }
@@ -47,50 +51,57 @@ export function hasHastClass(node: Element, className: string): boolean {
   return getHastClassNames(node).includes(className)
 }
 
-function readHastStringProperty(
-  properties: Element['properties'] | undefined,
-  ...names: string[]
-): string | undefined {
-  if (!properties) return undefined
-
-  for (const name of names) {
-    const value = properties[name]
-    if (typeof value === 'string') return value
-  }
-
-  return undefined
-}
-
 export function readTranscludeTarget(node: Element): TranscludeTarget | undefined {
   const inner = node.children[0]
-  if (inner?.type !== 'element') return undefined
-
-  const targetSlug = readHastStringProperty(inner.properties, 'dataSlug', 'data-slug')
-  if (!targetSlug || !isFullSlug(targetSlug)) return undefined
-
-  const blockRef = readHastStringProperty(node.properties, 'dataBlock', 'data-block')
-  const dataEmbedAlias = readHastStringProperty(
-    node.properties,
-    'dataEmbedAlias',
-    'data-embed-alias',
+  const request = node.data?.referenceRequest
+  if (
+    inner?.type !== 'element' ||
+    inner.tagName !== 'a' ||
+    !request?.embed ||
+    request.status !== 'found' ||
+    !request.selector
   )
+    return undefined
+
+  const targetSlug = request.route?.slug ?? request.resolvedSlug
+  if (!targetSlug || !isFullSlug(targetSlug)) return undefined
+  const selector = request.selector
+  const blockRef =
+    selector.kind === 'whole' || selector.kind === 'base'
+      ? undefined
+      : selector.kind === 'heading' || selector.kind === 'block'
+        ? selector.anchor
+        : request.fragments.length
+          ? `#${request.fragments.join('#')}`
+          : undefined
 
   return {
     inner,
     targetSlug,
-    url: readHastStringProperty(node.properties, 'dataUrl', 'data-url') ?? '',
-    alias:
-      dataEmbedAlias !== undefined && dataEmbedAlias !== 'undefined'
-        ? dataEmbedAlias
-        : (blockRef ?? ''),
-    anchorPath: readHastStringProperty(node.properties, 'dataAnchorPath', 'data-anchor-path'),
+    request,
+    selector,
+    fragments: request.fragments,
+    metadata:
+      request.resolvedSettings?.kind === 'object' ? request.resolvedSettings.value : undefined,
+    url: request.route?.slug ?? targetSlug,
+    alias: request.label ?? request.implicitLabel ?? '',
     blockRef,
-    rawMetadata: readHastStringProperty(node.properties, 'dataMetadata', 'data-metadata'),
   }
 }
 
-export function transcludeVisitKey(target: TranscludeTarget): FullSlug {
-  return `${target.targetSlug}${target.anchorPath ?? target.blockRef ?? ''}` as FullSlug
+export function transcludeVisitKey(target: TranscludeTarget): string {
+  const { request, selector } = target
+  if (selector.kind === 'whole') return request.resolvedSlug ?? target.targetSlug
+  const source = request.resolvedPath ?? request.resolvedSlug ?? target.targetSlug
+  const selection =
+    selector.kind === 'heading' || selector.kind === 'block'
+      ? [selector.kind, selector.anchor]
+      : selector.kind === 'notebook'
+        ? [selector.kind, selector.cells]
+        : selector.kind === 'base'
+          ? [selector.kind, request.route?.slug ?? selector.view]
+          : [selector.kind, selector.raw]
+  return JSON.stringify([source, selection])
 }
 
 function findHeadingElement(node: RootContent, id?: string): Element | undefined {

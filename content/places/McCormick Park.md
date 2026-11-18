@@ -9,7 +9,6 @@ date: '2026-10-30'
 description: 'Little Portugal park with a playground, wading pool, ball diamond, and basketball courts'
 id: McCormick Park
 modified: 2026-10-30
-source: https://www.instagram.com/reel/Dc9qKlyJoqt/
 tags:
   - places
 title: McCormick Park

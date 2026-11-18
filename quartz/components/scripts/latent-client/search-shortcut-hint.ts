@@ -10,9 +10,13 @@ export function bindSearchShortcutHint(rt: Runtime): void {
   form?.append(search)
   input?.setAttribute('aria-keyshortcuts', 'Control+k')
   let controlHeld = false
+  // runs on every keydown and keyup: a text write here, even the same text, swaps a node inside
+  // the page and the site's :has() rules restyle all of it, so write only what changed
   const refresh = () => {
-    rt.root.toggleAttribute('data-lat-control-hints', controlHeld)
-    search.textContent = document.activeElement === input ? 'n / p' : 'k'
+    if (rt.root.hasAttribute('data-lat-control-hints') !== controlHeld)
+      rt.root.toggleAttribute('data-lat-control-hints', controlHeld)
+    const text = document.activeElement === input ? 'n / p' : 'k'
+    if (search.textContent !== text) search.textContent = text
   }
   const paint = (event: KeyboardEvent) => {
     controlHeld = event.ctrlKey && !event.altKey && !event.metaKey && !event.shiftKey
@@ -20,7 +24,8 @@ export function bindSearchShortcutHint(rt: Runtime): void {
   }
   const clear = () => {
     controlHeld = false
-    rt.root.removeAttribute('data-lat-control-hints')
+    if (rt.root.hasAttribute('data-lat-control-hints'))
+      rt.root.removeAttribute('data-lat-control-hints')
   }
   document.addEventListener('keydown', paint, { capture: true, signal: rt.signal })
   document.addEventListener('keyup', paint, { capture: true, signal: rt.signal })

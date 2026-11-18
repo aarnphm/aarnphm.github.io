@@ -120,6 +120,17 @@ export type SteerTerm =
 export interface FeatureState {
   refresh(): void
   pin(label: string, rows: [number, number][]): Promise<void>
+  /** steering emptied: the links go back to the focus's own */
+  unpin(): void
+  /** the search box's `filter:` as one byte per row, when it narrows the kinds */
+  mask?(): Promise<Uint8Array | undefined>
+  /**
+   * a latent embed in a note (latent-embed.client.ts, util/latent/embed/): the panel is the
+   * steering, the selected feature or the focus group, and reasoning; nothing adds a term
+   */
+  embed?: boolean
+  /** the build renders the panel: sliders come out disabled until the embed hydrates */
+  inert?: boolean
   names: string[]
   dicts: Map<string, Promise<FeatureDict>>
   tags: Promise<Map<number, [string, number][]> | null> | null

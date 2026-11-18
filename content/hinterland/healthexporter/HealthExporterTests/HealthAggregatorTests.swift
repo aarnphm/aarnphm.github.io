@@ -425,7 +425,7 @@ final class HealthAggregatorTests: XCTestCase {
       calendar: calendar
     )
 
-    XCTAssertEqual(document.version, 10)
+    XCTAssertEqual(document.version, 11)
     XCTAssertEqual(document.generatedAt, "2026-06-19T07:30:00-04:00")
     XCTAssertEqual(document.timezone, "America/Toronto")
     XCTAssertEqual(document.days, [])

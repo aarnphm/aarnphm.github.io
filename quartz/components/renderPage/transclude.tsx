@@ -5,12 +5,17 @@ import type { RenderTreeFeatures, TranscludeScope, TranscludeStats } from './tra
 import { QuartzPluginData } from '../../plugins/vfile'
 import { QuartzComponentProps } from '../../types/component'
 import { renderDataFor } from '../../util/ctx'
-import { collectHeadingIndex, resolveNestedAnchor } from '../../util/nested-anchor'
 import { FullSlug, isFullSlug } from '../../util/path'
 import { hasHastClass } from '../../util/transclude-props'
 import { addRunningHeads, processHeaders, shouldProcessHeaders } from './collapsible-headers'
+import { resolveEmbeddedSearch } from './embedded-search'
 import { mergeFootnotes, mergeReferences } from './footnotes-citations'
 import { transcludeBlockquote } from './transclude-blockquote'
+import {
+  documentIds,
+  expandTransclusionTree,
+  placeTransclusionBlocks,
+} from './transclude-occurrence'
 
 const DATE_ANCHOR_RE = /#(\d{4}-\d{2}-\d{2})$/
 
@@ -19,7 +24,6 @@ function collectRenderTreeFeatures(root: Root): RenderTreeFeatures {
     hasTranscludeBlockquote: false,
     hasReferences: false,
     hasFootnotes: false,
-    hasNestedAnchor: false,
     hasDateAnchor: false,
     hasDataSlugAnchor: false,
   }
@@ -29,16 +33,13 @@ function collectRenderTreeFeatures(root: Root): RenderTreeFeatures {
         features.hasTranscludeBlockquote = true
       }
     } else if (node.tagName === 'section') {
-      if (node.properties?.dataReferences === '') {
+      if (node.properties?.dataReferences != null) {
         features.hasReferences = true
       }
-      if (node.properties?.dataFootnotes === '') {
+      if (node.properties?.dataFootnotes != null) {
         features.hasFootnotes = true
       }
     } else if (node.tagName === 'a') {
-      if (typeof node.properties?.dataAnchorPath === 'string') {
-        features.hasNestedAnchor = true
-      }
       if (typeof node.properties?.href === 'string' && DATE_ANCHOR_RE.test(node.properties.href)) {
         features.hasDateAnchor = true
       }
@@ -51,7 +52,6 @@ function collectRenderTreeFeatures(root: Root): RenderTreeFeatures {
       features.hasTranscludeBlockquote &&
       features.hasReferences &&
       features.hasFootnotes &&
-      features.hasNestedAnchor &&
       features.hasDateAnchor &&
       features.hasDataSlugAnchor
     ) {
@@ -103,50 +103,8 @@ export function resolveTransclusions(
   }
 
   const { dynalist } = opts
+  resolveEmbeddedSearch(root, componentData)
   const features = collectRenderTreeFeatures(root)
-
-  if (features.hasNestedAnchor) {
-    const renderData = renderDataFor(componentData.ctx, allFiles)
-    const headingCache = new Map<string, ReturnType<typeof collectHeadingIndex>>()
-    visit(root, { tagName: 'a' }, node => {
-      const pathAttr = node.properties?.dataAnchorPath
-      const targetAttr = node.properties?.dataAnchorTarget
-      if (node.properties) {
-        delete node.properties.dataAnchorPath
-        delete node.properties.dataAnchorTarget
-      }
-      if (typeof pathAttr !== 'string') return
-      let segments: unknown
-      try {
-        segments = JSON.parse(pathAttr)
-      } catch {
-        return
-      }
-      if (!Array.isArray(segments) || segments.length < 2) return
-
-      const cacheKey = typeof targetAttr === 'string' ? targetAttr : ''
-      let headings = headingCache.get(cacheKey)
-      if (!headings) {
-        let tree: Root | undefined
-        if (cacheKey) {
-          const targetSlug = cacheKey.replace(/^\//, '')
-          tree = isFullSlug(targetSlug) ? renderData.bySlug.get(targetSlug)?.htmlAst : undefined
-        } else {
-          tree = root
-        }
-        if (!tree) return
-        headings = collectHeadingIndex(tree)
-        headingCache.set(cacheKey, headings)
-      }
-
-      const resolved = resolveNestedAnchor(segments as string[], headings)
-      if (!resolved) return
-      const href = node.properties?.href
-      if (typeof href === 'string') {
-        node.properties.href = href.replace(/#.*$/, '') + '#' + resolved
-      }
-    })
-  }
 
   if (features.hasDateAnchor) {
     const renderData = renderDataFor(componentData.ctx, allFiles)
@@ -183,16 +141,17 @@ export function resolveTransclusions(
       root,
       slug,
       opts,
-      visited,
+      visited: new Set<string>(visited),
       stats,
       features,
       renderData: renderDataFor(componentData.ctx, allFiles),
       notebookRuntimeTranscludes: new Map(),
       calendarEmbedCount: 0,
+      expansion: { occurrence: 0, remainingNodes: 50000, ids: documentIds(root) },
     }
-    visit(root, { tagName: 'blockquote' }, node => {
-      transcludeBlockquote(scope, node)
-    })
+    expandTransclusionTree(scope, node => transcludeBlockquote(scope, node))
+    placeTransclusionBlocks(root)
+    resolveEmbeddedSearch(root, componentData)
   }
 
   // NOTE: handling collapsible nodes

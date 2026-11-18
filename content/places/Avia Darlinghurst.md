@@ -9,7 +9,6 @@ date: '2026-11-01'
 description: 'Modern European restaurant serving handmade pasta and Mediterranean sharing plates in Darlinghurst, Sydney.'
 id: 'Avia Darlinghurst'
 modified: '2026-11-01'
-source: 'https://www.instagram.com/reel/DeGk1JMDuN-/'
 tags:
   - 'places'
 title: 'Avia Darlinghurst'

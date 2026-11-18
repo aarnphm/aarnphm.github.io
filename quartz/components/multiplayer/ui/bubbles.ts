@@ -245,6 +245,12 @@ export const renderComments = (ctx: UiContext) => {
           if (ctx.activeModal && ctx.activeModal.dataset.commentId === comment.id) {
             bubble.classList.add('modal-active')
           }
+          // The preview keeps its open width while collapsed, so its height is the open card's
+          // height; CSS animates to it exactly instead of easing a max-height cap.
+          const contentHeight = `${preview.offsetHeight}px`
+          if (bubble.style.getPropertyValue('--bubble-content-h') !== contentHeight) {
+            bubble.style.setProperty('--bubble-content-h', contentHeight)
+          }
         }
 
         bubble.onmouseleave = () => {
@@ -305,12 +311,11 @@ export const renderComments = (ctx: UiContext) => {
           ctx.threadOpenTimer = window.setTimeout(() => {
             ctx.threadOpenTimer = 0
             if (!bubble.isConnected) return
-            const bubbleRect = bubble.getBoundingClientRect()
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop
-            const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft
+            // The collapsed square's page position, read from the inline style so the thread
+            // lands in the same spot whether or not the collapse has finished.
             showCommentThread(ctx, comment.id, {
-              top: bubbleRect.top + scrollTop,
-              left: bubbleRect.left + scrollLeft,
+              top: parseFloat(bubble.style.top) || initialTop,
+              left: parseFloat(bubble.style.left) || initialLeft,
             })
           }, delay)
         }

@@ -17,6 +17,5 @@ tags:
 title: Umberto D.
 year: 1952
 runtime: 89
+external: https://en.wikipedia.org/wiki/Umberto_D.
 ---
-
-from [Scorsese's list of 39 films](https://www.instagram.com/p/DenMelzANtx/). [film details](https://en.wikipedia.org/wiki/Umberto_D.).

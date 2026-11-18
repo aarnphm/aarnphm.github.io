@@ -7,7 +7,12 @@ import {
   type SimulationNodeDatum,
 } from 'd3'
 import { debounce } from '../../util/debounce'
-import { inquiriesSlug, type InquiryMapData, type InquiryNode } from '../../util/inquiry-map'
+import {
+  inquiriesSlug,
+  type InquiryMapData,
+  type InquiryNode,
+  type InquiryPreview,
+} from '../../util/inquiry-map'
 import { FullSlug, getFullSlug, resolveRelative } from '../../util/path'
 
 type Body = SimulationNodeDatum & {
@@ -36,11 +41,39 @@ const spread = (k: number, n: number, from: number, to: number) =>
 // same place and neighbours in the sequence never share a column.
 const scatter = (k: number, salt: number) => (k * 0.6180339887 + salt) % 1
 
+/** Stream / thematic maps: hubs on the left, members ordered by `at` down a time column. */
+function seedChrono(bodies: Body[], w: number, h: number) {
+  const hubs = bodies.filter(b => b.node.cls === 'mvt').sort((a, b) => a.i - b.i)
+  const pages = bodies
+    .filter(b => b.node.cls !== 'mvt')
+    .sort((a, b) => {
+      const atA = a.node.at ? Date.parse(a.node.at) : Number.POSITIVE_INFINITY
+      const atB = b.node.at ? Date.parse(b.node.at) : Number.POSITIVE_INFINITY
+      const aNaN = Number.isNaN(atA)
+      const bNaN = Number.isNaN(atB)
+      if (aNaN !== bNaN) return aNaN ? 1 : -1
+      if (atA !== atB) return atA - atB
+      return a.i - b.i
+    })
+  hubs.forEach((b, k) => {
+    b.sx = (0.06 + 0.04 * scatter(k, 0.3)) * w
+    b.sy = spread(k, hubs.length, 0.12, 0.88) * h
+  })
+  pages.forEach((b, k) => {
+    b.sx = (0.42 + 0.4 * scatter(k, 0.7)) * w
+    b.sy = (spread(k, pages.length, 0.08, 0.92) + 0.02 * (scatter(k, 0.9) - 0.5)) * h
+  })
+  for (const b of bodies) {
+    b.x = b.sx
+    b.y = b.sy
+  }
+}
+
 /**
  * Seeds positions as the hand-placed mock does: hubs down the left (what joins pages) or across the
  * top (what joins sections), one column of pages per kind, sections at the centre of what they touch.
  */
-function seed(bodies: Body[], adj: number[][], w: number, h: number) {
+function seedCourse(bodies: Body[], adj: number[][], w: number, h: number) {
   const isFixed = (b: Body) => b.node.cls !== 'theme'
   // hubs keep the order the data declares them in (a1..c1, automne..été)
   const hubs = bodies.filter(b => b.node.cls === 'mvt').sort((a, b) => a.i - b.i)
@@ -93,6 +126,11 @@ function seed(bodies: Body[], adj: number[][], w: number, h: number) {
     b.x = b.sx
     b.y = b.sy
   }
+}
+
+function seed(bodies: Body[], adj: number[][], w: number, h: number, mode: 'course' | 'chrono') {
+  if (mode === 'chrono') seedChrono(bodies, w, h)
+  else seedCourse(bodies, adj, w, h)
 }
 
 /** Pushes overlapping rectangles apart along the shorter overlap. */
@@ -148,11 +186,73 @@ function octilinear(x1: number, y1: number, x2: number, y2: number): string {
   return `M${x1},${y1} l${sx * k},${sy * k} H${x2 - sx * k} L${x2},${y2}`
 }
 
+const PREVIEW_LIMIT = 4
+
+function renderPreviewCard(preview: InquiryPreview): HTMLElement {
+  const card = document.createElement('div')
+  card.className = 'stream-graph-preview-card'
+  if (preview.title) {
+    const title = document.createElement('p')
+    title.className = 'stream-graph-preview-title'
+    title.textContent = preview.title
+    card.append(title)
+  }
+  if (preview.date) {
+    const date = document.createElement('p')
+    date.className = 'stream-graph-preview-date'
+    date.textContent = preview.date
+    card.append(date)
+  }
+  if (preview.media) {
+    const media = document.createElement('p')
+    media.className = 'stream-graph-preview-media'
+    media.textContent = preview.media
+    card.append(media)
+  }
+  if (preview.description) {
+    const description = document.createElement('p')
+    description.className = 'stream-graph-preview-description'
+    description.textContent = preview.description
+    card.append(description)
+  }
+  if (preview.snippet) {
+    const snippet = document.createElement('p')
+    snippet.className = 'stream-graph-preview-snippet'
+    snippet.textContent = preview.snippet
+    card.append(snippet)
+  }
+  if (preview.tags && preview.tags.length > 0) {
+    const tags = document.createElement('ul')
+    tags.className = 'stream-graph-preview-tags'
+    for (const tag of preview.tags) {
+      const item = document.createElement('li')
+      item.className = 'stream-graph-preview-tag'
+      item.textContent = tag
+      tags.append(item)
+    }
+    card.append(tags)
+  }
+  return card
+}
+
 function mount(root: HTMLElement, data: InquiryMapData, slug: FullSlug, signal: AbortSignal) {
   const svg = root.querySelector<SVGSVGElement>('.inquiry-map-links')!
   const halo = root.querySelector<HTMLCanvasElement>('.inquiry-map-halo')!
   const list = root.querySelector<HTMLElement>('.inquiry-map-list')!
+  const previewRoot = root.querySelector<HTMLElement>('[data-stream-graph-preview]')
+  const seedMode = root.dataset.inquirySeed === 'chrono' ? 'chrono' : 'course'
+  for (const el of root.querySelectorAll('.nd')) el.remove()
+  list.replaceChildren()
+  svg.replaceChildren()
+  if (previewRoot) {
+    previewRoot.hidden = true
+    previewRoot.replaceChildren()
+  }
   const hrefOf = (node: InquiryNode) => {
+    if (!node.href) return ''
+    if (node.href.startsWith('/') || node.href.includes('?')) {
+      return node.href.startsWith('/') ? node.href : `/${node.href}`
+    }
     const [path, hash] = node.href.split('#')
     return resolveRelative(slug, path as FullSlug) + (hash ? `#${hash}` : '')
   }
@@ -200,7 +300,7 @@ function mount(root: HTMLElement, data: InquiryMapData, slug: FullSlug, signal: 
       b.w = b.el.offsetWidth * scale
       b.h = b.el.offsetHeight * scale
     }
-    seed(bodies, adj, w, h)
+    seed(bodies, adj, w, h, seedMode)
     const collide = rectCollide(bodies, w, h)
     const sim = forceSimulation<Body>(bodies)
       .force(
@@ -235,6 +335,32 @@ function mount(root: HTMLElement, data: InquiryMapData, slug: FullSlug, signal: 
     })
   }
 
+  const showPreview = (node: InquiryNode) => {
+    if (!previewRoot) return
+    const previews = node.previews ?? []
+    if (previews.length === 0) {
+      previewRoot.hidden = true
+      previewRoot.replaceChildren()
+      return
+    }
+    const shown = previews.slice(0, PREVIEW_LIMIT)
+    const fragment = document.createDocumentFragment()
+    for (const preview of shown) fragment.append(renderPreviewCard(preview))
+    if (previews.length > PREVIEW_LIMIT) {
+      const more = document.createElement('p')
+      more.className = 'stream-graph-preview-more'
+      more.textContent = `+${previews.length - PREVIEW_LIMIT} more`
+      fragment.append(more)
+    }
+    previewRoot.replaceChildren(fragment)
+    previewRoot.hidden = false
+  }
+  const hidePreview = () => {
+    if (!previewRoot) return
+    previewRoot.hidden = true
+    previewRoot.replaceChildren()
+  }
+
   // hover: the node and its neighbours within three hops, direct links in black
   const hover = (id: number) => {
     const dist = new Map<number, number>([[id, 0]])
@@ -258,10 +384,12 @@ function mount(root: HTMLElement, data: InquiryMapData, slug: FullSlug, signal: 
     }
     data.links.forEach(([a, b], k) => paths[k].classList.toggle('h1', a === id || b === id))
     paintHalo(dist)
+    showPreview(data.nodes[id])
   }
   const clear = () => {
     root.classList.remove('hov')
     for (const b of bodies) b.el.classList.remove('h0', 'h1', 'h2', 'h3')
+    hidePreview()
   }
   const paintHalo = (dist: Map<number, number>) => {
     const w = root.clientWidth
@@ -325,6 +453,13 @@ function mount(root: HTMLElement, data: InquiryMapData, slug: FullSlug, signal: 
   )
 
   layout()
+  const fromId = new URLSearchParams(window.location.search).get('from')
+  if (fromId) {
+    const activeId = fromId.startsWith('stream:') ? fromId : `stream:${fromId}`
+    for (const b of bodies) {
+      b.el.classList.toggle('stream-graph-active', b.node.id === activeId)
+    }
+  }
   const relayout = debounce(layout, 150)
   // label widths change when the web font swaps in
   void document.fonts?.ready.then(() => {
@@ -343,19 +478,31 @@ function mount(root: HTMLElement, data: InquiryMapData, slug: FullSlug, signal: 
 }
 
 document.addEventListener('nav', async () => {
-  const root = document.querySelector<HTMLElement>('[data-inquiry-map]')
-  if (!root) return
+  const roots = Array.from(document.querySelectorAll<HTMLElement>('[data-inquiry-map]'))
+  if (roots.length === 0) return
   const controller = new AbortController()
   window.addCleanup(() => controller.abort())
   const slug = getFullSlug(window)
-  try {
-    const res = await fetch(`${resolveRelative(slug, inquiriesSlug(slug) as FullSlug)}.json`, {
-      signal: controller.signal,
-    })
-    if (!res.ok) return
-    const data = (await res.json()) as InquiryMapData
-    if (!controller.signal.aborted) mount(root, data, slug, controller.signal)
-  } catch {
-    // aborted by navigation, or the file is missing
-  }
+  const defaultSrc = `${resolveRelative(slug, inquiriesSlug(slug) as FullSlug)}.json`
+  await Promise.all(
+    roots.map(async root => {
+      const src = root.dataset.inquirySrc
+        ? root.dataset.inquirySrc.endsWith('.json')
+          ? root.dataset.inquirySrc
+          : `${root.dataset.inquirySrc}.json`
+        : defaultSrc
+      try {
+        const res = await fetch(
+          src.startsWith('/') ? src : resolveRelative(slug, src as FullSlug),
+          { signal: controller.signal },
+        )
+        if (!res.ok) return
+        const data = (await res.json()) as InquiryMapData
+        if (controller.signal.aborted) return
+        mount(root, data, slug, controller.signal)
+      } catch {
+        // aborted by navigation, or the file is missing
+      }
+    }),
+  )
 })

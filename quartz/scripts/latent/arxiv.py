@@ -215,9 +215,79 @@ def local_macros(root: Path, text: str) -> list[str]:
   return defs
 
 
+HAND_DEF = re.compile(
+  r'\\(?:(?P<def>g?def)\s*(?P<dn>\\[A-Za-z]+)(?P<dp>(?:\s*#\d)*)\s*(?=\{)'
+  r'|(?P<let>let)\s*(?P<ln>\\[A-Za-z]+)\s*=?\s*(?P<lt>\\[A-Za-z]+)(?![A-Za-z@])'
+  r'|(?P<pd>DeclarePairedDelimiter)(?P<px>X?)(?![A-Za-z])'
+  r'|(?P<xp>(?:New|Provide|Declare|Renew)DocumentCommand)(?![A-Za-z]))'
+)
+MacroDef = tuple[int, 'str | None', str]
+
+
+def name_arg(text: str, at: int) -> tuple[str, int] | None:
+  """A control sequence, bare or braced (`\\name`, `{\\name}`), and the index past it."""
+  g = braced(text, at)
+  if g is not None:
+    name, end = g[0].strip(), g[1]
+  else:
+    nm = re.match(r'\s*(\\[A-Za-z@]+)', text[at:])
+    if not nm:
+      return None
+    name, end = nm.group(1), at + nm.end()
+  return (name, end) if re.fullmatch(r'\\[A-Za-z]+', name) else None
+
+
+def hand_defs(text: str) -> dict[str, MacroDef]:
+  """Definitions `\\newcommand` does not cover, for hand expansion only (pandoc is not given
+  them): `\\def`/`\\gdef` with `#n` parameters, `\\let` to another macro,
+  `\\DeclarePairedDelimiter[X]`, and xparse commands whose arguments are all mandatory."""
+  out: dict[str, MacroDef] = {}
+  for m in HAND_DEF.finditer(text):
+    if m['def']:
+      body = braced(text, m.end())
+      if body is not None:
+        out[m['dn']] = (len(re.findall(r'#\d', m['dp'])), None, body[0])
+    elif m['let']:
+      if m['lt'] not in ('\\relax', '\\undefined'):
+        out[m['ln']] = (0, None, m['lt'])
+    elif m['pd']:
+      nm = name_arg(text, m.end())
+      if nm is None:
+        continue
+      at, n = nm[1], 1
+      if m['px']:
+        opt = bracket(text, at)
+        if opt is None:
+          continue
+        n, at = int(opt[0] or 0), opt[1]
+      left, right = braced(text, at), None
+      if left is not None:
+        right = braced(text, left[1])
+      if left is None or right is None:
+        continue
+      if m['px']:
+        body = braced(text, right[1])
+        if body is None:
+          continue
+        inner = body[0]
+      else:
+        inner = '#1'
+      out[nm[0]] = (n, None, f'\\left{left[0]} {inner} \\right{right[0]}')
+    else:
+      nm = name_arg(text, m.end())
+      if nm is None:
+        continue
+      spec = braced(text, nm[1])
+      body = braced(text, spec[1]) if spec else None
+      if spec is None or body is None or re.sub(r'[m\s]', '', spec[0]):
+        continue
+      out[nm[0]] = (spec[0].count('m'), None, body[0])
+  return out
+
+
 # Macros to expand by hand in what pandoc never sees (algorithms, kept as TeX for pseudocode.js).
 class Macros:
-  def __init__(self, text: str):
+  def __init__(self, text: str, extra: dict[str, MacroDef] | None = None):
     self.defs: dict[str, tuple[int, str | None, str]] = {}
     for d in macro_defs(text):
       m = re.match(r'\\(\w+)\*?\s*', d)
@@ -246,6 +316,9 @@ class Macros:
       body = braced(d, at)
       if body is not None and name.startswith('\\'):
         self.defs[name] = (nargs, default, body[0])
+    # `\\newcommand` wins over a `\\def` of the same name, as the paper's later one would
+    for name, value in (extra or {}).items():
+      self.defs.setdefault(name, value)
     names = sorted(self.defs, key=len, reverse=True)
     self.pattern = (
       re.compile('|'.join(re.escape(n) + r'(?![A-Za-z@])' for n in names))
@@ -827,7 +900,16 @@ def convert(arxiv_id: str, root: Path, figures: Path) -> str | None:
     for d in macro_defs(preamble) + local_macros(root, preamble)
     if not re.match(r'\\\w+\*?\s*\{?\\[A-Za-z]*@', d)
   ]
-  macros = Macros('\n'.join(defs))
+  # a section file can define its own macros after `\\begin{document}` (`\\Hid` in SpecDec++);
+  # pandoc reads those in the body, but an algorithm is held aside as TeX and expands by hand
+  inline = [
+    d
+    for d in macro_defs(body)
+    if not re.match(r'\\\w+\*?\s*\{?\\[A-Za-z]*@', d)
+  ]
+  macros = Macros(
+    '\n'.join(defs + inline), {**hand_defs(preamble), **hand_defs(body)}
+  )
   folders = [
     base / f
     for m in re.finditer(r'\\graphicspath\s*\{((?:\{[^}]*\})+)\}', preamble)

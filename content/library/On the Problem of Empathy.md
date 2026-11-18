@@ -24,8 +24,7 @@ tags:
   - philosophy
 description: A phenomenological study of how we experience other people’s feelings and consciousness, and how empathy contributes to our understanding of persons and embodied selves.
 external: https://openlibrary.org/books/OL2184118M/On_the_problem_of_empathy
+reference_links:
+  - https://catalog.coloradocollege.edu/cgi-bin/koha/opac-detail.pl?biblionumber=906209
+details: Originally published in German in 1917. The cover is for the ICS Publications edition translated by Waltraut Stein.
 ---
-
-Originally published in German in 1917. The cover is for the ICS Publications edition translated by Waltraut Stein.
-
-Sources: [edition record](https://openlibrary.org/books/OL2184118M/On_the_problem_of_empathy); [original publication](https://catalog.coloradocollege.edu/cgi-bin/koha/opac-detail.pl?biblionumber=906209).

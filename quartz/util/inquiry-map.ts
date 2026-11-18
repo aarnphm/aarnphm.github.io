@@ -17,7 +17,20 @@ import GithubSlugger from 'github-slugger'
 
 /** `theme` boxes (sized by cards), `mvt` capsules (hubs), `pg` solid capsules (pages). */
 export type InquiryClass = 'theme' | 'mvt' | 'pg'
-export type InquiryLinkKind = 'edge' | 'seealso' | 'card' | 'wikilink'
+/** Curriculum kinds plus stream/thematic (`chrono` | `hub` | `tag`). */
+export type InquiryLinkKind = 'edge' | 'seealso' | 'card' | 'wikilink' | 'chrono' | 'hub' | 'tag'
+
+/** Stream entry card shown on graph-node hover (title / date / media / snippet / tags). */
+export interface InquiryPreview {
+  title?: string
+  date?: string
+  description?: string
+  /** Audio/image caption line, separate from body snippet. */
+  media?: string
+  snippet?: string
+  tags?: string[]
+  href?: string
+}
 
 export interface InquiryNode {
   id: string
@@ -29,6 +42,10 @@ export interface InquiryNode {
   w: number
   /** slug with optional `#anchor`, no leading slash; empty when the id names no page */
   href: string
+  /** ISO-ish sort key for chronological seeds; stream entries set this from `date` */
+  at?: string
+  /** Related stream entry cards for hover (entry: self; hub/tag: members). */
+  previews?: InquiryPreview[]
 }
 
 export interface InquiryMapData {
@@ -274,7 +291,15 @@ const MONTHS = [
   'nov.',
   'déc.',
 ]
-const PRIORITY: Record<InquiryLinkKind, number> = { edge: 5, seealso: 4, card: 3, wikilink: 2 }
+const PRIORITY: Record<InquiryLinkKind, number> = {
+  edge: 6,
+  seealso: 5,
+  card: 4,
+  wikilink: 3,
+  hub: 2,
+  tag: 1,
+  chrono: 0,
+}
 
 /** `yymmdd` slug stem to `20 oct`; anything else comes back unchanged. */
 const dateLabel = (stem: string): string => {

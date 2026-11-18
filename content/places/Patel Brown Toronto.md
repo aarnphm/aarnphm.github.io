@@ -9,7 +9,6 @@ date: '2026-11-02'
 description: 'Contemporary art gallery on Wade Avenue in Toronto.'
 id: 'Patel Brown Toronto'
 modified: '2026-11-02'
-source: 'https://www.instagram.com/p/DfNZFAegXFC/'
 tags:
   - 'places'
 title: 'Patel Brown Toronto'
