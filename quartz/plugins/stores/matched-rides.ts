@@ -1,4 +1,5 @@
 import type { RawStravaActivity, StravaStreams } from './strava'
+import { compareStravaIds } from '../../util/strava-id'
 import {
   buildRouteCandidates,
   clusterRouteCandidates,
@@ -45,7 +46,7 @@ export type MatchedRidePowerMetric = 'normalized' | 'average'
 export type MatchedRidePowerSource = 'device' | 'estimate'
 
 export interface MatchedRideEffort {
-  id: number
+  id: string
   date: string
   name: string
   distanceKm: number
@@ -135,7 +136,8 @@ const rideActivities = (activities: readonly RawStravaActivity[]): RawStravaActi
     )
     .sort(
       (left, right) =>
-        left.startDateLocal.localeCompare(right.startDateLocal) || left.id - right.id,
+        left.startDateLocal.localeCompare(right.startDateLocal) ||
+        compareStravaIds(left.id, right.id),
     )
 
 const characteristicCandidate = (activity: RawStravaActivity): CharacteristicCandidate | null => {

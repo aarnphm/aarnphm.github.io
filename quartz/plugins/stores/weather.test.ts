@@ -55,7 +55,7 @@ function currentForActivity(activity: WeatherActivity): SurfaceCurrentEstimate {
 
 function candidate(values: Partial<WeatherActivityCandidate> = {}): WeatherActivityCandidate {
   return {
-    activityId: 101,
+    activityId: '101',
     date: '2026-06-11',
     start: '2026-06-11T13:30:00.000Z',
     end: '2026-06-11T15:00:00.000Z',
@@ -158,12 +158,12 @@ test('weatherActivityFromHours preserves zero humidity and rejects malformed fra
 })
 
 test('summarizeWeatherDays folds activity weather into duration-weighted day wind', () => {
-  const first = weatherActivityFromHours(candidate({ activityId: 101, durationS: 3600 }), [
+  const first = weatherActivityFromHours(candidate({ activityId: '101', durationS: 3600 }), [
     hour({ windSpeed: 10, windDirection: 350, windGust: 19 }),
   ])
   const second = weatherActivityFromHours(
     candidate({
-      activityId: 102,
+      activityId: '102',
       start: '2026-06-11T16:00:00.000Z',
       end: '2026-06-11T18:00:00.000Z',
       durationS: 7200,
@@ -222,7 +222,7 @@ test('parseWeatherCache keeps valid activities and recomputes day summaries', ()
     version: 1,
     lastSync: 100,
     activities: {
-      good: {
+      101: {
         activityId: 101,
         date: '2026-06-11',
         start: '2026-06-11T13:00:00.000Z',
@@ -257,8 +257,8 @@ test('parseWeatherCache keeps valid activities and recomputes day summaries', ()
   assert.equal(cache?.current, null)
   assert.equal(Object.keys(cache?.activities ?? {}).length, 1)
   assert.equal(cache?.days['2026-06-11'].windKph, 18)
-  assert.equal(cache?.activities.good.averageRelativeHumidityPct, 64)
-  assert.deepEqual(cache?.activities.good.temperatureSeries, [
+  assert.equal(cache?.activities['101'].averageRelativeHumidityPct, 64)
+  assert.deepEqual(cache?.activities['101'].temperatureSeries, [
     { elapsedS: 0, temperatureC: 23 },
     { elapsedS: 3600, temperatureC: 24 },
   ])
@@ -295,7 +295,7 @@ test('discards mismatched or malformed current while preserving independent Weat
   assert.ok(activity)
   const current = currentForActivity(activity)
   const mismatches: SurfaceCurrentEstimate[] = [
-    { ...current, activityId: 102 },
+    { ...current, activityId: '102' },
     { ...current, routeFingerprint: 'another-route' },
     { ...current, start: '2026-06-11T13:00:00.000Z' },
     { ...current, end: '2026-06-11T15:30:00.000Z' },

@@ -16,7 +16,7 @@ const activity = (
   id: number,
   segments: MapRoutePoint[][],
   metrics: StreetMetricValues = unavailableMetrics(),
-): StreetMapActivity => ({ id, segments, metrics })
+): StreetMapActivity => ({ id: String(id), segments, metrics })
 
 const road = (coordinates: [number, number][], roadClass = 'street'): Record<string, unknown> => ({
   type: 'Feature',

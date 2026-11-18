@@ -31,12 +31,12 @@ import { selectWorkoutAnalysisView } from './workout-analysis-tabs'
 
 interface PlannedIndex {
   calendar: TrainingPeaksCalendar
-  byActivity: Map<number, TrainingPeaksCalendarWorkout>
+  byActivity: Map<string, TrainingPeaksCalendarWorkout>
 }
 
 interface PlannedMount {
   base: string
-  activityId: number
+  activityId: string
   tab: HTMLButtonElement
   panel: HTMLElement
   // Added on the client from the unlocked calendar, without a server-rendered tab.
@@ -53,7 +53,7 @@ const loadPlanned = async (signal: AbortSignal): Promise<PlannedIndex | null> =>
   if (!response.ok) return null
   const calendar = parseTrainingPeaksCalendar(await response.json())
   if (!calendar) return null
-  const byActivity = new Map<number, TrainingPeaksCalendarWorkout>()
+  const byActivity = new Map<string, TrainingPeaksCalendarWorkout>()
   for (const workout of calendar.workouts)
     if (workout.activity && trainingPeaksHasPlan(workout))
       byActivity.set(workout.activity.id, workout)
@@ -162,7 +162,7 @@ export const setupPlannedWorkouts = (
   let data: PlannedIndex | null = null
   // Activities whose planned tab the server rendered. Card rebuilds drop the tab, and the
   // mutation callback adds it back before the next paint.
-  const known = new Set<number>()
+  const known = new Set<string>()
   const mounted = new Map<HTMLElement, PlannedMount>()
   const pending = new Set<HTMLElement>()
   const channel = new BroadcastChannel('training-calendar-session')

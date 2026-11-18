@@ -69,7 +69,7 @@
     stravaId: id,
     viewOnStravaId: viewId,
     providerCourseId: String(courseID),
-    providerStravaId: Number(stravaID),
+    providerStravaId: String(stravaID),
     rideTimestamp: Number(ride_time),
     pageType: type,
     pageMode: mode,

@@ -63,10 +63,10 @@ test('serializes separate cycling and running power references with source links
   const payload: StravaDetailPayload<TestDetail> = {
     details: {},
     health: {},
-    powerCurveRef: [{ s: 1, w: 1_200, activityId: 1, activityDate: '2026-08-01' }],
-    powerCurveYearRef: [{ s: 1, w: 1_400, activityId: 2, activityDate: '2026-01-01' }],
-    runPowerCurveRef: [{ s: 1, w: 700, activityId: 3, activityDate: '2026-08-01' }],
-    runPowerCurveYearRef: [{ s: 1, w: 800, activityId: 4, activityDate: '2026-01-01' }],
+    powerCurveRef: [{ s: 1, w: 1_200, activityId: '1', activityDate: '2026-08-01' }],
+    powerCurveYearRef: [{ s: 1, w: 1_400, activityId: '2', activityDate: '2026-01-01' }],
+    runPowerCurveRef: [{ s: 1, w: 700, activityId: '3', activityDate: '2026-08-01' }],
+    runPowerCurveYearRef: [{ s: 1, w: 800, activityId: '4', activityDate: '2026-01-01' }],
     powerCurveYear: 2026,
   }
   const manifest: StravaDetailIndex = JSON.parse(serializeStravaDetails(payload).manifest)

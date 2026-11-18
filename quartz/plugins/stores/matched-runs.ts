@@ -1,4 +1,5 @@
 import type { RawStravaActivity, StravaStreams } from './strava'
+import { compareStravaIds } from '../../util/strava-id'
 import {
   buildRouteCandidates,
   clusterRouteCandidates,
@@ -24,7 +25,7 @@ const ROUTE_CONFIG: MatchedRouteConfig = {
 }
 
 export interface MatchedRunEffort {
-  id: number
+  id: string
   date: string
   name: string
   distanceKm: number
@@ -117,7 +118,7 @@ export const buildMatchedRuns = (
   const candidates = buildRouteCandidates(runActivities, streams, ROUTE_CONFIG).sort(
     (left, right) =>
       left.activity.startDateLocal.localeCompare(right.activity.startDateLocal) ||
-      left.activity.id - right.activity.id,
+      compareStravaIds(left.activity.id, right.activity.id),
   )
 
   const routeGroups = clusterRouteCandidates(candidates, ROUTE_CONFIG)

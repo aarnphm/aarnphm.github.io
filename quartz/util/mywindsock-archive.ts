@@ -40,7 +40,8 @@ const browserCapture = z.strictObject({
   stravaId: activityId,
   viewOnStravaId: activityId,
   providerCourseId: activityId,
-  providerStravaId: z.number().int().nonnegative(),
+  // Historical capture bytes participate in its checksum; retain safe legacy metadata.
+  providerStravaId: z.union([activityId, z.number().int().positive().max(Number.MAX_SAFE_INTEGER)]),
   rideTimestamp: z.number().int().nonnegative(),
   pageType: z.literal('activity'),
   pageMode: z.literal('analyst'),
@@ -96,7 +97,12 @@ const descriptionReport = z.strictObject({
   source: z.literal('provider-native'),
   transport: z.literal('strava-description'),
   schemaVersion: z.literal(1),
-  activityId: z.number().int().positive(),
+  activityId: z
+    .union([
+      z.string().regex(/^[1-9]\d*$/),
+      z.number().int().positive().max(Number.MAX_SAFE_INTEGER),
+    ])
+    .transform(value => String(value)),
   retrievedAt: z.number().nonnegative(),
   provider: z.literal('mywindsock'),
   weatherImpactPct: nullableNumber,

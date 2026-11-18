@@ -66,7 +66,7 @@ export interface HighParkLap extends LapExtras {
   cad: number | null
 }
 export interface HighParkVisit {
-  id: number
+  id: HighParkActivity['id']
   date: string
   start: string
   name: string
@@ -333,7 +333,7 @@ export function buildHighParkLoops(
 ): HighParkLoops {
   const cycling: HighParkVisit[] = []
   const running: HighParkVisit[] = []
-  const seen = new Set<number>()
+  const seen = new Set<HighParkActivity['id']>()
   const box: Box = [Infinity, Infinity, -Infinity, -Infinity]
   for (const activity of activities) {
     if (
@@ -347,7 +347,7 @@ export function buildHighParkLoops(
     if (!href) continue
     seen.add(activity.id)
     const native = nativeLaps(activity.analysisRanges)
-    const stream = streams[String(activity.id)]
+    const stream = streams[activity.id]
     const laps = native.length ? native : gpsLaps(stream ? streamPoints(stream) : activity.route)
     if (!laps.length) continue
     const trace = lapTrace(activity, laps)

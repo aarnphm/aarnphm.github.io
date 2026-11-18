@@ -18,7 +18,7 @@ export interface GarminTitleSyncOptions {
 }
 
 export interface GarminTitleUpdate {
-  stravaId: number
+  stravaId: string
   garminId: string
   garminActivityId: string
   from: string
@@ -32,7 +32,7 @@ export interface GarminTitleUpdate {
 }
 
 export interface GarminActivityTypeUpdate {
-  stravaId: number
+  stravaId: string
   garminId: string
   garminActivityId: string
   title: string

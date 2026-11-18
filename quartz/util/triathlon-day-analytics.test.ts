@@ -77,7 +77,7 @@ test('projects exact-date daily analytics without latest-value leakage', () => {
   }
   analytics.activities = [
     {
-      id: 19771722076,
+      id: '19771722076',
       date,
       sport: 'bike',
       name: 'Recovery Crit',
@@ -116,7 +116,7 @@ test('projects exact-date daily analytics without latest-value leakage', () => {
     ],
     activities: [
       {
-        id: 19771722076,
+        id: '19771722076',
         date,
         startedAt: `${date}T18:00:00-04:00`,
         sport: 'bike',

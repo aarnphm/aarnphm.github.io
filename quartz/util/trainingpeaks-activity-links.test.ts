@@ -38,7 +38,7 @@ function workout(
 
 function activity(overrides: Partial<TrainingPeaksLinkActivity> = {}): TrainingPeaksLinkActivity {
   return {
-    id: 123,
+    id: '123',
     name: 'The existing activity title',
     sport: 'run',
     startDate: '2026-10-06T00:00:42Z',
@@ -65,7 +65,7 @@ test('links by the recorded local date and keeps native TrainingPeaks measuremen
   const snapshot = structuredClone(input)
   const linked = linkTrainingPeaksCalendarActivities(input, [activity()])
   assert.deepEqual(linked.workouts[0].activity, {
-    id: 123,
+    id: '123',
     date: '2026-10-05',
     title: 'The existing activity title',
     match: 'recording',
@@ -86,7 +86,7 @@ test('linked recording peaks survive the public calendar parser with source prov
   assert.deepEqual(parsed?.workouts[0].actual, workout().actual)
   assert.equal(
     linkTrainingPeaksCalendarActivities(calendar([workout()]), [
-      activity({ id: 124, peaks }),
+      activity({ id: '124', peaks }),
       activity(),
     ]).workouts[0].activity,
     undefined,
@@ -112,7 +112,7 @@ test('rejects title-only matches, conflicting recordings, and activities outside
     activity({ startDateLocal: '2026-10-05T08:00:42Z' }),
     activity({ movingTime: 7200, elapsedTime: 7200 }),
     activity({ distance: 20000 }),
-    activity({ id: -1 }),
+    activity({ id: '-1' }),
   ])
     assert.equal(
       linkTrainingPeaksCalendarActivities(calendar([workout()]), [candidate]).workouts[0].activity,
@@ -132,8 +132,10 @@ test('requires unique one-to-one recording evidence across all workouts and acti
     ),
   )
   assert.equal(
-    linkTrainingPeaksCalendarActivities(calendar([workout()]), [activity(), activity({ id: 124 })])
-      .workouts[0].activity,
+    linkTrainingPeaksCalendarActivities(calendar([workout()]), [
+      activity(),
+      activity({ id: '124' }),
+    ]).workouts[0].activity,
     undefined,
   )
   assert.equal(
@@ -146,20 +148,20 @@ test('requires unique one-to-one recording evidence across all workouts and acti
     workout({ id: '43', sport: 'bike', workoutTypeId: 2, startTime: '17:00:00' }),
   ])
   const recordings = [
-    activity({ id: 123, sport: 'bike', startDateLocal: '2026-10-05T08:00:00Z' }),
-    activity({ id: 124, sport: 'bike', startDateLocal: '2026-10-05T17:00:00Z' }),
+    activity({ id: '123', sport: 'bike', startDateLocal: '2026-10-05T08:00:00Z' }),
+    activity({ id: '124', sport: 'bike', startDateLocal: '2026-10-05T17:00:00Z' }),
   ]
   assert.deepEqual(
     linkTrainingPeaksCalendarActivities(commutes, recordings).workouts.map(
       item => item.activity?.id,
     ),
-    [123, 124],
+    ['123', '124'],
   )
   assert.deepEqual(
     linkTrainingPeaksCalendarActivities(commutes, recordings.toReversed()).workouts.map(
       item => item.activity?.id,
     ),
-    [123, 124],
+    ['123', '124'],
   )
 })
 
@@ -217,7 +219,7 @@ test('allows device timer differences within one verified recording and never mi
   })
   assert.equal(
     linkTrainingPeaksCalendarActivities(calendar([strength]), [recorded]).workouts[0].activity?.id,
-    123,
+    '123',
   )
   const conflicting = activity({
     distance: 5000,
@@ -246,7 +248,7 @@ test('allows device timer differences within one verified recording and never mi
   assert.equal(
     linkTrainingPeaksCalendarActivities(calendar([workout()]), [companion]).workouts[0].activity
       ?.id,
-    123,
+    '123',
   )
 })
 
@@ -317,7 +319,7 @@ test('matches ancillary sessions without treating zero distance as independent r
     linkTrainingPeaksCalendarActivities(calendar([sauna]), [
       activity({ sport: 'sauna', distance: 0 }),
     ]).workouts[0].activity?.id,
-    123,
+    '123',
   )
   assert.equal(
     linkTrainingPeaksCalendarActivities(calendar([sauna]), [
@@ -334,13 +336,13 @@ test('matches ancillary sessions without treating zero distance as independent r
   assert.equal(
     linkTrainingPeaksCalendarActivities(calendar([workout({ startTime: null })]), [activity()])
       .workouts[0].activity?.id,
-    123,
+    '123',
   )
 })
 
 test('clears stale links and never attaches planned workouts', () => {
   const previous: TrainingPeaksCalendarActivityLink = {
-    id: 123,
+    id: '123',
     date: '2026-10-05',
     title: 'Old activity',
     match: 'recording',
@@ -363,7 +365,7 @@ test('clears stale links and never attaches planned workouts', () => {
 
 test('validates enriched browser payload links while preserving the cache model', () => {
   const link: TrainingPeaksCalendarActivityLink = {
-    id: 123,
+    id: '123',
     date: '2026-10-05',
     title: 'Existing activity',
     match: 'recording',
@@ -371,7 +373,7 @@ test('validates enriched browser payload links while preserving the cache model'
   const input = calendar([workout({ activity: link })])
   assert.deepEqual(parseTrainingPeaksCalendar(input), input)
   for (const invalid of [
-    { ...link, id: '123' },
+    { ...link, id: Number.MAX_SAFE_INTEGER + 1 },
     { ...link, id: -1 },
     { ...link, date: '2026-10-06' },
     { ...link, match: 'date-only' },

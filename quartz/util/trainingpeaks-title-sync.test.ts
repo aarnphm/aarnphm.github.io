@@ -13,7 +13,7 @@ import {
 
 function activity(overrides: Partial<RawStravaActivity> = {}): RawStravaActivity {
   return {
-    id: 20261500024,
+    id: '20261500024',
     name: 'Guided Down: Untangled',
     sportType: 'Workout',
     distance: 0,
@@ -32,7 +32,7 @@ function cache(
   description = '@ Othership. HTL 7.6\r\n\r\nCold plunge',
 ): StravaRawCache {
   return {
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: 0 },
     lastSync: 0,
     lastActivityStart: 0,

@@ -39,7 +39,7 @@ const plannedTab = (model: Element, base: string): Element => {
  * linked to a TrainingPeaks workout. The panel stays empty: the plan is private and the client
  * fills it after the training calendar session is unlocked.
  */
-export const addPlannedTabs = (node: Element, planned: readonly number[] | undefined): void => {
+export const addPlannedTabs = (node: Element, planned: readonly string[] | undefined): void => {
   if (!planned?.length) return
   const ids = new Set(planned)
   const visit = (element: Element): void => {

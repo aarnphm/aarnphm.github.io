@@ -4,13 +4,14 @@ import type { StravaRawCache } from '../plugins/stores/strava'
 import type { WahooData } from '../plugins/stores/wahoo'
 import { parseWahooFitLink, type ActivityTrackingEntry } from '../plugins/stores/tracking'
 import { isRouvyActivity, isWahooStravaDuplicate, type RecordingWindow } from './rouvy-wahoo'
+import { stravaId } from './strava-id'
 import { isRecord } from './type-guards'
 
 export interface RouvyWahooPair extends RecordingWindow {
-  canonicalId: number
+  canonicalId: string
   canonicalStartDate: string
   workoutId: number
-  duplicateStravaId: number | null
+  duplicateStravaId: string | null
   fitPath: string
   sha256: string
 }
@@ -33,8 +34,7 @@ export function readRouvyWahooPairs(contentDirectory = 'content'): RouvyWahooPai
   for (const pair of value.pairs) {
     if (
       !isRecord(pair) ||
-      typeof pair.canonicalId !== 'number' ||
-      !Number.isSafeInteger(pair.canonicalId) ||
+      stravaId(pair.canonicalId) === null ||
       typeof pair.workoutId !== 'number' ||
       !Number.isSafeInteger(pair.workoutId) ||
       typeof pair.canonicalStartDate !== 'string' ||
@@ -47,9 +47,7 @@ export function readRouvyWahooPairs(contentDirectory = 'content'): RouvyWahooPai
       typeof pair.distanceM !== 'number' ||
       !Number.isFinite(pair.distanceM) ||
       pair.distanceM < 0 ||
-      (pair.duplicateStravaId !== null &&
-        (typeof pair.duplicateStravaId !== 'number' ||
-          !Number.isSafeInteger(pair.duplicateStravaId))) ||
+      (pair.duplicateStravaId !== null && stravaId(pair.duplicateStravaId) === null) ||
       typeof pair.fitPath !== 'string' ||
       parseWahooFitLink(`[[${pair.fitPath}]]`) !== pair.fitPath ||
       typeof pair.sha256 !== 'string' ||
@@ -58,15 +56,16 @@ export function readRouvyWahooPairs(contentDirectory = 'content'): RouvyWahooPai
       throw new Error('Invalid ROUVY/Wahoo pairing record')
     if (
       pairs.some(
-        other => other.canonicalId === pair.canonicalId || other.workoutId === pair.workoutId,
+        other =>
+          other.canonicalId === stravaId(pair.canonicalId) || other.workoutId === pair.workoutId,
       )
     )
       throw new Error('Ambiguous ROUVY/Wahoo pairing archive')
     pairs.push({
-      canonicalId: pair.canonicalId,
+      canonicalId: stravaId(pair.canonicalId)!,
       canonicalStartDate: pair.canonicalStartDate,
       workoutId: pair.workoutId,
-      duplicateStravaId: pair.duplicateStravaId,
+      duplicateStravaId: stravaId(pair.duplicateStravaId),
       fitPath: pair.fitPath,
       sha256: pair.sha256,
       startDate: pair.startDate,

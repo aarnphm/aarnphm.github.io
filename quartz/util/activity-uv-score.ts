@@ -1,11 +1,12 @@
 import type { GardenEnvironmentEstimate, GardenUvScore } from './activity-environment'
 import type { UvSeverity } from './activity-provider-reports'
+import { stravaId, compareStravaIds } from './strava-id'
 import { isRecord, readNumber, readString } from './type-guards'
 
 export type GardenUvDoseClock = 'elapsed' | 'moving-telemetry'
 
 export interface GardenUvCalibrationPair {
-  activityId: number
+  activityId: string
   date: string
   score: number
   severity: UvSeverity
@@ -31,8 +32,8 @@ export interface GardenUvCalibrationArtifact {
   coefficientSed: number | null
   training: GardenUvCalibrationMetrics | null
   holdout: GardenUvCalibrationMetrics | null
-  activityIds: number[]
-  auditedActivityIds: number[]
+  activityIds: string[]
+  auditedActivityIds: string[]
 }
 
 const calibrationMetrics = (value: unknown): GardenUvCalibrationMetrics | null => {
@@ -60,10 +61,10 @@ const calibrationMetrics = (value: unknown): GardenUvCalibrationMetrics | null =
   return { pairCount, representedBands: bands, mae, meanBias, bandAgreementPct }
 }
 
-const activityIds = (value: unknown): number[] | null => {
+const activityIds = (value: unknown): string[] | null => {
   if (!Array.isArray(value)) return null
-  const ids = value.filter(item => typeof item === 'number' && Number.isInteger(item))
-  return ids.length === value.length ? ids : null
+  const ids = value.map(stravaId)
+  return ids.every((id): id is string => id !== null) ? ids : null
 }
 
 export function parseGardenUvCalibrationArtifact(
@@ -164,7 +165,7 @@ const representedBands = (pairs: readonly GardenUvCalibrationPair[]): number =>
   new Set(pairs.map(pair => pair.severity)).size
 
 const validPair = (pair: GardenUvCalibrationPair): boolean =>
-  Number.isInteger(pair.activityId) &&
+  stravaId(pair.activityId) !== null &&
   /^\d{4}-\d{2}-\d{2}$/.test(pair.date) &&
   Number.isFinite(pair.score) &&
   pair.score >= 0 &&
@@ -175,10 +176,11 @@ const validPair = (pair: GardenUvCalibrationPair): boolean =>
   pair.movingTelemetrySed >= 0
 
 const sortedPairs = (pairs: readonly GardenUvCalibrationPair[]): GardenUvCalibrationPair[] => {
-  const unique = new Map<number, GardenUvCalibrationPair>()
+  const unique = new Map<string, GardenUvCalibrationPair>()
   for (const pair of pairs.filter(validPair)) unique.set(pair.activityId, pair)
   return [...unique.values()].sort(
-    (left, right) => left.date.localeCompare(right.date) || left.activityId - right.activityId,
+    (left, right) =>
+      left.date.localeCompare(right.date) || compareStravaIds(left.activityId, right.activityId),
   )
 }
 

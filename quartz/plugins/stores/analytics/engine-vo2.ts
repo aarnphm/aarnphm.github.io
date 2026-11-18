@@ -26,7 +26,7 @@ export const hrMaxOf = (
   acts: Act[],
   cache: StravaRawCache,
   age: number,
-  heartRateById: Map<number, ActivityHeartRate>,
+  heartRateById: Map<string, ActivityHeartRate>,
 ): { hrMax: number; source: 'observed' | 'declared' | 'tanaka' } => {
   let obs = 0
   for (const { a } of acts) {
@@ -51,7 +51,7 @@ export function runVo2Of(
   cache: StravaRawCache,
   hrMax: number,
   hrRest: number | null,
-  heartRateById: Map<number, ActivityHeartRate>,
+  heartRateById: Map<string, ActivityHeartRate>,
 ): number | null {
   const vs: number[] = []
   const hs: number[] = []

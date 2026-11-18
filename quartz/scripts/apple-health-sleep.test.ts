@@ -89,13 +89,13 @@ test('Apple export imports through CLI and resolves sleep and naps with provenan
         core: null,
         weather: null,
         strava: {
-          athleteId: 1,
+          athleteId: '1',
           auth: { refreshToken: '', obtainedAt: 0 },
           lastSync: Date.parse('2026-11-10T00:00:00Z'),
           lastActivityStart: 0,
           activities: {
             '1': {
-              id: 1,
+              id: '1',
               name: 'Run',
               sportType: 'Run',
               distance: 1000,

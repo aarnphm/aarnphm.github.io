@@ -20,7 +20,7 @@ test('defaults to dry run and validates bounded title-sync arguments', () => {
     '1',
   ])
   assert.equal(args.write, true)
-  assert.deepEqual([...args.ids], [20261500024])
+  assert.deepEqual([...args.ids], ['20261500024'])
   assert.equal(args.limit, 1)
   for (const argv of [
     ['--sources', '--write'],
@@ -41,6 +41,6 @@ test('reads real Markdown tracking nodes and preserves explicit Strava identity'
     '```tracking\ntitle: Free Flow\ndate: 2026-09-20\ntime: 18:30\nduration: 75 mins\nactivity: sauna\ntemperature: 167F\nhumidity: 11%\ncooldown: cold plunge\nstrava: 20261500024\n```'
   const tracking = trainingPeaksSaunaTracking(markdown)
   assert.equal(tracking.length, 1)
-  assert.equal(tracking[0].stravaActivityId, 20261500024)
+  assert.equal(tracking[0].stravaActivityId, '20261500024')
   assert.equal(trainingPeaksSaunaTracking(markdown.replace('```tracking', '```text')).length, 0)
 })

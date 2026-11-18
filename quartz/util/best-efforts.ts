@@ -1,4 +1,5 @@
 import type { StravaActivityDetail } from '../plugins/stores/strava'
+import { compareStravaIds } from './strava-id'
 
 export type BestEffortSport = 'run' | 'bike'
 
@@ -9,7 +10,7 @@ export type BestEffortUnit = 'seconds' | 'km' | 'm' | 'watts'
 
 export interface BestEffortEntry {
   /** Strava activity id. */
-  id: number
+  id: string
   /** Local activity date, YYYY-MM-DD. */
   date: string
   name: string
@@ -124,7 +125,8 @@ const categoryOrder = (a: CategoryHead, b: CategoryHead): number =>
 const margin = (better: Better, a: Effort, b: Effort): number =>
   better === 'lower' ? b.value - a.value : a.value - b.value
 
-const chronological = (a: Effort, b: Effort): number => a.date.localeCompare(b.date) || a.id - b.id
+const chronological = (a: Effort, b: Effort): number =>
+  a.date.localeCompare(b.date) || compareStravaIds(a.id, b.id)
 
 const rankEfforts = (better: Better, efforts: Effort[]): BestEffortEntry[] => {
   const ranks = new Map<Effort, { rank: number; yearRank: number }>()
@@ -146,7 +148,7 @@ const rankEfforts = (better: Better, efforts: Effort[]): BestEffortEntry[] => {
 
 export const buildBestEffortsBlock = (
   details: readonly StravaActivityDetail[],
-  natives: ReadonlyMap<number, BestEffortNative> = new Map(),
+  natives: ReadonlyMap<string, BestEffortNative> = new Map(),
 ): BestEffortsBlock => {
   const categories = new Map<string, { head: CategoryHead; efforts: Effort[] }>()
   const add = (head: CategoryHead, effort: Effort): void => {

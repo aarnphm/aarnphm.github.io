@@ -5,6 +5,7 @@ import type {
   WeatherHour,
 } from '../plugins/stores/weather'
 import { weatherActivityHasCompleteRouteHours } from '../plugins/stores/weather'
+import { requireStravaId } from './strava-id'
 
 const HOUR_MS = 3_600_000
 
@@ -34,7 +35,7 @@ const round = (value: number, digits: number): number => {
 const floorHourMs = (value: number): number => Math.floor(value / HOUR_MS) * HOUR_MS
 
 export function routeWeatherFingerprint(
-  activityId: number,
+  activityId: string,
   start: string,
   end: string,
   stream: Pick<RouteWeatherStream, 'timeS' | 'latlng'>,
@@ -47,8 +48,11 @@ export function routeWeatherFingerprint(
       round(stream.latlng[index][0], 5),
       round(stream.latlng[index][1], 5),
     ])
+  // Preserve the old hash input's decimal ID spelling without converting it to a JS number.
+  // The text is hashed only; it is never parsed as a numeric transport value.
+  const fields = JSON.stringify({ start, end, route: normalized })
   return createHash('sha256')
-    .update(JSON.stringify({ activityId, start, end, route: normalized }))
+    .update(`{"activityId":${requireStravaId(activityId)},${fields.slice(1)}`)
     .digest('hex')
 }
 

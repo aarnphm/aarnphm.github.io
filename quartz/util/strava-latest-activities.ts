@@ -8,7 +8,7 @@ export const STRAVA_LATEST_ACTIVITIES_LIMIT = 5
 export type StravaCardKind = Extract<ActivityKind, 'swim' | 'bike' | 'run'>
 
 export interface StravaCardActivity {
-  id: number
+  id: string
   kind: StravaCardKind
   electric: boolean
   name: string
@@ -26,7 +26,7 @@ export interface StravaKindTotals {
 }
 
 export interface StravaLatestActivities {
-  athleteId: number
+  athleteId: string | null
   syncedAt: number
   activities: StravaCardActivity[]
   year: number
@@ -42,7 +42,7 @@ declare global {
 // The memo outlives bundle generations, so the key names the summary shape as well as the file.
 // Bump it when the filter or fields change. The stored list is the full discipline filter; callers
 // slice it, so two notes can ask for different row counts from one parse.
-const MEMO_SCHEMA = 'swim-bike-run:2'
+const MEMO_SCHEMA = 'swim-bike-run:3'
 
 const boundedLimit = (limit: number): number =>
   Number.isInteger(limit) && limit > 0 ? limit : STRAVA_LATEST_ACTIVITIES_LIMIT

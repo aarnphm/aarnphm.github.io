@@ -129,7 +129,7 @@ export function buildAnalytics(
   const latestDexa = dexaTests.length ? dexaTests[dexaTests.length - 1] : null
   const latestVo2Lab = vo2Tests.length ? vo2Tests[vo2Tests.length - 1] : null
 
-  if (!cache) return emptyAnalytics(0, todayFromSync ?? '1970-01-01', inputs.garmin)
+  if (!cache) return emptyAnalytics(null, todayFromSync ?? '1970-01-01', inputs.garmin)
 
   const sinceDay = inputs.since && /^\d{4}-\d{2}-\d{2}$/.test(inputs.since) ? inputs.since : null
   const sourceActivities = Object.values(cache.activities)
@@ -174,7 +174,7 @@ export function buildAnalytics(
     bucket.sessions += 1
     effortByDay.set(day, bucket)
   }
-  const heartRateById = new Map<number, ActivityHeartRate>()
+  const heartRateById = new Map<string, ActivityHeartRate>()
   for (const { a, sport } of raw) {
     const stream = cache.streams?.[String(a.id)]
     heartRateById.set(
@@ -219,8 +219,8 @@ export function buildAnalytics(
   )
   const thresholds = new Map<Sport, ThresholdEstimate>(thresholdList.map(t => [t.sport, t]))
 
-  const loadById = new Map<number, number>()
-  const paceIntensityFactorById = new Map<number, number>()
+  const loadById = new Map<string, number>()
+  const paceIntensityFactorById = new Map<string, number>()
   for (const act of acts) {
     if (act.a.commute === true) {
       loadById.set(act.a.id, 0)
@@ -440,7 +440,7 @@ export function buildAnalytics(
     ),
     bestEfforts: buildBestEffortsBlock(
       Object.values(inputs.activityDetails ?? {}).filter(detail => detail.commute !== true),
-      new Map<number, BestEffortNative>(
+      new Map<string, BestEffortNative>(
         Object.values(cache.activities).map(activity => [
           activity.id,
           {

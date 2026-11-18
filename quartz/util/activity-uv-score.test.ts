@@ -19,7 +19,7 @@ const pairs = (count: number, offset = 0): GardenUvCalibrationPair[] =>
     const score = scores[(index + offset) % scores.length]
     const dose = doseForScore(score)
     return {
-      activityId: 10_000 + offset * 100 + index,
+      activityId: String(10_000 + offset * 100 + index),
       date: new Date(Date.UTC(2025, 0, 1 + offset + index)).toISOString().slice(0, 10),
       score,
       severity: gardenUvSeverity(score),

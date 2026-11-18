@@ -348,7 +348,7 @@ const emptyVolumeBucket = (): VolumeBucket => ({
 
 const volumeForWindow = (
   acts: Act[],
-  loadById: Map<number, number>,
+  loadById: Map<string, number>,
   fromMs: number,
   toMs: number,
 ): VolumeBucket => {
@@ -400,7 +400,7 @@ export function buildCalibration(
   acts: Act[],
   thresholds: Map<Sport, ThresholdEstimate>,
   trends: Map<Sport, SportTrend>,
-  loadById: Map<number, number>,
+  loadById: Map<string, number>,
   today: string,
   todayMs: number,
 ): CalibrationBlock {

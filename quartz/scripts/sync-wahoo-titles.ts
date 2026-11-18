@@ -9,6 +9,8 @@ import {
   type WahooTitleStravaCache,
 } from '../plugins/stores/wahoo'
 import { joinSegments, QUARTZ } from '../util/path'
+import { requireStravaId } from '../util/strava-id'
+import { stravaObjectId } from '../util/strava-id'
 import { isRecord, type UnknownRecord } from '../util/type-guards'
 import { wahooCloudClientFromEnv } from '../util/wahoo-cloud'
 import { WAHOO_CACHE_FILE, writeWahooCache } from './sync-wahoo'
@@ -72,10 +74,10 @@ export function parseWahooTitleArgs(argv: string[]): Args {
     else if (arg === '--limit') args.limit = positiveInteger(argValue(argv, ++index, arg), arg)
     else if (arg === '--delay-ms')
       args.delayMs = nonnegativeInteger(argValue(argv, ++index, arg), arg)
-    else if (arg === '--id') args.ids.add(argValue(argv, ++index, arg))
+    else if (arg === '--id') args.ids.add(requireStravaId(argValue(argv, ++index, arg)))
     else if (arg === '--ids') {
       for (const id of argValue(argv, ++index, arg).split(','))
-        if (id.trim()) args.ids.add(id.trim())
+        if (id.trim()) args.ids.add(requireStravaId(id.trim()))
     } else if (arg === '--help' || arg === '-h') {
       console.log(usage())
       return args
@@ -114,7 +116,7 @@ function optionalBoolean(record: UnknownRecord, key: string, label: string): boo
 function parseStravaActivity(value: unknown, label: string): RawStravaActivity {
   if (!isRecord(value)) throw new Error(`${label} must be an object`)
   return {
-    id: requiredNumber(value, 'id', label),
+    id: stravaObjectId(value),
     name: requiredString(value, 'name', label),
     sportType: requiredString(value, 'sportType', label),
     distance: requiredNumber(value, 'distance', label),
@@ -142,8 +144,11 @@ export function parseWahooTitleStravaCache(value: unknown): WahooTitleStravaCach
   if (!isRecord(value) || !isRecord(value.activities))
     throw new Error('Strava cache must contain an activities object')
   const activities: Record<string, RawStravaActivity> = {}
-  for (const [id, activity] of Object.entries(value.activities))
-    activities[id] = parseStravaActivity(activity, `Strava cache.activities.${id}`)
+  for (const [id, activity] of Object.entries(value.activities)) {
+    const parsed = parseStravaActivity(activity, `Strava cache.activities.${id}`)
+    if (parsed.id !== id) throw new Error(`Strava activity key ${id} disagrees with its ID`)
+    activities[id] = parsed
+  }
   return { activities }
 }
 

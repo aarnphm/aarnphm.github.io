@@ -15,7 +15,7 @@ const surfaceCurrent = (durationS: number): SurfaceCurrentEstimate => ({
   sourceKind: 'modeled',
   formulaId: 'garden-surface-current-v1',
   formulaVersion: 1,
-  activityId: 101,
+  activityId: '101',
   routeFingerprint: 'route',
   start,
   end: new Date(Date.parse(start) + durationS * 1_000).toISOString(),
@@ -96,7 +96,7 @@ const routeHour = (
 })
 
 const weather = (durationS: number, routeHours: WeatherRouteHour[]): WeatherActivity => ({
-  activityId: 101,
+  activityId: '101',
   date: '2026-06-11',
   start,
   end: new Date(Date.parse(start) + durationS * 1_000).toISOString(),
@@ -131,7 +131,7 @@ const input = (
   routeHours: WeatherRouteHour[],
   values: Partial<ActivityEnvironmentInput> = {},
 ): ActivityEnvironmentInput => ({
-  activityId: 101,
+  activityId: '101',
   elapsedTimeS: durationS,
   movingTimeS: durationS,
   timeS: [0, durationS],
@@ -162,7 +162,7 @@ test('integrates one hour at UVI 4 into 4 UVI-hours and 3.6 SED', () => {
 
 test('rejects a WeatherKit entry attached to another Strava activity', () => {
   const values = input(3_600, [routeHour(0, 3_600)])
-  values.weather.activityId = 102
+  values.weather.activityId = '102'
 
   assert.deepEqual(buildActivityEnvironment(values), { environment: null, apparentWind: null })
 })
@@ -496,7 +496,7 @@ test('projects matching NOAA surface current with modeled provenance and no priv
 test('suppresses surface current with mismatched identity or interval while retaining weather', () => {
   const current = surfaceCurrent(3_600)
   for (const mismatch of [
-    { ...current, activityId: 102 },
+    { ...current, activityId: '102' },
     { ...current, routeFingerprint: 'another-route' },
     { ...current, start: '2026-06-11T12:00:00.000Z', end: start },
     { ...current, end: '2026-06-11T15:00:00.000Z' },

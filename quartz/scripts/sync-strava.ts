@@ -1,233 +1,70 @@
 import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
-import { AdaptiveRateLimiter, fetchWithRetry } from '../plugins/stores/citations'
 import {
   hasFetchedActivityDetail,
   normalizeKind,
   RawStravaActivity,
   RawStravaActivityDetail,
-  RawStravaAnalysisRange,
-  RawStravaRunSplit,
-  StravaRawCache,
   StravaGear,
+  StravaRawCache,
   StravaStreams,
   StravaZones,
 } from '../plugins/stores/strava'
-import { upsertEnvLine } from '../util/env-file'
 import { joinSegments, QUARTZ } from '../util/path'
-import { readStravaCacheFile, writeStravaCacheFile } from '../util/strava-cache-file'
+import { readStravaCacheFile, updateStravaCacheFile } from '../util/strava-cache-file'
+import { compareStravaIds, requireStravaId, stravaObjectId } from '../util/strava-id'
 import { reconcileStravaActivities, stravaFetchAfter } from '../util/strava-sync-window'
 import { stravaSyncRefreshDays } from '../util/sync-refresh-window'
 import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
-import { isRecord, readNumber, readString } from '../util/type-guards'
+import { isRecord } from '../util/type-guards'
 import { syncRouvyWahooPairs } from './sync-rouvy-wahoo'
+import { mapActivity, parseActivityDetail, parseGear } from './sync-strava/records'
+import {
+  apiUrl,
+  authHeaders,
+  fetchCity,
+  fetchStrava,
+  logDeferredReads,
+  mapPool,
+  resolveToken,
+} from './sync-strava/transport'
 
-const TOKEN_URL = 'https://www.strava.com/oauth/token'
-const DEFAULT_API_BASE_URL = 'https://www.strava.com/api/v3'
-const API = normalizeApiBaseUrl(process.env.STRAVA_API_BASE_URL ?? DEFAULT_API_BASE_URL)
+export { mapActivity, parseGear, parseRunSplits } from './sync-strava/records'
+
 const PER_PAGE = 200
+
 const CACHE_VERSION = 8
-const ENV_FILE = '.env'
+
 const cacheFile = joinSegments(QUARTZ, '.quartz-cache', 'strava.json')
-const limiter = new AdaptiveRateLimiter(400, 60_000)
-const geoLimiter = new AdaptiveRateLimiter(1100, 30_000)
+
 const CONCURRENCY = 5
+
 const DETAIL_BACKFILL_BATCH = 50
-const READ_REQUEST_RESERVE = 5
-const HEADERLESS_READ_REQUEST_LIMIT = 90
-const configuredReadRequestLimit = Number(process.env.STRAVA_MAX_READ_REQUESTS)
-const MAX_READ_REQUESTS =
-  Number.isFinite(configuredReadRequestLimit) && configuredReadRequestLimit >= 1
-    ? Math.floor(configuredReadRequestLimit)
-    : null
-
-interface StravaRatePair {
-  short: number
-  daily: number
-}
-
-let readLimit: StravaRatePair | null = null
-let readUsage: StravaRatePair | null = null
-let readRequests = 0
-let readsInFlight = 0
-let rateDeferred = false
-
-function ratePair(value: string | null): StravaRatePair | null {
-  const values = value?.split(',').map(part => Number(part.trim())) ?? []
-  if (values.length !== 2 || !values.every(item => Number.isInteger(item) && item >= 0)) return null
-  return { short: values[0], daily: values[1] }
-}
-
-function recordReadRate(response: Response): void {
-  readLimit = ratePair(response.headers.get('X-ReadRateLimit-Limit')) ?? readLimit
-  readUsage = ratePair(response.headers.get('X-ReadRateLimit-Usage')) ?? readUsage
-}
-
-function canRead(): boolean {
-  if (MAX_READ_REQUESTS != null && readRequests >= MAX_READ_REQUESTS) return false
-  if (!readLimit || !readUsage) return readRequests < HEADERLESS_READ_REQUEST_LIMIT
-  return (
-    readLimit.short - readUsage.short > READ_REQUEST_RESERVE + readsInFlight &&
-    readLimit.daily - readUsage.daily > READ_REQUEST_RESERVE + readsInFlight
-  )
-}
-
-async function fetchStrava(url: string, options: RequestInit): Promise<Response | null> {
-  if (!canRead()) {
-    rateDeferred = true
-    return null
-  }
-  readRequests += 1
-  readsInFlight += 1
-  try {
-    const response = await fetchWithRetry(url, options, limiter)
-    if (response) recordReadRate(response)
-    return response
-  } finally {
-    readsInFlight -= 1
-  }
-}
-
-async function mapPool<T>(
-  items: T[],
-  limit: number,
-  worker: (item: T, index: number) => Promise<void>,
-): Promise<void> {
-  let cursor = 0
-  const runners = Array.from({ length: Math.min(limit, items.length) }, async () => {
-    while (cursor < items.length) {
-      const index = cursor++
-      await worker(items[index], index)
-    }
-  })
-  await Promise.all(runners)
-}
-
-interface TokenResponse {
-  access_token: string
-  refresh_token: string
-}
-
-function normalizeApiBaseUrl(value: string): string {
-  return new URL(value).toString().replace(/\/+$/, '')
-}
-
-function apiUrl(path: string, params: Record<string, string | number> = {}): string {
-  const url = new URL(`${API}${path}`)
-  for (const [key, value] of Object.entries(params)) url.searchParams.set(key, String(value))
-  return url.toString()
-}
-
-function authHeaders(token: string): HeadersInit {
-  return { Authorization: `Bearer ${token}` }
-}
-
-async function readTokenResponse(res: Response): Promise<TokenResponse> {
-  const raw: unknown = await res.json()
-  if (!isRecord(raw)) throw new Error('token refresh returned a non-object response')
-  const accessToken = readString(raw, 'access_token')
-  const refreshToken = readString(raw, 'refresh_token')
-  if (!accessToken || !refreshToken) throw new Error('token refresh response missing tokens')
-  return { access_token: accessToken, refresh_token: refreshToken }
-}
 
 async function readCache(): Promise<StravaRawCache | null> {
   return readStravaCacheFile(cacheFile)
 }
 
-async function refresh(
-  clientId: string,
-  clientSecret: string,
-  refreshToken: string,
-): Promise<TokenResponse> {
-  const body = new URLSearchParams({
-    client_id: clientId,
-    client_secret: clientSecret,
-    grant_type: 'refresh_token',
-    refresh_token: refreshToken,
-  })
-  const res = await fetchWithRetry(TOKEN_URL, { method: 'POST', body }, limiter)
-  if (!res) throw new Error('token refresh failed (network/auth)')
-  return readTokenResponse(res)
-}
-
-async function resolveToken(
-  prev: StravaRawCache | null,
-): Promise<{ access: string; refreshToken: string }> {
-  const clientId = process.env.STRAVA_CLIENT_ID
-  const clientSecret = process.env.STRAVA_CLIENT_SECRET
-  const envRefreshToken = process.env.STRAVA_REFRESH_TOKEN
-  const refreshToken = prev?.auth.refreshToken || envRefreshToken
-  if (clientId && clientSecret && refreshToken) {
-    const token = await refresh(clientId, clientSecret, refreshToken)
-    if (token.refresh_token !== refreshToken) console.log('[strava] refresh token rotated')
-    if (token.refresh_token !== envRefreshToken) {
-      await upsertEnvLine(ENV_FILE, 'STRAVA_REFRESH_TOKEN', token.refresh_token)
-      console.log('[strava] STRAVA_REFRESH_TOKEN updated in .env')
-    }
-    return { access: token.access_token, refreshToken: token.refresh_token }
-  }
-  const direct = process.env.STRAVA_ACCESS_TOKEN
-  if (direct) {
-    console.log('[strava] using STRAVA_ACCESS_TOKEN directly (no client_id for refresh flow)')
-    return { access: direct, refreshToken: refreshToken ?? '' }
-  }
-  throw new Error(
-    'need STRAVA_CLIENT_ID + STRAVA_CLIENT_SECRET + STRAVA_REFRESH_TOKEN, or STRAVA_ACCESS_TOKEN',
-  )
-}
-
-export function mapActivity(raw: Record<string, unknown>): RawStravaActivity {
-  const deviceName = readString(raw, 'device_name')?.trim()
-  return {
-    id: raw.id as number,
-    name: String(raw.name ?? ''),
-    sportType: String(raw.sport_type ?? raw.type ?? ''),
-    ...(typeof raw.trainer === 'boolean' ? { trainer: raw.trainer } : {}),
-    ...(typeof raw.commute === 'boolean' ? { commute: raw.commute } : {}),
-    distance: Number(raw.distance ?? 0),
-    movingTime: Number(raw.moving_time ?? 0),
-    elapsedTime: Number(raw.elapsed_time ?? 0),
-    totalElevationGain: Number(raw.total_elevation_gain ?? 0),
-    startDate: String(raw.start_date ?? ''),
-    startDateLocal: String(raw.start_date_local ?? raw.start_date ?? ''),
-    averageSpeed: Number(raw.average_speed ?? 0),
-    maxSpeed: nullableNumber(raw, 'max_speed') ?? undefined,
-    averageHeartrate:
-      raw.average_heartrate === undefined ? undefined : Number(raw.average_heartrate),
-    maxHeartrate: raw.max_heartrate === undefined ? undefined : Number(raw.max_heartrate),
-    averageWatts: raw.average_watts === undefined ? undefined : Number(raw.average_watts),
-    weightedAverageWatts:
-      raw.weighted_average_watts === undefined ? undefined : Number(raw.weighted_average_watts),
-    maxWatts: raw.max_watts === undefined ? undefined : Number(raw.max_watts),
-    kilojoules: raw.kilojoules === undefined ? undefined : Number(raw.kilojoules),
-    deviceWatts: raw.device_watts === undefined ? undefined : Boolean(raw.device_watts),
-    averageCadence: raw.average_cadence === undefined ? undefined : Number(raw.average_cadence),
-    sufferScore: raw.suffer_score === undefined ? undefined : Number(raw.suffer_score),
-    averageTemp: raw.average_temp === undefined ? undefined : Number(raw.average_temp),
-    ...(deviceName ? { deviceName } : {}),
-    ...(raw.gear_id === null || typeof raw.gear_id === 'string'
-      ? { gearId: readString(raw, 'gear_id')?.trim() || null }
-      : {}),
-  }
-}
-
 async function fetchActivities(
   token: string,
   after: number,
-): Promise<{ activities: RawStravaActivity[]; athleteId: number }> {
+): Promise<{ activities: RawStravaActivity[]; athleteId: string | null }> {
   const headers = authHeaders(token)
   const activities: RawStravaActivity[] = []
-  let athleteId = 0
+  let athleteId: string | null = null
   for (let page = 1; ; page++) {
     const url = apiUrl('/athlete/activities', { after, per_page: PER_PAGE, page })
     const res = await fetchStrava(url, { headers })
     if (!res) throw new Error(`activity fetch failed at page ${page}`)
     const batch = (await res.json()) as Record<string, unknown>[]
-    if (!Array.isArray(batch) || batch.length === 0) break
+    if (!Array.isArray(batch)) throw new Error('Invalid Strava activities response')
+    if (batch.length === 0) break
     for (const raw of batch) {
-      const athlete = raw.athlete as { id?: number } | undefined
-      if (athlete?.id) athleteId = athlete.id
+      if (!isRecord(raw) || !isRecord(raw.athlete)) throw new Error('Missing Strava athlete ID')
+      const id = stravaObjectId(raw.athlete)
+      if (athleteId !== null && athleteId !== id)
+        throw new Error('Strava athlete ID changed between activities')
+      athleteId = id
       activities.push(mapActivity(raw))
     }
     console.log(`[strava] page ${page}: ${batch.length} activities`)
@@ -236,7 +73,7 @@ async function fetchActivities(
   return { activities, athleteId }
 }
 
-async function fetchStreams(token: string, id: number): Promise<StravaStreams | null> {
+async function fetchStreams(token: string, id: string): Promise<StravaStreams | null> {
   const headers = authHeaders(token)
   const url = apiUrl(`/activities/${id}/streams`, {
     keys: 'time,latlng,altitude,distance,watts,heartrate,cadence',
@@ -256,26 +93,6 @@ async function fetchStreams(token: string, id: number): Promise<StravaStreams | 
   }
 }
 
-export function parseGear(value: unknown): StravaGear | null {
-  if (!isRecord(value)) return null
-  const id = readString(value, 'id')?.trim()
-  if (!id) return null
-  const brandName = readString(value, 'brand_name')?.trim() || null
-  const modelName = readString(value, 'model_name')?.trim() || null
-  const distance = nullableNumber(value, 'distance')
-  return {
-    id,
-    name:
-      readString(value, 'name')?.trim() || [brandName, modelName].filter(Boolean).join(' ') || null,
-    brandName,
-    modelName,
-    ...(value.description === null || typeof value.description === 'string'
-      ? { description: readString(value, 'description')?.trim() || null }
-      : {}),
-    distanceM: distance != null && distance >= 0 ? distance : null,
-  }
-}
-
 async function fetchGear(token: string, id: string): Promise<StravaGear | null> {
   const res = await fetchStrava(apiUrl(`/gear/${encodeURIComponent(id)}`), {
     headers: authHeaders(token),
@@ -285,14 +102,15 @@ async function fetchGear(token: string, id: string): Promise<StravaGear | null> 
   return gear?.id === id ? gear : null
 }
 
-async function fetchAthleteFtp(
+async function fetchAthlete(
   token: string,
   gear: Record<string, StravaGear>,
-): Promise<number | null> {
+): Promise<{ id: string; ftp: number | null } | null> {
   const res = await fetchStrava(apiUrl('/athlete'), { headers: authHeaders(token) })
   if (!res || !res.ok) return null
   const data: unknown = await res.json()
-  if (!isRecord(data)) return null
+  if (!isRecord(data)) throw new Error('Invalid Strava athlete response')
+  const id = stravaObjectId(data)
   for (const items of [data.bikes, data.shoes]) {
     if (!Array.isArray(items)) continue
     for (const item of items) {
@@ -306,7 +124,7 @@ async function fetchAthleteFtp(
         }
     }
   }
-  return typeof data.ftp === 'number' && data.ftp > 0 ? Math.round(data.ftp) : null
+  return { id, ftp: typeof data.ftp === 'number' && data.ftp > 0 ? Math.round(data.ftp) : null }
 }
 
 async function refreshGear(
@@ -331,12 +149,8 @@ async function refreshGear(
   return failed
 }
 
-async function fetchZones(
-  token: string,
-  gear: Record<string, StravaGear>,
-): Promise<StravaZones | null> {
+async function fetchZones(token: string, ftp: number | null): Promise<StravaZones | null> {
   const res = await fetchStrava(apiUrl('/athlete/zones'), { headers: authHeaders(token) })
-  const ftp = await fetchAthleteFtp(token, gear)
   if (!res || !res.ok) return ftp != null ? { hr: [], power: [], ftp } : null
   const data = (await res.json()) as {
     heart_rate?: { zones?: { min: number; max: number }[] }
@@ -350,121 +164,17 @@ async function fetchZones(
   return { hr, power, ftp }
 }
 
-function nullableNumber(record: Record<string, unknown>, key: string): number | null {
-  const value = readNumber(record, key)
-  return value != null && Number.isFinite(value) ? value : null
-}
-
-function parseAnalysisRange(
-  value: unknown,
-  fallbackKind: 'lap' | 'segment',
-  index: number,
-): RawStravaAnalysisRange | null {
-  if (!isRecord(value)) return null
-  const elapsedTime = nullableNumber(value, 'elapsed_time')
-  const distance = nullableNumber(value, 'distance')
-  if (elapsedTime == null || elapsedTime < 0 || distance == null || distance < 0) return null
-  const rawId = value.id
-  const id =
-    typeof rawId === 'number' || typeof rawId === 'string'
-      ? String(rawId)
-      : `${fallbackKind}-${index + 1}`
-  const name =
-    readString(value, 'name')?.trim() ||
-    `${fallbackKind === 'lap' ? 'Lap' : 'Segment'} ${index + 1}`
-  return {
-    id,
-    name,
-    elapsedTime,
-    movingTime: nullableNumber(value, 'moving_time') ?? elapsedTime,
-    startDate: readString(value, 'start_date') ?? null,
-    distance,
-    startIndex: nullableNumber(value, 'start_index'),
-    endIndex: nullableNumber(value, 'end_index'),
-    totalElevationGain: nullableNumber(value, 'total_elevation_gain'),
-    averageSpeed: nullableNumber(value, 'average_speed'),
-    averageHeartrate: nullableNumber(value, 'average_heartrate'),
-    averageWatts: nullableNumber(value, 'average_watts'),
-    averageCadence: nullableNumber(value, 'average_cadence'),
-  }
-}
-
-function parseAnalysisRanges(value: unknown, kind: 'lap' | 'segment'): RawStravaAnalysisRange[] {
-  if (!Array.isArray(value)) return []
-  return value.flatMap((item, index) => {
-    const range = parseAnalysisRange(item, kind, index)
-    return range ? [range] : []
-  })
-}
-
-function parseRunSplit(value: unknown, index: number): RawStravaRunSplit | null {
-  if (!isRecord(value)) return null
-  const distance = nullableNumber(value, 'distance')
-  const elapsedTime = nullableNumber(value, 'elapsed_time')
-  const movingTime = nullableNumber(value, 'moving_time') ?? elapsedTime
-  if (
-    distance == null ||
-    distance <= 0 ||
-    elapsedTime == null ||
-    elapsedTime <= 0 ||
-    movingTime == null ||
-    movingTime <= 0
-  )
-    return null
-  const averageSpeed = nullableNumber(value, 'average_speed') ?? distance / movingTime
-  if (!Number.isFinite(averageSpeed) || averageSpeed <= 0) return null
-  return {
-    split: Math.max(1, Math.round(nullableNumber(value, 'split') ?? index + 1)),
-    distance,
-    elapsedTime,
-    movingTime,
-    averageSpeed,
-    averageHeartrate: nullableNumber(value, 'average_heartrate'),
-    elevationDifference: nullableNumber(value, 'elevation_difference'),
-    paceZone: nullableNumber(value, 'pace_zone'),
-  }
-}
-
-export function parseRunSplits(value: unknown): RawStravaRunSplit[] {
-  if (!Array.isArray(value)) return []
-  return value.flatMap((item, index) => {
-    const split = parseRunSplit(item, index)
-    return split ? [split] : []
-  })
-}
-
 async function fetchActivityDetail(
   token: string,
-  id: number,
+  id: string,
+  athleteId: string | null,
 ): Promise<RawStravaActivityDetail | null> {
   const res = await fetchStrava(apiUrl(`/activities/${id}`, { include_all_efforts: 'true' }), {
     headers: authHeaders(token),
   })
   if (!res) return null
   const data: unknown = await res.json()
-  if (!isRecord(data)) return null
-  return {
-    description: readString(data, 'description') ?? null,
-    fetchedAt: Date.now(),
-    calories: nullableNumber(data, 'calories'),
-    laps: parseAnalysisRanges(data.laps, 'lap'),
-    segmentEfforts: parseAnalysisRanges(data.segment_efforts, 'segment'),
-    splitsMetric: parseRunSplits(data.splits_metric),
-    splitsStandard: parseRunSplits(data.splits_standard),
-  }
-}
-
-async function fetchCity(lat: number, lon: number): Promise<string | null> {
-  const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&zoom=10&addressdetails=1`
-  const res = await fetchWithRetry(
-    url,
-    { headers: { 'User-Agent': 'aarnphm-garden-strava-sync/1.0' } },
-    geoLimiter,
-  )
-  if (!res) return null
-  const data = (await res.json()) as { address?: Record<string, string> }
-  const a = data.address ?? {}
-  return a.city || a.town || a.village || a.municipality || a.county || a.state || null
+  return parseActivityDetail(data, id, athleteId)
 }
 
 function progress(label: string, done: number, total: number): void {
@@ -479,28 +189,23 @@ async function main(): Promise<void> {
   const prev = await readCache()
   const gearOnly = process.argv.includes('--gear-only')
   const detailArgument = process.argv.indexOf('--activity-detail')
-  const detailId = detailArgument < 0 ? null : Number(process.argv[detailArgument + 1])
-  if (
-    detailId != null &&
-    (!prev ||
-      !Number.isSafeInteger(detailId) ||
-      detailId <= 0 ||
-      !prev.activities[String(detailId)])
-  )
+  const detailId = detailArgument < 0 ? null : requireStravaId(process.argv[detailArgument + 1])
+  if (detailId != null && (!prev || !prev.activities[detailId]))
     throw new Error('--activity-detail requires one existing cached activity ID')
   if (gearOnly && detailId != null) throw new Error('choose --gear-only or --activity-detail')
   if (gearOnly && !prev) throw new Error('--gear-only needs an existing Strava cache')
   const { access, refreshToken } = await resolveToken(prev)
   if (detailId != null && prev) {
-    const detail = await fetchActivityDetail(access, detailId)
+    const detail = await fetchActivityDetail(access, detailId, prev.athleteId)
     if (!detail) throw new Error(`activity detail ${detailId} unavailable; cache preserved`)
-    const current = await readCache()
-    if (!current || current.athleteId !== prev.athleteId || !current.activities[String(detailId)])
-      throw new Error('Strava cache identity changed during detail refresh; cache preserved')
-    await writeStravaCacheFile(cacheFile, {
-      ...current,
-      auth: { refreshToken, obtainedAt: Date.now() },
-      activityDetails: { ...current.activityDetails, [String(detailId)]: detail },
+    await updateStravaCacheFile(cacheFile, current => {
+      if (!current || current.athleteId !== prev.athleteId || !current.activities[detailId])
+        throw new Error('Strava cache identity changed during detail refresh; cache preserved')
+      return {
+        ...current,
+        auth: { refreshToken, obtainedAt: Date.now() },
+        activityDetails: { ...current.activityDetails, [detailId]: detail },
+      }
     })
     await refreshTriathlonRouteSource()
     console.log(`[strava] refreshed activity detail ${detailId} → ${cacheFile}`)
@@ -508,17 +213,21 @@ async function main(): Promise<void> {
   }
   if (gearOnly && prev) {
     const gear: Record<string, StravaGear> = { ...prev.gear }
-    await fetchAthleteFtp(access, gear)
+    const athlete = await fetchAthlete(access, gear)
+    if (!athlete || (prev.athleteId !== null && athlete.id !== prev.athleteId))
+      throw new Error('Strava athlete ID changed; cache preserved')
     const failed = await refreshGear(access, gear, prev.activities)
     if (failed.length > 0)
       throw new Error(`equipment refresh incomplete for ${failed.join(', ')}; cache preserved`)
-    const current = await readCache()
-    if (!current || current.athleteId !== prev.athleteId)
-      throw new Error('Strava cache athlete changed during equipment refresh; cache preserved')
-    await writeStravaCacheFile(cacheFile, {
-      ...current,
-      auth: { refreshToken, obtainedAt: Date.now() },
-      gear: { ...current.gear, ...gear },
+    await updateStravaCacheFile(cacheFile, current => {
+      if (!current || current.athleteId !== prev.athleteId)
+        throw new Error('Strava cache athlete changed during equipment refresh; cache preserved')
+      return {
+        ...current,
+        athleteId: athlete.id,
+        auth: { refreshToken, obtainedAt: Date.now() },
+        gear: { ...current.gear, ...gear },
+      }
     })
     await refreshTriathlonRouteSource()
     console.log(`[strava] wrote ${Object.keys(gear).length} equipment records → ${cacheFile}`)
@@ -557,12 +266,12 @@ async function main(): Promise<void> {
   const writeCache = async (): Promise<void> => {
     const cache: StravaRawCache = {
       version: CACHE_VERSION,
-      athleteId: athleteId || prev?.athleteId || 0,
+      athleteId: authenticatedAthleteId,
       auth: { refreshToken, obtainedAt: Date.now() },
       lastSync: Date.now(),
       lastActivityStart,
       activities: Object.fromEntries(
-        Object.entries(merged).sort(([a], [b]) => Number(a) - Number(b)),
+        Object.entries(merged).sort(([a], [b]) => compareStravaIds(a, b)),
       ),
       activityDetails,
       gear,
@@ -570,17 +279,24 @@ async function main(): Promise<void> {
       geo,
       zones,
     }
-    await writeStravaCacheFile(cacheFile, cache)
-  }
-  let writing: Promise<void> | null = null
-  const checkpoint = (): void => {
-    if (writing) return
-    writing = writeCache().finally(() => {
-      writing = null
+    await updateStravaCacheFile(cacheFile, current => {
+      if (current?.athleteId != null && current.athleteId !== cache.athleteId)
+        throw new Error('Strava cache athlete changed during sync; cache preserved')
+      for (const [id, detail] of Object.entries(current?.activityDetails ?? {}))
+        if (merged[id] && (detail.fetchedAt ?? 0) > (activityDetails[id]?.fetchedAt ?? 0))
+          activityDetails[id] = detail
+      return cache
     })
   }
-
-  const fetchedZones = await fetchZones(access, gear)
+  const athlete = await fetchAthlete(access, gear)
+  if (
+    !athlete ||
+    (athleteId !== null && athleteId !== athlete.id) ||
+    (prev?.athleteId != null && prev.athleteId !== athlete.id)
+  )
+    throw new Error('Strava athlete identity unavailable or changed; cache preserved')
+  const authenticatedAthleteId = athlete.id
+  const fetchedZones = await fetchZones(access, athlete.ftp)
   if (fetchedZones) zones = fetchedZones
   else if (!zones) console.log('[strava] no athlete zones (needs profile:read_all) — deriving')
 
@@ -598,7 +314,6 @@ async function main(): Promise<void> {
     const s = await fetchStreams(access, a.id)
     if (s) streams[String(a.id)] = s
     progress('streams', ++si, needStreams.length)
-    if (si % 16 === 0) checkpoint()
   })
 
   const needGeo = Object.values(merged).filter(a => {
@@ -616,7 +331,6 @@ async function main(): Promise<void> {
     const city = await fetchCity(s.latlng[0][0], s.latlng[0][1])
     if (city) geo[String(a.id)] = city
     progress('geocode', ++gi, needGeo.length)
-    if (gi % 8 === 0) checkpoint()
   }
 
   const detailCandidates = Object.values(merged)
@@ -642,28 +356,18 @@ async function main(): Promise<void> {
   const needDetails = [...recentDetails, ...historicalBackfill]
   let di = 0
   await mapPool(needDetails, CONCURRENCY, async a => {
-    const detail = await fetchActivityDetail(access, a.id)
+    const detail = await fetchActivityDetail(access, a.id, authenticatedAthleteId)
     if (detail) {
       activityDetails[String(a.id)] = detail
       if (detail.calories != null) merged[String(a.id)].calories = detail.calories
     }
     progress('details', ++di, needDetails.length)
-    if (di % 16 === 0) checkpoint()
   })
 
-  if (writing) await writing
   await writeCache()
   await syncRouvyWahooPairs()
   await refreshTriathlonRouteSource()
-  if (rateDeferred) {
-    const usage =
-      readLimit && readUsage
-        ? `; Strava read usage ${readUsage.short}/${readLimit.short} short, ${readUsage.daily}/${readLimit.daily} daily`
-        : ''
-    console.log(
-      `[strava] deferred requests after ${readRequests} reads${MAX_READ_REQUESTS == null ? '' : `/${MAX_READ_REQUESTS}`}${usage}`,
-    )
-  }
+  logDeferredReads()
   console.log(
     `[strava] wrote ${Object.keys(merged).length} activities (+${activities.length} new), ${Object.keys(streams).length} streams, ${Object.keys(activityDetails).length} details, ${Object.keys(geo).length} located → ${cacheFile}`,
   )

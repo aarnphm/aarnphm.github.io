@@ -4,7 +4,7 @@ import type { RawStravaActivity } from '../plugins/stores/strava'
 import { reconcileStravaActivities, stravaFetchAfter } from './strava-sync-window'
 
 const activity = (id: number, startDate: string, calories?: number): RawStravaActivity => ({
-  id,
+  id: String(id),
   name: `activity ${id}`,
   sportType: 'Run',
   distance: 5000,
@@ -48,7 +48,7 @@ test('reconcileStravaActivities prunes deleted overlap rows and preserves older 
 
 test('reconcileStravaActivities mirrors a full refresh and retains distinct fetched ids', () => {
   const first = activity(4, '2026-06-04T12:00:00Z')
-  const second = { ...first, id: 5 }
+  const second = { ...first, id: '5' }
   const result = reconcileStravaActivities(
     { '1': activity(1, '2026-05-01T12:00:00Z') },
     [first, second],

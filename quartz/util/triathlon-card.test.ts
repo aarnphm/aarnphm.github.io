@@ -495,9 +495,9 @@ test('shares one duration axis across dense, sparse, and shorter power curves', 
       { s: 3, w: 0 },
     ],
     [
-      { s: 1, w: 800, activityId: 11, activityDate: '2026-08-01' },
-      { s: 3, w: 750, activityId: 12, activityDate: '2026-08-02' },
-      { s: 60, w: 350, activityId: 12, activityDate: '2026-08-02' },
+      { s: 1, w: 800, activityId: '11', activityDate: '2026-08-01' },
+      { s: 3, w: 750, activityId: '12', activityDate: '2026-08-02' },
+      { s: 60, w: 350, activityId: '12', activityDate: '2026-08-02' },
     ],
     [{ s: 2, w: 900 }],
     [],
@@ -891,7 +891,7 @@ const thermalSource = (
 ): ActivityThermalSource | null => (value == null ? null : source)
 
 const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDetail => ({
-  id: 101,
+  id: '101',
   sport: 'bike',
   name: 'Threshold ride',
   date: '2026-07-09',
@@ -1105,7 +1105,7 @@ const environmentAnalyses = (): ActivityAnalyses => ({
       provider: 'pelotan',
       transport: 'strava-description',
       schemaVersion: 1,
-      activityId: 101,
+      activityId: '101',
       retrievedAt: Date.parse('2026-07-09T18:00:00Z'),
       score: 83,
       rawBand: 'High',
@@ -1119,7 +1119,7 @@ const environmentAnalyses = (): ActivityAnalyses => ({
       provider: 'mywindsock',
       transport: 'strava-description',
       schemaVersion: 1,
-      activityId: 101,
+      activityId: '101',
       retrievedAt: Date.parse('2026-07-09T18:00:00Z'),
       weatherImpactPct: 0.6,
       cdaM2: 0.324,
@@ -1521,7 +1521,7 @@ const modeledSurfaceCurrent = (): PublicSurfaceCurrentEstimate => ({
   sourceKind: 'modeled',
   formulaId: 'garden-surface-current-v1',
   formulaVersion: 1,
-  activityId: 101,
+  activityId: '101',
   start: '2026-07-09T12:00:00Z',
   end: '2026-07-09T13:20:00Z',
   computedAt: Date.parse('2026-07-09T18:05:00Z'),
@@ -2497,7 +2497,7 @@ test('renders WeatherKit humidity below wind in shared server and hydrated activ
           provider: 'mywindsock',
           transport: 'strava-description',
           schemaVersion: 1,
-          activityId: 101,
+          activityId: '101',
           retrievedAt: 1,
           weatherImpactPct: 0.6,
           cdaM2: null,
@@ -5848,7 +5848,7 @@ test('falls back to legacy stream traces without complete analysis telemetry', (
 })
 
 test('labels the activity disclosure and exposes its expanded state and controlled panel', () => {
-  const collapsed = buildActivity(factory, detail({ id: 42 }))
+  const collapsed = buildActivity(factory, detail({ id: '42' }))
   const collapsedToggle = byClass(collapsed, 'tri-act-toggle')[0]
   const collapsedPanel = byClass(collapsed, 'tri-act-more')[0]
   assert.ok(collapsedToggle)
@@ -5859,7 +5859,7 @@ test('labels the activity disclosure and exposes its expanded state and controll
   assert.deepEqual(collapsedToggle.properties.ariaControls, ['tri-act-more-42'])
   assert.equal(collapsedPanel.properties.id, 'tri-act-more-42')
 
-  const expanded = buildActivity(factory, detail({ id: 42 }), true)
+  const expanded = buildActivity(factory, detail({ id: '42' }), true)
   const expandedToggle = byClass(expanded, 'tri-act-toggle')[0]
   assert.ok(expandedToggle)
   assert.equal(text(expandedToggle), '− see less')
@@ -5868,7 +5868,7 @@ test('labels the activity disclosure and exposes its expanded state and controll
 
 test('uses an explicit embed setting to choose the activity disclosure state', () => {
   const payload = {
-    details: { 42: detail({ id: 42, date: '2026-08-18', sport: 'bike' }) },
+    details: { 42: detail({ id: '42', date: '2026-08-18', sport: 'bike' }) },
     health: {},
   }
   const expanded = buildDayCard(factory, '2026-08-18', payload, {
@@ -5907,7 +5907,7 @@ test('marks every routed sport for the shared desktop figure split', () => {
   assert.equal(byClass(swim, 'tri-act-figs--route').length, 1)
   assert.equal(byClass(swim, 'tri-act-figs--split').length, 1)
 
-  const routeOnlySwim = detail({ id: 2026, date: '2026-07-26', sport: 'swim', strokes: null })
+  const routeOnlySwim = detail({ id: '2026', date: '2026-07-26', sport: 'swim', strokes: null })
   const routeOnlyPayload = { details: { 2026: routeOnlySwim }, health: {} }
   const fullPageSwim = buildDayCard(factory, routeOnlySwim.date, routeOnlyPayload, {
     expanded: true,
@@ -6385,7 +6385,7 @@ test('renders Garmin walk pace, cadence, respiration, and elevation', () => {
 
 const swimTrendDetail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDetail =>
   detail({
-    id: 5,
+    id: '5',
     sport: 'swim',
     name: 'Pool swim',
     date: '2026-07-05',
@@ -6585,7 +6585,7 @@ test('pool swimming retains calculated condition and recorded physiology without
 
 const swimTrendPoints: SwimTrendPoint[] = [
   {
-    id: 1,
+    id: '1',
     date: '2026-07-01',
     start: '2026-07-01T12:00:00Z',
     paceSPer100m: 112,
@@ -6593,7 +6593,7 @@ const swimTrendPoints: SwimTrendPoint[] = [
     strokeRateSpm: 20,
   },
   {
-    id: 2,
+    id: '2',
     date: '2026-07-02',
     start: '2026-07-02T12:00:00Z',
     paceSPer100m: 110,
@@ -6601,7 +6601,7 @@ const swimTrendPoints: SwimTrendPoint[] = [
     strokeRateSpm: 22,
   },
   {
-    id: 3,
+    id: '3',
     date: '2026-07-03',
     start: '2026-07-03T12:00:00Z',
     paceSPer100m: 108,
@@ -6609,7 +6609,7 @@ const swimTrendPoints: SwimTrendPoint[] = [
     strokeRateSpm: 24,
   },
   {
-    id: 4,
+    id: '4',
     date: '2026-07-04',
     start: '2026-07-04T12:00:00Z',
     paceSPer100m: 106,
@@ -6617,7 +6617,7 @@ const swimTrendPoints: SwimTrendPoint[] = [
     strokeRateSpm: 26,
   },
   {
-    id: 5,
+    id: '5',
     date: '2026-07-05',
     start: '2026-07-05T12:00:00Z',
     paceSPer100m: 100,
@@ -6625,7 +6625,7 @@ const swimTrendPoints: SwimTrendPoint[] = [
     strokeRateSpm: 28,
   },
   {
-    id: 7,
+    id: '7',
     date: '2026-07-05',
     start: '2026-07-05T18:00:00Z',
     paceSPer100m: 90,
@@ -6633,7 +6633,7 @@ const swimTrendPoints: SwimTrendPoint[] = [
     strokeRateSpm: 40,
   },
   {
-    id: 6,
+    id: '6',
     date: '2026-07-06',
     start: '2026-07-06T12:00:00Z',
     paceSPer100m: 90,
@@ -6846,7 +6846,7 @@ test('plots only the selected swim intervals even when history contains same-dat
   const rendered = buildSwimTrends(
     factory,
     swimTrendDetail({
-      id: 7,
+      id: '7',
       start: '2026-07-05T18:00:00Z',
       swimPaceSPer100m: 90,
       strokeRateSpm: 40,
@@ -7026,9 +7026,9 @@ test('parses ampersand-separated activity exclusions', () => {
 
 test('omits excluded activities from a day card', () => {
   const activities = [
-    detail({ id: 19471122670, date: '2026-07-26', name: 'Warmup legs for SuperTri' }),
-    detail({ id: 19475891673, date: '2026-07-26', name: 'SuperTri 2026 Bike Leg' }),
-    detail({ id: 19476629599, date: '2026-07-26', name: 'Warm down' }),
+    detail({ id: '19471122670', date: '2026-07-26', name: 'Warmup legs for SuperTri' }),
+    detail({ id: '19475891673', date: '2026-07-26', name: 'SuperTri 2026 Bike Leg' }),
+    detail({ id: '19476629599', date: '2026-07-26', name: 'Warm down' }),
   ]
   const rendered = buildDayCard(
     factory,
@@ -7049,14 +7049,14 @@ test('omits excluded activities from a day card', () => {
 test('focused display keeps triathlon sports and composes with sport and ID filters', () => {
   const date = '2026-09-08'
   const activities = [
-    detail({ id: 1, date, sport: 'bike' }),
-    detail({ id: 2, date, sport: 'run' }),
-    detail({ id: 3, date, sport: 'swim' }),
-    detail({ id: 4, date, sport: 'walk' }),
-    detail({ id: 5, date, sport: 'strength' }),
-    detail({ id: 6, date, sport: 'yoga' }),
-    detail({ id: 7, date, sport: 'treatment' }),
-    detail({ id: 8, date, sport: 'sauna' }),
+    detail({ id: '1', date, sport: 'bike' }),
+    detail({ id: '2', date, sport: 'run' }),
+    detail({ id: '3', date, sport: 'swim' }),
+    detail({ id: '4', date, sport: 'walk' }),
+    detail({ id: '5', date, sport: 'strength' }),
+    detail({ id: '6', date, sport: 'yoga' }),
+    detail({ id: '7', date, sport: 'treatment' }),
+    detail({ id: '8', date, sport: 'sauna' }),
   ]
   const payload = {
     details: Object.fromEntries(activities.map(activity => [activity.id, activity])),
@@ -7081,8 +7081,12 @@ test('focused display keeps triathlon sports and composes with sport and ID filt
 })
 
 test('renders only the selected activity and expands it', () => {
-  const selected = detail({ id: 19731411847, date: '2026-08-13', name: 'Toronto-Nobleton-Toronto' })
-  const other = detail({ id: 19731411848, date: '2026-08-13', sport: 'run' })
+  const selected = detail({
+    id: '19731411847',
+    date: '2026-08-13',
+    name: 'Toronto-Nobleton-Toronto',
+  })
+  const other = detail({ id: '19731411848', date: '2026-08-13', sport: 'run' })
   const rendered = buildDayCard(
     factory,
     '2026-08-13',
@@ -7103,8 +7107,8 @@ test('renders only the selected activity and expands it', () => {
 
 test('renders exact-date analytics and appends day-card sleep after recovery', () => {
   const date = '2026-08-16'
-  const ride = detail({ id: 19771722076, date, name: 'Recovery Crit' })
-  const run = detail({ id: 19771722077, date, name: 'Evening run', sport: 'run' })
+  const ride = detail({ id: '19771722076', date, name: 'Recovery Crit' })
+  const run = detail({ id: '19771722077', date, name: 'Evening run', sport: 'run' })
   const summary: TriathlonDayAnalytics = {
     date,
     sleepMetrics: resolveSleepMetrics(
@@ -7605,13 +7609,13 @@ test('renders Garmin sleep on an Oura gap and preserves native stage and sample 
   }
   const analytics = buildAnalytics(
     {
-      athleteId: 1,
+      athleteId: '1',
       auth: { refreshToken: '', obtainedAt: 0 },
       lastSync: start,
       lastActivityStart: start,
       activities: {
         1: {
-          id: 1,
+          id: '1',
           name: 'Ride',
           sportType: 'Ride',
           distance: 5000,
@@ -7706,7 +7710,7 @@ test('renders Garmin sleep on an Oura gap and preserves native stage and sample 
 })
 
 test('day-card date renders as a month link only when extras provide an href', () => {
-  const current = detail({ id: 7, date: '2026-07-09' })
+  const current = detail({ id: '7', date: '2026-07-09' })
   const payload = { details: { 7: current }, health: {} }
   const linked = buildDayCard(factory, '2026-07-09', payload, {
     dateHref: '../../../triathlon/on/2026/07',
@@ -7719,9 +7723,9 @@ test('day-card date renders as a month link only when extras provide an href', (
 })
 
 test('timeline day cards keep activity measurements and the date inert', () => {
-  const ride = detail({ id: 1, date: '2026-07-09', name: 'Lunch ride', distanceKm: 30 })
+  const ride = detail({ id: '1', date: '2026-07-09', name: 'Lunch ride', distanceKm: 30 })
   const strength = detail({
-    id: 2,
+    id: '2',
     date: '2026-07-09',
     sport: 'strength',
     name: 'Upper body',
@@ -7756,8 +7760,8 @@ test('timeline day cards keep activity measurements and the date inert', () => {
   assert.equal(text(byClass(rest, 'tri-timeline-value')[0]), 'rest')
 })
 test('expanded day-card extras render every activity pre-expanded', () => {
-  const first = detail({ id: 1, date: '2026-07-09' })
-  const second = detail({ id: 2, date: '2026-07-09', sport: 'run' })
+  const first = detail({ id: '1', date: '2026-07-09' })
+  const second = detail({ id: '2', date: '2026-07-09', sport: 'run' })
   const rendered = buildDayCard(
     factory,
     '2026-07-09',
@@ -7776,7 +7780,7 @@ test('expanded day-card extras render every activity pre-expanded', () => {
 test('race cards preserve missing run power rows for transitions', () => {
   const transitions = [
     detail({
-      id: 1,
+      id: '1',
       name: 'SuperTri T1',
       sport: 'run',
       avgWatts: null,
@@ -7786,7 +7790,7 @@ test('race cards preserve missing run power rows for transitions', () => {
       deviceWatts: false,
     }),
     detail({
-      id: 2,
+      id: '2',
       name: 'SuperTri T2',
       sport: 'run',
       avgWatts: null,
@@ -8066,7 +8070,7 @@ const criticalPower = (
     {
       durationS: 180,
       meanPowerWatts: 306.5,
-      activityId: 102,
+      activityId: '102',
       activityDate: '2026-08-09',
       startElapsedS: 6_618,
       endElapsedS: 6_798,
@@ -8074,7 +8078,7 @@ const criticalPower = (
     {
       durationS: 420,
       meanPowerWatts: 272,
-      activityId: 103,
+      activityId: '103',
       activityDate: '2026-08-05',
       startElapsedS: 1_018,
       endElapsedS: 1_438,
@@ -8082,7 +8086,7 @@ const criticalPower = (
     {
       durationS: 720,
       meanPowerWatts: 264.3,
-      activityId: 103,
+      activityId: '103',
       activityDate: '2026-08-05',
       startElapsedS: 1_018,
       endElapsedS: 1_738,
@@ -9482,7 +9486,7 @@ test('serializes daily cards with long activity and reference power curves', asy
     powerCurve.map(point => ({
       ...point,
       w: point.s === pointCount - 1 ? watts : 700,
-      activityId: 202,
+      activityId: '202',
       activityDate: '2026-07-08',
     }))
   const sixWeeks = reference(2_000)
@@ -9573,9 +9577,9 @@ test('renders six-week and calendar-year comparison ranges on one watt domain', 
     zonedDetail(),
     ctx({
       curveRef: [
-        { s: 1, w: 700, activityId: 102, activityDate: '2026-07-10' },
-        { s: 60, w: 400, activityId: 102, activityDate: '2026-07-10' },
-        { s: 3_600, w: 220, activityId: 103, activityDate: '2026-07-11' },
+        { s: 1, w: 700, activityId: '102', activityDate: '2026-07-10' },
+        { s: 60, w: 400, activityId: '102', activityDate: '2026-07-10' },
+        { s: 3_600, w: 220, activityId: '103', activityDate: '2026-07-11' },
       ],
       curveYearRef: [
         { s: 1, w: 1_060 },
@@ -9634,7 +9638,7 @@ test('renders only the ride critical power model and keeps FTP and goal in the e
     wPrimeJoules: 9_600,
     anchors: criticalPower('activity').anchors.map(anchor => ({
       ...anchor,
-      activityId: 101,
+      activityId: '101',
       activityDate: '2026-07-09',
     })),
     independentEffortCount: 1,
@@ -9733,12 +9737,12 @@ test('renders running power comparison ranges with run sources and keeps cycling
     curveRef: [{ s: 1, w: 1_200 }],
     curveYearRef: [{ s: 1, w: 1_400 }],
     runCurveRef: [
-      { s: 1, w: 700, activityId: 201, activityDate: '2026-07-10' },
-      { s: 3_600, w: 320, activityId: 201, activityDate: '2026-07-10' },
+      { s: 1, w: 700, activityId: '201', activityDate: '2026-07-10' },
+      { s: 3_600, w: 320, activityId: '201', activityDate: '2026-07-10' },
     ],
     runCurveYearRef: [
-      { s: 1, w: 800, activityId: 202, activityDate: '2026-01-10' },
-      { s: 3_600, w: 350, activityId: 202, activityDate: '2026-01-10' },
+      { s: 1, w: 800, activityId: '202', activityDate: '2026-01-10' },
+      { s: 3_600, w: 350, activityId: '202', activityDate: '2026-01-10' },
     ],
     curveYear: 2026,
   })
@@ -9792,8 +9796,8 @@ test('suppresses a power reference link back to its enclosing activity', () => {
     zonedDetail(),
     ctx({
       curveRef: [
-        { s: 1, w: 700, activityId: 101, activityDate: '2026-07-09' },
-        { s: 60, w: 400, activityId: 101, activityDate: '2026-07-09' },
+        { s: 1, w: 700, activityId: '101', activityDate: '2026-07-09' },
+        { s: 60, w: 400, activityId: '101', activityDate: '2026-07-09' },
       ],
     }),
   )
@@ -9886,7 +9890,7 @@ const comparisonActivity = (
   overrides: Partial<StravaActivityDetail> = {},
 ): StravaActivityDetail => {
   const activity = detail({
-    id,
+    id: String(id),
     name: `Activity ${id}`,
     date: `2026-07-${String((id % 20) + 1).padStart(2, '0')}`,
     ...overrides,
@@ -9941,7 +9945,7 @@ test('counts route coverage for the comparison map from gapped map routes', () =
   assert.equal(activityComparisonEligible(first), true)
   assert.equal(activityComparisonEligible(second), true)
 
-  const routeless = { ...second, id: 203, route: [], mapRoute: [] }
+  const routeless = { ...second, id: '203', route: [], mapRoute: [] }
   assert.equal(activityComparisonEligible(routeless), false)
 })
 
@@ -10292,9 +10296,9 @@ test('uses running dynamics instead of respiration for run comparisons', () => {
 })
 
 test('compares route-less pool swims on interval distance, pace, and stroke rate', () => {
-  const first = swimTrendDetail({ id: 215, name: 'Pool 1', hrZones: [20, 40, 30, 10, 0] })
+  const first = swimTrendDetail({ id: '215', name: 'Pool 1', hrZones: [20, 40, 30, 10, 0] })
   const second = swimTrendDetail({
-    id: 216,
+    id: '216',
     name: 'Pool 2',
     date: '2026-07-06',
     swimIntervals: swimTrendDetail().swimIntervals.map(interval => ({
@@ -11677,7 +11681,7 @@ test('renders night and individual naps with separate charts, unique readouts, a
   const details: Record<string, OuraDayDetail> = {}
   const days: Record<string, OuraDaily> = {}
   const sleepRow = (id: string, type: string, hour: string) => ({
-    id,
+    id: String(id),
     type,
     day: date,
     bedtime_start: `${date}T${hour}:00:00-04:00`,

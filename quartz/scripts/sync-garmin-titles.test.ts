@@ -55,7 +55,7 @@ test('persists only successful Garmin titles while preserving the latest cache f
   await persistGarminTitleUpdates(
     [
       {
-        stravaId: 1,
+        stravaId: '1',
         garminId: 'connect:1',
         garminActivityId: '1',
         from: 'Strength',

@@ -1,4 +1,5 @@
 import { shiftIsoDay } from './local-date'
+import { compareStravaIds } from './strava-id'
 import { swimPaceSeconds } from './swim-metrics'
 
 export const SWIM_POWER_REFERENCE_PACE_S_PER_100M = 150
@@ -40,7 +41,7 @@ export interface SwimPowerEstimate {
 }
 
 export interface SwimPowerBestPoint extends SwimPowerCurvePoint {
-  activityId: number
+  activityId: string
   activityDate: string
   inputSource: SwimPowerEstimate['inputSource']
 }
@@ -231,7 +232,7 @@ export function openWaterPowerIntervals(
 }
 
 export function buildSwimPowerCurveBlock(
-  activities: readonly { id: number; date: string; swimPower?: SwimPowerEstimate | null }[],
+  activities: readonly { id: string; date: string; swimPower?: SwimPowerEstimate | null }[],
   today: string,
 ): SwimPowerCurveBlock {
   const yearLabel = Number(today.slice(0, 4))
@@ -241,7 +242,7 @@ export function buildSwimPowerCurveBlock(
   const year = new Map<number, SwimPowerBestPoint>()
   let activityCount = 0
   for (const activity of [...activities].sort(
-    (a, b) => b.date.localeCompare(a.date) || b.id - a.id,
+    (a, b) => b.date.localeCompare(a.date) || compareStravaIds(b.id, a.id),
   )) {
     if (
       activity.date > today ||

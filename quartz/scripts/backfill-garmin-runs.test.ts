@@ -13,7 +13,7 @@ import {
 
 function stravaActivity(): RawStravaActivity {
   return {
-    id: 19370081352,
+    id: '19370081352',
     name: 'Tapering swim',
     sportType: 'Swim',
     distance: 400,

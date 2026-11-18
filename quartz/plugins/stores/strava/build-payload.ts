@@ -11,6 +11,7 @@ import {
 import { resolveDailySleepHealth } from '../../../util/daily-sleep-health'
 import { localIsoDay } from '../../../util/local-date'
 import { latestProviderSync } from '../../../util/provider-sync'
+import { requireStravaId } from '../../../util/strava-id'
 import {
   CRITICAL_POWER_DURATIONS_S,
   fitCriticalPower,
@@ -85,7 +86,9 @@ export function buildPayload(
   if (!cache) return emptyPayload()
   const originalCache = cache
   cache = applyActivityTracking(cache, garmin, activityTracking, wahoo ?? null) ?? cache
-  const trackingById = new Map(activityTracking.map(entry => [entry.activityId, entry]))
+  const trackingById = new Map(
+    activityTracking.map(entry => [requireStravaId(entry.activityId), entry]),
+  )
   const resolveGarmin = (activity: RawStravaActivity, sport: ActivityKind) =>
     matchGarminActivity(
       originalCache.activities[String(activity.id)] ?? activity,

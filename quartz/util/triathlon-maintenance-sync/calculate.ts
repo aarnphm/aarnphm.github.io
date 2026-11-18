@@ -1,4 +1,5 @@
 import type { RawStravaActivity } from '../../plugins/stores/strava'
+import { requireStravaId } from '../strava-id'
 import { isRecord } from '../type-guards'
 import { intersection, lastDate, localDate, type DistanceRecord, type UsageRange } from './records'
 
@@ -12,10 +13,10 @@ export interface MaintenanceDistanceResult {
   reason: string | null
   meters: number
   miles: number
-  activityIds: number[]
+  activityIds: string[]
   virtualMiles: number
-  virtualActivityIds: number[]
-  defaultBikeActivityIds: number[]
+  virtualActivityIds: string[]
+  defaultBikeActivityIds: string[]
 }
 
 export function calculateDistances(
@@ -26,9 +27,9 @@ export function calculateDistances(
   if (!isRecord(activities)) throw new Error('Strava cache has no activity mapping')
   const trackedBikes = new Set(records.map(record => record.bikeId))
   const rides = new Map<
-    number,
+    string,
     {
-      id: number
+      id: string
       bikeId: string
       date: string
       meters: number
@@ -46,12 +47,12 @@ export function calculateDistances(
       typeof activity.startDateLocal !== 'string' ||
       typeof activity.distance !== 'number' ||
       !Number.isFinite(activity.distance) ||
-      activity.distance < 0 ||
-      !Number.isSafeInteger(activity.id)
+      activity.distance < 0
     )
       throw new Error('Invalid Strava Ride date, distance or ID')
-    rides.set(activity.id, {
-      id: activity.id,
+    const id = requireStravaId(activity.id)
+    rides.set(id, {
+      id,
       bikeId,
       date: localDate(activity.startDateLocal.slice(0, 10)),
       meters: activity.distance,

@@ -14,7 +14,7 @@ import {
 } from './weather-route-hours'
 
 const candidate: WeatherActivityCandidate = {
-  activityId: 101,
+  activityId: '101',
   date: '2026-06-11',
   start: '2026-06-11T13:30:00.000Z',
   end: '2026-06-11T15:15:00.000Z',
@@ -57,12 +57,12 @@ test('builds one route-coordinate query for every intersecting UTC hour', () => 
 })
 
 test('route fingerprints are stable and invalidate on route changes', () => {
-  const first = routeWeatherFingerprint(101, candidate.start, candidate.end, stream)
-  const same = routeWeatherFingerprint(101, candidate.start, candidate.end, {
+  const first = routeWeatherFingerprint('101', candidate.start, candidate.end, stream)
+  const same = routeWeatherFingerprint('101', candidate.start, candidate.end, {
     ...stream,
     latlng: stream.latlng.map(point => [...point]),
   })
-  const changed = routeWeatherFingerprint(101, candidate.start, candidate.end, {
+  const changed = routeWeatherFingerprint('101', candidate.start, candidate.end, {
     ...stream,
     latlng: [...stream.latlng.slice(0, -1), [43.68, -79.43]],
   })
@@ -95,7 +95,7 @@ test('selects an exact hourly timestamp across ISO formatting variants', () => {
 test('refreshes old schemas, changed routes, recent activities, and incomplete coverage', () => {
   const fingerprint = 'a'.repeat(64)
   const activity: WeatherActivity = {
-    activityId: 101,
+    activityId: '101',
     date: candidate.date,
     start: candidate.start,
     end: candidate.end,

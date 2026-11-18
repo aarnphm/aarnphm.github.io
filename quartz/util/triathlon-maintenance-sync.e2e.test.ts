@@ -90,7 +90,7 @@ Keep the body, [[links]], and spacing exactly as authored.
 `
 
 const ride = (
-  id: number,
+  id: string,
   date: string,
   miles: number,
   sportType = 'Ride',
@@ -145,7 +145,7 @@ test('sync refresh recalculates every maintenance category and preserves chain r
   }
   const saveRides = async (activities: RawStravaActivity[]) => {
     const cache: StravaRawCache = {
-      athleteId: 1,
+      athleteId: '1',
       auth: { refreshToken: '', obtainedAt: 0 },
       lastSync: Date.now(),
       lastActivityStart: 0,
@@ -158,20 +158,20 @@ test('sync refresh recalculates every maintenance category and preserves chain r
     await mkdir(join(directory, 'quartz/.quartz-cache'), { recursive: true })
     await writeFile(notePath, fixture)
     const rides = [
-      ride(1, '2026-11-11', 1),
-      ride(2, '2026-11-12', 2),
-      ride(10, '2026-11-12', 100, 'VirtualRide'),
-      ride(11, '2026-11-12', 100, 'Run'),
-      ride(20, '2026-11-11', 30, 'Ride', 'b18595115'),
-      ride(21, '2026-11-12', 40, 'Ride', 'b18595115'),
-      ride(22, '2026-11-12', 100, 'Ride', null),
-      { ...ride(23, '2026-11-12', 100), gearId: undefined },
-      ride(24, '2026-11-12', 100, 'Ride', 'b999'),
-      ride(25, '2026-11-11', 50, 'VirtualRide', 'b18595115'),
-      ride(26, '2026-11-12', 60, 'VirtualRide', 'b18595115'),
-      ride(27, '2026-11-12', 100, 'VirtualRide', null),
-      { ...ride(28, '2026-11-12', 100, 'VirtualRide'), gearId: undefined },
-      ride(29, '2026-11-12', 100, 'VirtualRide', 'b999'),
+      ride('9007199254740992', '2026-11-11', 1),
+      ride('9007199254740993', '2026-11-12', 2),
+      ride('10', '2026-11-12', 100, 'VirtualRide'),
+      ride('11', '2026-11-12', 100, 'Run'),
+      ride('20', '2026-11-11', 30, 'Ride', 'b18595115'),
+      ride('21', '2026-11-12', 40, 'Ride', 'b18595115'),
+      ride('22', '2026-11-12', 100, 'Ride', null),
+      { ...ride('23', '2026-11-12', 100), gearId: undefined },
+      ride('24', '2026-11-12', 100, 'Ride', 'b999'),
+      ride('25', '2026-11-11', 50, 'VirtualRide', 'b18595115'),
+      ride('26', '2026-11-12', 60, 'VirtualRide', 'b18595115'),
+      ride('27', '2026-11-12', 100, 'VirtualRide', null),
+      { ...ride('28', '2026-11-12', 100, 'VirtualRide'), gearId: undefined },
+      ride('29', '2026-11-12', 100, 'VirtualRide', 'b999'),
     ]
     await saveRides(rides)
     const first = await refresh()
@@ -208,7 +208,10 @@ test('sync refresh recalculates every maintenance category and preserves chain r
         "          - range: [{ start: '2026-11-13', end: null }]",
       )
     await writeFile(notePath, virtualOverlapSource)
-    await saveRides([ride(1, '2026-11-12', 2), ride(2, '2026-11-13', 3, 'VirtualRide')])
+    await saveRides([
+      ride('9007199254740992', '2026-11-12', 2),
+      ride('9007199254740993', '2026-11-13', 3, 'VirtualRide'),
+    ])
     const virtualOverlap = normalized(await refresh())
     assert.equal(virtualOverlap.wheels.find(wheel => wheel.type === 'old front')?.distanceMiles, 2)
     assert.equal(virtualOverlap.wheels.find(wheel => wheel.type === 'new front')?.distanceMiles, 0)
@@ -298,7 +301,9 @@ test('sync refresh recalculates every maintenance category and preserves chain r
     })
 
     await saveRides(
-      rides.map(activity => (activity.id === 27 ? { ...activity, gearId: 'b18595115' } : activity)),
+      rides.map(activity =>
+        activity.id === '27' ? { ...activity, gearId: 'b18595115' } : activity,
+      ),
     )
     const explicit = normalized(await refresh())
     assert.equal(explicit.chains.find(chain => chain.id === '5')?.distanceMiles, 202)
@@ -318,9 +323,9 @@ test('sync refresh recalculates every maintenance category and preserves chain r
     await writeFile(notePath, multiBikeSource)
 
     await saveRides([
-      ...rides.filter(activity => activity.id !== 2 && activity.id !== 10),
-      ride(2, '2026-11-12', 2, 'Ride', 'b18595115'),
-      ride(10, '2026-11-12', 100, 'VirtualRide', 'b18595115'),
+      ...rides.filter(activity => activity.id !== '9007199254740993' && activity.id !== '10'),
+      ride('9007199254740993', '2026-11-12', 2, 'Ride', 'b18595115'),
+      ride('10', '2026-11-12', 100, 'VirtualRide', 'b18595115'),
     ])
     const reassigned = normalized(await refresh())
     assert.equal(reassigned.chains.find(chain => chain.id === '5')?.cycles?.[0].distanceMiles, 0)
@@ -336,7 +341,7 @@ test('sync refresh recalculates every maintenance category and preserves chain r
     assert.equal(await readFile(notePath, 'utf8'), invalidBike)
     await writeFile(notePath, first)
 
-    await saveRides([...rides, ride(3, '2026-11-13', 3)])
+    await saveRides([...rides, ride('3', '2026-11-13', 3)])
     const added = normalized(await refresh())
     assert.deepEqual(
       added.components
@@ -348,7 +353,7 @@ test('sync refresh recalculates every maintenance category and preserves chain r
     assert.equal(added.chains.find(chain => chain.id === '4')?.cycles?.[0].distanceMiles, 0)
     snapshots.push({ stage: 'new ride', maintenance: added })
 
-    await saveRides([rides[0], ride(2, '2026-11-12', 4)])
+    await saveRides([rides[0], ride('9007199254740993', '2026-11-12', 4)])
     const correctedSource = await refresh()
     const corrected = normalized(correctedSource)
     assert.equal(corrected.chains.find(chain => chain.id === '5')?.cycles?.[0].distanceMiles, 4)
@@ -371,7 +376,11 @@ test('sync refresh recalculates every maintenance category and preserves chain r
           "      range: [{ start: '2026-11-12', end: '2026-11-13' }]",
         ),
     )
-    await saveRides([rides[0], ride(2, '2026-11-12', 4), ride(4, '2026-11-14', 5, 'VirtualRide')])
+    await saveRides([
+      rides[0],
+      ride('9007199254740993', '2026-11-12', 4),
+      ride('4', '2026-11-14', 5, 'VirtualRide'),
+    ])
     const rotated = normalized(await refresh())
     assert.equal(rotated.chains.find(chain => chain.id === '4')?.distanceMiles, 6)
     assert.equal(rotated.chains.find(chain => chain.id === '4')?.cycles?.[0].distanceMiles, 5)
@@ -417,7 +426,7 @@ test('sync refresh recalculates every maintenance category and preserves chain r
     assert.equal(await readFile(notePath, 'utf8'), beforeInvalid)
     await rm(cachePath)
     assert.equal(await refresh(), beforeInvalid, 'missing cache must preserve saved values')
-    await saveRides([ride(1, 'invalid', 1)])
+    await saveRides([ride('9007199254740992', 'invalid', 1)])
     await assert.rejects(refresh(), /invalid.*(date|Ride)|Ride.*invalid/i)
     assert.equal(await readFile(notePath, 'utf8'), beforeInvalid)
     await saveRides(rides)

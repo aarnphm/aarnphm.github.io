@@ -13,7 +13,7 @@ import {
 function cache(lastSync: number): StravaRawCache {
   return {
     version: 4,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: 'refresh', obtainedAt: lastSync },
     lastSync,
     lastActivityStart: 0,

@@ -5,6 +5,7 @@ import { pathToFileURL } from 'node:url'
 import { visit } from 'unist-util-visit'
 import { parseTrackingBlock, type ManualSaunaEntry } from '../plugins/stores/tracking'
 import { readStravaCacheFile } from '../util/strava-cache-file'
+import { requireStravaId } from '../util/strava-id'
 import { TrainingPeaksApi } from '../util/trainingpeaks-api'
 import {
   selectTrainingPeaksTitleSources,
@@ -26,7 +27,7 @@ interface Args {
   sourcesOnly: boolean
   since: string | null
   until: string | null
-  ids: Set<number>
+  ids: Set<string>
   limit: number | null
 }
 
@@ -57,12 +58,13 @@ export function parseTrainingPeaksTitleArgs(argv: readonly string[]): Args {
           throw new Error(`${arg} requires a valid YYYY-MM-DD date`)
         if (arg === '--since') args.since = value
         else args.until = value
+      } else if (arg === '--id') {
+        args.ids.add(requireStravaId(value))
       } else {
         const number = Number(value)
         if (!Number.isSafeInteger(number) || number <= 0)
           throw new Error(`${arg} requires a positive integer`)
-        if (arg === '--id') args.ids.add(number)
-        else args.limit = number
+        args.limit = number
       }
     } else throw new Error(`Unknown TrainingPeaks title argument: ${arg}`)
   }
@@ -83,7 +85,7 @@ export function trainingPeaksSaunaTracking(markdown: string): ManualSaunaEntry[]
 }
 
 interface TitleResult {
-  stravaId: number
+  stravaId: string
   date: string
   title: string
   workoutId?: string
@@ -215,7 +217,7 @@ async function syncTitles(
     }
     const otherSource = [
       ...(current.description ?? '').matchAll(/strava\.com\/activities\/(\d+)/g),
-    ].some(match => Number(match[1]) !== source.stravaId)
+    ].some(match => match[1] !== source.stravaId)
     if (
       current.isLocked ||
       otherSource ||

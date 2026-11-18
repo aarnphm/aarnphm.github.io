@@ -28,7 +28,7 @@ function activity(sport: 'bike' | 'run', laps = 2, reverse = false): HighParkAct
     .flat()
     .concat([samples[0]])
   return {
-    id: 123,
+    id: '9007199254740992',
     date: '2026-11-07',
     start: '2026-11-07T13:00:00Z',
     name: 'park',
@@ -59,14 +59,17 @@ test('native circuit efforts count once and exclude overlapping, half and multi-
   const result = buildHighParkLoops([a])
   assert.equal(result.cycling.laps, 1)
   assert.equal(result.cycling.activities[0].source, 'Strava segment')
-  assert.equal(result.cycling.activities[0].href, '/triathlon/on/2026/11/07#tri-activity-123')
+  assert.equal(
+    result.cycling.activities[0].href,
+    '/triathlon/on/2026/11/07#tri-activity-9007199254740992',
+  )
 })
 
 test('GPS circuits count separately for cycling and running in either direction', () => {
-  const run = { ...activity('run', 2, true), id: 456 }
+  const run = { ...activity('run', 2, true), id: '9007199254740993' }
   const latlng: [number, number][] = run.route.map(p => [p.lat, p.lng])
   const result = buildHighParkLoops([activity('bike'), { ...run, route: [] }], {
-    '456': {
+    [run.id]: {
       latlng,
       time: run.route.map(p => p.elapsedS),
       distance: run.route.map(p => p.d * 1000),

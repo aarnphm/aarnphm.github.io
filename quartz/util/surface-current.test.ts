@@ -30,7 +30,7 @@ const field = (hour: number, uMps: number, vMps: number, wet = true): SurfaceCur
 })
 const estimate = (fields = [field(0, 0.1, 0), field(1, 0.1, 0)]) =>
   buildSurfaceCurrentEstimate({
-    activityId: 101,
+    activityId: '101',
     routeFingerprint: 'route',
     start,
     end: '2026-09-27T18:02:00.000Z',
@@ -87,7 +87,7 @@ test('integrates vector speed over the route and records direction toward', () =
   assert.equal(value.summary.averageDirectionDeg, 90)
   assert.equal(value.summary.coveredDurationS, 120)
   assert.equal(value.summary.coveragePct, 100)
-  assert.equal(parseSurfaceCurrentEstimate(value)?.activityId, 101)
+  assert.equal(parseSurfaceCurrentEstimate(value)?.activityId, '101')
 })
 
 test('interpolates opposite velocity vectors before deriving speed', () => {
@@ -107,7 +107,7 @@ test('dry cells and absent hourly coverage remain null', () => {
 
 test('GPS pauses and an uncovered end of the route reduce elapsed coverage', () => {
   const value = buildSurfaceCurrentEstimate({
-    activityId: 101,
+    activityId: '101',
     routeFingerprint: 'route',
     start,
     end: '2026-09-27T18:04:00.000Z',
@@ -135,7 +135,7 @@ test('GPS pauses and an uncovered end of the route reduce elapsed coverage', () 
 test('serialized samples stay bounded and preserve pauses while summary uses every interval', () => {
   const timeS = Array.from({ length: 1_201 }, (_, i) => (i < 600 ? i : i + 120))
   const value = buildSurfaceCurrentEstimate({
-    activityId: 101,
+    activityId: '101',
     routeFingerprint: 'route',
     start,
     end: new Date(Date.parse(start) + 1_320_000).toISOString(),
@@ -175,6 +175,6 @@ test('strict cache parsing rejects impossible coverage, timelines, vectors and p
   )
   assert.equal(parsePublicSurfaceCurrentEstimate(value), null)
   const { routeFingerprint: _fingerprint, ...publicValue } = value
-  assert.equal(parsePublicSurfaceCurrentEstimate(publicValue)?.activityId, 101)
+  assert.equal(parsePublicSurfaceCurrentEstimate(publicValue)?.activityId, '101')
   assert.equal(parsePublicSurfaceCurrentEstimate({ ...publicValue, latitude: 43.2 }), null)
 })

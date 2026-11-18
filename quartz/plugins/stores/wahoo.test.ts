@@ -13,7 +13,7 @@ import {
 
 function strava(id: number, startDate = '2026-08-27T12:00:00.000Z'): RawStravaActivity {
   return {
-    id,
+    id: String(id),
     name: id === 1 ? 'Tempo Training' : 'Weaker Match',
     sportType: 'Ride',
     distance: id === 1 ? 48_200 : 47_000,
@@ -205,7 +205,7 @@ test('selects one strongest Strava cycling title and protects edited Wahoo worko
   const stravaCache = { activities: { one: strava(1), two: strava(2) } }
   const updates = selectWahooTitleUpdates(stravaCache, cache())
   assert.equal(updates.length, 1)
-  assert.equal(updates[0].stravaId, 1)
+  assert.equal(updates[0].stravaId, '1')
   assert.equal(updates[0].wahooWorkoutId, 55)
   assert.equal(updates[0].from, 'Toronto Road Cycling')
   assert.equal(updates[0].to, 'Tempo Training')
@@ -303,14 +303,14 @@ test('stationary title matches require duration and reject other sports or recor
 test('deduplicates uncategorized Wahoo recordings across activity kinds before comparing titles', () => {
   const source = { ...strava(1), sportType: 'Yoga', distance: 0, name: 'yoga session' }
   const weaker = { ...strava(2), sportType: 'Workout', distance: 0 }
-  const unknown = { ...source, id: 3, sportType: 'UnsupportedSport' }
+  const unknown = { ...source, id: '3', sportType: 'UnsupportedSport' }
   const data = cache()
   data.activities['wahoo:55'].sport = null
   data.activities['wahoo:55'].distanceM = 0
   const sources = { activities: { one: source, two: weaker, three: unknown } }
   const updates = selectWahooTitleUpdates(sources, data)
   assert.equal(updates.length, 1)
-  assert.equal(updates[0].stravaId, 1)
+  assert.equal(updates[0].stravaId, '1')
   data.activities['wahoo:55'].name = updates[0].to
   assert.deepEqual(selectWahooTitleUpdates(sources, data), [])
 })

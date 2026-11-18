@@ -14,7 +14,7 @@ import {
 
 function strava(overrides: Partial<RawStravaActivity> = {}): RawStravaActivity {
   return {
-    id: 101,
+    id: '101',
     name: 'Tempo   Training',
     sportType: 'Ride',
     distance: 48_200,
@@ -31,7 +31,7 @@ function strava(overrides: Partial<RawStravaActivity> = {}): RawStravaActivity {
 function stravaCache(activities: RawStravaActivity[]): StravaRawCache {
   return {
     version: 1,
-    athleteId: 1,
+    athleteId: '1',
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: 0,
@@ -67,7 +67,7 @@ test('selects bike title updates from matched Strava and Garmin activities', () 
 
   assert.deepEqual(updates, [
     {
-      stravaId: 101,
+      stravaId: '101',
       garminId: 'connect:23227931231',
       garminActivityId: '23227931231',
       from: 'Toronto Road Cycling',
@@ -85,9 +85,9 @@ test('selects bike title updates from matched Strava and Garmin activities', () 
 
 test('skips incompatible sports, same-title, nonnumeric Garmin ids, and filtered activities', () => {
   const cache = stravaCache([
-    strava({ id: 1, name: 'Keep me' }),
-    strava({ id: 2, name: 'Run Title', sportType: 'Run' }),
-    strava({ id: 3, name: 'Late Ride', startDate: '2026-06-03T12:00:00Z' }),
+    strava({ id: '1', name: 'Keep me' }),
+    strava({ id: '2', name: 'Run Title', sportType: 'Run' }),
+    strava({ id: '3', name: 'Late Ride', startDate: '2026-06-03T12:00:00Z' }),
   ])
 
   assert.equal(selectGarminTitleUpdates(cache, garminCache({ name: 'Keep me' })).length, 0)
@@ -112,7 +112,7 @@ test('selects all supported activity titles by default and retains kind, date, i
   ]
   const activities = sportTypes.map((sportType, index) =>
     strava({
-      id: index + 1,
+      id: String(index + 1),
       sportType,
       name: `custom ${sportType}`,
       distance: ['Ride', 'Run', 'Swim', 'Walk', 'Hike'].includes(sportType) ? 1000 : 0,
@@ -142,19 +142,19 @@ test('selects all supported activity titles by default and retains kind, date, i
     selectGarminTitleUpdates(stravaData, garminData, { kind: 'strength' }).map(
       update => update.stravaId,
     ),
-    [4, 6, 7],
+    ['4', '6', '7'],
   )
   assert.deepEqual(
     selectGarminTitleUpdates(stravaData, garminData, { since: '2026-06-04', limit: 2 }).map(
       update => update.stravaId,
     ),
-    [4, 5],
+    ['4', '5'],
   )
   assert.deepEqual(
     selectGarminTitleUpdates(stravaData, garminData, { ids: new Set(['8', '11']) }).map(
       update => update.stravaId,
     ),
-    [8, 11],
+    ['8', '11'],
   )
 
   for (const update of selectGarminTitleUpdates(stravaData, garminData))
@@ -164,16 +164,16 @@ test('selects all supported activity titles by default and retains kind, date, i
 
 test('deduplicates uncategorized Garmin recordings across different activity kinds', () => {
   const activities = stravaCache([
-    strava({ id: 1, sportType: 'WeightTraining', name: 'weaker strength match', distance: 0 }),
+    strava({ id: '1', sportType: 'WeightTraining', name: 'weaker strength match', distance: 0 }),
     strava({
-      id: 2,
+      id: '2',
       sportType: 'Yoga',
       name: 'yoga session',
       distance: 0,
       startDate: '2026-06-01T12:04:00Z',
     }),
     strava({
-      id: 3,
+      id: '3',
       sportType: 'UnsupportedSport',
       name: 'unknown session',
       distance: 0,
@@ -183,7 +183,7 @@ test('deduplicates uncategorized Garmin recordings across different activity kin
   const garmin = garminCache({ sport: null, distanceM: null })
   const updates = selectGarminTitleUpdates(activities, garmin)
   assert.equal(updates.length, 1)
-  assert.equal(updates[0].stravaId, 2)
+  assert.equal(updates[0].stravaId, '2')
   assert.equal(updates[0].to, 'yoga session')
   garmin.activities.edge.name = updates[0].to
   assert.deepEqual(selectGarminTitleUpdates(activities, garmin), [])
@@ -192,7 +192,7 @@ test('deduplicates uncategorized Garmin recordings across different activity kin
 test('assigns an overlapping Garmin activity to the strongest Strava match once', () => {
   const cache = stravaCache([
     strava({
-      id: 18883895771,
+      id: '18883895771',
       name: 'Warm down treadmill',
       sportType: 'Run',
       distance: 1897.3,
@@ -202,7 +202,7 @@ test('assigns an overlapping Garmin activity to the strongest Strava match once'
       startDateLocal: '2026-06-11T18:17:03Z',
     }),
     strava({
-      id: 18910052530,
+      id: '18910052530',
       name: 'Broken Miles but it is 1 mile only',
       sportType: 'Run',
       distance: 1645.1,
@@ -241,7 +241,7 @@ test('selects pool swim type updates for matched imported swims', () => {
   const updates = selectGarminActivityTypeUpdates(
     stravaCache([
       strava({
-        id: 202,
+        id: '202',
         name: 'Pool Swim',
         sportType: 'Swim',
         distance: 700,
@@ -266,7 +266,7 @@ test('selects pool swim type updates for matched imported swims', () => {
 
   assert.deepEqual(updates, [
     {
-      stravaId: 202,
+      stravaId: '202',
       garminId: 'connect:23530271040',
       garminActivityId: '23530271040',
       title: 'Pool Swim',

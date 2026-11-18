@@ -14,7 +14,7 @@ export interface TrainingPeaksCalendarPeak {
 }
 
 export interface TrainingPeaksCalendarActivityLink {
-  id: number
+  id: string
   date: string
   title: string
   match: 'source-id' | 'recording'

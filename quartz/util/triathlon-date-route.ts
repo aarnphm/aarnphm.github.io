@@ -1,5 +1,6 @@
 import type { StravaActivityDetail, StravaDay } from '../plugins/stores/strava'
 import type { FullSlug } from './path'
+import { stravaId } from './strava-id'
 
 const ISO_DATE = /^(\d{4})-(\d{2})-(\d{2})$/
 const TRIATHLON_ON_SLUG = 'triathlon/on' as FullSlug
@@ -7,7 +8,6 @@ const TRIATHLON_YEAR_SLUG = /^triathlon\/on\/(\d{4})$/
 const TRIATHLON_MONTH_SLUG = /^triathlon\/on\/(\d{4})\/(\d{2})$/
 const TRIATHLON_DAY_SLUG = /^triathlon\/on\/(\d{4})\/(\d{2})\/(\d{2})$/
 const SHORTCUT_DATE_PATH = /^\/(\d{4})(?:\/(\d{2})(?:\/(\d{2}))?)?\/?$/
-const ACTIVITY_ID = /^\d+$/
 
 export type TriathlonDateRoute =
   | { kind: 'index' }
@@ -71,8 +71,8 @@ export const triathlonDayHrefFromReference = (
 }
 
 export const triathlonActivityAnchor = (activityId: number | string): string | null => {
-  const value = String(activityId)
-  return ACTIVITY_ID.test(value) ? `tri-activity-${value}` : null
+  const value = stravaId(activityId)
+  return value !== null ? `tri-activity-${value}` : null
 }
 
 export const triathlonActivityHref = (

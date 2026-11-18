@@ -1,7 +1,7 @@
 import { isRecord } from './type-guards'
 
 export interface MyWindsockArchiveReference {
-  activityId: number
+  activityId: string
   capturedAt: string
   path: string
 }
@@ -48,7 +48,7 @@ export interface MyWindsockGraph {
 }
 
 export interface MyWindsockGraphs {
-  activityId: number
+  activityId: string
   sport: 'bike' | 'run'
   capturedAt: string
   cyclingCda: boolean
@@ -93,7 +93,7 @@ const inlineLabels: Record<string, string> = {
 
 export const isMyWindsockArchiveReference = (
   value: unknown,
-  activityId: number,
+  activityId: string,
 ): value is MyWindsockArchiveReference =>
   isRecord(value) &&
   value.activityId === activityId &&
@@ -227,7 +227,7 @@ const wPrimeIssue = (plots: MyWindsockGraphPlot[]): string | null => {
 }
 
 // Read only data fields from native configurations. Formatter/rule source remains inert JSON.
-export function parseMyWindsockGraphs(value: unknown, activityId: number): MyWindsockGraphs | null {
+export function parseMyWindsockGraphs(value: unknown, activityId: string): MyWindsockGraphs | null {
   if (!isRecord(value) || value.schemaVersion !== 1 || value.provider !== 'mywindsock') return null
   const activity = record(value.activity)
   const capture = record(value.graphCapture)

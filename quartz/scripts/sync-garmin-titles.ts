@@ -3,12 +3,7 @@ import fs from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import type { GarminCache } from '../plugins/stores/garmin'
-import {
-  ACTIVITY_KINDS,
-  isActivityKind,
-  type ActivityKind,
-  type StravaRawCache,
-} from '../plugins/stores/strava'
+import { ACTIVITY_KINDS, isActivityKind, type ActivityKind } from '../plugins/stores/strava'
 import {
   cleanGarminConnectBaseUrl,
   DEFAULT_GARMIN_CONNECT_BASE,
@@ -26,6 +21,8 @@ import {
   updateGarminActivityType,
 } from '../util/garmin-title-update'
 import { joinSegments, QUARTZ } from '../util/path'
+import { readStravaCacheFile } from '../util/strava-cache-file'
+import { requireStravaId } from '../util/strava-id'
 
 const CACHE_DIR = joinSegments(QUARTZ, '.quartz-cache')
 const STRAVA_CACHE = joinSegments(CACHE_DIR, 'strava.json')
@@ -72,10 +69,10 @@ export function parseGarminTitleArgs(argv: string[]): Args {
     else if (arg === '--type') args.type = parseType(readArgValue(argv, ++i, arg))
     else if (arg === '--since') args.since = readArgValue(argv, ++i, arg)
     else if (arg === '--limit') args.limit = positiveInteger(readArgValue(argv, ++i, arg), arg)
-    else if (arg === '--id') args.ids.add(readArgValue(argv, ++i, arg))
+    else if (arg === '--id') args.ids.add(requireStravaId(readArgValue(argv, ++i, arg)))
     else if (arg === '--ids') {
       for (const id of readArgValue(argv, ++i, arg).split(','))
-        if (id.trim()) args.ids.add(id.trim())
+        if (id.trim()) args.ids.add(requireStravaId(id.trim()))
     } else if (arg === '--delay-ms')
       args.delayMs = nonnegativeInteger(readArgValue(argv, ++i, arg), arg)
     else if (arg === '--help' || arg === '-h') {
@@ -164,7 +161,8 @@ export async function persistGarminTitleUpdates(
 }
 
 async function syncPoolSwimTypes(args: Args): Promise<void> {
-  const strava = await readJsonFile<StravaRawCache>(STRAVA_CACHE)
+  const strava = await readStravaCacheFile(STRAVA_CACHE)
+  if (!strava) throw new Error('Strava cache is missing')
   const garmin = await readJsonFile<GarminCache>(GARMIN_CACHE)
   const updates = selectGarminActivityTypeUpdates(strava, garmin, {
     kind: args.kind,
@@ -205,7 +203,8 @@ async function main(): Promise<void> {
     await syncPoolSwimTypes(args)
     return
   }
-  const strava = await readJsonFile<StravaRawCache>(STRAVA_CACHE)
+  const strava = await readStravaCacheFile(STRAVA_CACHE)
+  if (!strava) throw new Error('Strava cache is missing')
   const garmin = await readJsonFile<GarminCache>(GARMIN_CACHE)
   const updates = selectGarminTitleUpdates(strava, garmin, {
     kind: args.kind,

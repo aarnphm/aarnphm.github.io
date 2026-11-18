@@ -29,6 +29,8 @@ import {
 } from '../util/garmin-session'
 import { updateGarminActivityTitle } from '../util/garmin-title-update'
 import { joinSegments, QUARTZ } from '../util/path'
+import { requireStravaId } from '../util/strava-id'
+import { stravaObjectId } from '../util/strava-id'
 import { isRecord, type UnknownRecord } from '../util/type-guards'
 import {
   WahooCloudClient,
@@ -141,7 +143,8 @@ export function parseActivityBridgeStravaActivities(
   value: unknown,
 ): ActivityBridgeStravaActivity[] {
   return activityRecords(value, 'Strava cache').map(([key, record]) => {
-    const id = requiredNumber(record, 'id', `Strava activity ${key}`)
+    const id = stravaObjectId(record)
+    if (id !== key) throw new Error(`Strava activity key ${key} disagrees with its ID`)
     return {
       id: String(id),
       name: requiredString(record, 'name', `Strava activity ${key}`),
@@ -264,7 +267,7 @@ function parseReceipt(value: unknown, label: string): ActivityBridgeReceipt {
     sourceFitSha256,
     destinationProvider,
     destinationActivityId: optionalString(record, 'destinationActivityId', label),
-    stravaActivityId: requiredString(record, 'stravaActivityId', label),
+    stravaActivityId: requireStravaId(record.stravaActivityId),
     uploadToken: optionalString(record, 'uploadToken', label),
     uploadStatus: uploadStatus(record.uploadStatus, label),
     createdAt: requiredNumber(record, 'createdAt', label),

@@ -65,15 +65,11 @@ const readWindRoute = (
     !Array.isArray(value.mappings)
   )
     return empty
-  const graphs = parseMyWindsockGraphs(value, Number(id))
+  const graphs = parseMyWindsockGraphs(value, id)
   return {
     route: projectMyWindsockRoute(value as unknown as MyWindsockArchive),
     archive: graphs
-      ? {
-          activityId: Number(id),
-          capturedAt: graphs.capturedAt,
-          path: `/triathlon/wind/${id}.json`,
-        }
+      ? { activityId: id, capturedAt: graphs.capturedAt, path: `/triathlon/wind/${id}.json` }
       : null,
   }
 }

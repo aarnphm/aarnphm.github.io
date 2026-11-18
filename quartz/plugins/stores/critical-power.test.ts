@@ -10,7 +10,7 @@ import {
 const anchor = (durationS: number, activityId: number, startElapsedS = 0): CriticalPowerAnchor => ({
   durationS,
   meanPowerWatts: 250 + 10_000 / durationS,
-  activityId,
+  activityId: String(activityId),
   activityDate: `2026-08-0${activityId}`,
   startElapsedS,
   endElapsedS: startElapsedS + durationS,
@@ -28,7 +28,7 @@ test('fits critical power and W prime in power space', () => {
   assert.equal(estimate.criticalPowerWatts, 250)
   assert.equal(estimate.wPrimeJoules, 10_000)
   assert.equal(estimate.independentEffortCount, 3)
-  assert.equal(estimate.anchors[0].activityId, 4)
+  assert.equal(estimate.anchors[0].activityId, '4')
   assert.equal(estimate.confidence, 'medium')
   assert.equal(estimate.rmseWatts, 0)
   assert.equal(criticalPowerAtDuration(estimate, 300), 250 + 10_000 / 300)

@@ -6,7 +6,7 @@ import {
   parsePelotanReport,
 } from './activity-provider-reports'
 
-const activityId = 19_943_165_126
+const activityId = '19943165126'
 const retrievedAt = Date.parse('2026-09-02T12:00:00Z')
 
 test('parses the final Pelotan report and preserves its native band', () => {
@@ -21,7 +21,7 @@ Avg UV 1.5
 UV Load 83 — High
 Avg UV 2.3
 🌡️ 20°C ☁️ 42%`,
-    activityId,
+    String(activityId),
     retrievedAt,
   )
 
@@ -45,7 +45,7 @@ test('normalizes Pelotan Light and Low to the same severity', () => {
   for (const rawBand of ['Light', 'Low']) {
     const report = parsePelotanReport(
       `-- pelotan.cc/uv UV Load Analysis --\nUV Load 18 — ${rawBand}`,
-      activityId,
+      String(activityId),
       retrievedAt,
     )
     assert.equal(report?.rawBand, rawBand)
@@ -56,7 +56,7 @@ test('normalizes Pelotan Light and Low to the same severity', () => {
 test('keeps valid zero values and rejects values outside provider bounds', () => {
   const report = parsePelotanReport(
     '-- pelotan.cc/uv UV Load Analysis --\nUV Load 0 — Negligible\nAvg UV 0\nTemperature 0 C\nCloud 0%',
-    activityId,
+    String(activityId),
     retrievedAt,
   )
   assert.equal(report?.score, 0)
@@ -66,7 +66,7 @@ test('keeps valid zero values and rejects values outside provider bounds', () =>
   assert.equal(
     parsePelotanReport(
       '-- pelotan UV Load Analysis --\nUV Load 101 — Extreme',
-      activityId,
+      String(activityId),
       retrievedAt,
     ),
     null,
@@ -85,7 +85,7 @@ Air Speed: 16.8 mph
 Temperature: 68°F
 Precipitation: 25% @ 0.02 Inch/hr
 -- END --`,
-    activityId,
+    String(activityId),
     retrievedAt,
   )
 
@@ -103,13 +103,13 @@ Precipitation: 25% @ 0.02 Inch/hr
 })
 
 test('requires a recognized provider header and never returns the raw description', () => {
-  assert.deepEqual(parseActivityProviderReports('UV Load 83 — High', activityId, retrievedAt), {
-    myWindsock: null,
-    pelotan: null,
-  })
+  assert.deepEqual(
+    parseActivityProviderReports('UV Load 83 — High', String(activityId), retrievedAt),
+    { myWindsock: null, pelotan: null },
+  )
   const reports = parseActivityProviderReports(
     '-- myWindsock Report --\nWeather Impact: 0%\n-- END --\n-- pelotan UV Load Analysis --\nUV Load 3 — Negligible',
-    activityId,
+    String(activityId),
     retrievedAt,
   )
   assert.equal(reports.myWindsock?.weatherImpactPct, 0)
@@ -128,7 +128,7 @@ Air Speed: 18.4km/h
 Temp: 13.3-17°C
 Precip: 0% @ 0 Inch/hr
 -- END --`,
-    activityId,
+    String(activityId),
     retrievedAt,
   )
 
@@ -159,7 +159,7 @@ Pelotan UV Load Analysis, via pelotan.cc/uv
 🔴 UV Load 83 — High
 Serious UV stress — plan recovery and protect skin.
 Avg UV 2.3 · 🌡️ 20 °C · ☁️ 42% cloud`,
-    activityId,
+    String(activityId),
     retrievedAt,
   )
 
@@ -191,7 +191,7 @@ Temperature: 68°F
 -- myWindsock Report --
 malformed
 -- END --`,
-    activityId,
+    String(activityId),
     retrievedAt,
   )
 
@@ -205,7 +205,7 @@ test('rejects undelimited provider-shaped prose', () => {
   assert.deepEqual(
     parseActivityProviderReports(
       'myWindsock Report\nWeather Impact: 2%\npelotan UV Load Analysis\nUV Load 83 — High',
-      activityId,
+      String(activityId),
       retrievedAt,
     ),
     { myWindsock: null, pelotan: null },

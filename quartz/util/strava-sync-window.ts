@@ -1,4 +1,5 @@
 import type { RawStravaActivity } from '../plugins/stores/strava'
+import { requireStravaId } from './strava-id'
 import { DEFAULT_SYNC_REFRESH_WINDOW_DAYS } from './sync-refresh-window'
 
 const DAY_SECONDS = 86_400
@@ -33,9 +34,9 @@ export function reconcileStravaActivities(
     }
   }
   for (const activity of fetched) {
-    const id = String(activity.id)
+    const id = requireStravaId(activity.id)
     const cached = previous?.[id]
-    activities[id] = { ...activity, calories: activity.calories ?? cached?.calories }
+    activities[id] = { ...activity, id, calories: activity.calories ?? cached?.calories }
   }
   return {
     activities,

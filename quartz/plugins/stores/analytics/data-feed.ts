@@ -1,5 +1,6 @@
 import { selectActivityAnalysisSummary } from '../../../util/activity-analysis-selection'
 import { latestProviderSync } from '../../../util/provider-sync'
+import { compareStravaIds } from '../../../util/strava-id'
 import { matchGarminHeartRateActivity, type GarminWeightSample } from '../garmin'
 import { resolveActivityHeartRate, round, type StravaRawCache } from '../strava'
 import { TrackEntry } from '../tracking'
@@ -55,7 +56,7 @@ export function buildDataFeed(
     (inputs.trainingExclusions ?? []).map(entry => entry.activityId),
   )
   const sorted = [...analytics.activities].sort(
-    (p, q) => p.date.localeCompare(q.date) || p.id - q.id,
+    (p, q) => p.date.localeCompare(q.date) || compareStravaIds(p.id, q.id),
   )
 
   const byDay = new Map<string, { sessions: number; meters: number; seconds: number }>()

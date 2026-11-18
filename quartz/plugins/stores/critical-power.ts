@@ -1,4 +1,5 @@
 import type { CyclingMechanics } from '../../util/cycling-torque'
+import { compareStravaIds } from '../../util/strava-id'
 
 export const CRITICAL_POWER_DURATIONS_S = [180, 420, 720] as const
 
@@ -9,7 +10,7 @@ export interface CriticalPowerAnchor {
   mechanics?: CyclingMechanics | null
   durationS: number
   meanPowerWatts: number
-  activityId: number
+  activityId: string
   activityDate: string
   startElapsedS: number
   endElapsedS: number
@@ -57,7 +58,7 @@ const selectAnchors = (
         (candidate.meanPowerWatts === best.meanPowerWatts &&
           (candidate.activityDate > best.activityDate ||
             (candidate.activityDate === best.activityDate &&
-              candidate.activityId > best.activityId)))
+              compareStravaIds(candidate.activityId, best.activityId) > 0)))
       )
         best = candidate
     }
@@ -68,7 +69,7 @@ const selectAnchors = (
 }
 
 const independentEffortCount = (anchors: readonly CriticalPowerAnchor[]): number => {
-  const byActivity = new Map<number, CriticalPowerAnchor[]>()
+  const byActivity = new Map<string, CriticalPowerAnchor[]>()
   for (const anchor of anchors) {
     const activity = byActivity.get(anchor.activityId) ?? []
     activity.push(anchor)

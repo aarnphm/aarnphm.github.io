@@ -16,7 +16,7 @@ test('empty page names both sports and has no fabricated activity links', () => 
 test('native record and activity row use the same canonical day anchor', () => {
   const loops = buildHighParkLoops([
     {
-      id: 123,
+      id: '123',
       date: '2026-11-07',
       start: '2026-11-07T13:00:00Z',
       sport: 'bike',

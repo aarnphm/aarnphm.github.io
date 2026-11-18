@@ -29,7 +29,7 @@ export const swimMetricsByActivityId = (
   acts: readonly Act[],
   apple: AppleCache | null | undefined,
   details: AnalyticsInputs['activityDetails'],
-): Map<number, SwimActivityMetrics> => {
+): Map<string, SwimActivityMetrics> => {
   const swimActs = acts.filter(act => act.sport === 'swim')
   const matches = matchAppleSwims(
     Object.values(apple?.swims ?? {}),
@@ -41,7 +41,7 @@ export const swimMetricsByActivityId = (
     })),
   )
 
-  const out = new Map<number, SwimActivityMetrics>()
+  const out = new Map<string, SwimActivityMetrics>()
   for (const act of swimActs) {
     const detail = details?.[String(act.a.id)]
     const swim = matches.get(act.a.id)
@@ -83,9 +83,9 @@ export const runningDynamicsByActivityId = (
   acts: readonly Act[],
   apple: AppleCache | null | undefined,
   details: AnalyticsInputs['activityDetails'],
-): Map<number, RunningDynamicsMetrics> => {
+): Map<string, RunningDynamicsMetrics> => {
   const workouts = Object.values(apple?.workouts ?? {})
-  const out = new Map<number, RunningDynamicsMetrics>()
+  const out = new Map<string, RunningDynamicsMetrics>()
   for (const act of acts) {
     if (act.sport !== 'run') continue
     const workout = matchAppleRun({ start: act.a.startDate, distanceM: act.a.distance }, workouts)
@@ -122,7 +122,7 @@ export function activityLoad(
 export function buildDaily(
   acts: Act[],
   supplementalActivities: readonly SupplementalLoadActivity[],
-  loadById: Map<number, number>,
+  loadById: Map<string, number>,
   effortByDay: ReadonlyMap<string, EffortBucket>,
   windowFrom: number,
   windowTo: number,
@@ -237,7 +237,7 @@ function weekStartOf(day: string): string {
 export function buildWeekly(
   acts: Act[],
   supplementalActivities: readonly SupplementalLoadActivity[],
-  loadById: Map<number, number>,
+  loadById: Map<string, number>,
   effortByDay: ReadonlyMap<string, EffortBucket>,
   windowFrom: number,
   windowTo: number,
