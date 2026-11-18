@@ -4,6 +4,7 @@ import { copyFile, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promi
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import test from 'node:test'
+import { pathToFileURL } from 'node:url'
 import vm from 'node:vm'
 
 const tsx = resolve('node_modules/tsx/dist/cli.mjs')
@@ -262,6 +263,203 @@ test('wind validation and ingestion preserve historical providerStravaId=0, stri
         ) + '\n',
       )
     }
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('mywindsock-browser-session operates over Helium CUA tab.playwright without CDP, chunks >1 MiB payloads under broker limits, and rejects unsafe courseID', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'wind-session-cua-'))
+  try {
+    const sessionModule = (await import(
+      pathToFileURL(resolve('quartz/scripts/mywindsock-browser-session.mjs')).href
+    )) as {
+      startGraphCapture: (tab: unknown, options?: { checkpointDirectory?: string }) => Promise<any>
+      captureGraphBatch: (
+        tab: unknown,
+        bundle: any,
+        limit?: number,
+        options?: { checkpointDirectory?: string },
+      ) => Promise<any>
+      captureInlineGraphs: (
+        tab: unknown,
+        bundle: any,
+        options?: { checkpointDirectory?: string },
+      ) => Promise<any>
+      exportRuntimeCapture: (
+        tab: unknown,
+        bundle: any,
+        options?: { checkpointDirectory?: string },
+      ) => Promise<any>
+    }
+
+    const id = '9007199254740993'
+    let selectedKey = 'power'
+    let menuActive = false
+    let pageCourseId: unknown = '83610437'
+    const bigPadding = Array.from({ length: 220_000 }, (_, i) => i * 0.5)
+    let maxCommandBytes = 0
+    let maxResultBytes = 0
+
+    const makeContext = () => {
+      const ctx: Record<string, unknown> = {
+        Date,
+        Error,
+        JSON,
+        Math,
+        Number,
+        Object,
+        String,
+        Array,
+        getComputedStyle: () => ({ display: 'block' }),
+        location: { href: `https://mywindsock.com/activity/${id}/`, pathname: `/activity/${id}/` },
+        document: {
+          querySelector: (sel: string) => {
+            if (sel === '#chart_menu_ul') {
+              return { classList: { contains: (c: string) => c === 'ulmenu_active' && menuActive } }
+            }
+            if (sel === '#chart_menu_ul li.ulmenu_selected') {
+              return {
+                getAttribute: (attr: string) => (attr === 'data-value' ? selectedKey : null),
+                click: () => {
+                  menuActive = true
+                },
+              }
+            }
+            const match = sel.match(/^#chart_menu_ul li\[data-value="(.+)"\]$/)
+            if (match) {
+              return {
+                click: () => {
+                  selectedKey = match[1]
+                  menuActive = false
+                },
+              }
+            }
+            if (sel === '#summary-dashboard-premium') return { textContent: 'No rankings yet' }
+            return null
+          },
+          querySelectorAll: (sel: string) => {
+            if (sel === '#chart_menu_ul li[data-value]') {
+              return [
+                { getAttribute: () => 'grade', textContent: 'Gradient' },
+                { getAttribute: () => 'virt_elev', textContent: 'Feels Like Elevation' },
+              ]
+            }
+            if (sel === 'a' || sel === '#dataarea a') {
+              return [
+                { textContent: 'View on Strava', href: `https://strava.com/activities/${id}` },
+              ]
+            }
+            if (sel === 'svg[id]') {
+              return [
+                {
+                  id: 'summary_windrose_chart-svg',
+                  parentElement: { parentElement: { parentElement: { textContent: 'Wind Rose' } } },
+                },
+              ]
+            }
+            return []
+          },
+          getElementById: () => ({ innerText: 'Totals', textContent: 'Nav' }),
+        },
+        zingchart: {
+          exec: (_target: string, cmd: string) =>
+            cmd === 'getdata'
+              ? {
+                  graphset: [
+                    {
+                      type: 'line',
+                      title: { text: selectedKey },
+                      series: [
+                        {
+                          text: selectedKey,
+                          values: [
+                            [0, 1],
+                            [1000, 2],
+                          ],
+                          scales: 'scale-y',
+                        },
+                      ],
+                    },
+                  ],
+                }
+              : null,
+        },
+        type: 'activity',
+        mode: 'analyst',
+        get courseID() {
+          return pageCourseId
+        },
+        stravaID: 0,
+        ride_time: Date.parse('2026-11-16T12:00:00Z') / 1000,
+        data: {
+          time: [0, 1 / 3600, 2 / 3600],
+          point_time: [0, 1 / 3600, 1 / 3600],
+          dist_acc: [0, 0.004, 0.008],
+          groundspd: [14.4, 14.4, 14.4],
+          adj_wind: [1.5, 1.5, 1.5],
+          direction360: [90, 90, 90],
+          dense_padding: bigPadding,
+        },
+        averages: { power: 0 },
+        course: [
+          [43.65, -79.46],
+          [43.6501, -79.46],
+          [43.6502, -79.46],
+        ],
+        distances: [0, 4, 8],
+        elev: [100, 100, 100],
+        forecast: [],
+        profiles: [],
+      }
+      ctx.window = ctx
+      vm.createContext(ctx)
+      return ctx
+    }
+
+    const ctx = makeContext()
+    const tab = {
+      playwright: {
+        domSnapshot: async () => 'RootWebArea "test"',
+        evaluate: async (fn: (...args: any[]) => unknown, arg?: unknown) => {
+          const cmdBytes = Buffer.byteLength(String(fn) + JSON.stringify(arg ?? null))
+          maxCommandBytes = Math.max(maxCommandBytes, cmdBytes)
+          assert.ok(cmdBytes < 1_000_000, `command exceeded 1 MiB broker limit: ${cmdBytes}`)
+          const raw = vm.runInContext(
+            `(${String(fn)})(${arg === undefined ? '' : JSON.stringify(arg)})`,
+            ctx,
+          )
+          const resBytes = Buffer.byteLength(JSON.stringify(raw ?? null))
+          maxResultBytes = Math.max(maxResultBytes, resBytes)
+          assert.ok(resBytes < 1_000_000, `result exceeded 1 MiB broker limit: ${resBytes}`)
+          return raw
+        },
+      },
+    }
+
+    pageCourseId = Number(id)
+    await assert.rejects(
+      () => sessionModule.startGraphCapture(tab, { checkpointDirectory: root }),
+      /courseID/i,
+    )
+
+    pageCourseId = '83610437'
+    const bundle = await sessionModule.startGraphCapture(tab, { checkpointDirectory: root })
+    assert.equal(bundle.stravaId, id)
+    assert.equal(bundle.providerCourseId, '83610437')
+    await sessionModule.captureGraphBatch(tab, bundle, 4, { checkpointDirectory: root })
+    await sessionModule.captureInlineGraphs(tab, bundle, { checkpointDirectory: root })
+    const runtime = await sessionModule.exportRuntimeCapture(tab, bundle, {
+      checkpointDirectory: root,
+    })
+    const exportedRaw = await readFile(runtime.path, 'utf8')
+    assert.ok(Buffer.byteLength(exportedRaw) > 1_000_000)
+    assert.ok(maxCommandBytes < 1_000_000)
+    assert.ok(maxResultBytes < 1_000_000)
+    const exported = JSON.parse(exportedRaw)
+    assert.equal(exported.stravaId, id)
+    assert.equal(exported.providerStravaId, '0')
+    assert.equal(exported.providerCourseId, '83610437')
+  } finally {
     await rm(root, { recursive: true, force: true })
   }
 })

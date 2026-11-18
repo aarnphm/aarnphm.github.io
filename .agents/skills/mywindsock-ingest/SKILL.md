@@ -6,7 +6,7 @@ description: "Capture Aaron's personal myWindsock ride and run analyses through 
 # myWindsock ingestion
 
 Work in `/Users/aarnphm/workspace/garden`. Read its AGENTS.md and
-`docs/mywindsock-ingestion.md`. The durable archive is
+`docs/mywindsock-archive.schema.json`. The durable archive is
 `content/triathlon/wind/<strava_id>.json`. This workflow is for Aaron's own
 outdoor runs and bikes from **2026-10-03 inclusive**, the Tour de Simcoe day.
 
@@ -41,10 +41,12 @@ unverified on a run.
 ## Capture one activity
 
 Read [browser capture](references/browser-capture.md) before the first page.
-Use the computer-use browser tool and its documented CDP capability. Reuse
-the signed-in Chrome profile. The activity URL and View on Strava link must
-identify the queued ID; `ride_time` must equal the cached recording start.
-The importer enforces the timestamp and filename identity again.
+Use the `cua` MCP server (`start` then `js` with the same session ID) against the
+signed-in Helium profile, opening an unfocused task window (`browser.tabs.new`)
+and closing owned tabs at the end with `await cua.finish()`. The activity URL and
+View on Strava link must identify the queued string ID; `ride_time` must equal the
+cached recording start. The importer enforces the timestamp and filename identity
+again.
 
 Capture all available runtime arrays, aggregates, weather, every visible menu
 graph, and every inline chart. Save a graph inventory with captured, empty,

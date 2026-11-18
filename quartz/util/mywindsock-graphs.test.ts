@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises'
 import test from 'node:test'
 import { parseMyWindsockGraphs } from './mywindsock-graphs'
 
-const archive = async (activityId: number): Promise<unknown> =>
+const archive = async (activityId: string): Promise<unknown> =>
   JSON.parse(
     await readFile(
       new URL(`../../content/triathlon/wind/${activityId}.json`, import.meta.url),
@@ -14,7 +14,7 @@ const archive = async (activityId: number): Promise<unknown> =>
 // The browser cannot prove that projection preserves the source archive, or that
 // a second activity's valid W′ values survive the rejection of a corrupt curve.
 test('rejects the captured October 6 W′ overflow without rewriting its source', async () => {
-  const input = await archive(20480919077)
+  const input = await archive('20480919077')
   const before = JSON.stringify(input)
   const result = parseMyWindsockGraphs(input, '20480919077')
   assert.ok(result)
@@ -27,7 +27,7 @@ test('rejects the captured October 6 W′ overflow without rewriting its source'
 })
 
 test('keeps the captured October 7 W′ values and their source units', async () => {
-  const result = parseMyWindsockGraphs(await archive(20491396921), '20491396921')
+  const result = parseMyWindsockGraphs(await archive('20491396921'), '20491396921')
   assert.ok(result)
   const graph = result.graphs.find(graph => graph.key === 'wprime')
   assert.ok(graph)
@@ -42,7 +42,7 @@ test('keeps the captured October 7 W′ values and their source units', async ()
 })
 
 test('projects inline chart names and provider categories from the captured report', async () => {
-  const result = parseMyWindsockGraphs(await archive(20480919077), '20480919077')
+  const result = parseMyWindsockGraphs(await archive('20480919077'), '20480919077')
   assert.ok(result)
   const ranking = result.graphs.find(graph => graph.key === 'inline:pointsgraph')
   assert.equal(ranking?.label, 'Activity Weather Rankings')

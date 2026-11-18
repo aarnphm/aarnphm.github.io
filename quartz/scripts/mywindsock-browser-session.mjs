@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 
-// Run this module inside cua_repl, passing its documented tab and CDP handles.
+// Run this module inside Helium CUA (`cua` MCP `js`), passing its claimed/task `tab` handle.
 const graphScript = await readFile(
   new URL('./mywindsock-browser-graph.js', import.meta.url),
   'utf8',
@@ -10,27 +10,98 @@ const captureScript = await readFile(
   new URL('./mywindsock-browser-capture.js', import.meta.url),
   'utf8',
 )
-const checkpointDirectory = fileURLToPath(
+const defaultCheckpointDirectory = fileURLToPath(
   new URL('../../docs/verification/mywindsock-ingestion/artifacts/checkpoints', import.meta.url),
 )
 
-async function evaluate(cdp, expression) {
-  const result = await cdp.send(
-    'Runtime.evaluate',
-    { expression, returnByValue: true },
-    { timeoutMs: 10000 },
-  )
-  if (result.exceptionDetails) throw new Error(result.exceptionDetails.text)
-  return result.result.value
+const INPUT_CHUNK_CHARS = 400_000
+const OUTPUT_CHUNK_CHARS = 500_000
+
+const isCdp = candidate => Boolean(candidate && typeof candidate.send === 'function')
+const resolveChannel = (tab, maybeCdp) => (isCdp(maybeCdp) ? maybeCdp : isCdp(tab) ? tab : tab)
+const resolveDir = options => options?.checkpointDirectory ?? defaultCheckpointDirectory
+
+async function evaluate(channel, expression) {
+  if (isCdp(channel)) {
+    const result = await channel.send(
+      'Runtime.evaluate',
+      { expression, returnByValue: true },
+      { timeoutMs: 10000 },
+    )
+    if (result.exceptionDetails) throw new Error(result.exceptionDetails.text)
+    return result.result.value
+  }
+  const pw = channel?.playwright
+  if (!pw?.evaluate) throw new Error('Expected a Helium CUA tab with tab.playwright.evaluate')
+
+  let inputKey = null
+  try {
+    let runExpr = expression
+    if (expression.length > INPUT_CHUNK_CHARS) {
+      inputKey = '__mywindsock_in_' + Math.random().toString(36).slice(2)
+      await pw.evaluate(key => {
+        window[key] = ''
+      }, inputKey)
+      for (let offset = 0; offset < expression.length; offset += INPUT_CHUNK_CHARS) {
+        await pw.evaluate(
+          ({ key, slice }) => {
+            window[key] += slice
+          },
+          { key: inputKey, slice: expression.slice(offset, offset + INPUT_CHUNK_CHARS) },
+        )
+      }
+      runExpr = `window[${JSON.stringify(inputKey)}]`
+    }
+
+    const initial = await pw.evaluate(
+      ({ expr, fromKey, maxChars }) => {
+        const source = (fromKey ? window[fromKey] : expr).replace(/^(?:\s|\/\/[^\n]*\n|;)+/, '')
+        const value = Function(`"use strict"; return (\n${source}\n)`)()
+        if (typeof value !== 'string' || value.length <= maxChars) return { done: true, value }
+        const outKey = '__mywindsock_out_' + Math.random().toString(36).slice(2)
+        window[outKey] = value
+        return { done: false, key: outKey, length: value.length, head: value.slice(0, maxChars) }
+      },
+      { expr: inputKey ? '' : runExpr, fromKey: inputKey, maxChars: OUTPUT_CHUNK_CHARS },
+    )
+    if (initial.done) return initial.value
+    try {
+      let assembled = initial.head
+      for (let offset = OUTPUT_CHUNK_CHARS; offset < initial.length; offset += OUTPUT_CHUNK_CHARS) {
+        assembled += await pw.evaluate(
+          ({ key, start, size }) => window[key].slice(start, start + size),
+          { key: initial.key, start: offset, size: OUTPUT_CHUNK_CHARS },
+        )
+      }
+      return assembled
+    } finally {
+      await pw.evaluate(key => {
+        delete window[key]
+      }, initial.key)
+    }
+  } finally {
+    if (inputKey) {
+      await pw.evaluate(key => {
+        delete window[key]
+      }, inputKey)
+    }
+  }
 }
 
-export async function startGraphCapture(tab, cdp) {
+const courseIdGuardExpression = `(typeof courseID==='string'?/^[1-9]\\d*$/.test(courseID):Number.isSafeInteger(courseID)&&courseID>0)?String(courseID):(()=>{throw new Error('Unexpected provider courseID')})()`
+
+export async function startGraphCapture(tab, cdpOrOptions, maybeOptions) {
+  const channel = resolveChannel(tab, cdpOrOptions)
+  const options = isCdp(cdpOrOptions) ? maybeOptions : cdpOrOptions
   if (
     !(await tab.playwright.evaluate(() =>
       document.querySelector('#chart_menu_ul').classList.contains('ulmenu_active'),
     ))
   ) {
-    await evaluate(cdp, 'document.querySelector("#chart_menu_ul li.ulmenu_selected").click(); true')
+    await evaluate(
+      channel,
+      '(document.querySelector("#chart_menu_ul li.ulmenu_selected").click(), true)',
+    )
     await tab.playwright.domSnapshot()
   }
   const menu = await tab.playwright.evaluate(() =>
@@ -40,32 +111,32 @@ export async function startGraphCapture(tab, cdp) {
   )
   const identity = JSON.parse(
     await evaluate(
-      cdp,
+      channel,
       `JSON.stringify({
     adapterVersion:'mywindsock-graphs-browser-v1',capturedAt:new Date().toISOString(),
     pageUrl:location.href,stravaId:location.pathname.match(/^\\/activity\\/([1-9]\\d*)\\/$/)?.[1],
     viewOnStravaId:Array.from(document.querySelectorAll('a')).find(a=>a.textContent.includes('View on Strava'))?.href.match(/\\/activities\\/([1-9]\\d*)/)?.[1],
-    providerCourseId:String(courseID),rideTimestamp:Number(ride_time)
+    providerCourseId:${courseIdGuardExpression},rideTimestamp:Number(ride_time)
   })`,
     ),
   )
   if (!identity.stravaId || identity.stravaId !== identity.viewOnStravaId || !menu.length)
     throw new Error('Activity identity or graph menu is missing')
   const bundle = { ...identity, menu, graphs: {} }
-  await checkpoint(bundle)
+  await checkpoint(bundle, resolveDir(options))
   return bundle
 }
 
-async function checkpoint(bundle) {
-  await mkdir(checkpointDirectory, { recursive: true })
-  await writeFile(`${checkpointDirectory}/${bundle.stravaId}.json`, JSON.stringify(bundle))
+async function checkpoint(bundle, directory = defaultCheckpointDirectory) {
+  await mkdir(directory, { recursive: true })
+  await writeFile(`${directory}/${bundle.stravaId}.json`, JSON.stringify(bundle))
 }
 
-async function assertCurrentActivity(cdp, bundle) {
+async function assertCurrentActivity(channel, bundle) {
   const identity = JSON.parse(
     await evaluate(
-      cdp,
-      'JSON.stringify({path:location.pathname,course:String(courseID),start:Number(ride_time)})',
+      channel,
+      `JSON.stringify({path:location.pathname,course:${courseIdGuardExpression},start:Number(ride_time)})`,
     ),
   )
   if (
@@ -76,8 +147,32 @@ async function assertCurrentActivity(cdp, bundle) {
     throw new Error('The browser activity changed during capture')
 }
 
-export async function captureGraphBatch(tab, cdp, bundle, limit = 4) {
-  await assertCurrentActivity(cdp, bundle)
+export async function captureGraphBatch(
+  tab,
+  bundleOrCdp,
+  limitOrBundle = 4,
+  limitOrOptions,
+  maybeOptions,
+) {
+  const hasCdp = isCdp(bundleOrCdp)
+  const channel = resolveChannel(tab, hasCdp ? bundleOrCdp : undefined)
+  const bundle = hasCdp ? limitOrBundle : bundleOrCdp
+  const limit =
+    typeof (hasCdp ? limitOrOptions : limitOrBundle) === 'number'
+      ? hasCdp
+        ? limitOrOptions
+        : limitOrBundle
+      : 4
+  const options = hasCdp
+    ? typeof limitOrOptions === 'object'
+      ? limitOrOptions
+      : maybeOptions
+    : typeof limitOrBundle === 'object'
+      ? limitOrBundle
+      : limitOrOptions
+  const dir = resolveDir(options)
+
+  await assertCurrentActivity(channel, bundle)
   const deferred = new Set([
     'interval_designer',
     'ai_power',
@@ -92,12 +187,12 @@ export async function captureGraphBatch(tab, cdp, bundle, limit = 4) {
   const results = []
   for (const item of pending) {
     try {
-      await assertCurrentActivity(cdp, bundle)
+      await assertCurrentActivity(channel, bundle)
       const previousConfiguration =
         item.key === 'ai_power'
           ? JSON.parse(
               await evaluate(
-                cdp,
+                channel,
                 graphScript.replace(
                   '__MYWINDSOCK_GRAPH__',
                   JSON.stringify({ label: item.label, source: 'menu', target: 'chartarea_target' }),
@@ -106,21 +201,21 @@ export async function captureGraphBatch(tab, cdp, bundle, limit = 4) {
             ).configuration
           : null
       // The native locator's scrolling moves this menu during selection. Invoke the
-      // inspected DOM control through CDP, then verify the resulting visible state.
+      // inspected DOM control in-page, then verify the resulting visible state.
       if (
         !(await tab.playwright.evaluate(() =>
           document.querySelector('#chart_menu_ul').classList.contains('ulmenu_active'),
         ))
       ) {
         await evaluate(
-          cdp,
-          'document.querySelector("#chart_menu_ul li.ulmenu_selected").click(); true',
+          channel,
+          '(document.querySelector("#chart_menu_ul li.ulmenu_selected").click(), true)',
         )
         await tab.playwright.domSnapshot()
       }
       await evaluate(
-        cdp,
-        `document.querySelector('#chart_menu_ul li[data-value='+${JSON.stringify(JSON.stringify(item.key))}+']').click(); true`,
+        channel,
+        `(document.querySelector('#chart_menu_ul li[data-value='+${JSON.stringify(JSON.stringify(item.key))}+']').click(), true)`,
       )
       const snapshot = await tab.playwright.domSnapshot()
       const selected = await tab.playwright.evaluate(() =>
@@ -129,7 +224,7 @@ export async function captureGraphBatch(tab, cdp, bundle, limit = 4) {
       if (selected !== item.key) throw new Error('The requested menu entry did not become selected')
       const graph = JSON.parse(
         await evaluate(
-          cdp,
+          channel,
           graphScript.replace(
             '__MYWINDSOCK_GRAPH__',
             JSON.stringify({ label: item.label, source: 'menu', target: 'chartarea_target' }),
@@ -184,15 +279,26 @@ export async function captureGraphBatch(tab, cdp, bundle, limit = 4) {
       }
       results.push({ key: item.key, state: 'failed', note: bundle.graphs[item.key].note })
     }
-    await checkpoint(bundle)
+    await checkpoint(bundle, dir)
   }
   return results
 }
 
-export async function exportRuntimeCapture(cdp, bundle) {
-  await assertCurrentActivity(cdp, bundle)
+export async function exportRuntimeCapture(
+  tabOrCdp,
+  bundleOrCdp,
+  maybeBundleOrOptions,
+  maybeOptions,
+) {
+  const secondIsCdp = isCdp(bundleOrCdp)
+  const channel = secondIsCdp ? bundleOrCdp : tabOrCdp
+  const bundle = secondIsCdp ? maybeBundleOrOptions : bundleOrCdp
+  const options = secondIsCdp ? maybeOptions : maybeBundleOrOptions
+  const dir = resolveDir(options)
+
+  await assertCurrentActivity(channel, bundle)
   const cdaAvailable = await evaluate(
-    cdp,
+    channel,
     'Array.from(document.querySelectorAll("#dataarea a")).some(a => a.textContent.includes("View the CdA Chart"))',
   )
   const legacyChart = key =>
@@ -212,14 +318,14 @@ export async function exportRuntimeCapture(cdp, bundle) {
   }
   const capture = JSON.parse(
     await evaluate(
-      cdp,
+      channel,
       captureScript
         .replace('__MYWINDSOCK_CHARTS__', JSON.stringify(charts))
         .replaceAll('__MYWINDSOCK_OUTPUT__', JSON.stringify('return')),
     ),
   )
-  const capturePath = `${checkpointDirectory}/${bundle.stravaId}.runtime.json`
-  await mkdir(checkpointDirectory, { recursive: true })
+  const capturePath = `${dir}/${bundle.stravaId}.runtime.json`
+  await mkdir(dir, { recursive: true })
   await writeFile(capturePath, JSON.stringify(capture))
   return {
     id: capture.stravaId,
@@ -229,8 +335,14 @@ export async function exportRuntimeCapture(cdp, bundle) {
   }
 }
 
-export async function captureInlineGraphs(tab, cdp, bundle) {
-  await assertCurrentActivity(cdp, bundle)
+export async function captureInlineGraphs(tab, bundleOrCdp, maybeBundleOrOptions, maybeOptions) {
+  const hasCdp = isCdp(bundleOrCdp)
+  const channel = resolveChannel(tab, hasCdp ? bundleOrCdp : undefined)
+  const bundle = hasCdp ? maybeBundleOrOptions : bundleOrCdp
+  const options = hasCdp ? maybeOptions : maybeBundleOrOptions
+  const dir = resolveDir(options)
+
+  await assertCurrentActivity(channel, bundle)
   const targets = await tab.playwright.evaluate(() =>
     Array.from(document.querySelectorAll('svg[id]'))
       .filter(
@@ -258,7 +370,7 @@ export async function captureInlineGraphs(tab, cdp, bundle) {
         note: rankingText,
       }
       results.push({ key: 'inline:pointsgraph', state: 'unavailable' })
-      await checkpoint(bundle)
+      await checkpoint(bundle, dir)
     }
   }
   for (const target of targets) {
@@ -266,7 +378,7 @@ export async function captureInlineGraphs(tab, cdp, bundle) {
     try {
       bundle.graphs[key] = JSON.parse(
         await evaluate(
-          cdp,
+          channel,
           graphScript.replace(
             '__MYWINDSOCK_GRAPH__',
             JSON.stringify({ label: target.label, source: 'inline', target: target.id }),
@@ -285,7 +397,7 @@ export async function captureInlineGraphs(tab, cdp, bundle) {
       }
     }
     results.push({ key, state: bundle.graphs[key].state })
-    await checkpoint(bundle)
+    await checkpoint(bundle, dir)
   }
   return results
 }

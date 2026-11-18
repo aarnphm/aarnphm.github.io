@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-11-17 09:59:27 GMT-05:00
+modified: 2026-11-18 10:06:02 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -82,6 +82,11 @@ title: are.na
 
 ## discourse
 
+- https://x.com/WillManidis/status/2113744389839392968 -- Will Manidis on conduct and political credibility in social movements
+  - [meta]:
+    - date: 11/18/2026
+    - tags: [effective altruism, community norms]
+    - later: true
 - https://x.com/DarioAmodei/status/2112732230124818891 -- Dario Amodei responds to Nathan Calvin on Anthropic’s safety strategy
   - [meta]:
     - date: 11/17/2026
@@ -858,6 +863,11 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/kemimarie/status/2113741992517841064 -- Kemi on self-forgiveness and wanting to be loved
+  - [meta]:
+    - date: 11/18/2026
+    - tags: [relationships, self-forgiveness]
+    - later: true
 - https://x.com/noampomsky/status/2112715759176786200 -- Ava shares a reading of Elizabeth Holmes in You Can See Everything
   - [meta]:
     - date: 11/17/2026
@@ -18721,6 +18731,11 @@ title: are.na
 
 ## opinions
 
+- https://x.com/patinthehat0/status/2113398438926672189 -- P on AI diffusion, financing, and San Francisco
+  - [meta]:
+    - date: 11/18/2026
+    - tags: [ai economics, capital investment]
+    - later: true
 - https://emjsmith.substack.com/p/seeing-myself-in-elizabeth-holmes -- Seeing Myself In Elizabeth Holmes
   - [meta]:
     - date: 11/10/2026
@@ -23317,6 +23332,11 @@ title: are.na
 
 ## finances
 
+- https://x.com/evanjconrad/status/2113750471164985450 -- Evan Conrad on fund-owned GPUs for portfolio companies
+  - [meta]:
+    - date: 11/18/2026
+    - tags: [gpu ownership, compute infrastructure]
+    - later: true
 - https://x.com/JesusFerna7026/status/2112519061800128883 -- Saving for the Machines: AI and capital accumulation
   - [meta]:
     - date: 11/12/2026
@@ -23600,6 +23620,11 @@ title: are.na
 
 ## design
 
+- https://x.com/Emojipedia/status/2113671058599600138 -- Emojipedia revisits Gmail’s animated goomoji
+  - [meta]:
+    - date: 11/18/2026
+    - tags: [emoji history, animation]
+    - later: true
 - https://x.com/raunofreiberg/status/2112875577388712123 -- Rauno Freiberg recommends og:video
   - [meta]:
     - date: 11/17/2026
@@ -26017,6 +26042,11 @@ title: are.na
 
 ## resources
 
+- https://x.com/Scenario_gg/status/2113635335267643591 -- Scenario releases a collection of 3D models
+  - [meta]:
+    - date: 11/18/2026
+    - tags: [3d assets, open datasets]
+    - later: true
 - https://www.cyclingtimetrials.org.uk/events/42188-rttc-national-hill-climb-championship -- RTTC National Hill Climb Championship 2026
   - [meta]:
     - date: 10/22/2026
@@ -29669,6 +29699,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://x.com/WarnerTeddy/status/2113697705461739616 -- Teddy Warner’s lightweight stratospheric balloon platform
+  - [meta]:
+    - date: 11/18/2026
+    - tags: [stratospheric balloons, open hardware]
+    - later: true
 - https://x.com/xhfloz/status/2112906382697500735 -- XH’s setup notes for everyday agent workflows
   - [meta]:
     - date: 11/16/2026
