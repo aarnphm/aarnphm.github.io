@@ -40,8 +40,12 @@ const browserCapture = z.strictObject({
   stravaId: activityId,
   viewOnStravaId: activityId,
   providerCourseId: activityId,
-  // Historical capture bytes participate in its checksum; retain safe legacy metadata.
-  providerStravaId: z.union([activityId, z.number().int().positive().max(Number.MAX_SAFE_INTEGER)]),
+  // Historical capture bytes participate in its checksum; retain safe legacy metadata and provider zero.
+  providerStravaId: z.union([
+    z.literal('0'),
+    activityId,
+    z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER),
+  ]),
   rideTimestamp: z.number().int().nonnegative(),
   pageType: z.literal('activity'),
   pageMode: z.literal('analyst'),
@@ -58,7 +62,7 @@ const browserCapture = z.strictObject({
       longitude: z.number(),
       timezone: z.string(),
       offset: z.number(),
-      side_of_road: z.string(),
+      side_of_road: z.string().nullable(),
       hourly: z.json(),
       daily: z.json(),
       currently: z.json(),

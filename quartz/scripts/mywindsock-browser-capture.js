@@ -13,6 +13,12 @@
     throw new Error('Activity page identity or mode changed')
   if (!Array.isArray(data.time) || !data.time.length || !Array.isArray(course) || !course.length)
     throw new Error('Analysis is not loaded')
+  if (
+    typeof stravaID === 'string'
+      ? !/^(?:0|[1-9]\d*)$/.test(stravaID)
+      : !Number.isSafeInteger(stravaID) || stravaID < 0
+  )
+    throw new Error('Unexpected provider stravaID')
   const nonFiniteValues = []
   const numeric = (value, path, index = null, component) => {
     if (value === null || Number.isFinite(value)) return value
