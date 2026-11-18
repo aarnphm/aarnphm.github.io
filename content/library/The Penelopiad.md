@@ -26,5 +26,3 @@ reference_links:
   - https://groveatlantic.com/book/the-penelopiad/
 details: First published in 2005. Cover from the 2018 Canongate Canons paperback, ISBN 9781786892485.
 ---
-
-

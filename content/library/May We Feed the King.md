@@ -25,5 +25,3 @@ external: https://granta.com/products/may-we-feed-the-king/
 reference_links:
   - https://thebookerprizes.com/the-booker-library/books/may-we-feed-the-king
 ---
-
-

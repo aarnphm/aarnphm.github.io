@@ -23,5 +23,3 @@ tags:
 status: to read
 posters: '[[library/posters/the-guest.jpg]]'
 ---
-
-

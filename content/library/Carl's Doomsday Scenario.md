@@ -26,5 +26,3 @@ tags:
 status: to read
 posters: '[[library/posters/carls-doomsday-scenario.jpg]]'
 ---
-
-
