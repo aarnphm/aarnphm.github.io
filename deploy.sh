@@ -31,6 +31,7 @@ run_stage() {
 deploy() {
   load_env
   GIT_LFS_SKIP_SMUDGE=1 run_stage git-pull git pull
+  run_stage pnpm-install pnpm install --frozen-lockfile
   run_stage lfs-install git lfs install --local
   run_stage lfs-pull git lfs pull
   run_stage lfs-required git lfs pull --include="quartz/runtime/native/packs/**,content/triathlon/wind/**/*.json,content/thoughts/images/**,content/hinterland/app/**" --exclude=""

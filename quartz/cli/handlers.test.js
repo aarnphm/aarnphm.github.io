@@ -1,6 +1,11 @@
 import assert from 'node:assert/strict'
+import { spawn } from 'node:child_process'
 import { once } from 'node:events'
+import fs from 'node:fs/promises'
+import os from 'node:os'
+import path from 'node:path'
 import test from 'node:test'
+import { fileURLToPath } from 'node:url'
 import { WebSocket } from 'ws'
 import {
   createReloadServer,
@@ -152,4 +157,64 @@ test('source watcher includes browser JavaScript and runtime data dependencies',
     'pnpm-lock.yaml',
   ])
     assert.equal(isSourceWatchPath(filename), true, filename)
+})
+
+test('non-watch build flushes configuration import failure over pipes without esbuild deadlock', async t => {
+  const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
+  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'quartz-handlers-pipe-'))
+  t.after(() => fs.rm(tmpDir, { recursive: true, force: true }))
+
+  await fs.writeFile(
+    path.join(tmpDir, 'package.json'),
+    JSON.stringify({ name: 'quartz-pipe-fixture', version: '4.6.0', type: 'module' }),
+  )
+  await fs.symlink(path.join(repoRoot, 'node_modules'), path.join(tmpDir, 'node_modules'))
+  await fs.mkdir(path.join(tmpDir, 'quartz/chunks'), { recursive: true })
+
+  // Generate enough >4 KiB module inputs so --bundleInfo exceeds the 64 KiB OS pipe buffer.
+  const imports = []
+  for (let i = 0; i < 900; i++) {
+    const name = `very-long-component-module-name-${String(i).padStart(4, '0')}.ts`
+    const pad = 'x'.repeat(5000 + i)
+    await fs.writeFile(path.join(tmpDir, 'quartz/chunks', name), `export const v${i} = '${pad}'\n`)
+    imports.push(`import { v${i} } from './chunks/${name}'`)
+  }
+  await fs.writeFile(
+    path.join(tmpDir, 'quartz/build.ts'),
+    `${imports.join('\n')}\nimport 'missing-external-dependency-sentinel'\nexport default async () => ({ ready: true })\nexport const sum = [${Array.from({ length: 900 }, (_, i) => `v${i}`).join(',')}].length\n`,
+  )
+
+  const handlersEntry = path.join(repoRoot, 'quartz/cli/handlers.js')
+  const runner = path.join(tmpDir, 'run.mjs')
+  await fs.writeFile(
+    runner,
+    `import { handleBuild } from ${JSON.stringify(handlersEntry)}\nawait handleBuild({ directory: 'content', output: 'public', concurrency: 1, bundleInfo: true, watch: false, serve: false, verbose: false })\n`,
+  )
+
+  const child = spawn(process.execPath, [runner], {
+    cwd: tmpDir,
+    stdio: ['ignore', 'pipe', 'pipe'],
+  })
+  child.stdout.setEncoding('utf8')
+  child.stderr.setEncoding('utf8')
+  let stdout = ''
+  let stderr = ''
+  const drainStdout = (async () => {
+    for await (const chunk of child.stdout) {
+      stdout += chunk
+      await new Promise(resolve => setTimeout(resolve, 15))
+    }
+  })()
+  const drainStderr = (async () => {
+    for await (const chunk of child.stderr) {
+      stderr += chunk
+    }
+  })()
+  const [[code]] = await Promise.all([once(child, 'close'), drainStdout, drainStderr])
+
+  assert.equal(code, 1)
+  const combined = `${stdout}\n${stderr}`
+  assert.match(combined, /Couldn't parse Quartz configuration:/)
+  assert.match(combined, /missing-external-dependency-sentinel/)
+  assert.doesNotMatch(stderr, /all goroutines are asleep - deadlock!/)
 })

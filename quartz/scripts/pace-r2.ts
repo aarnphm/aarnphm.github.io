@@ -62,7 +62,7 @@ export async function fetchLiveLatest(family: string): Promise<LiveLatest | null
 
 export function r2put(key: string, file: string, cacheControl: string): void {
   const args = [
-    'dlx',
+    'exec',
     'wrangler',
     'r2',
     'object',
