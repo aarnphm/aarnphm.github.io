@@ -46,7 +46,7 @@ deploy() {
   # and publishes nothing, so an unchanged deploy spends a few seconds here.
   run_stage latent-model pnpm model:latent || echo "latent model refresh failed; deploying site without model update"
 
-  EMAIL_EMITTER_ENABLED=1 NODE_ENV=production run_stage quartz-build pnpm exec quartz/bootstrap-cli.mjs build --concurrency 16 --bundleInfo --verbose
+  EMAIL_EMITTER_ENABLED=1 NODE_ENV=production NODE_OPTIONS="${NODE_OPTIONS:+$NODE_OPTIONS }--max-old-space-size=16384" run_stage quartz-build pnpm exec quartz/bootstrap-cli.mjs build --concurrency 16 --bundleInfo --verbose
   run_stage output-assets node quartz/scripts/validate-deployment-assets.mjs public
 
   run_stage prune-ddl fd --glob "*.ddl" public -x rm

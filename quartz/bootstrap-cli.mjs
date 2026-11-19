@@ -1,4 +1,4 @@
-#!/usr/bin/env -S node --no-deprecation
+#!/usr/bin/env -S node --no-deprecation --max-old-space-size=16384
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 import { BuildArgv, BundleInfoArgv, StatsArgv } from './cli/args.js'

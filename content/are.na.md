@@ -5491,6 +5491,14 @@ title: are.na
 
 ## places
 
+- https://www.google.com/maps?cid=14827761860804465188 -- The Pelican Notting Hill
+  - [meta]:
+    - date: 11/18/2026
+    - tags: [bar, restaurant]
+    - coord: [51.5188301, -0.2045877]
+    - address: 45 All Saints Road, Notting Hill, London W11 1HE, United Kingdom
+    - later: true
+
 - https://www.google.com/maps?cid=2113971200120967555 -- Electric Cinema Portobello
   - [meta]:
     - date: 11/16/2026

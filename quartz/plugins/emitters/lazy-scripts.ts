@@ -1,4 +1,4 @@
-import { build, type Plugin } from 'esbuild'
+import { build, stop, type Plugin } from 'esbuild'
 import { readFile } from 'node:fs/promises'
 import type { QuartzEmitterPlugin } from '../../types/plugin'
 import { devFeatureEnabled, type DevFeature } from '../../dev-features'
@@ -79,6 +79,9 @@ export const LazyScripts: QuartzEmitterPlugin<Options> = opts => {
           })
         }),
       )
+      if (!ctx.argv.watch) {
+        await stop()
+      }
     },
     async *partialEmit() {},
   }

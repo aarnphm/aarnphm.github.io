@@ -161,6 +161,9 @@ export async function handleBuild(argv) {
       if (argv.bundleInfo) {
         await printBundleInfo(result.metafile)
       }
+      if (!argv.watch) {
+        await ctx.dispose()
+      }
       const moduleUrl = `${pathToFileURL(path.resolve(cacheFile)).href}?update=${randomUUID()}`
       return await import(moduleUrl)
     } catch (err) {

@@ -35,18 +35,18 @@ export function serializeContentDetails(content: ContentDetails, includeContent:
   return JSON.stringify(serializable)
 }
 
-function serializeIndexJson(
+function buildSerializedEntries(
   idx: ContentIndexMap,
   includeContent: boolean,
   previous?: SerializedIndexCache,
   changedSlugs?: ReadonlySet<FullSlug>,
-): { content: string; cache: SerializedIndexCache } {
+): Map<FullSlug, string> {
   if (!previous || !changedSlugs) {
     const entries = new Map<FullSlug, string>()
     for (const [slug, content] of idx) {
       entries.set(slug, serializeContentDetails(content, includeContent))
     }
-    return { content: serializeEntries(entries), cache: { entries } }
+    return entries
   }
 
   const entries = new Map(previous.entries)
@@ -61,6 +61,16 @@ function serializeIndexJson(
       entries.set(slug, serializeContentDetails(details, includeContent))
     }
   }
+  return entries
+}
+
+function serializeIndexJson(
+  idx: ContentIndexMap,
+  includeContent: boolean,
+  previous?: SerializedIndexCache,
+  changedSlugs?: ReadonlySet<FullSlug>,
+): { content: string; cache: SerializedIndexCache } {
+  const entries = buildSerializedEntries(idx, includeContent, previous, changedSlugs)
   return { content: serializeEntries(entries), cache: { entries } }
 }
 
@@ -160,13 +170,20 @@ async function writeSearchManifest(
     Array.from(searchChunkEntries(entries, id)).sort(([a], [b]) => a.localeCompare(b)),
   )
   const ordered: Record<string, string> = Object.fromEntries(orderedEntries)
-  const documents = Object.entries(ordered).map(([slug, serialized], id) => {
-    const details: ContentDetails = JSON.parse(serialized)
-    return prepareLexicalDocument(id, slug, details)
-  })
-  const fingerprint = crypto.createHash('sha256').update(JSON.stringify(documents)).digest('hex')
+  const fingerprintHash = crypto.createHash('sha256')
+  fingerprintHash.update('[')
   const index = createLexicalDocumentIndex()
-  for (const document of documents) index.add(document)
+  let docIndex = 0
+  for (const [slug, serialized] of Object.entries(ordered)) {
+    const details: ContentDetails = JSON.parse(serialized)
+    const document = prepareLexicalDocument(docIndex, slug, details)
+    if (docIndex > 0) fingerprintHash.update(',')
+    fingerprintHash.update(JSON.stringify(document))
+    index.add(document)
+    docIndex += 1
+  }
+  fingerprintHash.update(']')
+  const fingerprint = fingerprintHash.digest('hex')
   const { bytes } = encodeCompactLexicalIndex(index)
   const sha256 = crypto.createHash('sha256').update(bytes).digest('hex')
   const asset = `search-lexical/${sha256}/index-${sha256.slice(0, 8)}`
@@ -243,18 +260,16 @@ export async function writeSearchIndexJson(
   previous?: SerializedIndexCache,
   changedSlugs?: ReadonlySet<FullSlug>,
 ): Promise<{ files: FilePath[]; cache: SerializedIndexCache }> {
-  const serialized = serializeIndexJson(searchIndex, true, previous, changedSlugs)
+  const entries = buildSerializedEntries(searchIndex, true, previous, changedSlugs)
   const chunkIds = changedSlugs
     ? Array.from(new Set(Array.from(changedSlugs, searchChunkId))).sort()
     : searchChunkIds()
   const [manifestFile, chunkFiles] = await Promise.all([
-    writeSearchManifest(ctx, serialized.cache.entries),
-    mapConcurrent(chunkIds, defaultIoConcurrency, id =>
-      writeSearchChunk(ctx, id, serialized.cache.entries),
-    ),
+    writeSearchManifest(ctx, entries),
+    mapConcurrent(chunkIds, defaultIoConcurrency, id => writeSearchChunk(ctx, id, entries)),
   ])
   const files = [...manifestFile, ...chunkFiles]
-  return { files, cache: serialized.cache }
+  return { files, cache: { entries } }
 }
 
 export async function writePatchedSearchIndexJson(
